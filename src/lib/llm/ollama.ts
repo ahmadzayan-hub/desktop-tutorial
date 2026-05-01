@@ -17,6 +17,14 @@ interface OllamaResponse {
  * Single-shot generate against a local Ollama daemon.
  * Free, offline, no API keys required.
  */
+export class LlmUnreachableError extends Error {
+  readonly code = "llm_unreachable";
+  constructor(public baseUrl: string, cause?: unknown) {
+    super(`Cannot reach Ollama at ${baseUrl}. Start it with 'ollama serve' or set OLLAMA_BASE_URL.`);
+    if (cause) (this as { cause?: unknown }).cause = cause;
+  }
+}
+
 export async function generate(prompt: string, opts: OllamaOptions = {}): Promise<string> {
   const body = {
     model: opts.model ?? env.ollamaReasoning,
@@ -27,12 +35,18 @@ export async function generate(prompt: string, opts: OllamaOptions = {}): Promis
     options: { temperature: opts.temperature ?? 0.2 }
   };
 
-  const res = await fetch(`${env.ollamaBaseUrl}/api/generate`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-    signal: opts.signal
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${env.ollamaBaseUrl}/api/generate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: opts.signal
+    });
+  } catch (e) {
+    // Network-level failure (refused, DNS, timeout) — surface a clean error
+    throw new LlmUnreachableError(env.ollamaBaseUrl, e);
+  }
 
   if (!res.ok) {
     throw new Error(`Ollama error ${res.status}: ${await res.text()}`);

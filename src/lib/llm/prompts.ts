@@ -51,5 +51,7 @@ export const MODEL_FORMAT_HINTS: Record<string, string> = {
     "Target model: Claude. Use XML-style tags like <context>, <task>, <constraints>, <format>. Place instructions before data.",
   copilot:
     "Target model: GitHub Copilot. Be code-centric: include language, file context, function signatures, and inline comment intent.",
+  gemini:
+    "Target model: Gemini. Prefer concise, role-led instructions and place examples after the task. Use plain-text headers, no XML.",
   generic: "Target model: generic. Use neutral, plain-text sections."
 };

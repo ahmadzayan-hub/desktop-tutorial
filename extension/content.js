@@ -8,6 +8,7 @@
     if (HOST.includes("openai") || HOST.includes("chatgpt")) return "chatgpt";
     if (HOST.includes("claude")) return "claude";
     if (HOST.includes("copilot")) return "copilot";
+    if (HOST.includes("gemini") || HOST.includes("bard")) return "gemini";
     return "generic";
   })();
 

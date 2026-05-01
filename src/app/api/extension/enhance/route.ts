@@ -4,11 +4,12 @@ import { detectIntent } from "@/lib/services/orchestration";
 import { findGaps, generateQuestions } from "@/lib/services/clarification";
 import { reconstructPrompt, postFormatForModel } from "@/lib/services/formatter";
 import { requireApiKey } from "@/lib/services/auth";
+import { handleError } from "@/lib/api-helpers";
 import type { TargetModel } from "@/lib/types";
 
 const Body = z.object({
   raw_prompt: z.string().min(3).max(8000),
-  target_model: z.enum(["chatgpt", "claude", "copilot", "generic"]).optional(),
+  target_model: z.enum(["chatgpt", "claude", "copilot", "gemini", "generic"]).optional(),
   qa: z
     .array(
       z.object({
@@ -35,24 +36,28 @@ export async function POST(req: NextRequest) {
   }
   const { raw_prompt, target_model = "generic", qa = [], ask_first = false } = parsed.data;
 
-  const intent = await detectIntent(raw_prompt);
+  try {
+    const intent = await detectIntent(raw_prompt);
 
-  if (ask_first) {
-    const gaps = await findGaps(raw_prompt, intent.intent);
-    const questions = await generateQuestions(raw_prompt, intent.intent, gaps);
-    return NextResponse.json({ intent, questions });
+    if (ask_first) {
+      const gaps = await findGaps(raw_prompt, intent.intent);
+      const questions = await generateQuestions(raw_prompt, intent.intent, gaps);
+      return NextResponse.json({ intent, questions });
+    }
+
+    const result = await reconstructPrompt(
+      { rawPrompt: raw_prompt, intent: intent.intent, qa },
+      target_model as TargetModel
+    );
+    const final_prompt = postFormatForModel(result.final_prompt, target_model as TargetModel);
+
+    return NextResponse.json({
+      intent,
+      target_model,
+      final_prompt,
+      rationale: result.rationale
+    });
+  } catch (e) {
+    return handleError(e);
   }
-
-  const result = await reconstructPrompt(
-    { rawPrompt: raw_prompt, intent: intent.intent, qa },
-    target_model as TargetModel
-  );
-  const final_prompt = postFormatForModel(result.final_prompt, target_model as TargetModel);
-
-  return NextResponse.json({
-    intent,
-    target_model,
-    final_prompt,
-    rationale: result.rationale
-  });
 }

@@ -37,12 +37,17 @@ const RULE_BASED_GAPS: Array<{ slot: string; missing: (p: string) => boolean; wh
   }
 ];
 
-/** Combine rule-based heuristics with an LLM gap analysis. */
-export async function findGaps(rawPrompt: string, intent: string): Promise<Gap[]> {
-  const heuristic: Gap[] = RULE_BASED_GAPS.filter((r) => r.missing(rawPrompt)).map((r) => ({
+/** Pure helper exposed for testing — returns rule-based gaps without calling the LLM. */
+export function ruleBasedGaps(rawPrompt: string): Gap[] {
+  return RULE_BASED_GAPS.filter((r) => r.missing(rawPrompt)).map((r) => ({
     slot: r.slot,
     why: r.why
   }));
+}
+
+/** Combine rule-based heuristics with an LLM gap analysis. */
+export async function findGaps(rawPrompt: string, intent: string): Promise<Gap[]> {
+  const heuristic: Gap[] = ruleBasedGaps(rawPrompt);
 
   const llm = await generateJson<{ gaps: Gap[] }>(
     `INTENT: ${intent}\nRAW PROMPT:\n"""\n${rawPrompt}\n"""`,

@@ -2,7 +2,7 @@ export type Role = "owner" | "admin" | "member";
 
 export type SessionStatus = "intake" | "clarifying" | "ready" | "finalized";
 
-export type TargetModel = "chatgpt" | "claude" | "copilot" | "generic";
+export type TargetModel = "chatgpt" | "claude" | "copilot" | "gemini" | "generic";
 
 export interface Organization {
   id: string;
