@@ -11,11 +11,11 @@ html, body {
   @apply h-full bg-slate-50 text-slate-900 antialiased;
 }
 html[dir="rtl"] body {
-  font-family: "Segoe UI", "Tajawal", system-ui, -apple-system, sans-serif;
+  font-family: "Segoe UI", "Tajawal", "IBM Plex Sans Arabic", system-ui, -apple-system, sans-serif;
 }
 
 textarea, input, select {
-  @apply rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent;
+  @apply rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition;
 }
 
 button {
@@ -27,15 +27,26 @@ button {
   background-image: linear-gradient(135deg, #6366f1, #8b5cf6);
   box-shadow: 0 6px 20px -8px rgba(99, 102, 241, 0.6);
 }
-.btn-primary:hover { filter: brightness(1.05); }
+.btn-primary:hover { filter: brightness(1.05); transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
 .btn-ghost { @apply bg-transparent text-slate-700 px-3 py-2 hover:bg-slate-100; }
 
 .card {
-  @apply rounded-xl border border-slate-200 bg-white p-5 shadow-sm;
+  @apply rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition;
 }
 
-/* RTL/LTR-friendly logical spacing helpers (Tailwind v3 has them; keep them here for clarity) */
 .ms-2 { margin-inline-start: 0.5rem; }
 .me-2 { margin-inline-end: 0.5rem; }
+.ps-3 { padding-inline-start: 0.75rem; }
+.pe-1 { padding-inline-end: 0.25rem; }
+.pe-14 { padding-inline-end: 3.5rem; }
+.end-2 { inset-inline-end: 0.5rem; }
 
 pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+/* Subtle entrance for cards */
+@keyframes po-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.card { animation: po-fade-in 240ms ease-out both; }

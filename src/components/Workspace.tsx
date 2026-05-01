@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useI18n, useT } from "@/lib/i18n/I18nProvider";
 import { safeFetch } from "@/lib/safe-fetch";
 import {
@@ -10,6 +10,8 @@ import {
   type LocalQuestion
 } from "@/lib/local-engine";
 import type { TargetModel } from "@/lib/types";
+import VoiceInput from "@/components/VoiceInput";
+import FileUpload, { type AttachedFile, formatAttachedAsContext } from "@/components/FileUpload";
 
 interface PromptVersion {
   id: string;
@@ -53,6 +55,7 @@ export default function Workspace() {
   const { locale } = useI18n();
   const [raw, setRaw] = useState("");
   const [model, setModel] = useState<TargetModel>("generic");
+  const [files, setFiles] = useState<AttachedFile[]>([]);
   const [session, setSession] = useState<UISession | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [finalPrompt, setFinalPrompt] = useState<string | null>(null);
@@ -62,20 +65,35 @@ export default function Workspace() {
   const [info, setInfo] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  /**
-   * Run cloud first; on any failure (auth, network, LLM), fall back to local.
-   * The user always gets a result.
-   */
+  // Hydrate a starter dropped from /templates
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const stash = sessionStorage.getItem("po_starter");
+    if (stash) {
+      try {
+        const { text, model: m } = JSON.parse(stash) as { text: string; model: TargetModel };
+        setRaw(text);
+        if (m) setModel(m);
+      } catch { /* ignore */ }
+      sessionStorage.removeItem("po_starter");
+    }
+  }, []);
+
+  /** Compose raw + attached files into a single string passed to the engine. */
+  function composedPrompt(): string {
+    return raw + formatAttachedAsContext(files, locale);
+  }
+
   async function startSession(quick = false) {
     setLoading(true); setError(null); setInfo(null); setFinalPrompt(null); setRationale(null);
+    const composed = composedPrompt();
 
-    // Try cloud
     const r = await safeFetch<{ session: { id: string; intent: string | null; intent_confidence: number | null; questions: UIQuestion[]; prompt_versions?: PromptVersion[] }; mode: string }>(
       "/api/sessions",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ raw_prompt: raw, target_model: model, quick })
+        body: JSON.stringify({ raw_prompt: composed, target_model: model, quick })
       }
     );
 
@@ -96,16 +114,14 @@ export default function Workspace() {
       setLoading(false);
       return;
     }
-
-    // Cloud failed → run local engine
-    runLocal(quick);
+    runLocal(quick, composed);
   }
 
-  function runLocal(quick: boolean) {
-    const intent = detectIntentLocal(raw);
+  function runLocal(quick: boolean, composed: string) {
+    const intent = detectIntentLocal(composed);
     if (quick) {
       const result = reconstructPromptLocal({
-        raw, intent: intent.intent, qa: [], targetModel: model, locale
+        raw: composed, intent: intent.intent, qa: [], targetModel: model, locale
       });
       setSession({
         id: "local",
@@ -120,7 +136,7 @@ export default function Workspace() {
       setLoading(false);
       return;
     }
-    const questions: LocalQuestion[] = generateQuestionsLocal(raw, intent.intent, locale);
+    const questions: LocalQuestion[] = generateQuestionsLocal(composed, intent.intent, locale);
     setSession({
       id: "local",
       intent: intent.intent,
@@ -136,13 +152,14 @@ export default function Workspace() {
   async function submitAnswers() {
     if (!session) return;
     setLoading(true); setError(null);
+    const composed = composedPrompt();
 
     if (session.source === "local") {
       const qa = session.questions
         .map((q) => ({ question: q.question, answer: (answers[q.id] ?? "").trim() }))
         .filter((p) => p.answer.length > 0);
       const result = reconstructPromptLocal({
-        raw, intent: session.intent as never, qa, targetModel: model, locale
+        raw: composed, intent: session.intent as never, qa, targetModel: model, locale
       });
       setFinalPrompt(result.final_prompt);
       setRationale(result.rationale);
@@ -166,16 +183,15 @@ export default function Workspace() {
       body: JSON.stringify({ target_model: model })
     });
     if (!r.ok || !r.data) {
-      // fall back: turn collected answers into a local reconstruction
       const qa = session.questions
         .map((q) => ({ question: q.question, answer: (answers[q.id] ?? "").trim() }))
         .filter((p) => p.answer.length > 0);
       const result = reconstructPromptLocal({
-        raw, intent: session.intent as never, qa, targetModel: model, locale
+        raw: composed, intent: session.intent as never, qa, targetModel: model, locale
       });
       setFinalPrompt(result.final_prompt);
       setRationale(result.rationale);
-      setInfo(locale === "ar" ? "أُكمل الموجّه محليًا بعد تعذّر الخادم." : "Completed locally after server was unreachable.");
+      setInfo(locale === "ar" ? "أُكمل الموجِّه محليًا بعد تعذّر الخادم." : "Completed locally after server was unreachable.");
     } else {
       setFinalPrompt(r.data.version.final_prompt);
       setRationale(r.data.version.rationale);
@@ -194,13 +210,16 @@ export default function Workspace() {
     setTimeout(() => setCopied(false), 1200);
   }
 
+  function appendVoice(text: string) {
+    setRaw((cur) => (cur ? cur.trim() + " " + text : text));
+  }
+
   const beforeStats = useMemo(() => stats(raw), [raw]);
   const afterStats = useMemo(() => (finalPrompt ? stats(finalPrompt) : null), [finalPrompt]);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-6">
       <div className="card shadow-sm relative overflow-hidden">
-        {/* decorative corner spark */}
         <svg
           aria-hidden="true"
           className="absolute -top-6 -right-6 w-28 h-28 opacity-20 pointer-events-none rtl:right-auto rtl:-left-6"
@@ -221,16 +240,24 @@ export default function Workspace() {
             {t("ws.stats", { chars: beforeStats.chars, words: beforeStats.words })}
           </span>
         </div>
-        <textarea
-          value={raw}
-          onChange={(e) => setRaw(e.target.value)}
-          rows={5}
-          className="w-full mt-2"
-          placeholder={t("ws.placeholder.raw")}
-        />
+
+        <div className="mt-2 relative">
+          <textarea
+            value={raw}
+            onChange={(e) => setRaw(e.target.value)}
+            rows={5}
+            className="w-full pe-14"
+            placeholder={t("ws.placeholder.raw")}
+          />
+          <div className="absolute bottom-2 end-2">
+            <VoiceInput onTranscript={appendVoice} />
+          </div>
+        </div>
+
+        <FileUpload files={files} onChange={setFiles} className="mt-4" />
 
         {!session && (
-          <div className="mt-3">
+          <div className="mt-4">
             <div className="text-xs text-slate-500 mb-2">{t("ws.try_starter")}</div>
             <div className="flex flex-wrap gap-2">
               {STARTER_KEYS.map((s) => (
