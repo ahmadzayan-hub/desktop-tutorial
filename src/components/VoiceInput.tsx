@@ -14,11 +14,15 @@ interface SpeechRecognitionLike {
   lang: string;
   continuous: boolean;
   interimResults: boolean;
+  maxAlternatives?: number;
   start(): void;
   stop(): void;
+  abort?(): void;
   onresult: ((e: SpeechRecognitionEvent) => void) | null;
   onerror: ((e: { error: string }) => void) | null;
   onend: (() => void) | null;
+  onstart?: (() => void) | null;
+  onaudiostart?: (() => void) | null;
 }
 
 interface SpeechRecognitionEvent {
@@ -37,24 +41,43 @@ declare global {
 }
 
 interface Props {
-  onTranscript: (text: string, append: boolean) => void;
+  /** Called with each transcribed chunk. The second arg is true when final. */
+  onTranscript: (text: string, isFinal: boolean) => void;
   className?: string;
 }
 
+type Status = "idle" | "requesting" | "listening" | "denied" | "error" | "unsupported";
+
 /**
- * Voice input that records continuously until the user explicitly stops.
+ * Professional voice input.
  *
- * The dialect picker exposes country-flag options (🇦🇪 الإمارات, 🇪🇬 مصر,
- * 🇸🇦 السعودية…). Persists choice in localStorage so the next session
- * remembers it.
+ * Why this rewrite — the previous version had three concrete bugs:
+ *   1. It never explicitly requested microphone permission via getUserMedia,
+ *      so on some browsers `recognition.start()` silently failed before any
+ *      prompt appeared.
+ *   2. It only forwarded final transcripts. With no interim feedback, users
+ *      couldn't tell whether the recogniser was hearing them.
+ *   3. There was no audio-level meter, so a muted mic looked the same as a
+ *      working one until 30 s passed with no result.
+ *
+ * This version:
+ *   - Requests mic permission up front via `getUserMedia` (with a clear
+ *     error path for "denied" / "no device").
+ *   - Streams interim transcripts to the parent so the textarea fills as
+ *     the user speaks (with a delete-and-replace strategy to avoid double
+ *     insertion when a chunk is finalised).
+ *   - Renders a live RMS audio-level bar from a Web Audio analyser node, so
+ *     the user sees their voice is actually being captured.
+ *   - Auto-restarts only on benign auto-end events (Chrome's silence timer)
+ *     and gives up cleanly on hard failures.
  */
 export default function VoiceInput({ onTranscript, className }: Props) {
   const t = useT();
   const { locale } = useI18n();
-  const [supported, setSupported] = useState(true);
-  const [listening, setListening] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<Status>("idle");
+  const [errorDetail, setErrorDetail] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
+  const [level, setLevel] = useState(0);              // 0..1 audio RMS
   const [voiceLocale, setVoiceLocale] = useState<VoiceLocale | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -63,42 +86,171 @@ export default function VoiceInput({ onTranscript, className }: Props) {
   const startedAtRef = useRef<number | null>(null);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Initialise picker from localStorage; fall back to UI-locale default
+  // Web-audio chain for the level meter
+  const streamRef = useRef<MediaStream | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const rafRef = useRef<number | null>(null);
+
+  // Track last interim transcript so we can replace, not duplicate
+  const lastInterimRef = useRef<string>("");
+
   useEffect(() => {
     setVoiceLocale(loadPreferred(locale));
   }, [locale]);
 
-  // Construct / tear down the recogniser when picker or locale changes
+  // Detect browser support once
   useEffect(() => {
     if (typeof window === "undefined") return;
     const Ctor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
+    if (!Ctor) setStatus("unsupported");
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stopAll();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function stopAll() {
+    userStoppedRef.current = true;
+    if (recRef.current) {
+      try { recRef.current.stop(); } catch { /* ignore */ }
+      recRef.current = null;
+    }
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    if (audioCtxRef.current) {
+      try { audioCtxRef.current.close(); } catch { /* ignore */ }
+      audioCtxRef.current = null;
+    }
+    analyserRef.current = null;
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((tk) => tk.stop());
+      streamRef.current = null;
+    }
+    if (tickRef.current) {
+      clearInterval(tickRef.current);
+      tickRef.current = null;
+    }
+    startedAtRef.current = null;
+    setLevel(0);
+  }
+
+  async function requestMicAndStart() {
+    setErrorDetail(null);
+    setStatus("requesting");
+
+    // 1. Explicit mic permission so the browser shows its prompt now, not
+    //    silently inside SpeechRecognition.start(). Bonus: the resulting
+    //    MediaStream powers the level meter.
+    let stream: MediaStream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
+      });
+    } catch (e) {
+      const err = e as DOMException;
+      if (err?.name === "NotAllowedError" || err?.name === "PermissionDeniedError") {
+        setStatus("denied");
+      } else if (err?.name === "NotFoundError" || err?.name === "DevicesNotFoundError") {
+        setStatus("error");
+        setErrorDetail(t("voice.no_device"));
+      } else {
+        setStatus("error");
+        setErrorDetail(err?.message ?? String(e));
+      }
+      return;
+    }
+    streamRef.current = stream;
+
+    // 2. Wire up the level meter
+    try {
+      const Ctx =
+        window.AudioContext ??
+        (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (Ctx) {
+        const ctx = new Ctx();
+        const source = ctx.createMediaStreamSource(stream);
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 1024;
+        source.connect(analyser);
+        audioCtxRef.current = ctx;
+        analyserRef.current = analyser;
+
+        const buf = new Uint8Array(analyser.fftSize);
+        const tick = () => {
+          if (!analyserRef.current) return;
+          analyserRef.current.getByteTimeDomainData(buf);
+          let sum = 0;
+          for (let i = 0; i < buf.length; i++) {
+            const v = (buf[i] - 128) / 128;
+            sum += v * v;
+          }
+          const rms = Math.sqrt(sum / buf.length);
+          setLevel(Math.min(1, rms * 3));
+          rafRef.current = requestAnimationFrame(tick);
+        };
+        rafRef.current = requestAnimationFrame(tick);
+      }
+    } catch {
+      // Level meter is decoration; ignore failures
+    }
+
+    // 3. Start the actual SpeechRecognition
+    const Ctor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
     if (!Ctor) {
-      setSupported(false);
+      setStatus("unsupported");
       return;
     }
     const rec = new Ctor();
     rec.continuous = true;
     rec.interimResults = true;
+    rec.maxAlternatives = 1;
     rec.lang = voiceLocale?.code ?? (locale === "ar" ? "ar-AE" : "en-US");
 
     rec.onresult = (e: SpeechRecognitionEvent) => {
-      let chunk = "";
+      let interim = "";
+      let finalText = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
-        if (e.results[i].isFinal) chunk += e.results[i][0].transcript;
+        const r = e.results[i];
+        const txt = r[0].transcript;
+        if (r.isFinal) finalText += txt;
+        else interim += txt;
       }
-      if (chunk) onTranscript(chunk, true);
+      if (finalText) {
+        // Final overrides any pending interim → tell parent to replace+commit
+        if (lastInterimRef.current) {
+          // First, undo the interim (parent saw it as "interim:true")
+          onTranscript(lastInterimRef.current, false /* not final */);
+          lastInterimRef.current = "";
+        }
+        onTranscript(finalText, true);
+      } else if (interim) {
+        lastInterimRef.current = interim;
+        onTranscript(interim, false);
+      }
     };
 
     rec.onerror = (e) => {
+      // Recoverable on mobile during pauses — keep going unless the user stopped
       if (
         !userStoppedRef.current &&
         (e.error === "no-speech" || e.error === "audio-capture" || e.error === "aborted")
       ) {
         return;
       }
-      setError(e.error);
-      userStoppedRef.current = true;
-      setListening(false);
+      setStatus("error");
+      setErrorDetail(t("voice.error", { detail: e.error }));
+      stopAll();
     };
 
     rec.onend = () => {
@@ -110,35 +262,16 @@ export default function VoiceInput({ onTranscript, className }: Props) {
           /* ignore */
         }
       }
-      setListening(false);
-      startedAtRef.current = null;
-      if (tickRef.current) {
-        clearInterval(tickRef.current);
-        tickRef.current = null;
-      }
+      setStatus("idle");
+      stopAll();
     };
 
     recRef.current = rec;
-    return () => {
-      userStoppedRef.current = true;
-      try { rec.stop(); } catch { /* ignore */ }
-      recRef.current = null;
-      if (tickRef.current) {
-        clearInterval(tickRef.current);
-        tickRef.current = null;
-      }
-    };
-  }, [voiceLocale, locale, onTranscript]);
-
-  function start() {
-    const rec = recRef.current;
-    if (!rec) return;
-    setError(null);
     userStoppedRef.current = false;
-    rec.lang = voiceLocale?.code ?? (locale === "ar" ? "ar-AE" : "en-US");
+
     try {
       rec.start();
-      setListening(true);
+      setStatus("listening");
       startedAtRef.current = Date.now();
       setElapsed(0);
       if (tickRef.current) clearInterval(tickRef.current);
@@ -148,27 +281,20 @@ export default function VoiceInput({ onTranscript, className }: Props) {
         }
       }, 1000);
     } catch (e) {
-      setError(String(e));
+      setStatus("error");
+      setErrorDetail(String(e));
+      stopAll();
     }
   }
 
   function stop() {
-    const rec = recRef.current;
-    userStoppedRef.current = true;
-    setListening(false);
-    if (rec) {
-      try { rec.stop(); } catch { /* ignore */ }
-    }
-    if (tickRef.current) {
-      clearInterval(tickRef.current);
-      tickRef.current = null;
-    }
-    startedAtRef.current = null;
+    setStatus("idle");
+    stopAll();
   }
 
   function toggle() {
-    if (listening) stop();
-    else start();
+    if (status === "listening" || status === "requesting") stop();
+    else void requestMicAndStart();
   }
 
   function pickLocale(v: VoiceLocale) {
@@ -177,7 +303,7 @@ export default function VoiceInput({ onTranscript, className }: Props) {
     setPickerOpen(false);
   }
 
-  if (!supported) {
+  if (status === "unsupported") {
     return (
       <span className={`text-xs text-slate-500 ${className ?? ""}`} title={t("voice.unsupported")}>
         🎤 —
@@ -188,10 +314,10 @@ export default function VoiceInput({ onTranscript, className }: Props) {
   const mm = String(Math.floor(elapsed / 60)).padStart(2, "0");
   const ss = String(elapsed % 60).padStart(2, "0");
   const list = listFor(locale);
+  const listening = status === "listening";
 
   return (
     <div className={`flex items-center gap-1.5 ${className ?? ""}`}>
-      {/* Flag picker — opens a popover of locales */}
       <div className="relative">
         <button
           type="button"
@@ -199,7 +325,8 @@ export default function VoiceInput({ onTranscript, className }: Props) {
           aria-label={t("voice.dialect")}
           aria-haspopup="listbox"
           aria-expanded={pickerOpen}
-          className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-slate-300 bg-white hover:border-brand-400 transition text-base leading-none"
+          disabled={listening}
+          className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-slate-300 bg-white hover:border-brand-400 transition text-base leading-none disabled:opacity-60"
           title={voiceLocale ? labelFor(voiceLocale, locale) : t("voice.dialect")}
         >
           <span aria-hidden="true">{voiceLocale?.flag ?? "🌐"}</span>
@@ -239,6 +366,7 @@ export default function VoiceInput({ onTranscript, className }: Props) {
         type="button"
         onClick={toggle}
         aria-label={listening ? t("voice.stop") : t("voice.start")}
+        aria-pressed={listening}
         className={
           "relative inline-flex items-center justify-center w-10 h-10 rounded-full transition shadow-sm " +
           (listening
@@ -258,17 +386,45 @@ export default function VoiceInput({ onTranscript, className }: Props) {
           )}
         </svg>
         {listening && (
-          <span className="absolute inset-0 rounded-full animate-ping bg-rose-400/40" />
+          <>
+            <span className="absolute inset-0 rounded-full animate-ping bg-rose-400/40" />
+            {/* Live audio-level ring — scales with RMS */}
+            <span
+              className="absolute inset-0 rounded-full bg-rose-300/30"
+              style={{ transform: `scale(${1 + level * 0.45})`, transition: "transform 80ms linear" }}
+              aria-hidden="true"
+            />
+          </>
         )}
       </button>
 
+      {status === "requesting" && (
+        <span className="text-xs text-slate-500" aria-live="polite">{t("voice.requesting")}</span>
+      )}
       {listening && (
-        <span className="text-xs text-rose-600 font-medium tabular-nums" aria-live="polite">
-          ● {mm}:{ss} · {t("voice.listening")}
+        <span className="flex items-center gap-2 text-xs text-rose-600 font-medium" aria-live="polite">
+          <span className="tabular-nums">● {mm}:{ss}</span>
+          {/* 5-bar mini level meter */}
+          <span className="inline-flex items-end gap-[2px] h-3.5" aria-hidden="true">
+            {[0.15, 0.35, 0.55, 0.75, 0.95].map((threshold, i) => (
+              <span
+                key={i}
+                className={
+                  "w-[3px] rounded-sm transition-colors " +
+                  (level >= threshold ? "bg-rose-600" : "bg-rose-200")
+                }
+                style={{ height: `${30 + i * 14}%` }}
+              />
+            ))}
+          </span>
+          <span>{t("voice.listening")}</span>
         </span>
       )}
-      {error && !listening && (
-        <span className="text-xs text-rose-700">{t("voice.error", { detail: error })}</span>
+      {status === "denied" && (
+        <span className="text-xs text-rose-700">{t("voice.denied")}</span>
+      )}
+      {status === "error" && errorDetail && (
+        <span className="text-xs text-rose-700">{errorDetail}</span>
       )}
     </div>
   );

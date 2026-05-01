@@ -1,5 +1,58 @@
 # Changelog
 
+## v0.10.0 — 2026-05-01 — Multi-domain, professional voice, mobile
+
+The "every kind of prompt, on every device" release.
+
+- 🎙 **Voice recording rebuilt for real-world use**:
+  - Explicit `getUserMedia` pre-flight so the browser's microphone prompt
+    appears immediately and clearly. No more silent failures.
+  - Live audio-level meter (RMS off the analyser node) → users can *see* the
+    mic is working as they speak.
+  - Interim transcripts are now streamed to the textarea — words appear as
+    spoken, then commit when finalised. Final results replace interims
+    cleanly so nothing duplicates.
+  - Distinct error states for "denied", "no device", "unsupported", etc.,
+    with actionable messages.
+  - Continues recording across silence pauses; only stops when the user
+    explicitly stops.
+- 🖼 **Multi-domain prompt orchestration** — six new specialised intents
+  with their own clarifying questions and output scaffolds:
+  - **Image** (Midjourney/SDXL/Flux/DALL·E): subject + style + lighting +
+    composition + negative prompt + diffusion params
+  - **Video** (Runway/Sora/Pika/Veo): duration, aspect ratio, shot list,
+    voice-over, music, hook + CTA
+  - **Audio** (ElevenLabs/Suno/Udio): format, voice character, pacing,
+    music & SFX cues, deliverable spec
+  - **Software**: platform, stack, MVP features, data model, auth,
+    acceptance tests, explicit out-of-scope
+  - **Website**: purpose, page outline, hero copy, visual system,
+    components, breakpoints, A11y, SEO
+  - **Report**: executive summary, methodology, findings, recommendations,
+    risks, references — decision-grade structure
+  - 15 new unit tests for intent detection + reconstruction.
+- ⚖️ **Side-by-side model comparison**: one click generates the same prompt
+  formatted for ChatGPT, Claude, and Gemini in parallel cards with token
+  estimates so the user can pick the best fit. All local, instant.
+- 🌗 **Dark mode**: three-state toggle (light / dark / system), persisted
+  in localStorage, applied before first paint to avoid a flash. Tracks
+  OS preference live in system mode. Tailwind `darkMode: "class"`, dark
+  variants on every surface.
+- 💡 **Inline lint hints** under the textarea — at most two chips at a time
+  ("Add audience", "Specify format", "Mention what to avoid") that appear
+  only when the prompt actually needs them. A green "looking good" when
+  the prompt is healthy.
+- 📲 **Share + Install**: Web Share API integration for one-tap sharing on
+  WhatsApp, Telegram, X, Mail, Messages, AirDrop — anywhere the OS share
+  sheet exposes. Native PWA install button appears on Chromium/Android
+  when the browser fires `beforeinstallprompt`.
+- 🍎 **iOS native shell** (Capacitor scaffolded): full mobile/README.md
+  with iOS + Android build instructions, microphone permission setup,
+  share-sheet integration. Bundle id rebrand to `com.zaian.promptzaian`.
+  Android shell remains supported and now compatible with API 22+ (≈99%
+  of devices). Both shells share the live web app for instant updates.
+- ✅ **Quality**: 54 tests (was 39), typecheck, production build all pass.
+
 ## v0.9.0 — 2026-05-01 — Dialects, token budget, drafts, diff
 
 The "tangible value per session" release.

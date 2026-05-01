@@ -68,6 +68,15 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" dir="ltr">
+      <head>
+        {/* Apply theme before first paint to avoid a flash. Reads the same
+            localStorage key + system preference that ThemeToggle uses. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var k='po_theme_v1',v=localStorage.getItem(k);var d=v==='dark'||((v===null||v==='system')&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();`
+          }}
+        />
+      </head>
       <body>
         <a
           href="#main"

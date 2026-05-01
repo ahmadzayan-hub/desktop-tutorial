@@ -1,18 +1,55 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
+/**
+ * Capacitor configuration for the Prompt ZAI@n / موجة زيان native shells.
+ *
+ * Both Android and iOS wrap the live web app — when the host is reachable
+ * we serve from there (instant updates, no app-store review needed for
+ * content changes). When offline, the bundled web assets in `webDir` take
+ * over via the service worker, so the app keeps working in local mode.
+ *
+ * Build:
+ *   Android  →  npm run android:init   (first time)
+ *               npm run android:sync   (after each web build)
+ *               npm run android:open   (Android Studio)
+ *   iOS      →  npm run ios:init       (first time, needs macOS + Xcode)
+ *               npm run ios:sync       (after each web build)
+ *               npm run ios:open       (Xcode)
+ */
+
+const PRODUCTION_URL = "https://desktop-tutorial-kappa-five.vercel.app";
+
 const config: CapacitorConfig = {
-  appId: "app.promptorchestrator.android",
-  appName: "Prompt Orchestrator",
+  appId: "com.zaian.promptzaian",
+  appName: "Prompt ZAI@n",
   webDir: "../public",
-  // Point the wrapped app at your live Vercel URL.
-  // For dev, use http://10.0.2.2:3000 from the Android emulator.
   server: {
-    url: "https://desktop-tutorial-kappa-five.vercel.app",
+    url: PRODUCTION_URL,
     cleartext: false,
-    androidScheme: "https"
+    androidScheme: "https",
+    iosScheme: "https"
   },
   android: {
-    backgroundColor: "#f8fafc"
+    backgroundColor: "#0b1120"
+  },
+  ios: {
+    backgroundColor: "#0b1120",
+    contentInset: "always",
+    // Lets the in-app web view request microphone permission for the voice
+    // input. Pair with NSMicrophoneUsageDescription in Info.plist.
+    limitsNavigationsToAppBoundDomains: false
+  },
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 800,
+      backgroundColor: "#0b1120",
+      androidScaleType: "CENTER_CROP",
+      showSpinner: false
+    },
+    StatusBar: {
+      style: "DARK",
+      backgroundColor: "#0b1120"
+    }
   }
 };
 

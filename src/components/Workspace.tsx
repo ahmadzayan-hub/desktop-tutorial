@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useI18n, useT } from "@/lib/i18n/I18nProvider";
 import type { DictKey } from "@/lib/i18n/dictionaries";
 import { safeFetch } from "@/lib/safe-fetch";
@@ -17,7 +17,10 @@ import FeedbackWidget from "@/components/FeedbackWidget";
 import QualityBadge from "@/components/QualityBadge";
 import TokenMeter from "@/components/TokenMeter";
 import PromptDiff from "@/components/PromptDiff";
+import InlineLintHints from "@/components/InlineLintHints";
+import ModelComparison from "@/components/ModelComparison";
 import { loadDraft, saveDraft, clearDraft } from "@/lib/draft-store";
+import type { Intent } from "@/lib/local-engine";
 import {
   loadHistory,
   saveHistoryEntry,
@@ -59,6 +62,12 @@ const INTENT_KEYS: Record<string, DictKey> = {
   creative: "intent.creative",
   design: "intent.design",
   conversation: "intent.conversation",
+  image: "intent.image",
+  video: "intent.video",
+  audio: "intent.audio",
+  software: "intent.software",
+  website: "intent.website",
+  report: "intent.report",
   other: "intent.other"
 };
 
@@ -299,8 +308,30 @@ export default function Workspace() {
     void submitAnswers();
   }
 
-  function appendVoice(text: string) {
-    setRaw((cur) => (cur ? cur.trim() + " " + text : text));
+  // Voice transcript handler with two modes:
+  //   - isFinal=true  → commit the chunk and clear the interim buffer.
+  //   - isFinal=false → render this chunk live so the user sees their words,
+  //                     but mark it as provisional so the next chunk can
+  //                     replace it instead of doubling up.
+  const interimBaseRef = useRef<string>("");
+  function handleVoice(text: string, isFinal: boolean) {
+    if (isFinal) {
+      setRaw((cur) => {
+        const base = interimBaseRef.current || cur;
+        const cleaned = (base ? base.trim() + " " : "") + text.trim();
+        interimBaseRef.current = "";
+        return cleaned;
+      });
+    } else {
+      setRaw((cur) => {
+        // Capture the committed-so-far baseline the first time we see an
+        // interim chunk; subsequent interim updates rewrite from there.
+        if (!interimBaseRef.current) interimBaseRef.current = cur;
+        const base = interimBaseRef.current;
+        const sep = base && !base.endsWith(" ") ? " " : "";
+        return base + sep + text;
+      });
+    }
   }
 
   function restoreFromHistory(entry: LocalHistoryEntry) {
@@ -371,10 +402,11 @@ export default function Workspace() {
               placeholder={t("ws.placeholder.raw")}
             />
             <div className="absolute bottom-2 end-2">
-              <VoiceInput onTranscript={appendVoice} />
+              <VoiceInput onTranscript={handleVoice} />
             </div>
           </div>
 
+          <InlineLintHints text={raw} />
           <p className="mt-2 text-[11px] text-slate-500">{t("ws.shortcut.hint")}</p>
 
           {draftRestored && (
@@ -577,6 +609,19 @@ export default function Workspace() {
                     </div>
                   </div>
                 </div>
+
+                {session && (
+                  <ModelComparison
+                    raw={raw}
+                    intent={(session.intent as Intent) ?? "other"}
+                    qa={session.questions
+                      .map((q) => ({
+                        question: q.question,
+                        answer: (answers[q.id] ?? "").trim()
+                      }))
+                      .filter((p) => p.answer.length > 0)}
+                  />
+                )}
               </>
             )}
           </section>
@@ -602,6 +647,12 @@ function IntentBadge({ intent }: { intent: string }) {
     creative: "bg-pink-50 text-pink-700",
     design: "bg-fuchsia-50 text-fuchsia-700",
     conversation: "bg-cyan-50 text-cyan-700",
+    image: "bg-orange-50 text-orange-700",
+    video: "bg-red-50 text-red-700",
+    audio: "bg-teal-50 text-teal-700",
+    software: "bg-indigo-50 text-indigo-700",
+    website: "bg-lime-50 text-lime-700",
+    report: "bg-stone-100 text-stone-700",
     other: "bg-slate-100 text-slate-600"
   };
   const key = INTENT_KEYS[intent] ?? "intent.other";
