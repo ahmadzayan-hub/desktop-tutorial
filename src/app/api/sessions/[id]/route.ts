@@ -1,8 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { requireUserOrg } from "@/lib/services/auth";
+import { safeRoute } from "@/lib/api-helpers";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export const GET = safeRoute(async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireUserOrg(req.headers.get("x-org-id"));
   if (auth instanceof NextResponse) return auth;
 
@@ -25,9 +26,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     .eq("org_id", auth.orgId);
 
   return NextResponse.json({ session: data, answers: answers ?? [] });
-}
+});
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export const DELETE = safeRoute(async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireUserOrg(req.headers.get("x-org-id"));
   if (auth instanceof NextResponse) return auth;
 
@@ -39,4 +40,4 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     .eq("org_id", auth.orgId);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });
-}
+});

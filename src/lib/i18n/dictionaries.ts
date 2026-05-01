@@ -28,7 +28,6 @@ export const dict = {
 
     "ws.label.raw": "Raw prompt",
     "ws.placeholder.raw": "Type, paste, or speak. e.g. Help me refactor my React data table to be faster…",
-    "ws.try_starter": "Try a starter:",
     "ws.target": "Target model",
     "ws.model.generic": "Generic",
     "ws.btn.quick": "⚡ Quick enhance",
@@ -50,12 +49,6 @@ export const dict = {
     "ws.after": "After",
     "ws.stats": "{chars} chars · {words} words",
     "ws.added_words": "(+{n} words of structure)",
-    "ws.starter.refactor": "Refactor a function",
-    "ws.starter.tweet": "Marketing tweet",
-    "ws.starter.research": "Research brief",
-    "ws.starter.bug": "Bug investigation",
-    "ws.starter.email": "Email reply",
-    "ws.starter.launch": "Plan a launch",
 
     "voice.start": "Speak",
     "voice.stop": "Stop",
@@ -63,11 +56,11 @@ export const dict = {
     "voice.unsupported": "Voice input is not supported in this browser.",
     "voice.error": "Voice error: {detail}",
 
-    "files.label": "Attach data (CSV, JSON, TXT, MD, code)",
+    "files.label": "Attach any files — text, code, images, PDFs, docs",
     "files.add": "Attach files",
     "files.remove": "Remove",
     "files.size": "{kb} KB",
-    "files.too_big": "File too large (max 200 KB).",
+    "files.too_big": "File too large (max 10 MB).",
     "files.loaded": "Loaded into prompt context",
 
     "history.title": "History",
@@ -119,7 +112,6 @@ export const dict = {
 
     "ws.label.raw": "الموجِّه الخام",
     "ws.placeholder.raw": "اكتب أو الصق أو تحدّث. مثال: ساعدني في تسريع مكوّن جدول البيانات في React…",
-    "ws.try_starter": "ابدأ من اقتراح جاهز:",
     "ws.target": "النموذج المستهدف",
     "ws.model.generic": "عام",
     "ws.btn.quick": "⚡ تحسين سريع",
@@ -141,12 +133,6 @@ export const dict = {
     "ws.after": "بعد",
     "ws.stats": "{chars} حرفًا · {words} كلمة",
     "ws.added_words": "(+{n} كلمة من البنية المضافة)",
-    "ws.starter.refactor": "إعادة هيكلة دالة",
-    "ws.starter.tweet": "تغريدة تسويقية",
-    "ws.starter.research": "موجز بحثي",
-    "ws.starter.bug": "تحقيق في خطأ برمجي",
-    "ws.starter.email": "ردّ بريدي",
-    "ws.starter.launch": "خطّة إطلاق",
 
     "voice.start": "أمْلِ صوتيًا",
     "voice.stop": "إيقاف",
@@ -154,11 +140,11 @@ export const dict = {
     "voice.unsupported": "الإدخال الصوتي غير مدعوم في هذا المتصفّح.",
     "voice.error": "خطأ في التعرّف الصوتي: {detail}",
 
-    "files.label": "أرفق بيانات (CSV أو JSON أو TXT أو MD أو كود)",
+    "files.label": "أرفق أي ملفات — نصوص أو أكواد أو صور أو PDF أو مستندات",
     "files.add": "أرفق ملفات",
     "files.remove": "إزالة",
     "files.size": "{kb} كيلوبايت",
-    "files.too_big": "حجم الملف كبير جدًا (الحدّ 200 كيلوبايت).",
+    "files.too_big": "حجم الملف كبير جدًا (الحدّ 10 ميغابايت).",
     "files.loaded": "تمّت إضافته إلى سياق الموجِّه",
 
     "history.title": "السِّجل",

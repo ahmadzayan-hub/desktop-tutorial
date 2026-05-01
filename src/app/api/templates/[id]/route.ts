@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { requireUserOrg } from "@/lib/services/auth";
 import { normalizeTemplateBody } from "@/lib/services/template";
+import { safeRoute } from "@/lib/api-helpers";
 
 const PatchBody = z.object({
   name: z.string().min(1).max(120).optional(),
@@ -12,7 +13,7 @@ const PatchBody = z.object({
   is_public: z.boolean().optional()
 });
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export const GET = safeRoute(async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireUserOrg(req.headers.get("x-org-id"));
   if (auth instanceof NextResponse) return auth;
   const supabase = getServerSupabase();
@@ -24,9 +25,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   if (!data) return NextResponse.json({ error: "not_found" }, { status: 404 });
   return NextResponse.json({ template: data });
-}
+});
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export const PATCH = safeRoute(async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireUserOrg(req.headers.get("x-org-id"));
   if (auth instanceof NextResponse) return auth;
   const parsed = PatchBody.safeParse(await req.json());
@@ -45,9 +46,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ template: data });
-}
+});
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export const DELETE = safeRoute(async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireUserOrg(req.headers.get("x-org-id"));
   if (auth instanceof NextResponse) return auth;
   const supabase = getServerSupabase();
@@ -58,4 +59,4 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     .eq("org_id", auth.orgId);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });
-}
+});

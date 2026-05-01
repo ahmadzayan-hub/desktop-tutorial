@@ -64,5 +64,22 @@ export async function safeFetch<T = unknown>(
     };
   }
 
+  // The API now returns 200 with `{ unavailable: true }` when the backend isn't
+  // configured, so Vercel doesn't flag it as a 5xx error. The client treats
+  // that envelope as "fall through to local mode."
+  const p = (parsed ?? {}) as Record<string, unknown>;
+  if (p.unavailable === true) {
+    return {
+      ok: false,
+      status: res.status,
+      data: null,
+      error: {
+        code: typeof p.reason === "string" ? p.reason : "unavailable",
+        message: typeof p.message === "string" ? p.message : "Backend unavailable",
+        hint: typeof p.hint === "string" ? p.hint : undefined
+      }
+    };
+  }
+
   return { ok: true, status: res.status, data: (parsed as T) ?? null };
 }

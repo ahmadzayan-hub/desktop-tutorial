@@ -27,7 +27,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="max-w-md mx-auto px-6 py-16">
+    <div className="max-w-md mx-auto px-4 sm:px-6 py-12 sm:py-16">
       <h1 className="text-2xl font-semibold">{t("login.title")}</h1>
       <p className="text-slate-600 text-sm mt-1">{t("login.subtitle")}</p>
       <form onSubmit={send} className="mt-6 space-y-3">

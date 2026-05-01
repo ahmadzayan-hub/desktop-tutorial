@@ -27,37 +27,40 @@ export async function OPTIONS() {
 }
 
 export async function POST(req: NextRequest) {
-  const auth = await requireApiKey(req.headers.get("authorization"));
-  if (auth instanceof NextResponse) return auth;
+  try {
+    const auth = await requireApiKey(req.headers.get("authorization"));
+    if (auth instanceof NextResponse) return auth;
+    return await handleEnhance(req, auth);
+  } catch (e) {
+    return handleError(e);
+  }
+}
 
+async function handleEnhance(req: NextRequest, _auth: { userId: string; orgId: string }) {
   const parsed = Body.safeParse(await req.json());
   if (!parsed.success) {
     return NextResponse.json({ error: "invalid_body", issues: parsed.error.flatten() }, { status: 400 });
   }
   const { raw_prompt, target_model = "generic", qa = [], ask_first = false } = parsed.data;
 
-  try {
-    const intent = await detectIntent(raw_prompt);
+  const intent = await detectIntent(raw_prompt);
 
-    if (ask_first) {
-      const gaps = await findGaps(raw_prompt, intent.intent);
-      const questions = await generateQuestions(raw_prompt, intent.intent, gaps);
-      return NextResponse.json({ intent, questions });
-    }
-
-    const result = await reconstructPrompt(
-      { rawPrompt: raw_prompt, intent: intent.intent, qa },
-      target_model as TargetModel
-    );
-    const final_prompt = postFormatForModel(result.final_prompt, target_model as TargetModel);
-
-    return NextResponse.json({
-      intent,
-      target_model,
-      final_prompt,
-      rationale: result.rationale
-    });
-  } catch (e) {
-    return handleError(e);
+  if (ask_first) {
+    const gaps = await findGaps(raw_prompt, intent.intent);
+    const questions = await generateQuestions(raw_prompt, intent.intent, gaps);
+    return NextResponse.json({ intent, questions });
   }
+
+  const result = await reconstructPrompt(
+    { rawPrompt: raw_prompt, intent: intent.intent, qa },
+    target_model as TargetModel
+  );
+  const final_prompt = postFormatForModel(result.final_prompt, target_model as TargetModel);
+
+  return NextResponse.json({
+    intent,
+    target_model,
+    final_prompt,
+    rationale: result.rationale
+  });
 }

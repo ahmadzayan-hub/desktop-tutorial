@@ -34,13 +34,27 @@ interface Props {
   className?: string;
 }
 
+/**
+ * Voice input that records continuously until the user explicitly stops.
+ *
+ * The Web Speech API auto-ends after a silence window (especially on mobile
+ * Chrome) — we transparently restart recognition while the user is still in
+ * "listening" mode so a long pause doesn't end the session prematurely.
+ */
 export default function VoiceInput({ onTranscript, className }: Props) {
   const t = useT();
   const { locale } = useI18n();
   const [supported, setSupported] = useState(true);
   const [listening, setListening] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [elapsed, setElapsed] = useState(0);
+
   const recRef = useRef<SpeechRecognitionLike | null>(null);
+  // True only when the user has hit "stop". Auto-end events check this to
+  // decide between restart (long-record mode) and a real stop.
+  const userStoppedRef = useRef(false);
+  const startedAtRef = useRef<number | null>(null);
+  const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -63,35 +77,92 @@ export default function VoiceInput({ onTranscript, className }: Props) {
       }
       if (chunk) onTranscript(chunk, true);
     };
+
     rec.onerror = (e) => {
+      // "no-speech" and "audio-capture" are recoverable on mobile — keep going
+      // unless the user has stopped explicitly.
+      if (
+        !userStoppedRef.current &&
+        (e.error === "no-speech" || e.error === "audio-capture" || e.error === "aborted")
+      ) {
+        return;
+      }
       setError(e.error);
+      userStoppedRef.current = true;
       setListening(false);
     };
-    rec.onend = () => setListening(false);
+
+    rec.onend = () => {
+      // Auto-restart unless the user explicitly stopped — this is the key
+      // change that lets recording run for as long as the user wants.
+      if (!userStoppedRef.current) {
+        try {
+          rec.start();
+          return;
+        } catch {
+          // Some browsers throw "already started"; fall through to mark
+          // listening = false.
+        }
+      }
+      setListening(false);
+      startedAtRef.current = null;
+      if (tickRef.current) {
+        clearInterval(tickRef.current);
+        tickRef.current = null;
+      }
+    };
 
     recRef.current = rec;
     return () => {
+      userStoppedRef.current = true;
       try { rec.stop(); } catch { /* ignore */ }
       recRef.current = null;
+      if (tickRef.current) {
+        clearInterval(tickRef.current);
+        tickRef.current = null;
+      }
     };
   }, [locale, onTranscript]);
 
-  function toggle() {
-    setError(null);
+  function start() {
     const rec = recRef.current;
     if (!rec) return;
-    if (listening) {
-      try { rec.stop(); } catch { /* ignore */ }
-      setListening(false);
-    } else {
-      try {
-        rec.lang = locale === "ar" ? "ar-SA" : "en-US";
-        rec.start();
-        setListening(true);
-      } catch (e) {
-        setError(String(e));
-      }
+    setError(null);
+    userStoppedRef.current = false;
+    rec.lang = locale === "ar" ? "ar-SA" : "en-US";
+    try {
+      rec.start();
+      setListening(true);
+      startedAtRef.current = Date.now();
+      setElapsed(0);
+      if (tickRef.current) clearInterval(tickRef.current);
+      tickRef.current = setInterval(() => {
+        if (startedAtRef.current) {
+          setElapsed(Math.floor((Date.now() - startedAtRef.current) / 1000));
+        }
+      }, 1000);
+    } catch (e) {
+      setError(String(e));
     }
+  }
+
+  function stop() {
+    const rec = recRef.current;
+    userStoppedRef.current = true;
+    setListening(false);
+    if (rec) {
+      try { rec.stop(); } catch { /* ignore */ }
+    }
+    if (tickRef.current) {
+      clearInterval(tickRef.current);
+      tickRef.current = null;
+    }
+    startedAtRef.current = null;
+  }
+
+  function toggle() {
+    if (listening) stop();
+    else start();
   }
 
   if (!supported) {
@@ -101,6 +172,9 @@ export default function VoiceInput({ onTranscript, className }: Props) {
       </span>
     );
   }
+
+  const mm = String(Math.floor(elapsed / 60)).padStart(2, "0");
+  const ss = String(elapsed % 60).padStart(2, "0");
 
   return (
     <div className={`flex items-center gap-2 ${className ?? ""}`}>
@@ -116,18 +190,26 @@ export default function VoiceInput({ onTranscript, className }: Props) {
         }
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="9" y="2" width="6" height="12" rx="3" />
-          <path d="M5 10v2a7 7 0 0 0 14 0v-2" />
-          <line x1="12" y1="19" x2="12" y2="22" />
+          {listening ? (
+            <rect x="6" y="6" width="12" height="12" rx="2" />
+          ) : (
+            <>
+              <rect x="9" y="2" width="6" height="12" rx="3" />
+              <path d="M5 10v2a7 7 0 0 0 14 0v-2" />
+              <line x1="12" y1="19" x2="12" y2="22" />
+            </>
+          )}
         </svg>
         {listening && (
           <span className="absolute inset-0 rounded-full animate-ping bg-rose-400/40" />
         )}
       </button>
       {listening && (
-        <span className="text-xs text-rose-600 font-medium animate-pulse">{t("voice.listening")}</span>
+        <span className="text-xs text-rose-600 font-medium tabular-nums" aria-live="polite">
+          ● {mm}:{ss} · {t("voice.listening")}
+        </span>
       )}
-      {error && (
+      {error && !listening && (
         <span className="text-xs text-rose-700">{t("voice.error", { detail: error })}</span>
       )}
     </div>

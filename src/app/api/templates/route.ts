@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { requireUserOrg } from "@/lib/services/auth";
 import { normalizeTemplateBody } from "@/lib/services/template";
+import { safeRoute } from "@/lib/api-helpers";
 
 const Body = z.object({
   name: z.string().min(1).max(120),
@@ -12,7 +13,7 @@ const Body = z.object({
   is_public: z.boolean().optional()
 });
 
-export async function GET(req: NextRequest) {
+export const GET = safeRoute(async (req: NextRequest) => {
   const auth = await requireUserOrg(req.headers.get("x-org-id"));
   if (auth instanceof NextResponse) return auth;
   const supabase = getServerSupabase();
@@ -23,9 +24,9 @@ export async function GET(req: NextRequest) {
     .order("created_at", { ascending: false });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ templates: data });
-}
+});
 
-export async function POST(req: NextRequest) {
+export const POST = safeRoute(async (req: NextRequest) => {
   const auth = await requireUserOrg(req.headers.get("x-org-id"));
   if (auth instanceof NextResponse) return auth;
   const parsed = Body.safeParse(await req.json());
@@ -48,4 +49,4 @@ export async function POST(req: NextRequest) {
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ template: data });
-}
+});

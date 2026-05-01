@@ -11,7 +11,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-30 backdrop-blur bg-white/80 border-b border-slate-200">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-2">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-2">
         <a href="/" className="flex items-center gap-2 font-semibold tracking-tight min-w-0">
           <Logo className="w-8 h-8 flex-shrink-0" />
           <span className="truncate">{t("app.name")}</span>
