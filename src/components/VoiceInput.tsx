@@ -43,8 +43,18 @@ declare global {
 interface Props {
   /** Called with each transcribed chunk. The second arg is true when final. */
   onTranscript: (text: string, isFinal: boolean) => void;
+  /**
+   * Optional: when smart-submit is enabled and the user has a final
+   * transcript followed by SILENCE_HOLD_MS of silence, this fires. The
+   * parent typically uses it to auto-generate the prompt.
+   */
+  onAutoSubmit?: () => void;
   className?: string;
 }
+
+const SILENCE_THRESHOLD = 0.04;     // RMS below this counts as silence
+const SILENCE_HOLD_MS  = 2500;      // need this much continuous silence
+const SMART_SUBMIT_KEY = "po_smart_submit_v1";
 
 type Status = "idle" | "requesting" | "listening" | "denied" | "error" | "unsupported";
 
@@ -71,7 +81,7 @@ type Status = "idle" | "requesting" | "listening" | "denied" | "error" | "unsupp
  *   - Auto-restarts only on benign auto-end events (Chrome's silence timer)
  *     and gives up cleanly on hard failures.
  */
-export default function VoiceInput({ onTranscript, className }: Props) {
+export default function VoiceInput({ onTranscript, onAutoSubmit, className }: Props) {
   const t = useT();
   const { locale } = useI18n();
   const [status, setStatus] = useState<Status>("idle");
@@ -80,6 +90,7 @@ export default function VoiceInput({ onTranscript, className }: Props) {
   const [level, setLevel] = useState(0);              // 0..1 audio RMS
   const [voiceLocale, setVoiceLocale] = useState<VoiceLocale | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [smartSubmit, setSmartSubmit] = useState(false);
 
   const recRef = useRef<SpeechRecognitionLike | null>(null);
   const userStoppedRef = useRef(false);
@@ -94,10 +105,24 @@ export default function VoiceInput({ onTranscript, className }: Props) {
 
   // Track last interim transcript so we can replace, not duplicate
   const lastInterimRef = useRef<string>("");
+  // Smart-submit silence tracker
+  const lastVoiceAtRef = useRef<number>(0);
+  const hasFinalRef = useRef<boolean>(false);
+  const autoSubmittedRef = useRef<boolean>(false);
+  const onAutoSubmitRef = useRef(onAutoSubmit);
+  onAutoSubmitRef.current = onAutoSubmit;
 
   useEffect(() => {
     setVoiceLocale(loadPreferred(locale));
   }, [locale]);
+
+  // Restore smart-submit preference
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      setSmartSubmit(window.localStorage.getItem(SMART_SUBMIT_KEY) === "1");
+    } catch { /* ignore */ }
+  }, []);
 
   // Detect browser support once
   useEffect(() => {
@@ -197,6 +222,26 @@ export default function VoiceInput({ onTranscript, className }: Props) {
           }
           const rms = Math.sqrt(sum / buf.length);
           setLevel(Math.min(1, rms * 3));
+
+          // Smart-submit: refresh "last voice" timestamp whenever the user is
+          // audibly speaking. When we have a final transcript AND continuous
+          // silence for SILENCE_HOLD_MS, fire onAutoSubmit exactly once.
+          const now = Date.now();
+          if (rms > SILENCE_THRESHOLD) lastVoiceAtRef.current = now;
+          const silentFor = lastVoiceAtRef.current ? now - lastVoiceAtRef.current : 0;
+          if (
+            !autoSubmittedRef.current &&
+            hasFinalRef.current &&
+            silentFor >= SILENCE_HOLD_MS &&
+            onAutoSubmitRef.current
+          ) {
+            autoSubmittedRef.current = true;
+            // Stop recording first so the parent sees a final state, then
+            // request the auto-submit on the next tick.
+            stop();
+            setTimeout(() => onAutoSubmitRef.current?.(), 50);
+          }
+
           rafRef.current = requestAnimationFrame(tick);
         };
         rafRef.current = requestAnimationFrame(tick);
@@ -234,6 +279,8 @@ export default function VoiceInput({ onTranscript, className }: Props) {
           lastInterimRef.current = "";
         }
         onTranscript(finalText, true);
+        hasFinalRef.current = true;
+        lastVoiceAtRef.current = Date.now();
       } else if (interim) {
         lastInterimRef.current = interim;
         onTranscript(interim, false);
@@ -268,6 +315,9 @@ export default function VoiceInput({ onTranscript, className }: Props) {
 
     recRef.current = rec;
     userStoppedRef.current = false;
+    hasFinalRef.current = false;
+    autoSubmittedRef.current = false;
+    lastVoiceAtRef.current = Date.now();
 
     try {
       rec.start();
@@ -303,6 +353,12 @@ export default function VoiceInput({ onTranscript, className }: Props) {
     setPickerOpen(false);
   }
 
+  function toggleSmartSubmit() {
+    const next = !smartSubmit;
+    setSmartSubmit(next);
+    try { window.localStorage.setItem(SMART_SUBMIT_KEY, next ? "1" : "0"); } catch { /* ignore */ }
+  }
+
   if (status === "unsupported") {
     return (
       <span className={`text-xs text-slate-500 ${className ?? ""}`} title={t("voice.unsupported")}>
@@ -316,8 +372,30 @@ export default function VoiceInput({ onTranscript, className }: Props) {
   const list = listFor(locale);
   const listening = status === "listening";
 
+  // The auto-submit trigger only fires when the user has opted in.
+  const effectiveAutoSubmit = onAutoSubmit && smartSubmit ? onAutoSubmit : undefined;
+  // Re-bind ref on every render so the always-current callback is reachable.
+  onAutoSubmitRef.current = effectiveAutoSubmit;
+
   return (
     <div className={`flex items-center gap-1.5 ${className ?? ""}`}>
+      {onAutoSubmit && (
+        <button
+          type="button"
+          onClick={toggleSmartSubmit}
+          aria-pressed={smartSubmit}
+          aria-label={t("voice.smart_submit")}
+          title={t(smartSubmit ? "voice.smart_submit_on" : "voice.smart_submit_off")}
+          className={
+            "inline-flex items-center justify-center w-9 h-9 rounded-full transition text-base " +
+            (smartSubmit
+              ? "bg-emerald-50 text-emerald-700 border border-emerald-300 dark:bg-emerald-900/30 dark:border-emerald-700"
+              : "bg-white dark:bg-slate-900 text-slate-500 border border-slate-300 dark:border-slate-700 hover:border-emerald-300")
+          }
+        >
+          <span aria-hidden="true">⚡</span>
+        </button>
+      )}
       <div className="relative">
         <button
           type="button"

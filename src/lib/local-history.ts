@@ -17,6 +17,8 @@ export interface LocalHistoryEntry {
   target_model: string | null;
   final_prompt: string | null;
   rating?: -1 | 0 | 1;
+  /** True when the user has starred this prompt to keep it in their library. */
+  bookmarked?: boolean;
 }
 
 function safeStorage(): Storage | null {
@@ -79,4 +81,31 @@ export function removeHistoryEntry(id: string) {
   } catch {
     /* ignore */
   }
+}
+
+/**
+ * Flip a single entry's bookmarked flag and persist. Bookmarked items are
+ * the user's "saved library" — surfaced separately on the workspace and
+ * survive a "Clear" of un-starred history.
+ */
+export function toggleBookmark(id: string): boolean {
+  const s = safeStorage();
+  const list = loadHistory();
+  const idx = list.findIndex((e) => e.id === id);
+  if (idx === -1) return false;
+  const next = list.map((e, i) =>
+    i === idx ? { ...e, bookmarked: !e.bookmarked } : e
+  );
+  if (s) {
+    try { s.setItem(KEY, JSON.stringify(next)); } catch { /* ignore */ }
+  }
+  return !list[idx].bookmarked;
+}
+
+/** Clears un-starred entries; preserves the user's saved library. */
+export function clearUnstarred() {
+  const s = safeStorage();
+  if (!s) return;
+  const next = loadHistory().filter((e) => e.bookmarked);
+  try { s.setItem(KEY, JSON.stringify(next)); } catch { /* ignore */ }
 }

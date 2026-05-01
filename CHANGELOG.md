@@ -1,5 +1,53 @@
 # Changelog
 
+## v0.11.0 — 2026-05-01 — Reverse mode, A/B, library, admin
+
+The "every idea on the roadmap, shipped" release — all ten v0.11 ideas plus
+patterns drawn from PromptHero studies (visual style packs, saved library,
+template categories).
+
+- 🔍 **Reverse mode**: paste a polished prompt and learn why it works. Pure
+  local analyser (`lib/reverse-analyzer.ts`) returns intent, quality
+  breakdown, structural skeleton, strengths list, and one specific
+  improvement target. Build / Reverse toggle at the top of the workspace.
+- 🎓 **Onboarding tour**: dismissible 3-step intro on first visit.
+- ⚡ **Voice-to-final smart submit**: opt-in toggle (⚡ button next to mic).
+  When the user stops speaking for 2.5 s and the recogniser has captured a
+  final transcript, the workspace auto-generates the prompt. Persisted in
+  localStorage.
+- 🛡 **Anti-hallucination guardrails**: a five-rule "Trust & accuracy"
+  block is now appended to every report and research scaffold (cite
+  verifiable sources only / distinguish facts from inferences / mark
+  speculation / quote with source / acknowledge gaps). Both EN and AR.
+- 🖼 **Shareable PNG cards**: render the final prompt as a 1200×1500
+  branded image, downloadable or shareable via the OS share sheet
+  (uses `navigator.share({ files })` where supported).
+- ⚖️ **A/B variant comparison**: alongside the multi-model comparison,
+  generate Concise + Detailed versions of the same prompt. The user picks
+  the winner, choice posts to `/api/feedback` with
+  `comment: "variant_winner: concise|detailed"` so the platform learns
+  which length lands better per intent.
+- ⭐ **Saved prompts library** (PromptHero-inspired): each history item now
+  has a star toggle. New All / Saved tabs filter the list. "Clear" only
+  removes un-starred items so the user's library survives.
+- 🎨 **Image style packs** (PromptHero-inspired): 10 curated visual styles
+  — Cinematic, Editorial, Anime, Oil, Cyberpunk, Minimalist, 3D Render,
+  Vintage Film, Watercolor, Pixel Art — each one click appends a
+  battle-tested set of modifiers. Picker auto-shows when the prompt is
+  detected as `image` or `design`.
+- 📊 **Admin feedback dashboard**: `/admin/feedback` with KPI cards,
+  by-intent and by-model bar charts, top complaint tags, locale split,
+  and the latest 20 rows. Reads from `/api/admin/feedback` which trusts
+  Supabase RLS to gate access to org owners/admins.
+- 🧩 **Browser extension polished**: rebranded to Prompt ZAI@n, MV3 hotkey
+  Alt+P added, contextMenus permission for future right-click integration,
+  full README with install + packaging instructions.
+- 🔌 **Public API v1**: stable `/api/v1/enhance` endpoint (POST, bearer
+  API key) for third-party integrations. Returns `api_version: "v1"` so
+  callers can branch on schema changes safely. Existing
+  `/api/extension/enhance` kept for backward compat.
+- ✅ **Quality**: 59 tests (was 54), typecheck, production build all pass.
+
 ## v0.10.0 — 2026-05-01 — Multi-domain, professional voice, mobile
 
 The "every kind of prompt, on every device" release.

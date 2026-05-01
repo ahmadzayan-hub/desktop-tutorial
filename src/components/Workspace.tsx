@@ -19,6 +19,15 @@ import TokenMeter from "@/components/TokenMeter";
 import PromptDiff from "@/components/PromptDiff";
 import InlineLintHints from "@/components/InlineLintHints";
 import ModelComparison from "@/components/ModelComparison";
+import VariantComparison from "@/components/VariantComparison";
+import PromptCard from "@/components/PromptCard";
+import StylePackPicker from "@/components/StylePackPicker";
+import OnboardingTour from "@/components/OnboardingTour";
+import ReverseMode from "@/components/ReverseMode";
+import {
+  toggleBookmark,
+  clearUnstarred
+} from "@/lib/local-history";
 import { loadDraft, saveDraft, clearDraft } from "@/lib/draft-store";
 import type { Intent } from "@/lib/local-engine";
 import {
@@ -87,6 +96,8 @@ export default function Workspace() {
   const [copied, setCopied] = useState(false);
   const [history, setHistory] = useState<LocalHistoryEntry[]>([]);
   const [draftRestored, setDraftRestored] = useState(false);
+  const [mode, setMode] = useState<"build" | "reverse">("build");
+  const [historyFilter, setHistoryFilter] = useState<"all" | "starred">("all");
 
   // Hydrate a starter dropped from /templates, restore an auto-saved draft,
   // and rehydrate the local history list.
@@ -362,9 +373,49 @@ export default function Workspace() {
   const beforeStats = useMemo(() => stats(raw), [raw]);
   const afterStats = useMemo(() => (finalPrompt ? stats(finalPrompt) : null), [finalPrompt]);
   const hasOutput = Boolean(finalPrompt || (session && session.questions.length > 0));
+  // Live intent preview drives the style-pack picker (only shown for image prompts).
+  const previewIntent = useMemo<Intent>(
+    () => (raw.trim().length >= 6 ? detectIntentLocal(raw).intent : "other"),
+    [raw]
+  );
 
   return (
     <div className="mx-auto w-full max-w-7xl px-3 sm:px-6 lg:px-8 py-6 sm:py-10">
+      <OnboardingTour />
+
+      {/* Mode toggle: Build (default) or Reverse-analyse */}
+      <div className="mb-4 sm:mb-6 inline-flex rounded-full border border-slate-200 dark:border-slate-700 p-1 bg-white dark:bg-slate-900">
+        <button
+          type="button"
+          onClick={() => setMode("build")}
+          aria-pressed={mode === "build"}
+          className={
+            "px-4 py-1.5 rounded-full text-xs font-medium transition " +
+            (mode === "build"
+              ? "bg-brand-600 text-white shadow-sm"
+              : "text-slate-600 dark:text-slate-300 hover:text-slate-900")
+          }
+        >
+          ✍️ {t("mode.build")}
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode("reverse")}
+          aria-pressed={mode === "reverse"}
+          className={
+            "px-4 py-1.5 rounded-full text-xs font-medium transition " +
+            (mode === "reverse"
+              ? "bg-brand-600 text-white shadow-sm"
+              : "text-slate-600 dark:text-slate-300 hover:text-slate-900")
+          }
+        >
+          🔍 {t("mode.reverse")}
+        </button>
+      </div>
+
+      {mode === "reverse" ? (
+        <ReverseMode />
+      ) : (
       <div className={
         "grid gap-4 sm:gap-6 " +
         (hasOutput ? "lg:grid-cols-2" : "lg:grid-cols-1 lg:max-w-3xl lg:mx-auto")
@@ -402,7 +453,14 @@ export default function Workspace() {
               placeholder={t("ws.placeholder.raw")}
             />
             <div className="absolute bottom-2 end-2">
-              <VoiceInput onTranscript={handleVoice} />
+              <VoiceInput
+                onTranscript={handleVoice}
+                onAutoSubmit={() => {
+                  // Voice "smart-submit": after the user stops speaking for a
+                  // beat, kick off the questions flow automatically.
+                  if (raw.trim().length >= 3 && !loading) void startSession(false);
+                }}
+              />
             </div>
           </div>
 
@@ -428,6 +486,16 @@ export default function Workspace() {
           <FileUpload files={files} onChange={setFiles} className="mt-4" />
           {files.length > 0 && (
             <p className="mt-2 text-[11px] text-slate-500">{t("ws.privacy.files")}</p>
+          )}
+
+          {(previewIntent === "image" || previewIntent === "design") && (
+            <StylePackPicker
+              className="mt-4"
+              onPick={(appended) => {
+                // Append-only — never overwrite the user's intent text.
+                setRaw((cur) => (cur.trim() + appended));
+              }}
+            />
           )}
 
           <div className="mt-4 flex items-center gap-3 flex-wrap">
@@ -481,13 +549,16 @@ export default function Workspace() {
             </div>
           )}
 
-          {/* Local history — privacy-friendly, kept in this browser only */}
+          {/* Local history + saved library — privacy-friendly, browser-only */}
           {!hasOutput && history.length > 0 && (
             <RecentList
               history={history}
+              filter={historyFilter}
+              setFilter={setHistoryFilter}
               onRestore={restoreFromHistory}
               onRemove={(id) => { removeHistoryEntry(id); setHistory(loadHistory()); }}
-              onClear={() => { clearHistory(); setHistory([]); }}
+              onClear={() => { clearUnstarred(); setHistory(loadHistory()); }}
+              onBookmark={(id) => { toggleBookmark(id); setHistory(loadHistory()); }}
             />
           )}
         </section>
@@ -556,6 +627,10 @@ export default function Workspace() {
                       <button onClick={copyFinal} className="btn-ghost border border-slate-300 text-xs">
                         {copied ? t("ws.copied") : t("ws.btn.copy")}
                       </button>
+                      <PromptCard
+                        text={finalPrompt}
+                        intent={session?.intent ?? null}
+                      />
                     </div>
                   </div>
                   <div className="mt-3 grid sm:grid-cols-2 gap-3">
@@ -611,22 +686,37 @@ export default function Workspace() {
                 </div>
 
                 {session && (
-                  <ModelComparison
-                    raw={raw}
-                    intent={(session.intent as Intent) ?? "other"}
-                    qa={session.questions
-                      .map((q) => ({
-                        question: q.question,
-                        answer: (answers[q.id] ?? "").trim()
-                      }))
-                      .filter((p) => p.answer.length > 0)}
-                  />
+                  <>
+                    <VariantComparison
+                      raw={raw}
+                      intent={(session.intent as Intent) ?? "other"}
+                      qa={session.questions
+                        .map((q) => ({
+                          question: q.question,
+                          answer: (answers[q.id] ?? "").trim()
+                        }))
+                        .filter((p) => p.answer.length > 0)}
+                      targetModel={model}
+                      sessionId={session.id}
+                    />
+                    <ModelComparison
+                      raw={raw}
+                      intent={(session.intent as Intent) ?? "other"}
+                      qa={session.questions
+                        .map((q) => ({
+                          question: q.question,
+                          answer: (answers[q.id] ?? "").trim()
+                        }))
+                        .filter((p) => p.answer.length > 0)}
+                    />
+                  </>
                 )}
               </>
             )}
           </section>
         )}
       </div>
+      )}
     </div>
   );
 }
@@ -676,45 +766,102 @@ function Skeleton() {
 
 function RecentList({
   history,
+  filter,
+  setFilter,
   onRestore,
   onRemove,
-  onClear
+  onClear,
+  onBookmark
 }: {
   history: LocalHistoryEntry[];
+  filter: "all" | "starred";
+  setFilter: (f: "all" | "starred") => void;
   onRestore: (e: LocalHistoryEntry) => void;
   onRemove: (id: string) => void;
   onClear: () => void;
+  onBookmark: (id: string) => void;
 }) {
   const t = useT();
+  const visible = filter === "starred"
+    ? history.filter((h) => h.bookmarked)
+    : history;
+  const starredCount = history.filter((h) => h.bookmarked).length;
+
   return (
-    <div className="mt-5 pt-4 border-t border-slate-200">
-      <div className="flex items-center justify-between gap-2">
+    <div className="mt-5 pt-4 border-t border-slate-200 dark:border-slate-700">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
         <h2 className="text-sm font-medium">{t("ws.recent")}</h2>
-        <button
-          onClick={onClear}
-          className="btn-ghost text-xs text-slate-500 hover:text-rose-600 px-2 py-1"
-        >
-          {t("ws.recent.clear")}
-        </button>
+        <div className="flex items-center gap-1">
+          {/* All / Starred filter pill */}
+          <div className="inline-flex rounded-full border border-slate-200 dark:border-slate-700 p-0.5 text-[11px]">
+            <button
+              type="button"
+              onClick={() => setFilter("all")}
+              aria-pressed={filter === "all"}
+              className={
+                "px-2.5 py-0.5 rounded-full transition " +
+                (filter === "all"
+                  ? "bg-brand-600 text-white"
+                  : "text-slate-600 dark:text-slate-300")
+              }
+            >
+              {t("ws.recent.tab_all")} · {history.length}
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilter("starred")}
+              aria-pressed={filter === "starred"}
+              className={
+                "px-2.5 py-0.5 rounded-full transition " +
+                (filter === "starred"
+                  ? "bg-brand-600 text-white"
+                  : "text-slate-600 dark:text-slate-300")
+              }
+            >
+              ★ {t("ws.recent.tab_starred")} · {starredCount}
+            </button>
+          </div>
+          <button
+            onClick={onClear}
+            className="btn-ghost text-xs text-slate-500 hover:text-rose-600 px-2 py-1"
+            title={t("ws.recent.clear_hint")}
+          >
+            {t("ws.recent.clear")}
+          </button>
+        </div>
       </div>
       <ul className="mt-2 space-y-1.5">
-        {history.slice(0, 5).map((h) => (
+        {visible.slice(0, 8).map((h) => (
           <li
             key={h.id}
-            className="group flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs"
+            className="group flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-2.5 py-1.5 text-xs"
           >
+            <button
+              type="button"
+              onClick={() => onBookmark(h.id)}
+              aria-label={t(h.bookmarked ? "ws.recent.unstar" : "ws.recent.star")}
+              aria-pressed={!!h.bookmarked}
+              className={
+                "w-5 h-5 inline-flex items-center justify-center rounded-full transition " +
+                (h.bookmarked
+                  ? "text-amber-500"
+                  : "text-slate-400 hover:text-amber-500")
+              }
+            >
+              <span aria-hidden="true">{h.bookmarked ? "★" : "☆"}</span>
+            </button>
             <IntentBadge intent={h.intent ?? "other"} />
-            <span className="flex-1 truncate text-slate-700">{h.raw}</span>
+            <span className="flex-1 truncate text-slate-700 dark:text-slate-200">{h.raw}</span>
             <button
               onClick={() => onRestore(h)}
-              className="btn-ghost px-2 py-0.5 text-xs hover:bg-white"
+              className="btn-ghost px-2 py-0.5 text-xs hover:bg-white dark:hover:bg-slate-800"
             >
               {t("ws.recent.restore")}
             </button>
             <button
               onClick={() => onRemove(h.id)}
               aria-label={t("ws.recent.remove")}
-              className="opacity-0 group-hover:opacity-100 focus:opacity-100 w-5 h-5 rounded-full hover:bg-slate-200 inline-flex items-center justify-center"
+              className="opacity-0 group-hover:opacity-100 focus:opacity-100 w-5 h-5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 inline-flex items-center justify-center"
             >
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                 <line x1="6" y1="6" x2="18" y2="18" />
@@ -723,6 +870,9 @@ function RecentList({
             </button>
           </li>
         ))}
+        {visible.length === 0 && filter === "starred" && (
+          <li className="text-xs text-slate-500 italic">{t("ws.recent.no_starred")}</li>
+        )}
       </ul>
     </div>
   );

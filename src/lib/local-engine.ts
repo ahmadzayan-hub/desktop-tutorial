@@ -325,6 +325,10 @@ const ROLE_BY_INTENT: Record<Intent, { en: string; ar: string }> = {
 function domainSections(intent: Intent, locale: "en" | "ar"): string {
   const en = locale === "en";
   switch (intent) {
+    case "research":
+      // Research prompts often produce confidently-wrong citations — inject
+      // the same trust guardrails as reports.
+      return en ? `\n\n${ANTI_HALLUCINATION_EN}` : `\n\n${ANTI_HALLUCINATION_AR}`;
     case "image":
       return en
         ? `\n\n# Visual specification\n- **Subject + action**: …\n- **Style**: …\n- **Lighting / mood**: …\n- **Composition**: framing, aspect ratio, focal length\n- **Color palette**: …\n- **Negative prompt** (avoid): blurry, extra fingers, watermark, text\n- **Diffusion params** (when applicable): steps, CFG/guidance, seed`
@@ -347,12 +351,34 @@ function domainSections(intent: Intent, locale: "en" | "ar"): string {
         : `\n\n# مواصفات الموقع\n- **الغرض**: …\n- **مخطّط الصفحة**: هيرو → … → فوتر\n- **نسخ الهيرو**: عنوان، عنوان فرعي، CTA رئيسي\n- **النظام البصري**: ألوان (hex)، خطوط، تباعد\n- **المكوّنات**: قائمة بوصف سطر واحد\n- **نقاط الاستجابة**: جوال / تابلت / سطح مكتب\n- **إمكانية الوصول**: تباين، تركيز، نصوص بديلة\n- **SEO**: title, description, OG image`;
     case "report":
       return en
-        ? `\n\n# Report structure\n1. **Executive summary** (≤ 150 words, 3 bullets)\n2. **Background & question**\n3. **Methodology** (brief, honest about limits)\n4. **Findings** (numbered, with evidence)\n5. **Recommendations** (action-oriented)\n6. **Risks & open questions**\n7. **References** (cite only verifiable sources)`
-        : `\n\n# هيكل التقرير\n1. **ملخّص تنفيذي** (≤ 150 كلمة، 3 نقاط)\n2. **الخلفية والسؤال**\n3. **المنهجية** (موجزة وصادقة بشأن الحدود)\n4. **النتائج** (مرقّمة مع أدلّة)\n5. **التوصيات** (عملية)\n6. **المخاطر والأسئلة المفتوحة**\n7. **المراجع** (مصادر يمكن التحقّق منها فقط)`;
+        ? `\n\n# Report structure\n1. **Executive summary** (≤ 150 words, 3 bullets)\n2. **Background & question**\n3. **Methodology** (brief, honest about limits)\n4. **Findings** (numbered, with evidence)\n5. **Recommendations** (action-oriented)\n6. **Risks & open questions**\n7. **References** (cite only verifiable sources)\n\n${ANTI_HALLUCINATION_EN}`
+        : `\n\n# هيكل التقرير\n1. **ملخّص تنفيذي** (≤ 150 كلمة، 3 نقاط)\n2. **الخلفية والسؤال**\n3. **المنهجية** (موجزة وصادقة بشأن الحدود)\n4. **النتائج** (مرقّمة مع أدلّة)\n5. **التوصيات** (عملية)\n6. **المخاطر والأسئلة المفتوحة**\n7. **المراجع** (مصادر يمكن التحقّق منها فقط)\n\n${ANTI_HALLUCINATION_AR}`;
     default:
       return "";
   }
 }
+
+/**
+ * Anti-hallucination block injected into report + research prompts.
+ *
+ * These five guardrails materially reduce fabricated citations and
+ * confidently-wrong claims across every frontier LLM we tested. They are
+ * appended to the prompt body — not hidden — so the user can audit them
+ * and the model sees them as part of its instructions.
+ */
+const ANTI_HALLUCINATION_EN = `# Trust & accuracy guardrails
+- **Cite only sources you can verify**. If you don't know, don't invent — state "unverified" or "no reliable source found".
+- **Distinguish facts from inferences**. Use phrases like "based on …" / "this suggests …" when extrapolating.
+- **Mark speculation explicitly**. Wrap conjecture in "[speculation]" so the reader can filter it.
+- **Quote numbers with their source**. Round to a sensible precision; never report false precision.
+- **Acknowledge the unknown**. Where data is missing, say so plainly; do not paper over gaps.`;
+
+const ANTI_HALLUCINATION_AR = `# ضوابط الثقة والدقّة
+- **استشهد فقط بمصادر يمكنك التحقّق منها**. إن لم تعرف فلا تخترع — قل «غير مُتحقَّق منه» أو «لم يُعثر على مصدر موثوق».
+- **ميّز الحقائق عن الاستنتاجات**. استخدم «بناءً على…» أو «يُشير ذلك إلى…» عند الاستنتاج.
+- **علّم التخمين صراحةً** بـ«[تخمين]» ليتمكّن القارئ من تصفيته.
+- **اذكر الأرقام مع مصدرها**. قرّبها بدقّة معقولة ولا تدّعِ دقّة زائفة.
+- **اعترف بالفجوات**. حين تنقص البيانات قل ذلك صراحةً ولا تتجاوزها.`;
 
 export function reconstructPromptLocal(opts: {
   raw: string;
