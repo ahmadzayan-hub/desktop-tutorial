@@ -2,6 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useI18n, useT } from "@/lib/i18n/I18nProvider";
+import {
+  labelFor,
+  listFor,
+  loadPreferred,
+  savePreferred,
+  type VoiceLocale
+} from "@/lib/voice-locales";
 
 interface SpeechRecognitionLike {
   lang: string;
@@ -37,9 +44,9 @@ interface Props {
 /**
  * Voice input that records continuously until the user explicitly stops.
  *
- * The Web Speech API auto-ends after a silence window (especially on mobile
- * Chrome) — we transparently restart recognition while the user is still in
- * "listening" mode so a long pause doesn't end the session prematurely.
+ * The dialect picker exposes country-flag options (🇦🇪 الإمارات, 🇪🇬 مصر,
+ * 🇸🇦 السعودية…). Persists choice in localStorage so the next session
+ * remembers it.
  */
 export default function VoiceInput({ onTranscript, className }: Props) {
   const t = useT();
@@ -48,14 +55,20 @@ export default function VoiceInput({ onTranscript, className }: Props) {
   const [listening, setListening] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
+  const [voiceLocale, setVoiceLocale] = useState<VoiceLocale | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const recRef = useRef<SpeechRecognitionLike | null>(null);
-  // True only when the user has hit "stop". Auto-end events check this to
-  // decide between restart (long-record mode) and a real stop.
   const userStoppedRef = useRef(false);
   const startedAtRef = useRef<number | null>(null);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // Initialise picker from localStorage; fall back to UI-locale default
+  useEffect(() => {
+    setVoiceLocale(loadPreferred(locale));
+  }, [locale]);
+
+  // Construct / tear down the recogniser when picker or locale changes
   useEffect(() => {
     if (typeof window === "undefined") return;
     const Ctor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
@@ -66,21 +79,17 @@ export default function VoiceInput({ onTranscript, className }: Props) {
     const rec = new Ctor();
     rec.continuous = true;
     rec.interimResults = true;
-    rec.lang = locale === "ar" ? "ar-SA" : "en-US";
+    rec.lang = voiceLocale?.code ?? (locale === "ar" ? "ar-AE" : "en-US");
 
     rec.onresult = (e: SpeechRecognitionEvent) => {
       let chunk = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
-        if (e.results[i].isFinal) {
-          chunk += e.results[i][0].transcript;
-        }
+        if (e.results[i].isFinal) chunk += e.results[i][0].transcript;
       }
       if (chunk) onTranscript(chunk, true);
     };
 
     rec.onerror = (e) => {
-      // "no-speech" and "audio-capture" are recoverable on mobile — keep going
-      // unless the user has stopped explicitly.
       if (
         !userStoppedRef.current &&
         (e.error === "no-speech" || e.error === "audio-capture" || e.error === "aborted")
@@ -93,15 +102,12 @@ export default function VoiceInput({ onTranscript, className }: Props) {
     };
 
     rec.onend = () => {
-      // Auto-restart unless the user explicitly stopped — this is the key
-      // change that lets recording run for as long as the user wants.
       if (!userStoppedRef.current) {
         try {
           rec.start();
           return;
         } catch {
-          // Some browsers throw "already started"; fall through to mark
-          // listening = false.
+          /* ignore */
         }
       }
       setListening(false);
@@ -122,14 +128,14 @@ export default function VoiceInput({ onTranscript, className }: Props) {
         tickRef.current = null;
       }
     };
-  }, [locale, onTranscript]);
+  }, [voiceLocale, locale, onTranscript]);
 
   function start() {
     const rec = recRef.current;
     if (!rec) return;
     setError(null);
     userStoppedRef.current = false;
-    rec.lang = locale === "ar" ? "ar-SA" : "en-US";
+    rec.lang = voiceLocale?.code ?? (locale === "ar" ? "ar-AE" : "en-US");
     try {
       rec.start();
       setListening(true);
@@ -165,6 +171,12 @@ export default function VoiceInput({ onTranscript, className }: Props) {
     else start();
   }
 
+  function pickLocale(v: VoiceLocale) {
+    setVoiceLocale(v);
+    savePreferred(locale, v);
+    setPickerOpen(false);
+  }
+
   if (!supported) {
     return (
       <span className={`text-xs text-slate-500 ${className ?? ""}`} title={t("voice.unsupported")}>
@@ -175,9 +187,54 @@ export default function VoiceInput({ onTranscript, className }: Props) {
 
   const mm = String(Math.floor(elapsed / 60)).padStart(2, "0");
   const ss = String(elapsed % 60).padStart(2, "0");
+  const list = listFor(locale);
 
   return (
-    <div className={`flex items-center gap-2 ${className ?? ""}`}>
+    <div className={`flex items-center gap-1.5 ${className ?? ""}`}>
+      {/* Flag picker — opens a popover of locales */}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setPickerOpen((v) => !v)}
+          aria-label={t("voice.dialect")}
+          aria-haspopup="listbox"
+          aria-expanded={pickerOpen}
+          className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-slate-300 bg-white hover:border-brand-400 transition text-base leading-none"
+          title={voiceLocale ? labelFor(voiceLocale, locale) : t("voice.dialect")}
+        >
+          <span aria-hidden="true">{voiceLocale?.flag ?? "🌐"}</span>
+        </button>
+        {pickerOpen && (
+          <ul
+            role="listbox"
+            aria-label={t("voice.dialect")}
+            className="absolute bottom-full mb-2 end-0 z-40 max-h-72 w-44 overflow-auto rounded-lg border border-slate-200 bg-white shadow-lg py-1"
+          >
+            {list.map((v) => {
+              const active = voiceLocale?.code === v.code;
+              return (
+                <li key={v.code}>
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={active}
+                    onClick={() => pickLocale(v)}
+                    className={
+                      "w-full flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-slate-100 " +
+                      (active ? "bg-brand-50 text-brand-700 font-medium" : "text-slate-700")
+                    }
+                  >
+                    <span aria-hidden="true" className="text-base">{v.flag}</span>
+                    <span className="truncate flex-1 text-start">{labelFor(v, locale)}</span>
+                    <span className="text-[10px] text-slate-400 tabular-nums">{v.code}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+
       <button
         type="button"
         onClick={toggle}
@@ -204,6 +261,7 @@ export default function VoiceInput({ onTranscript, className }: Props) {
           <span className="absolute inset-0 rounded-full animate-ping bg-rose-400/40" />
         )}
       </button>
+
       {listening && (
         <span className="text-xs text-rose-600 font-medium tabular-nums" aria-live="polite">
           ● {mm}:{ss} · {t("voice.listening")}

@@ -15,6 +15,9 @@ import VoiceInput from "@/components/VoiceInput";
 import FileUpload, { type AttachedFile, formatAttachedAsContext } from "@/components/FileUpload";
 import FeedbackWidget from "@/components/FeedbackWidget";
 import QualityBadge from "@/components/QualityBadge";
+import TokenMeter from "@/components/TokenMeter";
+import PromptDiff from "@/components/PromptDiff";
+import { loadDraft, saveDraft, clearDraft } from "@/lib/draft-store";
 import {
   loadHistory,
   saveHistoryEntry,
@@ -74,8 +77,10 @@ export default function Workspace() {
   const [info, setInfo] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [history, setHistory] = useState<LocalHistoryEntry[]>([]);
+  const [draftRestored, setDraftRestored] = useState(false);
 
-  // Hydrate a starter dropped from /templates and rehydrate local history
+  // Hydrate a starter dropped from /templates, restore an auto-saved draft,
+  // and rehydrate the local history list.
   useEffect(() => {
     if (typeof window === "undefined") return;
     const stash = sessionStorage.getItem("po_starter");
@@ -84,11 +89,29 @@ export default function Workspace() {
         const { text, model: m } = JSON.parse(stash) as { text: string; model: TargetModel };
         setRaw(text);
         if (m) setModel(m);
+        clearDraft();
       } catch { /* ignore */ }
       sessionStorage.removeItem("po_starter");
+    } else {
+      const draft = loadDraft();
+      if (draft) {
+        setRaw(draft.raw);
+        setModel(draft.model);
+        setDraftRestored(true);
+      }
     }
     setHistory(loadHistory());
   }, []);
+
+  // Auto-save the in-progress draft (debounced so we don't thrash localStorage)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const id = window.setTimeout(() => {
+      if (raw.trim()) saveDraft({ raw, model });
+      else clearDraft();
+    }, 500);
+    return () => window.clearTimeout(id);
+  }, [raw, model]);
 
   function composedPrompt(): string {
     return raw + formatAttachedAsContext(files, locale);
@@ -166,6 +189,15 @@ export default function Workspace() {
   function rememberHistory(rawText: string, intent: string, target: TargetModel, finalText: string) {
     saveHistoryEntry({ raw: rawText, intent, target_model: target, final_prompt: finalText });
     setHistory(loadHistory());
+    // Once a prompt is finalised it has been preserved in history; the
+    // pending-draft is no longer interesting.
+    clearDraft();
+  }
+
+  function discardDraft() {
+    clearDraft();
+    setRaw("");
+    setDraftRestored(false);
   }
 
   async function submitAnswers() {
@@ -345,6 +377,22 @@ export default function Workspace() {
 
           <p className="mt-2 text-[11px] text-slate-500">{t("ws.shortcut.hint")}</p>
 
+          {draftRestored && (
+            <div className="mt-3 flex items-center gap-2 flex-wrap rounded-md border border-amber-200 bg-amber-50 text-amber-800 px-3 py-2 text-xs" role="status">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polyline points="23 4 23 10 17 10"/>
+                <path d="M20.49 15A9 9 0 1 1 5.64 5.64L23 10"/>
+              </svg>
+              <span className="flex-1">{t("draft.restored")}</span>
+              <button
+                onClick={discardDraft}
+                className="btn-ghost px-2 py-0.5 text-xs hover:bg-amber-100"
+              >
+                {t("draft.discard")}
+              </button>
+            </div>
+          )}
+
           <FileUpload files={files} onChange={setFiles} className="mt-4" />
           {files.length > 0 && (
             <p className="mt-2 text-[11px] text-slate-500">{t("ws.privacy.files")}</p>
@@ -478,11 +526,16 @@ export default function Workspace() {
                       </button>
                     </div>
                   </div>
-                  <QualityBadge finalText={finalPrompt} rawText={raw} className="mt-3" />
+                  <div className="mt-3 grid sm:grid-cols-2 gap-3">
+                    <QualityBadge finalText={finalPrompt} rawText={raw} />
+                    <TokenMeter text={finalPrompt} model={model} />
+                  </div>
 
                   <pre className="mt-3 whitespace-pre-wrap rounded bg-slate-50 p-3 text-sm border border-slate-200 max-h-[60vh] overflow-auto">
 {finalPrompt}
                   </pre>
+
+                  <PromptDiff raw={raw} final={finalPrompt} className="mt-3" />
                   {rationale && (
                     <details className="mt-3 text-sm text-slate-600">
                       <summary className="cursor-pointer">{t("ws.why")}</summary>

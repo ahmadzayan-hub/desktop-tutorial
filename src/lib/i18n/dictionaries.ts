@@ -66,6 +66,7 @@ export const dict = {
     "voice.listening": "Listening…",
     "voice.unsupported": "Voice input is not supported in this browser.",
     "voice.error": "Voice error: {detail}",
+    "voice.dialect": "Voice dialect",
 
     "files.label": "Attach any files — text, code, images, PDFs, docs",
     "files.add": "Attach files",
@@ -123,6 +124,20 @@ export const dict = {
     "quality.dim.format": "Format",
     "quality.score_aria": "Quality score: {score} out of 100",
     "quality.delta": "+{delta} vs your raw input",
+
+    "tokens.label": "Token budget",
+    "tokens.tokens": "tokens",
+    "tokens.context": "context",
+    "tokens.aria": "Estimated {count} tokens for {model}",
+    "tokens.fit.ok": "Fits comfortably ({pct}% of the context window).",
+    "tokens.fit.warn": "Getting full ({pct}%) — leave room for the model's reply.",
+    "tokens.fit.over": "Over the safe limit ({pct}%) — trim the prompt before sending.",
+
+    "draft.restored": "Draft restored from your last session.",
+    "draft.discard": "Discard draft",
+
+    "diff.title": "What the orchestrator added",
+    "diff.lines": "lines",
 
     "ws.recent": "Your recent prompts",
     "ws.recent.empty": "Your last few prompts will appear here.",
@@ -214,6 +229,7 @@ export const dict = {
     "voice.listening": "جارٍ الاستماع…",
     "voice.unsupported": "الإدخال الصوتي غير مدعوم في هذا المتصفّح.",
     "voice.error": "خطأ في التعرّف الصوتي: {detail}",
+    "voice.dialect": "اللهجة الصوتية",
 
     "files.label": "أرفق أي ملفات — نصوص أو أكواد أو صور أو PDF أو مستندات",
     "files.add": "أرفق ملفات",
@@ -271,6 +287,20 @@ export const dict = {
     "quality.dim.format": "التنسيق",
     "quality.score_aria": "درجة الجودة: {score} من 100",
     "quality.delta": "+{delta} مقارنة بالنص الخام",
+
+    "tokens.label": "ميزانية التوكنز",
+    "tokens.tokens": "توكن",
+    "tokens.context": "نافذة",
+    "tokens.aria": "تقدير {count} توكن لـ {model}",
+    "tokens.fit.ok": "يناسب بسهولة ({pct}% من النافذة).",
+    "tokens.fit.warn": "يقترب من الامتلاء ({pct}%) — اترك مساحة لردّ النموذج.",
+    "tokens.fit.over": "تجاوز الحدّ الآمن ({pct}%) — اختصر الموجِّه قبل الإرسال.",
+
+    "draft.restored": "تمّت استعادة المسوّدة من جلستك السابقة.",
+    "draft.discard": "حذف المسوّدة",
+
+    "diff.title": "ما الذي أضافه المُنسِّق",
+    "diff.lines": "سطر",
 
     "ws.recent": "أحدث الموجِّهات",
     "ws.recent.empty": "ستظهر هنا آخر موجِّهاتك.",

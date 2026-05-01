@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.9.0 — 2026-05-01 — Dialects, token budget, drafts, diff
+
+The "tangible value per session" release.
+
+- 🇦🇪🇪🇬🇸🇦 **Voice dialect picker with country flags**: replaces the old MSA default. Arabic users see 🇦🇪 الإمارات (default), 🇸🇦 السعودية, 🇪🇬 مصر, 🇰🇼, 🇶🇦, 🇧🇭, 🇴🇲, 🇯🇴, 🇱🇧, 🇸🇾 الشام, 🇮🇶, 🇾🇪, 🇲🇦, 🇩🇿, 🇹🇳, 🇱🇾. English users see 🇺🇸/🇬🇧/🇦🇺/🇨🇦/🇮🇳. Selection persists in localStorage. Picker is a 36×36 button right next to the mic — flag-first, scannable.
+- 📏 **Token-budget meter**: every final-prompt card now shows estimated tokens (low–mid–high) against the active model's context window (Generic 8k, ChatGPT 128k, Claude 200k, Copilot 64k, Gemini 1M). Colour-coded: emerald = fits, amber = getting full, rose = trim before sending. Pure-function estimator with 11 unit tests; honest ±15% range so users see uncertainty rather than false precision.
+- 💾 **Auto-save drafts**: raw prompt + target model are saved to localStorage on every keystroke (debounced 500 ms, 7-day TTL). On reload, the workspace shows a soft amber "Draft restored" strip with a "Discard" button. Completing or abandoning a session clears the draft.
+- 🔍 **Before/after diff viewer**: collapsible card under the final prompt, highlighting in emerald the lines the orchestrator added. Line-level LCS — pure function, 4 unit tests, bounded so a 5k-line input still renders instantly.
+- ✅ **Quality**: 39 tests (was 24), typecheck, production build all pass. Zero failures.
+
 ## v0.8.0 — 2026-05-01 — Brand identity + sharper learning loop
 
 The "Prompt ZAI@n / موجة زيان" release.
