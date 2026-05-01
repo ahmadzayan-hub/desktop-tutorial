@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useT } from "@/lib/i18n/I18nProvider";
+import { safeFetch } from "@/lib/safe-fetch";
 
 interface SessionRow {
   id: string;
@@ -13,25 +15,24 @@ interface SessionRow {
 }
 
 export default function HistoryPage() {
+  const t = useT();
   const [rows, setRows] = useState<SessionRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ message: string; hint?: string } | null>(null);
   const [query, setQuery] = useState("");
   const [intentFilter, setIntentFilter] = useState<string>("all");
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      try {
-        const r = await fetch("/api/sessions");
-        if (!r.ok) throw new Error((await r.json()).error ?? r.statusText);
-        const data = await r.json();
-        if (!cancelled) setRows(data.sessions ?? []);
-      } catch (e) {
-        if (!cancelled) setError(String(e));
-      } finally {
-        if (!cancelled) setLoading(false);
+      const r = await safeFetch<{ sessions: SessionRow[] }>("/api/sessions");
+      if (cancelled) return;
+      if (!r.ok || !r.data) {
+        setError(r.error ?? { message: "unknown" });
+      } else {
+        setRows(r.data.sessions ?? []);
       }
+      setLoading(false);
     })();
     return () => { cancelled = true; };
   }, []);
@@ -53,33 +54,38 @@ export default function HistoryPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
-      <h1 className="text-2xl font-semibold">History</h1>
+      <h1 className="text-2xl font-semibold">{t("history.title")}</h1>
 
       <div className="mt-4 flex gap-2 flex-wrap">
         <input
           type="search"
-          placeholder="Search prompts…"
+          placeholder={t("history.search")}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="flex-1 min-w-[200px]"
         />
         <select value={intentFilter} onChange={(e) => setIntentFilter(e.target.value)}>
-          <option value="all">All intents</option>
+          <option value="all">{t("history.all_intents")}</option>
           {intents.map((i) => (
             <option key={i} value={i}>{i}</option>
           ))}
         </select>
         <span className="text-xs text-slate-500 self-center">
-          {filtered.length} / {rows.length}
+          {t("history.count", { shown: filtered.length, total: rows.length })}
         </span>
       </div>
 
-      {loading && <p className="mt-4 text-slate-500">Loading…</p>}
-      {error && <p className="mt-4 text-rose-600">{error}</p>}
+      {loading && <p className="mt-4 text-slate-500">…</p>}
+      {error && (
+        <div className="mt-4 rounded-md border border-rose-200 bg-rose-50 text-rose-800 p-3 text-sm">
+          <div className="font-medium">{error.message}</div>
+          {error.hint && <div className="text-rose-700 text-xs mt-1">{error.hint}</div>}
+        </div>
+      )}
 
       <div className="mt-6 space-y-3">
         {filtered.map((s) => (
-          <div key={s.id} className="card">
+          <div key={s.id} className="card hover:shadow-md transition">
             <div className="flex items-center justify-between text-xs text-slate-500">
               <span>{new Date(s.created_at).toLocaleString()}</span>
               <span>
@@ -89,9 +95,9 @@ export default function HistoryPage() {
             <p className="mt-2 text-sm line-clamp-3">{s.raw_prompt}</p>
           </div>
         ))}
-        {!loading && filtered.length === 0 && (
+        {!loading && filtered.length === 0 && !error && (
           <p className="text-slate-500">
-            {rows.length === 0 ? "No sessions yet." : "No sessions match your filters."}
+            {rows.length === 0 ? t("history.empty") : t("history.empty_filter")}
           </p>
         )}
       </div>

@@ -1,34 +1,44 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { I18nProvider } from "@/lib/i18n/I18nProvider";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Prompt Orchestrator",
-  description: "Turn raw ideas into perfectly engineered prompts."
+  title: "Prompt Orchestrator — AI Prompt Writing Assistant",
+  description: "Turn rough ideas into perfectly engineered prompts. Free, multilingual, mobile-ready.",
+  applicationName: "Prompt Orchestrator",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: { capable: true, title: "Prompt Orchestrator", statusBarStyle: "default" },
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg"
+  }
+};
+
+export const viewport: Viewport = {
+  themeColor: "#6366f1",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" dir="ltr">
       <body>
-        <div className="min-h-screen flex flex-col">
-          <header className="border-b border-slate-200 bg-white">
-            <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-              <a href="/" className="font-semibold tracking-tight">Prompt Orchestrator</a>
-              <nav className="flex gap-1 text-sm">
-                <a href="/workspace" className="btn-ghost">Workspace</a>
-                <a href="/templates" className="btn-ghost">Templates</a>
-                <a href="/history" className="btn-ghost">History</a>
-                <a href="/login" className="btn-ghost">Sign in</a>
-              </nav>
-            </div>
-          </header>
-          <main className="flex-1">{children}</main>
-          <footer className="border-t border-slate-200 bg-white">
-            <div className="max-w-6xl mx-auto px-6 py-4 text-xs text-slate-500">
-              100% free stack: Next.js + Supabase + Ollama + Vercel.
-            </div>
-          </footer>
-        </div>
+        <I18nProvider>
+          <div className="min-h-screen flex flex-col">
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </div>
+        </I18nProvider>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>{})); }`
+          }}
+        />
       </body>
     </html>
   );
