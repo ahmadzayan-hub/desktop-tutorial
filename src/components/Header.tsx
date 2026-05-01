@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n/I18nProvider";
+import Logo from "@/components/Logo";
 
 export default function Header() {
   const { t, locale, setLocale } = useI18n();
@@ -12,7 +13,7 @@ export default function Header() {
     <header className="sticky top-0 z-30 backdrop-blur bg-white/80 border-b border-slate-200">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-2">
         <a href="/" className="flex items-center gap-2 font-semibold tracking-tight min-w-0">
-          <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-600 to-violet-600 shadow-md shadow-brand-600/40 flex-shrink-0" />
+          <Logo className="w-8 h-8 flex-shrink-0" />
           <span className="truncate">{t("app.name")}</span>
         </a>
 

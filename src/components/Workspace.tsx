@@ -1,18 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { useT } from "@/lib/i18n/I18nProvider";
+import { useMemo, useState } from "react";
+import { useI18n, useT } from "@/lib/i18n/I18nProvider";
 import { safeFetch } from "@/lib/safe-fetch";
-
-type TargetModel = "chatgpt" | "claude" | "copilot" | "gemini" | "generic";
-
-interface Question {
-  id: string;
-  position: number;
-  question: string;
-  rationale: string | null;
-  required: boolean;
-}
+import {
+  detectIntentLocal,
+  generateQuestionsLocal,
+  reconstructPromptLocal,
+  type LocalQuestion
+} from "@/lib/local-engine";
+import type { TargetModel } from "@/lib/types";
 
 interface PromptVersion {
   id: string;
@@ -20,17 +17,6 @@ interface PromptVersion {
   target_model: TargetModel;
   final_prompt: string;
   rationale: string | null;
-}
-
-interface SessionPayload {
-  id: string;
-  raw_prompt: string;
-  intent: string | null;
-  intent_confidence: number | null;
-  status: string;
-  target_model: TargetModel | null;
-  questions: Question[];
-  prompt_versions?: PromptVersion[];
 }
 
 const STARTER_KEYS: Array<{
@@ -46,73 +32,159 @@ const STARTER_KEYS: Array<{
   { key: "ws.starter.launch", text: "Plan a 4-week launch checklist for a free tier SaaS.", model: "generic" }
 ];
 
+interface UIQuestion {
+  id: string;
+  position: number;
+  question: string;
+  rationale: string | null;
+  required: boolean;
+}
+
+interface UISession {
+  id: string;
+  intent: string;
+  intent_confidence: number;
+  questions: UIQuestion[];
+  source: "cloud" | "local";
+}
+
 export default function Workspace() {
   const t = useT();
+  const { locale } = useI18n();
   const [raw, setRaw] = useState("");
   const [model, setModel] = useState<TargetModel>("generic");
-  const [session, setSession] = useState<SessionPayload | null>(null);
+  const [session, setSession] = useState<UISession | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [finalPrompt, setFinalPrompt] = useState<string | null>(null);
   const [rationale, setRationale] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<{ message: string; hint?: string } | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
+  /**
+   * Run cloud first; on any failure (auth, network, LLM), fall back to local.
+   * The user always gets a result.
+   */
   async function startSession(quick = false) {
-    setLoading(true); setError(null); setFinalPrompt(null); setRationale(null);
-    const r = await safeFetch<{ session: SessionPayload; mode: "quick" | "clarify" }>("/api/sessions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ raw_prompt: raw, target_model: model, quick })
-    });
-    setLoading(false);
-    if (!r.ok || !r.data) {
-      setError(r.error ?? { message: "unknown" });
+    setLoading(true); setError(null); setInfo(null); setFinalPrompt(null); setRationale(null);
+
+    // Try cloud
+    const r = await safeFetch<{ session: { id: string; intent: string | null; intent_confidence: number | null; questions: UIQuestion[]; prompt_versions?: PromptVersion[] }; mode: string }>(
+      "/api/sessions",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ raw_prompt: raw, target_model: model, quick })
+      }
+    );
+
+    if (r.ok && r.data) {
+      const s = r.data.session;
+      setSession({
+        id: s.id,
+        intent: s.intent ?? "other",
+        intent_confidence: s.intent_confidence ?? 0,
+        questions: s.questions ?? [],
+        source: "cloud"
+      });
+      setAnswers({});
+      if (r.data.mode === "quick" && s.prompt_versions?.length) {
+        setFinalPrompt(s.prompt_versions[0].final_prompt);
+        setRationale(s.prompt_versions[0].rationale);
+      }
+      setLoading(false);
       return;
     }
-    setSession(r.data.session);
-    setAnswers({});
-    if (r.data.mode === "quick" && r.data.session.prompt_versions?.length) {
-      const v = r.data.session.prompt_versions[0];
-      setFinalPrompt(v.final_prompt);
-      setRationale(v.rationale);
+
+    // Cloud failed → run local engine
+    runLocal(quick);
+  }
+
+  function runLocal(quick: boolean) {
+    const intent = detectIntentLocal(raw);
+    if (quick) {
+      const result = reconstructPromptLocal({
+        raw, intent: intent.intent, qa: [], targetModel: model, locale
+      });
+      setSession({
+        id: "local",
+        intent: intent.intent,
+        intent_confidence: intent.confidence,
+        questions: [],
+        source: "local"
+      });
+      setFinalPrompt(result.final_prompt);
+      setRationale(result.rationale);
+      setInfo(locale === "ar" ? "وضع محلي — لا يحتاج إلى اتصال." : "Running locally — no backend needed.");
+      setLoading(false);
+      return;
     }
+    const questions: LocalQuestion[] = generateQuestionsLocal(raw, intent.intent, locale);
+    setSession({
+      id: "local",
+      intent: intent.intent,
+      intent_confidence: intent.confidence,
+      questions,
+      source: "local"
+    });
+    setAnswers({});
+    setInfo(locale === "ar" ? "وضع محلي — لا يحتاج إلى اتصال." : "Running locally — no backend needed.");
+    setLoading(false);
   }
 
   async function submitAnswers() {
     if (!session) return;
     setLoading(true); setError(null);
+
+    if (session.source === "local") {
+      const qa = session.questions
+        .map((q) => ({ question: q.question, answer: (answers[q.id] ?? "").trim() }))
+        .filter((p) => p.answer.length > 0);
+      const result = reconstructPromptLocal({
+        raw, intent: session.intent as never, qa, targetModel: model, locale
+      });
+      setFinalPrompt(result.final_prompt);
+      setRationale(result.rationale);
+      setLoading(false);
+      return;
+    }
+
     const payload = Object.entries(answers)
       .filter(([, v]) => v.trim().length > 0)
       .map(([question_id, answer]) => ({ question_id, answer }));
     if (payload.length > 0) {
-      const r1 = await safeFetch(`/api/sessions/${session.id}/answers`, {
+      await safeFetch(`/api/sessions/${session.id}/answers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answers: payload })
       });
-      if (!r1.ok) {
-        setError(r1.error ?? { message: "unknown" });
-        setLoading(false);
-        return;
-      }
     }
-    const r2 = await safeFetch<{ version: PromptVersion }>(`/api/sessions/${session.id}/finalize`, {
+    const r = await safeFetch<{ version: PromptVersion }>(`/api/sessions/${session.id}/finalize`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ target_model: model })
     });
-    setLoading(false);
-    if (!r2.ok || !r2.data) {
-      setError(r2.error ?? { message: "unknown" });
-      return;
+    if (!r.ok || !r.data) {
+      // fall back: turn collected answers into a local reconstruction
+      const qa = session.questions
+        .map((q) => ({ question: q.question, answer: (answers[q.id] ?? "").trim() }))
+        .filter((p) => p.answer.length > 0);
+      const result = reconstructPromptLocal({
+        raw, intent: session.intent as never, qa, targetModel: model, locale
+      });
+      setFinalPrompt(result.final_prompt);
+      setRationale(result.rationale);
+      setInfo(locale === "ar" ? "أُكمل الموجّه محليًا بعد تعذّر الخادم." : "Completed locally after server was unreachable.");
+    } else {
+      setFinalPrompt(r.data.version.final_prompt);
+      setRationale(r.data.version.rationale);
     }
-    setFinalPrompt(r2.data.version.final_prompt);
-    setRationale(r2.data.version.rationale);
+    setLoading(false);
   }
 
   function reset() {
-    setSession(null); setAnswers({}); setFinalPrompt(null); setRationale(null); setError(null);
+    setSession(null); setAnswers({}); setFinalPrompt(null); setRationale(null); setError(null); setInfo(null);
   }
 
   async function copyFinal() {
@@ -122,12 +194,27 @@ export default function Workspace() {
     setTimeout(() => setCopied(false), 1200);
   }
 
-  const beforeStats = stats(raw);
-  const afterStats = finalPrompt ? stats(finalPrompt) : null;
+  const beforeStats = useMemo(() => stats(raw), [raw]);
+  const afterStats = useMemo(() => (finalPrompt ? stats(finalPrompt) : null), [finalPrompt]);
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-10 space-y-6">
-      <div className="card shadow-sm">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-6">
+      <div className="card shadow-sm relative overflow-hidden">
+        {/* decorative corner spark */}
+        <svg
+          aria-hidden="true"
+          className="absolute -top-6 -right-6 w-28 h-28 opacity-20 pointer-events-none rtl:right-auto rtl:-left-6"
+          viewBox="0 0 100 100" fill="none"
+        >
+          <defs>
+            <linearGradient id="sp" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0%" stopColor="#6366f1"/>
+              <stop offset="100%" stopColor="#8b5cf6"/>
+            </linearGradient>
+          </defs>
+          <path d="M50 5 L58 42 L95 50 L58 58 L50 95 L42 58 L5 50 L42 42 Z" fill="url(#sp)"/>
+        </svg>
+
         <div className="flex items-baseline justify-between">
           <label className="text-sm font-medium">{t("ws.label.raw")}</label>
           <span className="text-xs text-slate-500">
@@ -187,6 +274,12 @@ export default function Workspace() {
           </button>
         </div>
 
+        {info && (
+          <div className="mt-3 rounded-md border border-sky-200 bg-sky-50 text-sky-800 p-3 text-sm flex items-start gap-2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 flex-shrink-0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            <span>{info}</span>
+          </div>
+        )}
         {error && (
           <div className="mt-3 rounded-md border border-rose-200 bg-rose-50 text-rose-800 p-3 text-sm">
             <div className="font-medium">{error.message}</div>
@@ -197,17 +290,19 @@ export default function Workspace() {
 
       {session && session.questions.length > 0 && !finalPrompt && (
         <div className="card shadow-sm">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
               <div className="text-sm text-slate-500">{t("ws.detected_intent")}</div>
-              <div className="font-medium">
-                {session.intent ?? "—"}{" "}
+              <div className="font-medium flex items-center gap-2">
+                <IntentBadge intent={session.intent} />
                 <span className="text-xs text-slate-500">
-                  {t("ws.confidence", { percent: Math.round((session.intent_confidence ?? 0) * 100) })}
+                  {t("ws.confidence", { percent: Math.round(session.intent_confidence * 100) })}
                 </span>
               </div>
             </div>
-            <div className="text-xs text-slate-500">{t("ws.status", { status: session.status })}</div>
+            {session.source === "local" && (
+              <span className="text-[10px] uppercase tracking-wide bg-slate-100 text-slate-600 px-2 py-0.5 rounded">local</span>
+            )}
           </div>
 
           <div className="mt-4 space-y-4">
@@ -237,7 +332,9 @@ export default function Workspace() {
         <>
           <div className="card shadow-sm">
             <div className="flex items-center justify-between">
-              <div className="font-medium">{t("ws.final_title")}</div>
+              <div className="font-medium flex items-center gap-2">
+                <SparkIcon /> {t("ws.final_title")}
+              </div>
               <button onClick={copyFinal} className="btn-ghost border border-slate-300">
                 {copied ? t("ws.copied") : t("ws.btn.copy")}
               </button>
@@ -286,8 +383,36 @@ export default function Workspace() {
 
 function stats(s: string) {
   const trimmed = s.trim();
-  return {
-    chars: trimmed.length,
-    words: trimmed ? trimmed.split(/\s+/).length : 0
+  return { chars: trimmed.length, words: trimmed ? trimmed.split(/\s+/).length : 0 };
+}
+
+function IntentBadge({ intent }: { intent: string }) {
+  const tone: Record<string, string> = {
+    coding: "bg-violet-50 text-violet-700",
+    writing: "bg-sky-50 text-sky-700",
+    research: "bg-amber-50 text-amber-700",
+    analysis: "bg-emerald-50 text-emerald-700",
+    planning: "bg-rose-50 text-rose-700",
+    creative: "bg-pink-50 text-pink-700",
+    design: "bg-fuchsia-50 text-fuchsia-700",
+    conversation: "bg-cyan-50 text-cyan-700",
+    other: "bg-slate-100 text-slate-600"
   };
+  return (
+    <span className={`text-xs px-2 py-0.5 rounded ${tone[intent] ?? tone.other}`}>{intent}</span>
+  );
+}
+
+function SparkIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 2 L13.5 9 L21 12 L13.5 15 L12 22 L10.5 15 L3 12 L10.5 9 Z" fill="url(#sg)"/>
+      <defs>
+        <linearGradient id="sg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#6366f1"/>
+          <stop offset="100%" stopColor="#8b5cf6"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  );
 }
