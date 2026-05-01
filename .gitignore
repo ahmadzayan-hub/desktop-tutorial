@@ -1,0 +1,21 @@
+node_modules/
+.next/
+out/
+dist/
+build/
+.DS_Store
+
+# env
+.env
+.env*.local
+
+# logs
+*.log
+npm-debug.log*
+
+# editor
+.vscode/
+.idea/
+
+# extension build
+extension/dist/

@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "Prompt Orchestrator",
+  "version": "0.1.0",
+  "description": "Enhance any AI prompt with intent detection, clarification, and model-specific formatting.",
+  "permissions": ["storage", "activeTab", "scripting"],
+  "host_permissions": [
+    "https://chat.openai.com/*",
+    "https://chatgpt.com/*",
+    "https://claude.ai/*",
+    "https://copilot.microsoft.com/*",
+    "https://gemini.google.com/*",
+    "http://localhost:3000/*",
+    "https://*/*"
+  ],
+  "background": { "service_worker": "background.js", "type": "module" },
+  "action": {
+    "default_title": "Prompt Orchestrator",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chat.openai.com/*",
+        "https://chatgpt.com/*",
+        "https://claude.ai/*",
+        "https://copilot.microsoft.com/*",
+        "https://gemini.google.com/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": { "128": "icon.png" }
+}
