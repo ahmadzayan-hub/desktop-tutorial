@@ -3,6 +3,7 @@
 import { useT } from "@/lib/i18n/I18nProvider";
 import HeroIllustration from "@/components/HeroIllustration";
 import { PenIcon, ChatIcon, SparkleIcon } from "@/components/StepIcons";
+import type { TargetModel } from "@/lib/types";
 
 export default function HomePage() {
   const t = useT();
@@ -18,9 +19,7 @@ export default function HomePage() {
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Copy column */}
           <div className="text-center lg:text-start">
-            <span className="inline-block text-xs font-semibold tracking-wide uppercase rounded-full bg-brand-50 text-brand-700 px-3 py-1">
-              {t("home.pill")}
-            </span>
+            <UaeBadge />
             <h1 className="mt-5 text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-tight bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 bg-clip-text text-transparent">
               {t("home.title")}
             </h1>
@@ -31,6 +30,9 @@ export default function HomePage() {
               <a href="/workspace" className="btn-primary">{t("home.cta.workspace")}</a>
               <a href="/templates" className="btn-ghost border border-slate-300">{t("home.cta.templates")}</a>
             </div>
+            <p className="mt-5 text-xs text-slate-500 max-w-md mx-auto lg:mx-0">
+              {t("home.origin_long")}
+            </p>
           </div>
 
           {/* Hero illustration column */}
@@ -40,7 +42,8 @@ export default function HomePage() {
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pb-12 sm:pb-20">
+      {/* How-it-works steps */}
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pb-10 sm:pb-14">
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           <StepCard
             tone="brand"
@@ -61,6 +64,77 @@ export default function HomePage() {
             body={t("home.step3.body")}
           />
         </div>
+      </div>
+
+      {/* Concrete examples — landing pads into the workspace */}
+      <ExamplesSection />
+    </div>
+  );
+}
+
+function UaeBadge() {
+  const t = useT();
+  return (
+    <span
+      className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold tracking-wide bg-gradient-to-r from-emerald-50 via-white to-rose-50 border border-slate-200 shadow-sm"
+      role="note"
+      aria-label="Made in the UAE, free for the world"
+    >
+      <span aria-hidden="true" className="text-base leading-none">🇦🇪</span>
+      <span className="text-slate-700">{t("home.pill")}</span>
+    </span>
+  );
+}
+
+function ExamplesSection() {
+  const t = useT();
+  const examples: Array<{
+    titleKey: "home.examples.coding.title" | "home.examples.writing.title" | "home.examples.analysis.title";
+    bodyKey: "home.examples.coding.body" | "home.examples.writing.body" | "home.examples.analysis.body";
+    model: TargetModel;
+    tone: "violet" | "sky" | "emerald";
+  }> = [
+    { titleKey: "home.examples.coding.title",   bodyKey: "home.examples.coding.body",   model: "chatgpt", tone: "violet" },
+    { titleKey: "home.examples.writing.title",  bodyKey: "home.examples.writing.body",  model: "chatgpt", tone: "sky" },
+    { titleKey: "home.examples.analysis.title", bodyKey: "home.examples.analysis.body", model: "claude",  tone: "emerald" }
+  ];
+
+  function tryExample(textKey: typeof examples[number]["bodyKey"], model: TargetModel) {
+    const text = t(textKey);
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("po_starter", JSON.stringify({ text, model }));
+    }
+    window.location.href = "/workspace";
+  }
+
+  const toneClass: Record<string, string> = {
+    violet:  "from-violet-50 to-violet-100/60 border-violet-200",
+    sky:     "from-sky-50 to-sky-100/60 border-sky-200",
+    emerald: "from-emerald-50 to-emerald-100/60 border-emerald-200"
+  };
+
+  return (
+    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pb-12 sm:pb-20">
+      <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide">
+        {t("home.examples.title")}
+      </h2>
+      <div className="mt-3 grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        {examples.map((e) => (
+          <button
+            key={e.titleKey}
+            onClick={() => tryExample(e.bodyKey, e.model)}
+            className={
+              "text-start rounded-xl border bg-gradient-to-br p-4 hover:shadow-md transition focus:outline-none focus:ring-2 focus:ring-brand-500 " +
+              toneClass[e.tone]
+            }
+          >
+            <div className="text-sm font-medium text-slate-800">{t(e.titleKey)}</div>
+            <p className="mt-1 text-sm text-slate-600 line-clamp-2">{t(e.bodyKey)}</p>
+            <span className="mt-3 inline-block text-xs font-semibold text-brand-700">
+              {t("home.examples.try")} →
+            </span>
+          </button>
+        ))}
       </div>
     </div>
   );

@@ -4,8 +4,8 @@ export const RTL_LOCALES: Locale[] = ["ar"];
 
 export const dict = {
   en: {
-    "app.name": "Prompt Orchestrator",
-    "app.tagline": "Your AI prompt writing assistant.",
+    "app.name": "Prompt ZAI@n",
+    "app.tagline": "Your AI prompt writing assistant — free from the UAE 🇦🇪 to the world.",
     "nav.workspace": "Workspace",
     "nav.templates": "Templates",
     "nav.history": "History",
@@ -13,7 +13,9 @@ export const dict = {
     "nav.signout": "Sign out",
     "lang.toggle": "العربية",
 
-    "home.pill": "100% free stack",
+    "home.pill": "Free from UAE 🇦🇪 to the world",
+    "home.origin_short": "🇦🇪 Made in the UAE · free for everyone",
+    "home.origin_long": "Built in the United Arab Emirates 🇦🇪 — released free of charge to anyone in the world. No paywall, no sign-up required.",
     "home.title": "Turn rough ideas into perfectly engineered prompts.",
     "home.subtitle":
       "We detect intent, ask the right clarification questions, and rebuild your prompt for ChatGPT, Claude, Copilot, or Gemini.",
@@ -25,6 +27,15 @@ export const dict = {
     "home.step2.body": "We surface only the gaps that matter.",
     "home.step3.title": "Copy a polished prompt",
     "home.step3.body": "Formatted for your target AI model.",
+
+    "home.examples.title": "What people are polishing today",
+    "home.examples.try": "Try it",
+    "home.examples.coding.title": "Refactor a slow component",
+    "home.examples.coding.body": "Refactor my React table to handle 50k rows without jank.",
+    "home.examples.writing.title": "Marketing tweet",
+    "home.examples.writing.body": "Write a tweet that pitches my indie SaaS to developers.",
+    "home.examples.analysis.title": "Summarise a topic",
+    "home.examples.analysis.body": "Explain vector databases for a non-technical CEO in 5 bullets.",
 
     "ws.label.raw": "Raw prompt",
     "ws.placeholder.raw": "Type, paste, or speak. e.g. Help me refactor my React data table to be faster…",
@@ -81,7 +92,7 @@ export const dict = {
     "login.btn.send": "Send magic link",
     "login.sent": "Check your inbox.",
 
-    "footer.note": "100% free stack: Next.js + Supabase + Ollama + Vercel.",
+    "footer.note": "Free from UAE 🇦🇪 to the world. Built on Next.js + Supabase + Ollama.",
     "footer.contact_title": "Contact & feedback",
     "footer.contact_note": "We read every message during the public trial.",
 
@@ -93,6 +104,25 @@ export const dict = {
     "feedback.placeholder": "What worked, what didn't? (optional)",
     "feedback.send": "Send",
     "feedback.thanks": "Thanks — your feedback trains the platform.",
+    "feedback.reason.title": "What went wrong?",
+    "feedback.reason.too_long": "Too long",
+    "feedback.reason.too_short": "Too short",
+    "feedback.reason.off_topic": "Missed the point",
+    "feedback.reason.bad_format": "Bad format",
+    "feedback.reason.wrong_tone": "Wrong tone",
+    "feedback.reason.wrong_lang": "Wrong language",
+
+    "quality.label": "Quality",
+    "quality.tier.low": "Needs work",
+    "quality.tier.mid": "Solid",
+    "quality.tier.high": "Excellent",
+    "quality.dim.clarity": "Clarity",
+    "quality.dim.specificity": "Specificity",
+    "quality.dim.structure": "Structure",
+    "quality.dim.audience": "Audience",
+    "quality.dim.format": "Format",
+    "quality.score_aria": "Quality score: {score} out of 100",
+    "quality.delta": "+{delta} vs your raw input",
 
     "ws.recent": "Your recent prompts",
     "ws.recent.empty": "Your last few prompts will appear here.",
@@ -122,8 +152,8 @@ export const dict = {
   },
 
   ar: {
-    "app.name": "مُنسِّق الموجِّهات",
-    "app.tagline": "مساعدك الذكي لصياغة موجِّهات الذكاء الاصطناعي.",
+    "app.name": "موجة زيان",
+    "app.tagline": "مساعدك الذكي لصياغة موجِّهات الذكاء الاصطناعي — مجاني من الإمارات 🇦🇪 إلى العالم.",
     "nav.workspace": "مساحة العمل",
     "nav.templates": "القوالب",
     "nav.history": "السِّجل",
@@ -131,7 +161,9 @@ export const dict = {
     "nav.signout": "تسجيل الخروج",
     "lang.toggle": "English",
 
-    "home.pill": "مجاني بالكامل",
+    "home.pill": "من الإمارات 🇦🇪 إلى العالم — مجاناً",
+    "home.origin_short": "🇦🇪 صُنع في الإمارات · مجاني للجميع",
+    "home.origin_long": "صُنع في دولة الإمارات العربية المتحدة 🇦🇪 — مُتاح مجاناً لأي شخص في العالم. بلا اشتراك ولا تسجيل دخول.",
     "home.title": "حوِّل فكرتك العابرة إلى موجِّه احترافي مُتقَن.",
     "home.subtitle":
       "نحدّد نيّتك، ونطرح الأسئلة الصحيحة لتوضيح طلبك، ثم نُعيد صياغة الموجِّه ليناسب ChatGPT أو Claude أو Copilot أو Gemini.",
@@ -143,6 +175,15 @@ export const dict = {
     "home.step2.body": "نظهر لك فقط النقاط الناقصة الجوهرية.",
     "home.step3.title": "انسخ موجِّهًا متقَنًا",
     "home.step3.body": "مُعَدًّا خصّيصًا لنموذج الذكاء الاصطناعي الذي تختاره.",
+
+    "home.examples.title": "أمثلة شائعة",
+    "home.examples.try": "جرّبها",
+    "home.examples.coding.title": "إعادة هيكلة مكوّن بطيء",
+    "home.examples.coding.body": "أعد هيكلة جدول React ليتعامل مع 50 ألف صف بسلاسة.",
+    "home.examples.writing.title": "تغريدة تسويقية",
+    "home.examples.writing.body": "اكتب تغريدة تروّج لـ SaaS مستقل موجَّهًا للمطوّرين.",
+    "home.examples.analysis.title": "تلخيص موضوع",
+    "home.examples.analysis.body": "اشرح قواعد بيانات المتّجهات لمدير غير تقني في 5 نقاط.",
 
     "ws.label.raw": "الموجِّه الخام",
     "ws.placeholder.raw": "اكتب أو الصق أو تحدّث. مثال: ساعدني في تسريع مكوّن جدول البيانات في React…",
@@ -199,7 +240,7 @@ export const dict = {
     "login.btn.send": "أرسل الرابط",
     "login.sent": "تحقّق من بريدك الإلكتروني.",
 
-    "footer.note": "مكدّس مجاني بالكامل: Next.js + Supabase + Ollama + Vercel.",
+    "footer.note": "من الإمارات 🇦🇪 إلى العالم — مجاناً. مبنيّ على Next.js + Supabase + Ollama.",
     "footer.contact_title": "تواصل وملاحظات",
     "footer.contact_note": "نقرأ كل رسالة خلال التجربة العامة.",
 
@@ -211,6 +252,25 @@ export const dict = {
     "feedback.placeholder": "ما الذي نجح وما الذي لم ينجح؟ (اختياري)",
     "feedback.send": "إرسال",
     "feedback.thanks": "شكرًا — ملاحظاتك تُحسِّن المنصة.",
+    "feedback.reason.title": "ما الذي لم يعجبك؟",
+    "feedback.reason.too_long": "طويل جدًا",
+    "feedback.reason.too_short": "قصير جدًا",
+    "feedback.reason.off_topic": "خرج عن الموضوع",
+    "feedback.reason.bad_format": "تنسيق سيّئ",
+    "feedback.reason.wrong_tone": "نبرة غير مناسبة",
+    "feedback.reason.wrong_lang": "اللغة خاطئة",
+
+    "quality.label": "الجودة",
+    "quality.tier.low": "يحتاج تحسينًا",
+    "quality.tier.mid": "جيّد",
+    "quality.tier.high": "ممتاز",
+    "quality.dim.clarity": "الوضوح",
+    "quality.dim.specificity": "التحديد",
+    "quality.dim.structure": "البنية",
+    "quality.dim.audience": "الجمهور",
+    "quality.dim.format": "التنسيق",
+    "quality.score_aria": "درجة الجودة: {score} من 100",
+    "quality.delta": "+{delta} مقارنة بالنص الخام",
 
     "ws.recent": "أحدث الموجِّهات",
     "ws.recent.empty": "ستظهر هنا آخر موجِّهاتك.",

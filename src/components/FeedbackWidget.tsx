@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useI18n, useT } from "@/lib/i18n/I18nProvider";
+import type { DictKey } from "@/lib/i18n/dictionaries";
 
 interface Props {
   sessionId: string | null;
@@ -11,11 +12,25 @@ interface Props {
   finalLength: number;
 }
 
+const REASONS: Array<{ id: string; key: DictKey }> = [
+  { id: "too_long",    key: "feedback.reason.too_long" },
+  { id: "too_short",   key: "feedback.reason.too_short" },
+  { id: "off_topic",   key: "feedback.reason.off_topic" },
+  { id: "bad_format",  key: "feedback.reason.bad_format" },
+  { id: "wrong_tone",  key: "feedback.reason.wrong_tone" },
+  { id: "wrong_lang",  key: "feedback.reason.wrong_lang" }
+];
+
 /**
- * Thumbs up / down + optional comment widget shown beneath a generated prompt.
+ * Two-step feedback widget.
  *
- * Sends to /api/feedback. Failure is swallowed silently — the user always sees
- * a "Thanks!" so the feedback loop never feels broken.
+ *   Step 1 — thumbs up/down (immediate signal)
+ *   Step 2 — only on thumbs-down: tag chips ("too long", "off topic", …)
+ *            plus an optional free-text note. The chip selection makes the
+ *            learning signal sharper than a binary rating alone.
+ *
+ * All failures are silent — the user always sees a "Thanks!" so the loop
+ * never feels broken.
  */
 export default function FeedbackWidget({
   sessionId,
@@ -26,17 +41,21 @@ export default function FeedbackWidget({
 }: Props) {
   const t = useT();
   const { locale } = useI18n();
-  const [rating, setRating] = useState<-1 | 0 | 1 | null>(null);
+  const [rating, setRating] = useState<-1 | 1 | null>(null);
+  const [tags, setTags] = useState<Set<string>>(new Set());
   const [comment, setComment] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [showComment, setShowComment] = useState(false);
 
-  async function send(value: -1 | 0 | 1, withComment = false) {
+  async function send(value: -1 | 1, finalSubmit = false) {
     if (busy) return;
     setBusy(true);
     setRating(value);
     try {
+      const noteParts: string[] = [];
+      if (tags.size > 0) noteParts.push("tags: " + Array.from(tags).join(", "));
+      if (comment.trim()) noteParts.push(comment.trim());
+      const noteJoined = noteParts.join(" | ").slice(0, 2000) || null;
       await fetch("/api/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -48,19 +67,28 @@ export default function FeedbackWidget({
           locale,
           raw_length: rawLength,
           final_length: finalLength,
-          comment: withComment && comment.trim() ? comment.trim().slice(0, 2000) : null
+          comment: noteJoined
         })
       });
-      setSubmitted(true);
+      // For thumbs-up, dismiss immediately. For thumbs-down, only dismiss
+      // once the user finishes the second step.
+      if (value === 1 || finalSubmit) setSubmitted(true);
     } catch {
-      // Silent — the feedback signal isn't worth a user-facing error.
-      setSubmitted(true);
+      if (value === 1 || finalSubmit) setSubmitted(true);
     } finally {
       setBusy(false);
     }
   }
 
-  if (submitted && !showComment) {
+  function toggleTag(id: string) {
+    setTags((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+
+  if (submitted) {
     return (
       <div className="mt-3 text-xs text-emerald-700 flex items-center gap-1.5" aria-live="polite">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -77,7 +105,7 @@ export default function FeedbackWidget({
         <span className="text-xs text-slate-500">{t("feedback.prompt")}</span>
         <button
           type="button"
-          onClick={() => send(1)}
+          onClick={() => void send(1)}
           disabled={busy}
           aria-label={t("feedback.up")}
           aria-pressed={rating === 1}
@@ -95,7 +123,7 @@ export default function FeedbackWidget({
         </button>
         <button
           type="button"
-          onClick={() => send(-1)}
+          onClick={() => setRating(-1)}
           disabled={busy}
           aria-label={t("feedback.down")}
           aria-pressed={rating === -1}
@@ -111,31 +139,47 @@ export default function FeedbackWidget({
             <path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H17l-3.05 12.5A4 4 0 0 1 10 18v3a3 3 0 0 1-1-2.88Z" />
           </svg>
         </button>
-        <button
-          type="button"
-          onClick={() => setShowComment((v) => !v)}
-          className="text-xs text-slate-600 hover:text-slate-900 underline-offset-2 hover:underline"
-        >
-          {showComment ? t("feedback.hide") : t("feedback.add_note")}
-        </button>
       </div>
 
-      {showComment && (
-        <div className="mt-2 flex flex-col sm:flex-row gap-2">
+      {/* Step 2 — only on thumbs-down */}
+      {rating === -1 && (
+        <div className="mt-3 rounded-lg bg-rose-50/60 border border-rose-100 p-3">
+          <div className="text-xs font-medium text-rose-800">{t("feedback.reason.title")}</div>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {REASONS.map((r) => {
+              const active = tags.has(r.id);
+              return (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => toggleTag(r.id)}
+                  aria-pressed={active}
+                  className={
+                    "text-xs px-2.5 py-1 rounded-full border transition " +
+                    (active
+                      ? "bg-rose-600 text-white border-rose-600"
+                      : "bg-white text-slate-700 border-slate-300 hover:border-rose-300")
+                  }
+                >
+                  {t(r.key)}
+                </button>
+              );
+            })}
+          </div>
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder={t("feedback.placeholder")}
             rows={2}
             maxLength={2000}
-            className="w-full text-sm"
+            className="w-full mt-2 text-sm"
           />
-          <div className="flex gap-2 sm:flex-col">
+          <div className="mt-2 flex justify-end">
             <button
               type="button"
-              onClick={() => send(rating ?? 0, true)}
-              disabled={busy || (rating === null && !comment.trim())}
-              className="btn-primary text-xs sm:w-auto"
+              onClick={() => void send(-1, true)}
+              disabled={busy}
+              className="btn-primary text-xs"
             >
               {t("feedback.send")}
             </button>

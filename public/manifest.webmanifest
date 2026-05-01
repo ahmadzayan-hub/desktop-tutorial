@@ -1,7 +1,7 @@
 {
-  "name": "Prompt Orchestrator",
-  "short_name": "Prompt Orch",
-  "description": "AI prompt writing assistant — multilingual, mobile-first.",
+  "name": "Prompt ZAI@n · موجة زيان",
+  "short_name": "ZAI@n",
+  "description": "Free AI prompt writing assistant — from the UAE 🇦🇪 to the world. EN/AR, voice + file uploads.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

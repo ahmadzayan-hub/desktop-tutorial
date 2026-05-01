@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.8.0 — 2026-05-01 — Brand identity + sharper learning loop
+
+The "Prompt ZAI@n / موجة زيان" release.
+
+- 🪪 **New brand**: the platform is now **Prompt ZAI@n** in English and **موجة زيان** in Arabic. Wordmark component shows the active form prominently with the other form as a small subtitle so both audiences recognise it. Logo, manifest, page titles, OG/Twitter metadata, JSON-LD schema, app-name keys all updated. PWA install name = "ZAI@n".
+- 🇦🇪 **"Made in UAE — free for the world"** is now visible on every page: a soft gradient pill above the hero, a one-paragraph note under the CTAs, and a refreshed footer line. The trial banner reinforces it.
+- 📊 **Prompt-quality score (0-100)** with a 5-dimension breakdown — clarity, specificity, structure, audience, format. Renders as a circular gauge + horizontal bars on every final-prompt card, with a "+Δ vs your raw input" delta so users see the value the orchestrator added at a glance. Pure-function scorer in `lib/quality-score.ts`, fully unit-tested (6 new tests).
+- 🎯 **Two-step feedback**: when a user thumbs-down, six reason chips appear (too long / too short / off-topic / bad format / wrong tone / wrong language) plus an optional note. Tags are stored alongside the rating, giving the learning loop a much sharper signal than a binary rating alone.
+- 🏠 **Home empty-state polish**: three concrete example cards under the hero ("Refactor a slow component", "Marketing tweet", "Summarise a topic"). Tapping any card pre-loads the workspace with that prompt + the right target model.
+- 🔍 **SEO**: new JSON-LD WebApplication schema published in the page head — `countryOfOrigin: UAE`, `isAccessibleForFree: true`, multilingual, free offer.
+- ✅ **Quality**: 24 tests (was 18), typecheck, production build all pass.
+
 ## v0.7.0 — 2026-05-01 — Phase-1 public trial
 
 The "real-time learning loop" release.

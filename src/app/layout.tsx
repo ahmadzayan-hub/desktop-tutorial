@@ -7,23 +7,26 @@ import TrialBanner from "@/components/TrialBanner";
 import { CONTACT_EMAIL } from "@/lib/contact";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-const TITLE = "Prompt Orchestrator — AI Prompt Writing Assistant";
+const TITLE = "Prompt ZAI@n · موجة زيان — AI Prompt Writing Assistant";
 const DESCRIPTION =
-  "Turn rough ideas into perfectly engineered prompts for ChatGPT, Claude, Copilot, and Gemini. Free, multilingual (EN/AR), works offline.";
+  "Free from the UAE 🇦🇪 to the world. Turn rough ideas into perfectly engineered prompts for ChatGPT, Claude, Copilot, and Gemini. Multilingual (EN/AR), voice + file uploads, works offline.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
-  title: { default: TITLE, template: "%s · Prompt Orchestrator" },
+  title: { default: TITLE, template: "%s · Prompt ZAI@n" },
   description: DESCRIPTION,
-  applicationName: "Prompt Orchestrator",
+  applicationName: "Prompt ZAI@n",
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, title: "Prompt Orchestrator", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "Prompt ZAI@n", statusBarStyle: "default" },
   icons: {
     icon: "/icon.svg",
     apple: "/icon.svg"
   },
   authors: [{ name: "Ahmad Zaian", url: `mailto:${CONTACT_EMAIL}` }],
   keywords: [
+    "Prompt ZAI@n",
+    "موجة زيان",
+    "Prompt Zaian",
     "prompt engineering",
     "AI",
     "ChatGPT",
@@ -33,15 +36,18 @@ export const metadata: Metadata = {
     "Arabic AI",
     "RTL",
     "voice prompt",
-    "prompt orchestrator"
+    "UAE",
+    "Emirates",
+    "free AI tool"
   ],
   openGraph: {
     type: "website",
     title: TITLE,
     description: DESCRIPTION,
     url: APP_URL,
-    siteName: "Prompt Orchestrator",
-    images: [{ url: "/icon.svg", width: 512, height: 512, alt: "Prompt Orchestrator" }]
+    siteName: "Prompt ZAI@n",
+    locale: "en_US",
+    images: [{ url: "/icon.svg", width: 512, height: 512, alt: "Prompt ZAI@n / موجة زيان" }]
   },
   twitter: {
     card: "summary_large_image",
@@ -69,6 +75,27 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
+        {/* JSON-LD: WebApplication schema for richer search results */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              name: "Prompt ZAI@n",
+              alternateName: ["موجة زيان", "Prompt Zaian"],
+              description: DESCRIPTION,
+              url: APP_URL,
+              applicationCategory: "ProductivityApplication",
+              operatingSystem: "Any",
+              isAccessibleForFree: true,
+              countryOfOrigin: { "@type": "Country", name: "United Arab Emirates" },
+              offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+              author: { "@type": "Person", name: "Ahmad Zaian", email: CONTACT_EMAIL },
+              inLanguage: ["en", "ar"]
+            })
+          }}
+        />
         <I18nProvider>
           <div className="min-h-screen flex flex-col">
             <TrialBanner />

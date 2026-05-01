@@ -14,6 +14,7 @@ import type { TargetModel } from "@/lib/types";
 import VoiceInput from "@/components/VoiceInput";
 import FileUpload, { type AttachedFile, formatAttachedAsContext } from "@/components/FileUpload";
 import FeedbackWidget from "@/components/FeedbackWidget";
+import QualityBadge from "@/components/QualityBadge";
 import {
   loadHistory,
   saveHistoryEntry,
@@ -477,6 +478,8 @@ export default function Workspace() {
                       </button>
                     </div>
                   </div>
+                  <QualityBadge finalText={finalPrompt} rawText={raw} className="mt-3" />
+
                   <pre className="mt-3 whitespace-pre-wrap rounded bg-slate-50 p-3 text-sm border border-slate-200 max-h-[60vh] overflow-auto">
 {finalPrompt}
                   </pre>
