@@ -1,5 +1,44 @@
 # Changelog
 
+## v0.12.0 — 2026-05-01 — Real-time suggestions everywhere
+
+The "Grammarly for AI prompts" release.
+
+- 🤖 **`/api/v1/suggest`** — anonymous, fast, pure-function endpoint that
+  returns 1-3 context-aware suggestion chips for any draft. No LLM
+  round-trip; runs in single-digit ms. Feeds every other suggestion
+  surface in the platform.
+- ✨ **In-app live suggestions** — Grammarly-style chip strip above the
+  workspace textarea. Debounced 250 ms, suggestions are *additions* the
+  user can apply with one tap (never replace their text), and dismissed
+  chips don't return for the same session.
+- 🧩 **Browser extension v0.12** — content script now injects a floating,
+  draggable suggestion bubble on ChatGPT, Claude, Copilot, and Gemini
+  composers. Identical UX to Grammarly's grammar bubble, but for prompt
+  quality. Toggleable from the extension options page (host URL, locale,
+  live-suggestions on/off). The classic ✨ Enhance button stays.
+- 📲 **PWA Web Share Target** — manifest declares `share_target` so once
+  the PWA is installed (Android Chromium / Edge), users get a "Share to
+  ZAI@n" entry in the system share sheet. Inbound text routes to a new
+  `/share` page that pre-loads the workspace.
+- ⚙️ **Settings page** at `/settings` — a Grammarly-inspired hub with
+  rows for Appearance / Voice dialect / Smart submit / Privacy / Share
+  & Install / Demo tutorial / Share feedback / Support / Version /
+  Privacy policy. Each row is a self-contained card.
+- 🎓 **Re-runnable demo tutorial** — Settings → Demo tutorial clears the
+  onboarding flag and reopens the workspace so the 3-step tour replays.
+- 🔌 **Supabase MCP server** — `.mcp.json` shipped at repo root with the
+  project's `mcp.supabase.com` HTTP transport pre-wired, so collaborators
+  on Claude Code automatically get the Supabase MCP after running
+  `claude /mcp` once to authenticate.
+- 📱 **Native mobile architecture doc** — `docs/MOBILE-SUGGESTIONS.md`
+  — full design for the iOS Custom Keyboard Extension and the Android
+  Floating Bubble + IME, all targeting the same `/api/v1/suggest`
+  contract. Privacy commitment included.
+- ✅ **Quality**: 66 tests (was 59), typecheck, production build all pass.
+  Zero failures. New routes generated: `/settings`, `/share`,
+  `/api/v1/suggest`.
+
 ## v0.11.0 — 2026-05-01 — Reverse mode, A/B, library, admin
 
 The "every idea on the roadmap, shipped" release — all ten v0.11 ideas plus

@@ -18,6 +18,7 @@ import QualityBadge from "@/components/QualityBadge";
 import TokenMeter from "@/components/TokenMeter";
 import PromptDiff from "@/components/PromptDiff";
 import InlineLintHints from "@/components/InlineLintHints";
+import LiveSuggestions from "@/components/LiveSuggestions";
 import ModelComparison from "@/components/ModelComparison";
 import VariantComparison from "@/components/VariantComparison";
 import PromptCard from "@/components/PromptCard";
@@ -465,6 +466,10 @@ export default function Workspace() {
           </div>
 
           <InlineLintHints text={raw} />
+          <LiveSuggestions
+            text={raw}
+            onApply={(appended) => setRaw((cur) => (cur || "") + appended)}
+          />
           <p className="mt-2 text-[11px] text-slate-500">{t("ws.shortcut.hint")}</p>
 
           {draftRestored && (

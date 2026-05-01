@@ -25,6 +25,7 @@ export default function Header() {
           <a href="/workspace" className="btn-ghost">{t("nav.workspace")}</a>
           <a href="/templates" className="btn-ghost">{t("nav.templates")}</a>
           <a href="/history" className="btn-ghost">{t("nav.history")}</a>
+          <a href="/settings" className="btn-ghost">{t("nav.settings")}</a>
           <a href="/login" className="btn-ghost">{t("nav.signin")}</a>
           <span className="mx-1 h-5 w-px bg-slate-200 dark:bg-slate-700" aria-hidden="true" />
           <ShareApp />
@@ -70,6 +71,7 @@ export default function Header() {
             <a href="/workspace" className="btn-ghost justify-start">{t("nav.workspace")}</a>
             <a href="/templates" className="btn-ghost justify-start">{t("nav.templates")}</a>
             <a href="/history" className="btn-ghost justify-start">{t("nav.history")}</a>
+            <a href="/settings" className="btn-ghost justify-start">{t("nav.settings")}</a>
             <a href="/login" className="btn-ghost justify-start">{t("nav.signin")}</a>
             <div className="mt-1 pt-2 border-t border-slate-100 dark:border-slate-800">
               <ShareApp />
