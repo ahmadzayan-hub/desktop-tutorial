@@ -82,6 +82,40 @@ export const dict = {
     "login.sent": "Check your inbox.",
 
     "footer.note": "100% free stack: Next.js + Supabase + Ollama + Vercel.",
+    "footer.contact_title": "Contact & feedback",
+    "footer.contact_note": "We read every message during the public trial.",
+
+    "feedback.prompt": "Was this prompt helpful?",
+    "feedback.up": "Thumbs up",
+    "feedback.down": "Thumbs down",
+    "feedback.add_note": "Add a note",
+    "feedback.hide": "Hide note",
+    "feedback.placeholder": "What worked, what didn't? (optional)",
+    "feedback.send": "Send",
+    "feedback.thanks": "Thanks — your feedback trains the platform.",
+
+    "ws.recent": "Your recent prompts",
+    "ws.recent.empty": "Your last few prompts will appear here.",
+    "ws.recent.restore": "Restore",
+    "ws.recent.clear": "Clear",
+    "ws.recent.remove": "Remove",
+    "ws.btn.download": "Download",
+    "ws.btn.regenerate": "Regenerate",
+    "ws.shortcut.hint": "Tip: press Ctrl/⌘+Enter to start with questions.",
+    "ws.privacy.files": "Files stay in your browser. They're sent to the AI model only when you generate a prompt.",
+
+    "trial.banner": "Public trial — your feedback shapes the product. Email us at {email}.",
+    "trial.dismiss": "Got it",
+
+    "intent.coding": "coding",
+    "intent.writing": "writing",
+    "intent.research": "research",
+    "intent.analysis": "analysis",
+    "intent.planning": "planning",
+    "intent.creative": "creative",
+    "intent.design": "design",
+    "intent.conversation": "conversation",
+    "intent.other": "other",
 
     "err.network": "Network error. Please check your connection.",
     "err.unknown": "Something went wrong. Please try again."
@@ -166,6 +200,40 @@ export const dict = {
     "login.sent": "تحقّق من بريدك الإلكتروني.",
 
     "footer.note": "مكدّس مجاني بالكامل: Next.js + Supabase + Ollama + Vercel.",
+    "footer.contact_title": "تواصل وملاحظات",
+    "footer.contact_note": "نقرأ كل رسالة خلال التجربة العامة.",
+
+    "feedback.prompt": "هل كان الموجِّه مفيدًا؟",
+    "feedback.up": "إعجاب",
+    "feedback.down": "عدم إعجاب",
+    "feedback.add_note": "أضف ملاحظة",
+    "feedback.hide": "إخفاء الملاحظة",
+    "feedback.placeholder": "ما الذي نجح وما الذي لم ينجح؟ (اختياري)",
+    "feedback.send": "إرسال",
+    "feedback.thanks": "شكرًا — ملاحظاتك تُحسِّن المنصة.",
+
+    "ws.recent": "أحدث الموجِّهات",
+    "ws.recent.empty": "ستظهر هنا آخر موجِّهاتك.",
+    "ws.recent.restore": "استعادة",
+    "ws.recent.clear": "مسح",
+    "ws.recent.remove": "إزالة",
+    "ws.btn.download": "تنزيل",
+    "ws.btn.regenerate": "إعادة الإنشاء",
+    "ws.shortcut.hint": "تلميح: اضغط Ctrl/⌘+Enter للبدء مع أسئلة.",
+    "ws.privacy.files": "ملفّاتك تبقى في متصفّحك. تُرسَل إلى النموذج فقط عند إنشاء الموجِّه.",
+
+    "trial.banner": "تجربة عامة — ملاحظاتك تصنع المنتج. راسلنا على {email}.",
+    "trial.dismiss": "فهمت",
+
+    "intent.coding": "برمجة",
+    "intent.writing": "كتابة",
+    "intent.research": "بحث",
+    "intent.analysis": "تحليل",
+    "intent.planning": "تخطيط",
+    "intent.creative": "إبداع",
+    "intent.design": "تصميم",
+    "intent.conversation": "محادثة",
+    "intent.other": "أخرى",
 
     "err.network": "خطأ في الشبكة. تحقّق من اتصالك.",
     "err.unknown": "حدث خطأ غير متوقّع. حاول مرّة أخرى."
