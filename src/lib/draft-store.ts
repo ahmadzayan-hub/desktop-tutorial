@@ -14,7 +14,8 @@ const DRAFT_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 export interface Draft {
   raw: string;
-  model: TargetModel;
+  /** Either a legacy TargetModel or a new AI_MODELS id. */
+  model: TargetModel | string;
   ts: number;
 }
 

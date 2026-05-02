@@ -289,6 +289,8 @@ export const dict = {
     "admin.col.note": "Note",
     "ws.btn.download": "Download",
     "ws.btn.regenerate": "Regenerate",
+    "ws.btn.push_further": "Push it further",
+    "ws.btn.push_hint": "Apply the strongest improvement and re-engineer the prompt.",
     "ws.shortcut.hint": "Tip: press Ctrl/⌘+Enter to start with questions.",
     "ws.privacy.files": "Files stay in your browser. They're sent to the AI model only when you generate a prompt.",
 
@@ -601,6 +603,8 @@ export const dict = {
     "admin.col.note": "ملاحظة",
     "ws.btn.download": "تنزيل",
     "ws.btn.regenerate": "إعادة الإنشاء",
+    "ws.btn.push_further": "ادفعه أبعد",
+    "ws.btn.push_hint": "طبّق أقوى تحسين وأعِد هندسة الموجِّه.",
     "ws.shortcut.hint": "تلميح: اضغط Ctrl/⌘+Enter للبدء مع أسئلة.",
     "ws.privacy.files": "ملفّاتك تبقى في متصفّحك، تُرسَل إلى النموذج فقط عند إنشاء الموجِّه.",
 

@@ -11,6 +11,7 @@ import {
   type LocalQuestion
 } from "@/lib/local-engine";
 import type { TargetModel } from "@/lib/types";
+import ModelPicker from "@/components/ModelPicker";
 import VoiceInput from "@/components/VoiceInput";
 import FileUpload, { type AttachedFile, formatAttachedAsContext } from "@/components/FileUpload";
 import FeedbackWidget from "@/components/FeedbackWidget";
@@ -19,6 +20,7 @@ import TokenMeter from "@/components/TokenMeter";
 import PromptDiff from "@/components/PromptDiff";
 import InlineLintHints from "@/components/InlineLintHints";
 import LiveSuggestions from "@/components/LiveSuggestions";
+import { suggestForDraft } from "@/lib/live-suggestions";
 import DomainPicker from "@/components/DomainPicker";
 import ModelComparison from "@/components/ModelComparison";
 import VariantComparison from "@/components/VariantComparison";
@@ -86,7 +88,9 @@ export default function Workspace() {
   const t = useT();
   const { locale } = useI18n();
   const [raw, setRaw] = useState("");
-  const [model, setModel] = useState<TargetModel>("generic");
+  // model holds either a legacy TargetModel ('chatgpt' | 'claude' | …) or
+  // any new model id from the AI_MODELS catalogue ('gpt-5', 'claude-opus-4-7'…).
+  const [model, setModel] = useState<string>("gpt-5");
   const [files, setFiles] = useState<AttachedFile[]>([]);
   const [session, setSession] = useState<UISession | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -217,7 +221,7 @@ export default function Workspace() {
     setLoading(false);
   }
 
-  function rememberHistory(rawText: string, intent: string, target: TargetModel, finalText: string) {
+  function rememberHistory(rawText: string, intent: string, target: TargetModel | string, finalText: string) {
     saveHistoryEntry({ raw: rawText, intent, target_model: target, final_prompt: finalText });
     setHistory(loadHistory());
     // Once a prompt is finalised it has been preserved in history; the
@@ -330,6 +334,29 @@ export default function Workspace() {
     void submitAnswers();
   }
 
+  /**
+   * One-tap quality boost.
+   *
+   * Picks the top-ranked suggestion for the current draft, appends it to
+   * the raw input, and re-generates. Effectively "what would push this
+   * prompt closer to 100% quality?" answered in a single click.
+   */
+  function pushItFurther() {
+    const next = suggestForDraft(raw, { locale }, 1)[0];
+    if (!next) return;
+    const append = locale === "ar" ? next.append_ar : next.append_en;
+    const after = (raw.trim() + append);
+    setRaw(after);
+    // Reset the session and regenerate from the augmented input.
+    setSession(null);
+    setAnswers({});
+    setFinalPrompt(null);
+    setRationale(null);
+    setError(null);
+    setInfo(null);
+    setTimeout(() => { void startSession(true); }, 50);
+  }
+
   // Voice transcript handler with two modes:
   //   - isFinal=true  → commit the chunk and clear the interim buffer.
   //   - isFinal=false → render this chunk live so the user sees their words,
@@ -358,7 +385,7 @@ export default function Workspace() {
 
   function restoreFromHistory(entry: LocalHistoryEntry) {
     setRaw(entry.raw);
-    if (entry.target_model) setModel(entry.target_model as TargetModel);
+    if (entry.target_model) setModel(entry.target_model);
     setSession(null);
     setAnswers({});
     setFinalPrompt(null);
@@ -526,21 +553,7 @@ export default function Workspace() {
             />
           )}
 
-          <div className="mt-4 flex items-center gap-3 flex-wrap">
-            <label htmlFor="po-target" className="text-sm shrink-0">{t("ws.target")}</label>
-            <select
-              id="po-target"
-              value={model}
-              onChange={(e) => setModel(e.target.value as TargetModel)}
-              className="grow sm:grow-0 min-w-[140px]"
-            >
-              <option value="generic">{t("ws.model.generic")}</option>
-              <option value="chatgpt">ChatGPT</option>
-              <option value="claude">Claude</option>
-              <option value="copilot">Copilot</option>
-              <option value="gemini">Gemini</option>
-            </select>
-          </div>
+          <ModelPicker value={model} onChange={setModel} className="mt-4" />
 
           <div className="mt-4 grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
             {session && (
@@ -646,13 +659,21 @@ export default function Workspace() {
                       {session && <IntentBadge intent={session.intent} />}
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      <button onClick={regenerate} disabled={loading} className="btn-ghost border border-slate-300 text-xs">
+                      <button
+                        onClick={pushItFurther}
+                        disabled={loading || raw.trim().length < 8}
+                        title={t("ws.btn.push_hint")}
+                        className="btn-primary text-xs"
+                      >
+                        ✨ {t("ws.btn.push_further")}
+                      </button>
+                      <button onClick={regenerate} disabled={loading} className="btn-ghost border border-slate-300 dark:border-slate-700 text-xs">
                         <RefreshIcon /> {t("ws.btn.regenerate")}
                       </button>
-                      <button onClick={downloadFinal} className="btn-ghost border border-slate-300 text-xs">
+                      <button onClick={downloadFinal} className="btn-ghost border border-slate-300 dark:border-slate-700 text-xs">
                         <DownloadIcon /> {t("ws.btn.download")}
                       </button>
-                      <button onClick={copyFinal} className="btn-ghost border border-slate-300 text-xs">
+                      <button onClick={copyFinal} className="btn-ghost border border-slate-300 dark:border-slate-700 text-xs">
                         {copied ? t("ws.copied") : t("ws.btn.copy")}
                       </button>
                       <PromptCard

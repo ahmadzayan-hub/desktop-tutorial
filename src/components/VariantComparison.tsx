@@ -10,7 +10,7 @@ interface Props {
   raw: string;
   intent: Intent;
   qa: Array<{ question: string; answer: string }>;
-  targetModel: TargetModel;
+  targetModel: TargetModel | string;
   sessionId: string | null;
 }
 

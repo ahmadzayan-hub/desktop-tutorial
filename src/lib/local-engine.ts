@@ -14,6 +14,8 @@
 
 import { ruleBasedGaps } from "@/lib/services/clarification";
 import { postFormatForModel } from "@/lib/services/formatter";
+import { formatPromptFor } from "@/lib/model-formatters";
+import { getModel, type AIModel } from "@/lib/ai-models";
 import type { TargetModel } from "@/lib/types";
 
 export type Intent =
@@ -380,86 +382,58 @@ const ANTI_HALLUCINATION_AR = `# ضوابط الثقة والدقّة
 - **اذكر الأرقام مع مصدرها**. قرّبها بدقّة معقولة ولا تدّعِ دقّة زائفة.
 - **اعترف بالفجوات**. حين تنقص البيانات قل ذلك صراحةً ولا تتجاوزها.`;
 
+/**
+ * Map a free-form model id to its actual catalogue entry.
+ *
+ * Accepts either a new model id (`gpt-5`, `claude-opus-4-7`, …) or one of
+ * the legacy `TargetModel` strings (`chatgpt`, `claude`, `copilot`,
+ * `gemini`, `generic`) which we redirect to the current family flagship.
+ */
+function resolveModel(modelId: string): AIModel {
+  const direct = getModel(modelId);
+  if (direct) return direct;
+  const legacy: Record<string, string> = {
+    chatgpt: "gpt-5",
+    claude:  "claude-opus-4-7",
+    gemini:  "gemini-3-pro",
+    copilot: "github-copilot",
+    generic: "generic"
+  };
+  return getModel(legacy[modelId] ?? "generic") ?? (getModel("generic") as AIModel);
+}
+
 export function reconstructPromptLocal(opts: {
   raw: string;
   intent: Intent;
   qa: Array<{ question: string; answer: string }>;
-  targetModel: TargetModel;
+  /** Either a TargetModel (legacy) or any AI_MODELS id. */
+  targetModel: TargetModel | string;
   locale: "en" | "ar";
 }): { final_prompt: string; rationale: string } {
   const { raw, intent, qa, targetModel, locale } = opts;
-  const L = SECTION_LABELS[locale];
-  const role = ROLE_BY_INTENT[intent][locale];
-  const extras = domainSections(intent, locale);
+  const model = resolveModel(targetModel);
+  const domainBlock = domainSections(intent, locale);
 
-  const qaBlock = qa.length
-    ? qa.map((p) => `- ${p.question}\n  > ${p.answer}`).join("\n")
-    : locale === "ar"
-      ? "(لا توجد توضيحات إضافية)"
-      : "(no extra clarifications)";
+  // Each model family has its own optimal scaffold. The dispatcher in
+  // model-formatters.ts owns the conversion; here we just pass the bundle
+  // and the chosen prompt style.
+  const body = formatPromptFor(model.promptStyle, {
+    raw, intent, qa, locale, domainBlock
+  });
 
-  let body: string;
-  switch (targetModel) {
-    case "claude":
-      body = `<role>${role}</role>
+  // Light post-format pass (whitespace, code-fence cleanup) for legacy
+  // TargetModel values; new model ids skip it because the formatters
+  // already produce clean output.
+  const isLegacy = ["chatgpt", "claude", "copilot", "gemini", "generic"]
+    .includes(targetModel as string);
+  const formatted = isLegacy
+    ? postFormatForModel(body, targetModel as TargetModel)
+    : body;
 
-<context>
-${L.original}: ${raw}
-
-${L.context}:
-${qaBlock}
-</context>
-
-<task>
-${raw}
-</task>
-
-<format>
-${locale === "ar" ? "أجب بنبرة واضحة، استخدم عناوين عند الحاجة، وأبق التنسيق متّسقًا." : "Answer with a clear voice, use headings when useful, keep formatting consistent."}
-</format>${extras}`;
-      break;
-
-    case "copilot":
-      body = `// ${L.task}: ${raw}
-// ${L.context}:
-${qa.map((p) => `// - ${p.question} -> ${p.answer}`).join("\n")}
-// ${L.format}: idiomatic code, comments only where helpful, include tests when relevant.${extras}`;
-      break;
-
-    case "chatgpt":
-    case "gemini":
-    case "generic":
-    default: {
-      const num = locale === "ar" ? ["١.", "٢.", "٣.", "٤.", "٥."] : ["1.", "2.", "3.", "4.", "5."];
-      body = `${role}
-
-# ${L.context}
-${L.original}: ${raw}
-
-# ${L.task}
-${raw}
-
-# ${L.constraints}
-${qaBlock}
-
-# ${L.format}
-${num[0]} ${locale === "ar" ? "ابدأ بإجابة مباشرة." : "Start with a direct answer."}
-${num[1]} ${locale === "ar" ? "أضف الدعم أو الأمثلة بعد ذلك." : "Provide supporting detail or examples next."}
-${num[2]} ${locale === "ar" ? "اختم بخطوة تالية أو خلاصة قابلة للتنفيذ." : "Close with a next step or actionable summary."}
-
-# ${L.success}
-- ${locale === "ar" ? "ملائم للجمهور والصيغة المطلوبَين" : "Matches the audience and format above"}
-- ${locale === "ar" ? "محدّد لا عام" : "Specific, not generic"}
-- ${locale === "ar" ? "قابل للنسخ والاستخدام مباشرة" : "Ready to copy and use as-is"}${extras}`;
-      break;
-    }
-  }
-
-  const formatted = postFormatForModel(body, targetModel);
   const rationale =
     locale === "ar"
-      ? `أُعيد بناء الموجّه محليًا لنية «${intent}» مع تنسيق ${targetModel}. تم دمج إجاباتك في القيود والسياق.`
-      : `Rebuilt locally for intent "${intent}" using ${targetModel} formatting. Your answers are merged into constraints and context.`;
+      ? `أُعيد بناء الموجّه محليًا لنية «${intent}» بأسلوب «${model.promptStyle}» الأنسب لـ ${model.name}.`
+      : `Rebuilt locally for intent "${intent}" using the "${model.promptStyle}" style optimised for ${model.name}.`;
 
   return { final_prompt: formatted, rationale };
 }

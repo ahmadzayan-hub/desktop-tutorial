@@ -1,5 +1,62 @@
 # Changelog
 
+## v0.15.0 — 2026-05-02 — 40+ models, per-model prompt engineering, push-it-further
+
+The "right prompt for the right model" release.
+
+- 🧠 **40+ frontier AI models catalogued** in `lib/ai-models.ts` and exposed
+  through a grouped picker in the workspace. Five families:
+  - **Text & reasoning**: GPT-5, GPT-5 Mini, GPT-4.1, Claude Opus 4.7,
+    Sonnet 4.6, Haiku 4.5, Gemini 3 Pro, Gemini 3 Flash, Grok 4,
+    DeepSeek R1, DeepSeek V3.5, Llama 4 Instruct, Mistral Large 2.1,
+    Qwen 3 Max, Cohere Command R+, Reka Core, Generic.
+  - **Code & app builders**: Cursor, GitHub Copilot, Replit Agent,
+    Lovable, Bolt.new, v0, Codestral.
+  - **Image**: Midjourney v7, Flux 2 Pro, SDXL 3, DALL·E 4, Ideogram v3,
+    Imagen 4, Recraft v3, Nano Banana Pro.
+  - **Video**: Sora 2, Veo 3, Runway Gen-4, Kling 2.5, Pika 2.5,
+    Luma Ray 2, Hailuo 2, Seedance.
+  - **Audio**: Suno v5, Udio v2, ElevenLabs v3.
+  Each entry has a real context window, a vendor, multimodal flag,
+  flagship marker, and a one-line "good at" note shown under the picker.
+- ✍️ **Per-model prompt formatters** in `lib/model-formatters.ts`. 30
+  distinct prompt styles, each tuned to its target's idioms:
+  - `openai-system` — System + Task + Context + Format + Success.
+  - `claude-xml` — `<role>/<context>/<task>/<format>` blocks.
+  - `gemini-multimodal` — JSON-friendly with structured output guidance.
+  - `grok-realtime` — leads with "use real-time data", date-stamps claims.
+  - `deepseek-reason` — step-by-step reasoning chain mandatory.
+  - `llama-instruct` — `[INST] ... [/INST]` markers.
+  - `midjourney-args` — `--ar 16:9 --style raw --s 250 --v 7`.
+  - `sdxl-tags` — comma-separated tags + Negative prompt + DPM++ params.
+  - `flux-natural`, `dalle-natural`, `ideogram-typo`, `imagen-natural`,
+    `recraft-vector`, `nano-banana`.
+  - `sora-shotlist` — numbered shot list with camera + duration.
+  - `veo-natural`, `runway-cinematic`, `kling-shotlist`, `pika-natural`,
+    `luma-natural`, `hailuo-natural`, `seedance-natural`.
+  - `music-prompt` — Genre / Mood / Tempo / Structure / Lyrics.
+  - `tts-elevenlabs` — `<voice>` and `<emotion>` tags.
+  - `code-comments` (Copilot) and `code-spec` (Cursor / Replit / v0).
+  18 new unit tests for the formatter dispatcher.
+- ✨ **"Push it further" button** on every final-prompt card. One tap:
+  picks the strongest improvement for the current draft (driven by the
+  same five-dimension quality score), appends the corresponding markdown
+  block, and re-engineers the prompt. Lets the user climb toward 100%
+  quality with a single click instead of editing manually.
+- 🛠 **Workspace streamline**: replaced the 5-option `<select>` with the
+  grouped, searchable model picker. Bumped the legacy `chatgpt|claude|
+  copilot|gemini|generic` defaults to `gpt-5` so new users get the most
+  capable model out of the box. The legacy strings still work end-to-end
+  through `resolveModel()` for backward compat.
+- 📏 **TokenMeter understands every model**: looks up context window from
+  the catalogue (e.g. 1M for GPT-4.1, 2M for Gemini 3 Pro, 500k for
+  Claude Opus 4.7) and renders the bar accordingly. Also gained dark
+  mode for emerald/amber/rose tints.
+- ✅ **Hard testing**: 84 tests pass (was 66, +18 model-formatter tests),
+  typecheck clean, production build clean. Live `next start` smoke test:
+  every route returns 200, suggest API works EN+AR, enhance correctly
+  401s without auth.
+
 ## v0.14.0 — 2026-05-02 — Privacy, /learn, desktop, voice fix mobile, em-dashes out
 
 The "polish + reach" release.
