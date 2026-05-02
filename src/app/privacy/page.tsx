@@ -128,8 +128,8 @@ export default function PrivacyPage() {
 
       <footer className="mt-6 text-xs text-slate-500 dark:text-slate-400">
         {isAr
-          ? "© 2026 موجة زيان. صنع بحبّ في الإمارات 🇦🇪 للعالم."
-          : "© 2026 PromptsZAIan. Built with love in the UAE 🇦🇪 for the world."}
+          ? "© 2026 زيان ستوديو. صنع بحبّ في الإمارات 🇦🇪 للعالم."
+          : "© 2026 ZAIan Studio. Built with love in the UAE 🇦🇪 for the world."}
       </footer>
     </div>
   );

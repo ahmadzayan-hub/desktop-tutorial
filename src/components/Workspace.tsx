@@ -509,6 +509,10 @@ export default function Workspace() {
                   // beat, kick off the questions flow automatically.
                   if (raw.trim().length >= 3 && !loading) void startSession(false);
                 }}
+                onTypeInstead={() => {
+                  const el = document.getElementById("po-raw") as HTMLTextAreaElement | null;
+                  el?.focus();
+                }}
               />
             </div>
           </div>

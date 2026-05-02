@@ -11,7 +11,7 @@ export default function Logo({ className }: LogoProps) {
     <svg
       viewBox="0 0 512 512"
       role="img"
-      aria-label="PromptsZAIan"
+      aria-label="ZAIan Studio"
       className={className}
     >
       <defs>

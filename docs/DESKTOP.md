@@ -1,6 +1,6 @@
-# PromptsZAIan — desktop app
+# ZAIan Studio — desktop app
 
-Native macOS, Windows, and Linux app for PromptsZAIan, built on
+Native macOS, Windows, and Linux app for ZAIan Studio, built on
 [Electron 31](https://www.electronjs.org/). The shell wraps the live web
 deployment so content updates ship instantly with each Vercel push, while
 the desktop layer adds:
@@ -41,9 +41,9 @@ Loads the production URL by default (`PROMPTSZAIAN_URL` env to override).
 ## Build a signed installer
 
 ```bash
-npm run build:mac      # → dist/PromptsZAIan-x.y.z.dmg
-npm run build:win      # → dist/PromptsZAIan Setup x.y.z.exe
-npm run build:linux    # → dist/PromptsZAIan-x.y.z.AppImage
+npm run build:mac      # → dist/ZAIan Studio-x.y.z.dmg
+npm run build:win      # → dist/ZAIan Studio Setup x.y.z.exe
+npm run build:linux    # → dist/ZAIan Studio-x.y.z.AppImage
 ```
 
 To codesign on macOS, set `CSC_LINK` and `CSC_KEY_PASSWORD` env vars

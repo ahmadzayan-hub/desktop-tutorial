@@ -1,8 +1,8 @@
 {
-  "name": "promptszaian-desktop",
+  "name": "zaian-studio-desktop",
   "version": "0.14.0",
   "private": true,
-  "description": "Desktop wrapper for PromptsZAIan / موجة زيان (Electron).",
+  "description": "Desktop wrapper for ZAIan Studio · زيان ستوديو (Electron).",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -16,8 +16,8 @@
     "electron-builder": "^24.13.3"
   },
   "build": {
-    "appId": "com.zaian.promptszaian.desktop",
-    "productName": "PromptsZAIan",
+    "appId": "com.zaian.studio.desktop",
+    "productName": "ZAIan Studio",
     "directories": { "output": "dist" },
     "files": ["main.js", "preload.js", "package.json"],
     "mac": { "category": "public.app-category.productivity", "target": ["dmg"] },

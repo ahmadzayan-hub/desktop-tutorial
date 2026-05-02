@@ -4,7 +4,7 @@ export const RTL_LOCALES: Locale[] = ["ar"];
 
 export const dict = {
   en: {
-    "app.name": "PromptsZAIan",
+    "app.name": "ZAIan Studio",
     "app.tagline": "Your AI prompt engineering studio, free from the UAE 🇦🇪 to the world.",
     "nav.workspace": "Workspace",
     "nav.templates": "Templates",
@@ -72,6 +72,8 @@ export const dict = {
     "voice.denied": "Microphone permission denied. Allow it in your browser settings.",
     "voice.no_device": "No microphone detected.",
     "voice.no_speech_hint": "I can hear audio but no words yet. Listening for {dialect}, try speaking louder, or pick a different dialect with the flag button.",
+    "voice.fallback_tried": "Auto-switching to English (en-US) for better recognition. If still nothing comes through, type your prompt instead.",
+    "voice.type_instead": "Type instead",
 
     "files.label": "Attach any files: text, code, images, PDFs, docs",
     "files.add": "Attach files",
@@ -149,12 +151,12 @@ export const dict = {
     "compare.show": "Compare",
     "compare.hide": "Hide comparison",
 
-    "share.title": "Share PromptsZAIan",
+    "share.title": "Share ZAIan Studio",
     "share.text": "Free AI prompt engineering studio, from the UAE 🇦🇪 to the world.",
     "share.button": "Share the app",
     "share.copied": "Link copied",
     "install.button": "Install app",
-    "install.hint": "Install PromptsZAIan for one-tap access from your home screen.",
+    "install.hint": "Install ZAIan Studio for one-tap access from your home screen.",
 
     "lint.empty": "Looking good, keep going.",
     "lint.hint.audience": "Add who it's for",
@@ -232,6 +234,7 @@ export const dict = {
     "reverse.has_structure": "Has explicit sections",
     "reverse.has_cta": "Closes with a call-to-action",
     "reverse.learn": "What would push this further",
+    "reverse.pushed": "Pushed: {before} → {after}/100",
     "reverse.words": "words",
 
     "tour.s1.title": "Drop your raw idea",
@@ -318,8 +321,8 @@ export const dict = {
   },
 
   ar: {
-    "app.name": "موجة زيان",
-    "app.tagline": "مساعدك الذكي لصياغة موجِّهات الذكاء الاصطناعي، مجاني من الإمارات 🇦🇪 إلى العالم.",
+    "app.name": "زيان ستوديو",
+    "app.tagline": "استوديو هندسة موجِّهات الذكاء الاصطناعي، مجاني من الإمارات 🇦🇪 إلى العالم.",
     "nav.workspace": "مساحة العمل",
     "nav.templates": "القوالب",
     "nav.history": "السِّجل",
@@ -386,6 +389,8 @@ export const dict = {
     "voice.denied": "رُفض إذن الميكروفون، فعّله من إعدادات المتصفّح.",
     "voice.no_device": "لم يُعثر على ميكروفون.",
     "voice.no_speech_hint": "أسمع صوتًا لكن لم تصل كلمات بعد، أستمع بلهجة {dialect}، جرّب التحدّث بصوت أعلى أو اختر لهجة أخرى من زر العَلَم.",
+    "voice.fallback_tried": "تحويل تلقائي إلى الإنجليزية (en-US) لتحسين التعرّف. إن لم تصل كلمات بعد ذلك، اكتب موجِّهك يدويًا.",
+    "voice.type_instead": "اكتب بدلاً من الإملاء",
 
     "files.label": "أرفق أي ملفات: نصوص أو أكواد أو صور أو PDF أو مستندات",
     "files.add": "أرفق ملفات",
@@ -463,12 +468,12 @@ export const dict = {
     "compare.show": "قارن",
     "compare.hide": "إخفاء المقارنة",
 
-    "share.title": "شارك موجة زيان",
+    "share.title": "شارك زيان ستوديو",
     "share.text": "استوديو هندسة موجِّهات الذكاء الاصطناعي، مجاني من الإمارات 🇦🇪 إلى العالم.",
     "share.button": "شارك التطبيق",
     "share.copied": "تمّ نسخ الرابط",
     "install.button": "تثبيت التطبيق",
-    "install.hint": "ثبّت موجة زيان للوصول السريع من شاشتك الرئيسية.",
+    "install.hint": "ثبّت زيان ستوديو للوصول السريع من شاشتك الرئيسية.",
 
     "lint.empty": "ممتاز، أكمل.",
     "lint.hint.audience": "أضف لمن هذا الموجِّه",
@@ -546,6 +551,7 @@ export const dict = {
     "reverse.has_structure": "يحوي أقسامًا واضحة",
     "reverse.has_cta": "يختم بدعوة للعمل",
     "reverse.learn": "ما الذي يدفعه أبعد",
+    "reverse.pushed": "تمّ الدفع: {before} → {after}/100",
     "reverse.words": "كلمة",
 
     "tour.s1.title": "اكتب فكرتك العابرة",

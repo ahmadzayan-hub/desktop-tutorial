@@ -7,25 +7,25 @@ import TrialBanner from "@/components/TrialBanner";
 import { CONTACT_EMAIL } from "@/lib/contact";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-const TITLE = "PromptsZAIan · موجة زيان — AI Prompt Engineering Studio";
+const TITLE = "ZAIan Studio · زيان ستوديو — AI Prompt Engineering Studio";
 const DESCRIPTION =
   "Free from the UAE 🇦🇪 to the world. Engineer prompts of every kind — code, writing, research, video, audio, software, websites, reports, images — for ChatGPT, Claude, Copilot, and Gemini. Multilingual (EN/AR), voice + file uploads, works offline.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
-  title: { default: TITLE, template: "%s · PromptsZAIan" },
+  title: { default: TITLE, template: "%s · ZAIan Studio" },
   description: DESCRIPTION,
-  applicationName: "PromptsZAIan",
+  applicationName: "ZAIan Studio",
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, title: "PromptsZAIan", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "ZAIan Studio", statusBarStyle: "default" },
   icons: {
     icon: "/icon.svg",
     apple: "/icon.svg"
   },
   authors: [{ name: "Ahmad Zaian", url: `mailto:${CONTACT_EMAIL}` }],
   keywords: [
-    "PromptsZAIan",
-    "موجة زيان",
+    "ZAIan Studio",
+    "زيان ستوديو",
     "prompt engineering",
     "AI prompts",
     "ChatGPT",
@@ -49,9 +49,9 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
     url: APP_URL,
-    siteName: "PromptsZAIan",
+    siteName: "ZAIan Studio",
     locale: "en_US",
-    images: [{ url: "/icon.svg", width: 512, height: 512, alt: "PromptsZAIan / موجة زيان" }]
+    images: [{ url: "/icon.svg", width: 512, height: 512, alt: "ZAIan Studio · زيان ستوديو" }]
   },
   twitter: {
     card: "summary_large_image",
@@ -95,8 +95,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              name: "PromptsZAIan",
-              alternateName: ["موجة زيان", "Prompts ZAIan"],
+              name: "ZAIan Studio",
+              alternateName: ["زيان ستوديو", "Prompts ZAIan"],
               description: DESCRIPTION,
               url: APP_URL,
               applicationCategory: "ProductivityApplication",

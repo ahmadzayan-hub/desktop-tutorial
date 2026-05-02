@@ -50,7 +50,7 @@ const DOMAINS: Domain[] = [
 
 export default function DomainPicker({ active, onPick, autoDetected, className }: Props) {
   const t = useT();
-  const localeIsAr = t("app.name") === "موجة زيان";
+  const localeIsAr = t("app.name") === "زيان ستوديو";
 
   return (
     <div className={"mt-3 " + (className ?? "")} aria-label={t("domain.label")}>

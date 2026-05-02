@@ -9,9 +9,9 @@ interface Props {
 /**
  * Wordmark for the platform brand.
  *
- * - English: **PromptsZAIan** — single word, "ZAI" rendered in the brand
- *   gradient to highlight the play on Zaian.
- * - Arabic:  **موجة زيان**.
+ * - English: **ZAIan Studio** — the "ZAI" tri-letter is rendered in the
+ *   brand gradient to read "Z-A-I" (the AI half of the name).
+ * - Arabic:  **زيان ستوديو**.
  *
  * The component picks the right form based on the active locale, but always
  * renders the *other* form as a small subtitle so both audiences recognise
@@ -22,10 +22,15 @@ export default function Wordmark({ className }: Props) {
 
   const en = (
     <span className="font-bold tracking-tight">
-      Prompts<span className="text-brand-600 dark:text-brand-400">ZAI</span>an
+      <span className="text-brand-600 dark:text-brand-400">ZAI</span>an{" "}
+      <span className="font-semibold">Studio</span>
     </span>
   );
-  const ar = <span className="font-semibold tracking-tight">موجة زيان</span>;
+  const ar = (
+    <span className="font-semibold tracking-tight">
+      زيان ستوديو
+    </span>
+  );
 
   return (
     <span className={"flex flex-col leading-tight min-w-0 " + (className ?? "")}>
@@ -33,7 +38,7 @@ export default function Wordmark({ className }: Props) {
         {locale === "ar" ? ar : en}
       </span>
       <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal truncate" aria-hidden="true">
-        {locale === "ar" ? "PromptsZAIan" : "موجة زيان"}
+        {locale === "ar" ? "ZAIan Studio" : "زيان ستوديو"}
       </span>
     </span>
   );

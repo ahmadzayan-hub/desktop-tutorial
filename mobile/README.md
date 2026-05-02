@@ -1,4 +1,4 @@
-# Prompt ZAI@n / موجة زيان — Mobile Shells
+# Prompt ZAI@n / زيان ستوديو — Mobile Shells
 
 Native iOS + Android wrappers around the live web app, built with
 [Capacitor 6](https://capacitorjs.com). Both shells point at the

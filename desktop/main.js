@@ -1,5 +1,5 @@
 /**
- * PromptsZAIan desktop shell (Electron main process).
+ * ZAIan Studio desktop shell (Electron main process).
  *
  * The desktop app wraps the live web build so updates ship instantly with
  * each Vercel deploy. Native menus, system tray, and keyboard shortcuts
@@ -9,7 +9,8 @@
 const { app, BrowserWindow, Menu, shell, globalShortcut } = require("electron");
 const path = require("path");
 
-const APP_URL = process.env.PROMPTSZAIAN_URL ||
+const APP_URL = process.env.ZAIAN_STUDIO_URL ||
+  process.env.PROMPTSZAIAN_URL || // legacy alias kept for backwards-compat
   "https://desktop-tutorial-kappa-five.vercel.app";
 
 let mainWindow = null;
@@ -22,7 +23,7 @@ function createWindow() {
     minHeight: 600,
     backgroundColor: "#0b1120",
     autoHideMenuBar: process.platform !== "darwin",
-    title: "PromptsZAIan",
+    title: "ZAIan Studio",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -47,7 +48,7 @@ function buildMenu() {
   const isMac = process.platform === "darwin";
   const template = [
     ...(isMac ? [{
-      label: "PromptsZAIan",
+      label: "ZAIan Studio",
       submenu: [
         { role: "about" }, { type: "separator" },
         { role: "services" }, { type: "separator" },

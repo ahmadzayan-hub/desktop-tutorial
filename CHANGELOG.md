@@ -1,5 +1,38 @@
 # Changelog
 
+## v0.16.0 — 2026-05-02 — ZAIan Studio rename, voice fallback, push-it-further everywhere
+
+The "fix what users actually hit" release.
+
+- 🪪 **Rebranded to ZAIan Studio · زيان ستوديو** across every surface:
+  Wordmark, Logo aria-label, page metadata (`<title>`, OG, Twitter,
+  JSON-LD), PWA manifest + shortcuts, browser-extension manifest +
+  content script, mobile Capacitor `appId` = `com.zaian.studio`,
+  desktop Electron `appId` = `com.zaian.studio.desktop` and
+  `productName` = `ZAIan Studio`, share-card canvas. Bundle slugs
+  changed: `zaian-studio-mobile`, `zaian-studio-desktop`. The English
+  "ZAI" tri-letter is rendered in the brand gradient inside the wordmark.
+- ✨ **"Push it further" button now everywhere**:
+  - **BUILD mode**: already present, kept the same.
+  - **REVERSE mode**: the previously-static "What would push this further"
+    hint is now a real button. One click takes the strongest available
+    suggestion (driven by the same five-dimension quality score), appends
+    it to the analysed prompt, re-scores, and shows the **before → after**
+    delta inline (`52 → 71/100`).
+- 🎙 **Voice recording — stuck-recogniser fallback**:
+  - When the recogniser captures audible speech but produces zero
+    transcripts for ≥ 8 s (the failure mode reported by users on Samsung
+    Internet / Chrome Android with non-English dialects), we now silently
+    restart it with `lang="en-US"`, the universally-supported STT locale.
+  - If recognition still fails, a prominent **"Type instead"** button
+    appears in the live-transcript popover. Clicking it stops the
+    recogniser and focuses the textarea so the user keeps moving.
+  - The popover is no longer `pointer-events-none` — its buttons now
+    actually click.
+- ✅ **Hard testing**: 84/84 tests, typecheck clean, production build
+  clean. Live smoke test: 10 routes return 200, manifest + HTML show only
+  the new brand strings, suggest API still works in EN + AR.
+
 ## v0.15.0 — 2026-05-02 — 40+ models, per-model prompt engineering, push-it-further
 
 The "right prompt for the right model" release.

@@ -49,12 +49,23 @@ interface Props {
    * parent typically uses it to auto-generate the prompt.
    */
   onAutoSubmit?: () => void;
+  /**
+   * Optional: called when voice fails entirely so the parent can focus the
+   * textarea for typing. Wired by the workspace.
+   */
+  onTypeInstead?: () => void;
   className?: string;
 }
 
 const SILENCE_THRESHOLD = 0.04;     // RMS below this counts as silence
 const SILENCE_HOLD_MS  = 2500;      // need this much continuous silence
 const SMART_SUBMIT_KEY = "po_smart_submit_v1";
+
+// If the recogniser captures audio but produces zero transcripts for this
+// long, fall back to en-US once (most universally supported STT language)
+// and surface a "Type instead" escape hatch.
+const NO_RESULT_FALLBACK_MS = 8000;
+const FALLBACK_LANG = "en-US";
 
 type Status = "idle" | "requesting" | "listening" | "denied" | "error" | "unsupported";
 
@@ -81,7 +92,7 @@ type Status = "idle" | "requesting" | "listening" | "denied" | "error" | "unsupp
  *   - Auto-restarts only on benign auto-end events (Chrome's silence timer)
  *     and gives up cleanly on hard failures.
  */
-export default function VoiceInput({ onTranscript, onAutoSubmit, className }: Props) {
+export default function VoiceInput({ onTranscript, onAutoSubmit, onTypeInstead, className }: Props) {
   const t = useT();
   const { locale } = useI18n();
   const [status, setStatus] = useState<Status>("idle");
@@ -118,6 +129,13 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, className }: Pr
   const autoSubmittedRef = useRef<boolean>(false);
   const onAutoSubmitRef = useRef(onAutoSubmit);
   onAutoSubmitRef.current = onAutoSubmit;
+
+  // Stuck-recogniser tracker: if audio is being captured but no transcript
+  // arrives, switch to a universal fallback language and remember we tried.
+  const audioStartedAtRef = useRef<number>(0);
+  const audioSeenRef = useRef<boolean>(false);
+  const fallbackTriedRef = useRef<boolean>(false);
+  const [stuck, setStuck] = useState(false);
 
   useEffect(() => {
     setVoiceLocale(loadPreferred(locale));
@@ -234,7 +252,12 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, className }: Pr
           // audibly speaking. When we have a final transcript AND continuous
           // silence for SILENCE_HOLD_MS, fire onAutoSubmit exactly once.
           const now = Date.now();
-          if (rms > SILENCE_THRESHOLD) lastVoiceAtRef.current = now;
+          if (rms > SILENCE_THRESHOLD) {
+            lastVoiceAtRef.current = now;
+            // Mark that we've seen the user actually speak — this rules out
+            // "user is silent" as the cause when no transcript arrives.
+            audioSeenRef.current = true;
+          }
           const silentFor = lastVoiceAtRef.current ? now - lastVoiceAtRef.current : 0;
           if (
             !autoSubmittedRef.current &&
@@ -243,10 +266,31 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, className }: Pr
             onAutoSubmitRef.current
           ) {
             autoSubmittedRef.current = true;
-            // Stop recording first so the parent sees a final state, then
-            // request the auto-submit on the next tick.
             stop();
             setTimeout(() => onAutoSubmitRef.current?.(), 50);
+          }
+
+          // Stuck recogniser: audible speech detected, but no transcript for
+          // NO_RESULT_FALLBACK_MS. Try once with FALLBACK_LANG (en-US),
+          // which is the most universally supported STT locale. If that
+          // also fails the user still has the "Type instead" button.
+          const sinceStart = audioStartedAtRef.current ? now - audioStartedAtRef.current : 0;
+          if (
+            !hasFinalRef.current &&
+            audioSeenRef.current &&
+            sinceStart >= NO_RESULT_FALLBACK_MS &&
+            !fallbackTriedRef.current
+          ) {
+            fallbackTriedRef.current = true;
+            setStuck(true);
+            const r = recRef.current;
+            if (r) {
+              try {
+                userStoppedRef.current = false;
+                r.lang = FALLBACK_LANG;
+                try { r.stop(); } catch { /* will restart in onend */ }
+              } catch { /* ignore */ }
+            }
           }
 
           rafRef.current = requestAnimationFrame(tick);
@@ -339,6 +383,10 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, className }: Pr
     hasFinalRef.current = false;
     autoSubmittedRef.current = false;
     lastVoiceAtRef.current = Date.now();
+    audioStartedAtRef.current = Date.now();
+    audioSeenRef.current = false;
+    fallbackTriedRef.current = false;
+    setStuck(false);
     // Reset diagnostic surface so an old transcript / state doesn't leak
     // into a fresh listening session.
     setLiveText("");
@@ -414,11 +462,13 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, className }: Pr
 
   return (
     <div className={`relative flex items-center gap-1.5 ${className ?? ""}`}>
-      {/* Live-transcript popover — floats above the button row when active so
-          the user has visible proof the recogniser is hearing them. */}
-      {(listening && (liveText || showNoSpeechHint)) && (
+      {/* Live-transcript popover. floats above the button row when active so
+          the user has visible proof the recogniser is hearing them. When the
+          recogniser gets stuck (audio detected, no transcript), we surface a
+          "Type instead" escape hatch that focuses the textarea. */}
+      {(listening && (liveText || showNoSpeechHint || stuck)) && (
         <div
-          className="absolute bottom-full end-0 mb-2 max-w-[min(520px,calc(100vw-2rem))] min-w-[200px] rounded-xl border border-rose-300 dark:border-rose-700 bg-white dark:bg-slate-900 shadow-lg px-3 py-2 z-30 pointer-events-none"
+          className="absolute bottom-full end-0 mb-2 max-w-[min(520px,calc(100vw-2rem))] min-w-[220px] rounded-xl border border-rose-300 dark:border-rose-700 bg-white dark:bg-slate-900 shadow-lg px-3 py-2 z-30"
           aria-live="polite"
         >
           {liveText ? (
@@ -426,9 +476,22 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, className }: Pr
               {liveText}
             </p>
           ) : (
-            <p className="text-xs text-amber-700 dark:text-amber-300">
-              {t("voice.no_speech_hint", { dialect: voiceLocale ? labelFor(voiceLocale, locale) : "—" })}
-            </p>
+            <>
+              <p className="text-xs text-amber-700 dark:text-amber-300">
+                {stuck
+                  ? t("voice.fallback_tried")
+                  : t("voice.no_speech_hint", { dialect: voiceLocale ? labelFor(voiceLocale, locale) : "—" })}
+              </p>
+              {onTypeInstead && (
+                <button
+                  type="button"
+                  onClick={() => { stop(); onTypeInstead(); }}
+                  className="mt-2 btn-ghost text-[11px] px-2 py-1 border border-slate-300 dark:border-slate-700"
+                >
+                  ⌨️ {t("voice.type_instead")}
+                </button>
+              )}
+            </>
           )}
         </div>
       )}
