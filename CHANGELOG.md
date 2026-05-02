@@ -1,5 +1,56 @@
 # Changelog
 
+## v0.14.0 — 2026-05-02 — Privacy, /learn, desktop, voice fix mobile, em-dashes out
+
+The "polish + reach" release.
+
+- 📜 **Real privacy policy page** at `/privacy`, fully bilingual (EN/AR).
+  Plain-language sections covering what stays on the device, what reaches
+  our server, what we never do, the user's rights, and contact. Linked
+  from the footer, settings, and login fallback.
+- 🔓 **Login graceful fallback**: when Supabase env vars are missing on
+  the deploy, the login page no longer surfaces a stack trace. Instead
+  it shows a clean card explaining sign-in is off in this build, with a
+  one-tap link into the local-mode workspace.
+- 🎙 **Voice fix for mobile**: Samsung Internet, Chrome on Android, and
+  some iOS Safari builds break under `continuous: true`. We now run
+  `continuous: false` on mobile UAs with transparent auto-restart on
+  `onend`, which matches the desktop UX while actually working on phones.
+  The live transcript popover and "no speech detected" diagnostic from
+  v0.13 stay; together they make the voice loop reliable.
+- 🇪🇬 **Egyptian dialect already first** (from v0.13). Default fallback
+  remains `ar-EG` for the broadest mobile recogniser coverage.
+- ✂️ **Em-dashes removed** from every user-visible string. The Python
+  pass replaces ` — ` with `,` (or `:` where it served as a label
+  introduction) across i18n + engine + suggestion templates. AR strings
+  use the Arabic comma (`،`). Net effect: the platform stops looking
+  AI-authored.
+- 🎓 **`/learn` page** with eight curated open YouTube courses on prompt
+  engineering: Anthropic interactive tutorial, DeepLearning.AI × OpenAI,
+  freeCodeCamp 5h course, Karpathy LLM deep-dive, Google Gemini Cookbook,
+  Microsoft Reactor, plus multimodal + tools/agents. Filtered by level
+  (beginner / intermediate / advanced) with search across topics.
+- ✨ **Tagline rewrite**: home subtitle now leads with "We re-engineer
+  your prompts professionally" instead of "We detect your intent".
+- 🌙 **Dark-mode contrast bump on example cards**: the lighter `/30 → /10`
+  gradients couldn't carry body text on Samsung dark mode. Switched to
+  `*-950 → slate-900` solid bases with brighter title (`slate-50`) and
+  body (`slate-200`) so every card is readable at a glance.
+- 🖥 **Desktop app** scaffolded under `desktop/` (Electron 31). Native
+  menus, `Cmd/Ctrl+Shift+P` global shortcut, system-tray-friendly,
+  external links open in the OS browser, sandbox + contextIsolation on
+  for security. Builds .dmg / .nsis / .AppImage / .deb. Full docs at
+  `docs/DESKTOP.md`.
+- 🦊 **Extension cross-browser**: extension/manifest.json gained
+  `browser_specific_settings.gecko` (Firefox 115+) and `options_ui`
+  (Firefox-correct), bumped version to 0.14.0.
+- 📱 **Mobile bumped** to 0.14.0 (Capacitor v6 still latest stable);
+  the iOS keyboard-extension architecture remains documented in
+  `docs/MOBILE-SUGGESTIONS.md`.
+- ✅ **Hard testing**: typecheck, 66/66 tests, production build all
+  green. Live `next start` walk: 23 routes return 200 (added /privacy
+  and /learn). Login fallback now renders synchronously on first paint.
+
 ## v0.13.0 — 2026-05-02 — Brand rename, dark mode, voice fix, domain picker
 
 The "feels right end-to-end" release.

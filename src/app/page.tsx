@@ -107,10 +107,12 @@ function ExamplesSection() {
     window.location.href = "/workspace";
   }
 
+  // Tones in dark mode use a darker, more solid base so body text reads
+  // cleanly. The lighter "/30 → /10" gradient hid text on Samsung dark mode.
   const toneClass: Record<string, string> = {
-    violet:  "from-violet-50 to-violet-100/60 border-violet-200 dark:from-violet-900/30 dark:to-violet-900/10 dark:border-violet-800",
-    sky:     "from-sky-50 to-sky-100/60 border-sky-200 dark:from-sky-900/30 dark:to-sky-900/10 dark:border-sky-800",
-    emerald: "from-emerald-50 to-emerald-100/60 border-emerald-200 dark:from-emerald-900/30 dark:to-emerald-900/10 dark:border-emerald-800"
+    violet:  "from-violet-50 to-violet-100/60 border-violet-200 dark:from-violet-950 dark:to-slate-900 dark:border-violet-700",
+    sky:     "from-sky-50 to-sky-100/60 border-sky-200 dark:from-sky-950 dark:to-slate-900 dark:border-sky-700",
+    emerald: "from-emerald-50 to-emerald-100/60 border-emerald-200 dark:from-emerald-950 dark:to-slate-900 dark:border-emerald-700"
   };
 
   return (
@@ -128,8 +130,8 @@ function ExamplesSection() {
               toneClass[e.tone]
             }
           >
-            <div className="text-sm font-medium text-slate-800 dark:text-slate-100">{t(e.titleKey)}</div>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300 line-clamp-2">{t(e.bodyKey)}</p>
+            <div className="text-sm font-medium text-slate-800 dark:text-slate-50">{t(e.titleKey)}</div>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-200 line-clamp-2">{t(e.bodyKey)}</p>
             <span className="mt-3 inline-block text-xs font-semibold text-brand-700 dark:text-brand-300">
               {t("home.examples.try")} →
             </span>

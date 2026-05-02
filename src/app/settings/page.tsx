@@ -161,7 +161,7 @@ export default function SettingsPage() {
       {/* Privacy policy */}
       <Row icon="📜" title={t("settings.policy.title")} body={t("settings.policy.body")}>
         <Link
-          href="/"
+          href="/privacy"
           className="text-xs text-brand-700 dark:text-brand-300 hover:underline"
         >
           {t("settings.policy.read")}

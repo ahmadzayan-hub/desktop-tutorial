@@ -28,6 +28,17 @@ export default function Footer() {
             </a>
           </p>
           <p className="mt-1">{t("footer.contact_note")}</p>
+          <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 sm:justify-end text-[11px]">
+            <a href="/privacy" className="text-brand-700 dark:text-brand-300 hover:underline">
+              {locale === "ar" ? "سياسة الخصوصية" : "Privacy policy"}
+            </a>
+            <a href="/learn" className="text-brand-700 dark:text-brand-300 hover:underline">
+              {locale === "ar" ? "تعلَّم" : "Learn"}
+            </a>
+            <a href="/settings" className="text-brand-700 dark:text-brand-300 hover:underline">
+              {locale === "ar" ? "الإعدادات" : "Settings"}
+            </a>
+          </p>
         </div>
       </div>
     </footer>

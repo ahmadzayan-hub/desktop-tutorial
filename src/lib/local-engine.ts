@@ -174,16 +174,16 @@ const QUESTION_TEMPLATES: Record<Intent, QuestionTpl[]> = {
   coding: [
     { slot: "language", en: "Which language and framework are you using?", ar: "ما اللغة وإطار العمل الذي تستخدمه؟", rationale_en: "Code style and APIs differ by stack.", rationale_ar: "أسلوب الكود وواجهات البرمجة تختلف حسب المنصّة." },
     { slot: "constraint", en: "Any performance, dependency, or style constraints?", ar: "هل توجد قيود على الأداء أو التبعيات أو الأسلوب؟", rationale_en: "Constraints prevent over-engineering.", rationale_ar: "القيود تمنع المبالغة في الحل." },
-    { slot: "success", en: "What does 'done' look like — tests, behaviour, output?", ar: "كيف يبدو الإنجاز — اختبارات، سلوك، مخرجات؟", rationale_en: "A success criterion lets the model self-check.", rationale_ar: "معيار النجاح يتيح للنموذج التحقق من نفسه." }
+    { slot: "success", en: "What does 'done' look like, tests, behaviour, output?", ar: "كيف يبدو الإنجاز، اختبارات، سلوك، مخرجات؟", rationale_en: "A success criterion lets the model self-check.", rationale_ar: "معيار النجاح يتيح للنموذج التحقق من نفسه." }
   ],
   writing: [
     { slot: "audience", en: "Who is the target audience?", ar: "من هو الجمهور المستهدف؟", rationale_en: "Audience drives tone and vocabulary.", rationale_ar: "الجمهور يحدّد النبرة والمفردات." },
-    { slot: "format", en: "What format — length, structure, examples?", ar: "ما الصيغة المطلوبة — الطول، البنية، الأمثلة؟", rationale_en: "Format avoids guessing.", rationale_ar: "تحديد الصيغة يمنع التخمين." },
+    { slot: "format", en: "What format, length, structure, examples?", ar: "ما الصيغة المطلوبة، الطول، البنية، الأمثلة؟", rationale_en: "Format avoids guessing.", rationale_ar: "تحديد الصيغة يمنع التخمين." },
     { slot: "goal", en: "What action should the reader take?", ar: "ما الإجراء الذي يجب أن يتّخذه القارئ؟", rationale_en: "A clear CTA shapes the whole piece.", rationale_ar: "دعوة العمل الواضحة تشكّل كامل النص." }
   ],
   research: [
-    { slot: "audience", en: "Who is reading this — expert or beginner?", ar: "من القارئ — خبير أم مبتدئ؟", rationale_en: "Depth and jargon depend on this.", rationale_ar: "العمق والمصطلحات تعتمد على ذلك." },
-    { slot: "depth", en: "How deep — TL;DR, summary, or deep dive?", ar: "ما عمق التغطية — موجز، ملخّص، أم تفصيلي؟", rationale_en: "Sets the level of detail.", rationale_ar: "يحدّد مستوى التفاصيل." },
+    { slot: "audience", en: "Who is reading this, expert or beginner?", ar: "من القارئ، خبير أم مبتدئ؟", rationale_en: "Depth and jargon depend on this.", rationale_ar: "العمق والمصطلحات تعتمد على ذلك." },
+    { slot: "depth", en: "How deep, TL;DR, summary, or deep dive?", ar: "ما عمق التغطية، موجز، ملخّص، أم تفصيلي؟", rationale_en: "Sets the level of detail.", rationale_ar: "يحدّد مستوى التفاصيل." },
     { slot: "sources", en: "Should it cite specific sources or be general?", ar: "هل يجب أن يستشهد بمصادر محدّدة أم يكون عامًا؟", rationale_en: "Avoids fabricated citations.", rationale_ar: "يمنع اختلاق المصادر." }
   ],
   analysis: [
@@ -192,7 +192,7 @@ const QUESTION_TEMPLATES: Record<Intent, QuestionTpl[]> = {
     { slot: "decision", en: "What decision should this analysis support?", ar: "ما القرار الذي يجب أن يدعمه هذا التحليل؟", rationale_en: "Focuses on what matters.", rationale_ar: "يركّز على ما يهم." }
   ],
   planning: [
-    { slot: "horizon", en: "What's the time horizon — week, month, quarter?", ar: "ما المدى الزمني — أسبوع، شهر، ربع؟", rationale_en: "Determines task granularity.", rationale_ar: "يحدّد دقّة المهام." },
+    { slot: "horizon", en: "What's the time horizon, week, month, quarter?", ar: "ما المدى الزمني، أسبوع، شهر، ربع؟", rationale_en: "Determines task granularity.", rationale_ar: "يحدّد دقّة المهام." },
     { slot: "resources", en: "What resources or constraints exist?", ar: "ما الموارد أو القيود المتاحة؟", rationale_en: "Realistic plans need realistic limits.", rationale_ar: "الخطط الواقعية تحتاج حدودًا واقعية." },
     { slot: "success", en: "What does success look like?", ar: "كيف يبدو النجاح؟", rationale_en: "Defines the finish line.", rationale_ar: "يحدّد خطّ النهاية." }
   ],
@@ -207,48 +207,48 @@ const QUESTION_TEMPLATES: Record<Intent, QuestionTpl[]> = {
     { slot: "constraints", en: "Brand colors, references, or things to avoid?", ar: "ألوان الهوية، مراجع، أو أشياء يجب تجنّبها؟", rationale_en: "Anchors output to your brand.", rationale_ar: "يربط النتيجة بهويّتك." }
   ],
   conversation: [
-    { slot: "context", en: "Quick context — what led to this question?", ar: "سياق سريع — ما الذي قاد إلى هذا السؤال؟", rationale_en: "Avoids generic advice.", rationale_ar: "يمنع النصيحة العامة." },
+    { slot: "context", en: "Quick context, what led to this question?", ar: "سياق سريع، ما الذي قاد إلى هذا السؤال؟", rationale_en: "Avoids generic advice.", rationale_ar: "يمنع النصيحة العامة." },
     { slot: "constraints", en: "Anything off-limits or already tried?", ar: "أي شيء مستبعد أو سبق أن جُرّب؟", rationale_en: "Saves a back-and-forth.", rationale_ar: "يوفّر جولات إضافية." }
   ],
 
   image: [
     { slot: "subject",     en: "What is the main subject and the action it's doing?",                  ar: "ما الموضوع الرئيسي وماذا يفعل؟",                          rationale_en: "Subject + action sets the centre of the frame.",                                       rationale_ar: "الموضوع والحركة يحدّدان مركز اللقطة." },
-    { slot: "style",       en: "What art style — photo-real, anime, oil painting, 3D, line art?",      ar: "ما الأسلوب الفنّي — واقعي، أنمي، زيتي، ثلاثي الأبعاد، خطوط؟", rationale_en: "Style is the single biggest output lever.",                                            rationale_ar: "الأسلوب هو الرافعة الأكبر للنتيجة." },
+    { slot: "style",       en: "What art style, photo-real, anime, oil painting, 3D, line art?",      ar: "ما الأسلوب الفنّي، واقعي، أنمي، زيتي، ثلاثي الأبعاد، خطوط؟", rationale_en: "Style is the single biggest output lever.",                                            rationale_ar: "الأسلوب هو الرافعة الأكبر للنتيجة." },
     { slot: "lighting",    en: "Lighting and mood (golden hour, neon, studio softbox, dramatic)?",     ar: "الإضاءة والمزاج (ضوء ذهبي، نيون، استوديو، درامي)؟",         rationale_en: "Lighting carries emotion.",                                                            rationale_ar: "الإضاءة تنقل المشاعر." },
-    { slot: "composition", en: "Camera framing — wide, close-up, top-down, aspect ratio?",             ar: "تأطير الكاميرا — لقطة عامّة، قريبة، علوية، نسبة الأبعاد؟",  rationale_en: "Composition tells the model where to put things.",                                    rationale_ar: "التأطير يحدّد توزيع العناصر." }
+    { slot: "composition", en: "Camera framing, wide, close-up, top-down, aspect ratio?",             ar: "تأطير الكاميرا، لقطة عامّة، قريبة، علوية، نسبة الأبعاد؟",  rationale_en: "Composition tells the model where to put things.",                                    rationale_ar: "التأطير يحدّد توزيع العناصر." }
   ],
 
   video: [
     { slot: "duration",   en: "Total duration and target platform (Reel 9:16, YouTube 16:9, etc.)?",   ar: "المدّة الكلية والمنصّة المستهدفة (ريل 9:16، يوتيوب 16:9، …)؟", rationale_en: "Aspect ratio and length drive every other decision.", rationale_ar: "نسبة الأبعاد والمدّة تحكمان بقيّة القرارات." },
-    { slot: "shots",      en: "Roughly how many shots/scenes — and what happens in each?",             ar: "كم عدد اللقطات/المشاهد تقريبًا — وما الذي يحدث في كلّ منها؟",  rationale_en: "Shot list = the storyboard skeleton.",               rationale_ar: "قائمة اللقطات هي هيكل القصّة." },
+    { slot: "shots",      en: "Roughly how many shots/scenes, and what happens in each?",             ar: "كم عدد اللقطات/المشاهد تقريبًا، وما الذي يحدث في كلّ منها؟",  rationale_en: "Shot list = the storyboard skeleton.",               rationale_ar: "قائمة اللقطات هي هيكل القصّة." },
     { slot: "voice_music", en: "Voice-over language/tone, and music style?",                            ar: "لغة ونبرة التعليق الصوتي، ونمط الموسيقى؟",                    rationale_en: "Audio shapes pacing as much as visuals.",             rationale_ar: "الصوت يصنع الإيقاع كما الصورة." },
     { slot: "cta",        en: "Closing line / call-to-action?",                                         ar: "العبارة الختامية أو دعوة العمل؟",                              rationale_en: "Every short video benefits from a hook + payoff.",    rationale_ar: "كل فيديو قصير يستفيد من خطّاف ونهاية." }
   ],
 
   audio: [
     { slot: "format",     en: "Podcast episode, voice-over, song, jingle, or sound effect?",            ar: "حلقة بودكاست، تعليق صوتي، أغنية، جينغل، أو مؤثّر صوتي؟",     rationale_en: "Audio format dictates structure and length.",         rationale_ar: "الصيغة الصوتية تحدّد البنية والطول." },
-    { slot: "voice",      en: "Voice character — gender, age, language/dialect, mood?",                 ar: "شخصية الصوت — الجنس، العمر، اللغة/اللهجة، المزاج؟",            rationale_en: "Voice details get baked into the TTS prompt.",        rationale_ar: "تفاصيل الصوت تُبنى في موجِّه TTS." },
+    { slot: "voice",      en: "Voice character, gender, age, language/dialect, mood?",                 ar: "شخصية الصوت، الجنس، العمر، اللغة/اللهجة، المزاج؟",            rationale_en: "Voice details get baked into the TTS prompt.",        rationale_ar: "تفاصيل الصوت تُبنى في موجِّه TTS." },
     { slot: "duration",   en: "Target length (seconds for ad, minutes for episode)?",                   ar: "الطول المستهدف (ثوانٍ للإعلان، دقائق للحلقة)؟",                rationale_en: "Length controls pacing and amount of script.",        rationale_ar: "الطول يضبط الإيقاع وكمّية النصّ." },
-    { slot: "music",      en: "Background music — genre, energy, or none?",                              ar: "الموسيقى الخلفية — النوع، الطاقة، أم بدون؟",                   rationale_en: "Music separates a podcast from a tutorial.",           rationale_ar: "الموسيقى تميّز البودكاست عن الشرح." }
+    { slot: "music",      en: "Background music, genre, energy, or none?",                              ar: "الموسيقى الخلفية، النوع، الطاقة، أم بدون؟",                   rationale_en: "Music separates a podcast from a tutorial.",           rationale_ar: "الموسيقى تميّز البودكاست عن الشرح." }
   ],
 
   software: [
-    { slot: "platform",    en: "Target platform — web, iOS, Android, desktop, CLI?",                     ar: "المنصّة المستهدفة — ويب، iOS، أندرويد، سطح مكتب، CLI؟",        rationale_en: "Platform decides framework and packaging.",          rationale_ar: "المنصّة تحدّد إطار العمل والتغليف." },
+    { slot: "platform",    en: "Target platform, web, iOS, Android, desktop, CLI?",                     ar: "المنصّة المستهدفة، ويب، iOS، أندرويد، سطح مكتب، CLI؟",        rationale_en: "Platform decides framework and packaging.",          rationale_ar: "المنصّة تحدّد إطار العمل والتغليف." },
     { slot: "stack",       en: "Preferred stack/language (or 'no preference')?",                         ar: "التقنيات/اللغة المفضّلة (أو «لا تفضيل»)؟",                       rationale_en: "Pinning the stack avoids hallucinated frameworks.",   rationale_ar: "تثبيت التقنيات يمنع اختلاق إطار غير حقيقي." },
     { slot: "features",    en: "Three core features the MVP must have?",                                  ar: "ثلاث ميزات أساسية يجب أن يحويها الإصدار الأول؟",                rationale_en: "Forces ruthless prioritisation.",                     rationale_ar: "يفرض تحديد الأولويات بصرامة." },
-    { slot: "data_auth",   en: "Data and auth — local-only, Supabase/Firebase, custom backend?",          ar: "البيانات والمصادقة — محلّيًا، Supabase/Firebase، خادم مخصّص؟",   rationale_en: "Data layer changes the architecture entirely.",      rationale_ar: "طبقة البيانات تغيّر البنية بالكامل." }
+    { slot: "data_auth",   en: "Data and auth, local-only, Supabase/Firebase, custom backend?",          ar: "البيانات والمصادقة، محلّيًا، Supabase/Firebase، خادم مخصّص؟",   rationale_en: "Data layer changes the architecture entirely.",      rationale_ar: "طبقة البيانات تغيّر البنية بالكامل." }
   ],
 
   website: [
-    { slot: "purpose",     en: "What is the site for — landing, portfolio, e-commerce, docs, blog?",     ar: "لماذا الموقع — هبوط، بورتفوليو، متجر، توثيق، مدوّنة؟",         rationale_en: "Purpose shapes information architecture.",            rationale_ar: "الغرض يحدّد بنية المعلومات." },
+    { slot: "purpose",     en: "What is the site for, landing, portfolio, e-commerce, docs, blog?",     ar: "لماذا الموقع، هبوط، بورتفوليو، متجر، توثيق، مدوّنة؟",         rationale_en: "Purpose shapes information architecture.",            rationale_ar: "الغرض يحدّد بنية المعلومات." },
     { slot: "sections",    en: "Which sections are required (hero, features, pricing, FAQ, contact)?",   ar: "الأقسام المطلوبة (هيرو، ميزات، تسعير، أسئلة، تواصل)؟",          rationale_en: "Section list = page outline.",                        rationale_ar: "قائمة الأقسام هي مخطّط الصفحة." },
-    { slot: "vibe",        en: "Visual vibe — minimal, bold, editorial, playful, corporate?",            ar: "الإحساس البصري — مينيمال، جريء، تحريري، مرح، شركاتي؟",           rationale_en: "Vibe maps to typography, spacing, colour.",           rationale_ar: "الإحساس يترجم إلى الخطوط والتباعد والألوان." },
+    { slot: "vibe",        en: "Visual vibe, minimal, bold, editorial, playful, corporate?",            ar: "الإحساس البصري، مينيمال، جريء، تحريري، مرح، شركاتي؟",           rationale_en: "Vibe maps to typography, spacing, colour.",           rationale_ar: "الإحساس يترجم إلى الخطوط والتباعد والألوان." },
     { slot: "constraints", en: "Brand colors, target audience, accessibility or SEO requirements?",      ar: "ألوان الهوية، الجمهور المستهدف، متطلبات الوصول أو SEO؟",         rationale_en: "Constraints prevent generic templates.",              rationale_ar: "القيود تمنع القوالب العامّة." }
   ],
 
   report: [
     { slot: "purpose",     en: "What decision or action will this report drive?",                        ar: "ما القرار أو الإجراء الذي سيدفعه هذا التقرير؟",                  rationale_en: "A purposeless report is unreadable.",                 rationale_ar: "التقرير بلا غرض غير قابل للقراءة." },
-    { slot: "audience",    en: "Who is the primary reader — executive, technical, academic, general?",   ar: "من القارئ الأساسي — تنفيذي، تقني، أكاديمي، عام؟",                rationale_en: "Audience drives depth and jargon.",                   rationale_ar: "الجمهور يحدّد العمق والمصطلحات." },
+    { slot: "audience",    en: "Who is the primary reader, executive, technical, academic, general?",   ar: "من القارئ الأساسي، تنفيذي، تقني، أكاديمي، عام؟",                rationale_en: "Audience drives depth and jargon.",                   rationale_ar: "الجمهور يحدّد العمق والمصطلحات." },
     { slot: "structure",   en: "Required sections (exec summary, methodology, findings, citations)?",    ar: "الأقسام المطلوبة (ملخّص تنفيذي، منهجية، نتائج، مراجع)؟",         rationale_en: "Structure is half the value of a report.",            rationale_ar: "البنية نصف قيمة التقرير." },
     { slot: "evidence",    en: "Should it cite real sources, internal data, or both?",                   ar: "هل يستشهد بمصادر حقيقية، بيانات داخلية، أم الاثنين؟",            rationale_en: "Evidence policy avoids fabricated citations.",        rationale_ar: "سياسة الأدلّة تمنع اختلاق المصادر." }
   ],
@@ -367,14 +367,14 @@ function domainSections(intent: Intent, locale: "en" | "ar"): string {
  * and the model sees them as part of its instructions.
  */
 const ANTI_HALLUCINATION_EN = `# Trust & accuracy guardrails
-- **Cite only sources you can verify**. If you don't know, don't invent — state "unverified" or "no reliable source found".
+- **Cite only sources you can verify**. If you don't know, don't invent, state "unverified" or "no reliable source found".
 - **Distinguish facts from inferences**. Use phrases like "based on …" / "this suggests …" when extrapolating.
 - **Mark speculation explicitly**. Wrap conjecture in "[speculation]" so the reader can filter it.
 - **Quote numbers with their source**. Round to a sensible precision; never report false precision.
 - **Acknowledge the unknown**. Where data is missing, say so plainly; do not paper over gaps.`;
 
 const ANTI_HALLUCINATION_AR = `# ضوابط الثقة والدقّة
-- **استشهد فقط بمصادر يمكنك التحقّق منها**. إن لم تعرف فلا تخترع — قل «غير مُتحقَّق منه» أو «لم يُعثر على مصدر موثوق».
+- **استشهد فقط بمصادر يمكنك التحقّق منها**. إن لم تعرف فلا تخترع، قل «غير مُتحقَّق منه» أو «لم يُعثر على مصدر موثوق».
 - **ميّز الحقائق عن الاستنتاجات**. استخدم «بناءً على…» أو «يُشير ذلك إلى…» عند الاستنتاج.
 - **علّم التخمين صراحةً** بـ«[تخمين]» ليتمكّن القارئ من تصفيته.
 - **اذكر الأرقام مع مصدرها**. قرّبها بدقّة معقولة ولا تدّعِ دقّة زائفة.

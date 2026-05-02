@@ -73,8 +73,8 @@ const TEMPLATES: LiveSuggestion[] = [
     id: "constraints",
     kind: "add_constraints",
     label_en: "+ Constraints",     label_ar: "+ القيود",
-    preview_en: "Spell out what to avoid — saves a re-prompt.",
-    preview_ar: "اذكر ما يجب تجنّبه — يوفّر جولة موجِّه إضافية.",
+    preview_en: "Spell out what to avoid, saves a re-prompt.",
+    preview_ar: "اذكر ما يجب تجنّبه، يوفّر جولة موجِّه إضافية.",
     append_en: "\n\n## Constraints\n- Avoid:\n- Required to include:\n- Hard limits (length, words, tokens):",
     append_ar: "\n\n## القيود\n- تجنّب:\n- يجب تضمين:\n- حدود صارمة (الطول، الكلمات، التوكنز):"
   },
@@ -118,8 +118,8 @@ const TEMPLATES: LiveSuggestion[] = [
     id: "tighten",
     kind: "tighten",
     label_en: "Tighten",           label_ar: "تكثيف",
-    preview_en: "Cut filler — say it in fewer words.",
-    preview_ar: "احذف الحشو — قُلها بكلمات أقلّ.",
+    preview_en: "Cut filler, say it in fewer words.",
+    preview_ar: "احذف الحشو، قُلها بكلمات أقلّ.",
     append_en: "\n\n[Reviewer note: rewrite the above in ≤ 60 words, removing all filler.]",
     append_ar: "\n\n[ملاحظة مراجِع: أعد كتابة ما سبق في ≤ 60 كلمة بحذف كل الحشو.]"
   },
@@ -127,10 +127,10 @@ const TEMPLATES: LiveSuggestion[] = [
     id: "expand",
     kind: "expand",
     label_en: "Expand",            label_ar: "توسعة",
-    preview_en: "Too terse — add 2-3 specifics.",
-    preview_ar: "موجز أكثر مما ينبغي — أضف 2-3 تفاصيل.",
-    append_en: "\n\n[Reviewer note: add 2-3 concrete specifics — numbers, named entities, or constraints.]",
-    append_ar: "\n\n[ملاحظة مراجِع: أضف 2-3 تفاصيل ملموسة — أرقام أو أسماء أو قيود.]"
+    preview_en: "Too terse, add 2-3 specifics.",
+    preview_ar: "موجز أكثر مما ينبغي، أضف 2-3 تفاصيل.",
+    append_en: "\n\n[Reviewer note: add 2-3 concrete specifics, numbers, named entities, or constraints.]",
+    append_ar: "\n\n[ملاحظة مراجِع: أضف 2-3 تفاصيل ملموسة، أرقام أو أسماء أو قيود.]"
   }
 ];
 

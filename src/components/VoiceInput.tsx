@@ -257,14 +257,22 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, className }: Pr
       // Level meter is decoration; ignore failures
     }
 
-    // 3. Start the actual SpeechRecognition
+    // 3. Start the actual SpeechRecognition.
+    //
+    // Mobile browsers (Samsung Internet, Chrome on Android) consistently
+    // misbehave when continuous=true: they fire onstart, capture audio,
+    // but never emit results. The reliable shape on mobile is single-shot
+    // recognition with onend → restart, which we transparently emulate.
     const Ctor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
     if (!Ctor) {
       setStatus("unsupported");
       return;
     }
+    const isMobile =
+      typeof navigator !== "undefined" &&
+      /android|iphone|ipad|ipod|mobile|silk/i.test(navigator.userAgent);
     const rec = new Ctor();
-    rec.continuous = true;
+    rec.continuous = !isMobile;        // single-shot on mobile, continuous on desktop
     rec.interimResults = true;
     rec.maxAlternatives = 1;
     rec.lang = voiceLocale?.code ?? (locale === "ar" ? "ar-EG" : "en-US");

@@ -1,6 +1,6 @@
 {
   "name": "promptszaian-mobile",
-  "version": "0.10.0",
+  "version": "0.14.0",
   "private": true,
   "description": "Native iOS + Android shells for PromptsZAIan / موجة زيان (Capacitor).",
   "scripts": {

@@ -24,6 +24,7 @@ export default function Header() {
         <nav className="hidden md:flex items-center gap-1 text-sm">
           <a href="/workspace" className="btn-ghost">{t("nav.workspace")}</a>
           <a href="/templates" className="btn-ghost">{t("nav.templates")}</a>
+          <a href="/learn" className="btn-ghost">{t("nav.learn")}</a>
           <a href="/history" className="btn-ghost">{t("nav.history")}</a>
           <a href="/settings" className="btn-ghost">{t("nav.settings")}</a>
           <a href="/login" className="btn-ghost">{t("nav.signin")}</a>
@@ -70,6 +71,7 @@ export default function Header() {
           <div className="max-w-7xl mx-auto px-4 py-2 flex flex-col">
             <a href="/workspace" className="btn-ghost justify-start">{t("nav.workspace")}</a>
             <a href="/templates" className="btn-ghost justify-start">{t("nav.templates")}</a>
+            <a href="/learn" className="btn-ghost justify-start">{t("nav.learn")}</a>
             <a href="/history" className="btn-ghost justify-start">{t("nav.history")}</a>
             <a href="/settings" className="btn-ghost justify-start">{t("nav.settings")}</a>
             <a href="/login" className="btn-ghost justify-start">{t("nav.signin")}</a>

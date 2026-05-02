@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "PromptsZAIan",
   "short_name": "ZAIan",
-  "version": "0.11.0",
-  "description": "Polish any AI prompt for ChatGPT, Claude, Copilot, Gemini — free, EN/AR. From the UAE 🇦🇪 to the world.",
+  "version": "0.14.0",
+  "description": "Polish any AI prompt for ChatGPT, Claude, Copilot, Gemini. Free, EN/AR. From the UAE 🇦🇪 to the world.",
   "permissions": ["storage", "activeTab", "scripting", "contextMenus"],
   "host_permissions": [
     "https://chat.openai.com/*",
@@ -11,7 +11,6 @@
     "https://claude.ai/*",
     "https://copilot.microsoft.com/*",
     "https://gemini.google.com/*",
-    "http://localhost:3000/*",
     "https://*/*"
   ],
   "background": { "service_worker": "background.js", "type": "module" },
@@ -25,7 +24,10 @@
       "description": "Open PromptsZAIan suggestions"
     }
   },
-  "options_page": "options.html",
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
   "content_scripts": [
     {
       "matches": [
@@ -40,5 +42,11 @@
       "run_at": "document_idle"
     }
   ],
-  "icons": { "128": "icon.png" }
+  "icons": { "128": "icon.png" },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "promptszaian@zaian.com",
+      "strict_min_version": "115.0"
+    }
+  }
 }
