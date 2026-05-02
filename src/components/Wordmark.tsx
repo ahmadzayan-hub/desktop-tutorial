@@ -9,9 +9,9 @@ interface Props {
 /**
  * Wordmark for the platform brand.
  *
- * - English: "Prompt ZAI@n" — the @ replaces the 'a' in "Zaian", giving the
- *   mark a distinctive tech feel. Rendered in two weights for emphasis.
- * - Arabic: "موجة زيان" (Mawjat Zayan / "Zayan's wave").
+ * - English: **PromptsZAIan** — single word, "ZAI" rendered in the brand
+ *   gradient to highlight the play on Zaian.
+ * - Arabic:  **موجة زيان**.
  *
  * The component picks the right form based on the active locale, but always
  * renders the *other* form as a small subtitle so both audiences recognise
@@ -19,13 +19,11 @@ interface Props {
  */
 export default function Wordmark({ className }: Props) {
   const { locale } = useI18n();
+
   const en = (
-    <>
-      <span className="font-semibold tracking-tight">Prompt&nbsp;</span>
-      <span className="font-bold tracking-tight">
-        ZAI<span className="text-brand-600">@</span>n
-      </span>
-    </>
+    <span className="font-bold tracking-tight">
+      Prompts<span className="text-brand-600 dark:text-brand-400">ZAI</span>an
+    </span>
   );
   const ar = <span className="font-semibold tracking-tight">موجة زيان</span>;
 
@@ -34,8 +32,8 @@ export default function Wordmark({ className }: Props) {
       <span className="text-base sm:text-lg truncate">
         {locale === "ar" ? ar : en}
       </span>
-      <span className="text-[10px] text-slate-500 font-normal truncate" aria-hidden="true">
-        {locale === "ar" ? "Prompt ZAI@n" : "موجة زيان"}
+      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal truncate" aria-hidden="true">
+        {locale === "ar" ? "PromptsZAIan" : "موجة زيان"}
       </span>
     </span>
   );

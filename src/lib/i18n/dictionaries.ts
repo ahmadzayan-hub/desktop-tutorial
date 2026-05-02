@@ -4,8 +4,8 @@ export const RTL_LOCALES: Locale[] = ["ar"];
 
 export const dict = {
   en: {
-    "app.name": "Prompt ZAI@n",
-    "app.tagline": "Your AI prompt writing assistant — free from the UAE 🇦🇪 to the world.",
+    "app.name": "PromptsZAIan",
+    "app.tagline": "Your AI prompt engineering studio — free from the UAE 🇦🇪 to the world.",
     "nav.workspace": "Workspace",
     "nav.templates": "Templates",
     "nav.history": "History",
@@ -70,6 +70,7 @@ export const dict = {
     "voice.requesting": "Requesting microphone…",
     "voice.denied": "Microphone permission denied. Allow it in your browser settings.",
     "voice.no_device": "No microphone detected.",
+    "voice.no_speech_hint": "I can hear audio but no words yet. Listening for {dialect} — try speaking louder, or pick a different dialect with the flag button.",
 
     "files.label": "Attach any files — text, code, images, PDFs, docs",
     "files.add": "Attach files",
@@ -147,12 +148,12 @@ export const dict = {
     "compare.show": "Compare",
     "compare.hide": "Hide comparison",
 
-    "share.title": "Share Prompt ZAI@n",
-    "share.text": "Free AI prompt writing assistant — from the UAE 🇦🇪 to the world.",
+    "share.title": "Share PromptsZAIan",
+    "share.text": "Free AI prompt engineering studio — from the UAE 🇦🇪 to the world.",
     "share.button": "Share the app",
     "share.copied": "Link copied",
     "install.button": "Install app",
-    "install.hint": "Install Prompt ZAI@n for one-tap access from your home screen.",
+    "install.hint": "Install PromptsZAIan for one-tap access from your home screen.",
 
     "lint.empty": "Looking good — keep going.",
     "lint.hint.audience": "Add who it's for",
@@ -164,6 +165,10 @@ export const dict = {
 
     "live.label": "Quick suggestions",
     "live.dismiss": "Dismiss this suggestion",
+
+    "domain.label": "What are you building?",
+    "domain.auto": "Auto-detect",
+    "domain.auto_detected": "auto-detected from your text — pick a tile to lock it",
 
     "settings.title": "Settings",
     "settings.subtitle": "All controls in one place. Everything stays on this device unless you sign in.",
@@ -376,6 +381,7 @@ export const dict = {
     "voice.requesting": "جارٍ طلب الميكروفون…",
     "voice.denied": "رُفض إذن الميكروفون. فعّله من إعدادات المتصفّح.",
     "voice.no_device": "لم يُعثر على ميكروفون.",
+    "voice.no_speech_hint": "أسمع صوتًا لكن لم تصل كلمات بعد. أستمع بلهجة {dialect} — جرّب التحدّث بصوت أعلى أو اختر لهجة أخرى من زر العَلَم.",
 
     "files.label": "أرفق أي ملفات — نصوص أو أكواد أو صور أو PDF أو مستندات",
     "files.add": "أرفق ملفات",
@@ -454,7 +460,7 @@ export const dict = {
     "compare.hide": "إخفاء المقارنة",
 
     "share.title": "شارك موجة زيان",
-    "share.text": "مساعد ذكي مجاني لكتابة الموجِّهات — من الإمارات 🇦🇪 إلى العالم.",
+    "share.text": "استوديو هندسة موجِّهات الذكاء الاصطناعي — مجاني من الإمارات 🇦🇪 إلى العالم.",
     "share.button": "شارك التطبيق",
     "share.copied": "تمّ نسخ الرابط",
     "install.button": "تثبيت التطبيق",
@@ -470,6 +476,10 @@ export const dict = {
 
     "live.label": "اقتراحات سريعة",
     "live.dismiss": "تجاهل هذا الاقتراح",
+
+    "domain.label": "ما الذي تبنيه؟",
+    "domain.auto": "كشف تلقائي",
+    "domain.auto_detected": "اكتُشف تلقائيًا من نصّك — اختر مربّعًا لتثبيته",
 
     "settings.title": "الإعدادات",
     "settings.subtitle": "كل الضوابط في مكان واحد. كل شيء يبقى على جهازك ما لم تسجّل الدخول.",

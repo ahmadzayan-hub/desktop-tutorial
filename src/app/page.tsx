@@ -20,17 +20,17 @@ export default function HomePage() {
           {/* Copy column */}
           <div className="text-center lg:text-start">
             <UaeBadge />
-            <h1 className="mt-5 text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-tight bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 bg-clip-text text-transparent">
+            <h1 className="mt-5 text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-tight bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:from-white dark:via-slate-100 dark:to-white bg-clip-text text-transparent">
               {t("home.title")}
             </h1>
-            <p className="mt-4 text-base sm:text-lg text-slate-600 max-w-2xl lg:max-w-none mx-auto lg:mx-0">
+            <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl lg:max-w-none mx-auto lg:mx-0">
               {t("home.subtitle")}
             </p>
             <div className="mt-7 flex flex-wrap justify-center lg:justify-start gap-3">
               <a href="/workspace" className="btn-primary">{t("home.cta.workspace")}</a>
-              <a href="/templates" className="btn-ghost border border-slate-300">{t("home.cta.templates")}</a>
+              <a href="/templates" className="btn-ghost border border-slate-300 dark:border-slate-700">{t("home.cta.templates")}</a>
             </div>
-            <p className="mt-5 text-xs text-slate-500 max-w-md mx-auto lg:mx-0">
+            <p className="mt-5 text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto lg:mx-0">
               {t("home.origin_long")}
             </p>
           </div>
@@ -76,12 +76,12 @@ function UaeBadge() {
   const t = useT();
   return (
     <span
-      className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold tracking-wide bg-gradient-to-r from-emerald-50 via-white to-rose-50 border border-slate-200 shadow-sm"
+      className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold tracking-wide bg-gradient-to-r from-emerald-50 via-white to-rose-50 dark:from-emerald-900/20 dark:via-slate-900 dark:to-rose-900/20 border border-slate-200 dark:border-slate-700 shadow-sm"
       role="note"
       aria-label="Made in the UAE, free for the world"
     >
       <span aria-hidden="true" className="text-base leading-none">🇦🇪</span>
-      <span className="text-slate-700">{t("home.pill")}</span>
+      <span className="text-slate-700 dark:text-slate-200">{t("home.pill")}</span>
     </span>
   );
 }
@@ -108,14 +108,14 @@ function ExamplesSection() {
   }
 
   const toneClass: Record<string, string> = {
-    violet:  "from-violet-50 to-violet-100/60 border-violet-200",
-    sky:     "from-sky-50 to-sky-100/60 border-sky-200",
-    emerald: "from-emerald-50 to-emerald-100/60 border-emerald-200"
+    violet:  "from-violet-50 to-violet-100/60 border-violet-200 dark:from-violet-900/30 dark:to-violet-900/10 dark:border-violet-800",
+    sky:     "from-sky-50 to-sky-100/60 border-sky-200 dark:from-sky-900/30 dark:to-sky-900/10 dark:border-sky-800",
+    emerald: "from-emerald-50 to-emerald-100/60 border-emerald-200 dark:from-emerald-900/30 dark:to-emerald-900/10 dark:border-emerald-800"
   };
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pb-12 sm:pb-20">
-      <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide">
+      <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
         {t("home.examples.title")}
       </h2>
       <div className="mt-3 grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -128,9 +128,9 @@ function ExamplesSection() {
               toneClass[e.tone]
             }
           >
-            <div className="text-sm font-medium text-slate-800">{t(e.titleKey)}</div>
-            <p className="mt-1 text-sm text-slate-600 line-clamp-2">{t(e.bodyKey)}</p>
-            <span className="mt-3 inline-block text-xs font-semibold text-brand-700">
+            <div className="text-sm font-medium text-slate-800 dark:text-slate-100">{t(e.titleKey)}</div>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300 line-clamp-2">{t(e.bodyKey)}</p>
+            <span className="mt-3 inline-block text-xs font-semibold text-brand-700 dark:text-brand-300">
               {t("home.examples.try")} →
             </span>
           </button>
@@ -152,9 +152,9 @@ function StepCard({
   body: string;
 }) {
   const tones: Record<string, string> = {
-    brand: "bg-brand-50 text-brand-700",
-    violet: "bg-violet-50 text-violet-700",
-    emerald: "bg-emerald-50 text-emerald-700"
+    brand:   "bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300",
+    violet:  "bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300",
+    emerald: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
   };
   return (
     <div className="card hover:shadow-md transition group">
@@ -162,7 +162,7 @@ function StepCard({
         {icon}
       </div>
       <div className="mt-3 font-medium">{title}</div>
-      <p className="text-sm text-slate-600 mt-1">{body}</p>
+      <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">{body}</p>
     </div>
   );
 }

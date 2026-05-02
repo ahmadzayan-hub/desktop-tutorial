@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 /**
- * Capacitor configuration for the Prompt ZAI@n / موجة زيان native shells.
+ * Capacitor configuration for the PromptsZAIan / موجة زيان native shells.
  *
  * Both Android and iOS wrap the live web app — when the host is reachable
  * we serve from there (instant updates, no app-store review needed for
@@ -20,8 +20,8 @@ import type { CapacitorConfig } from "@capacitor/cli";
 const PRODUCTION_URL = "https://desktop-tutorial-kappa-five.vercel.app";
 
 const config: CapacitorConfig = {
-  appId: "com.zaian.promptzaian",
-  appName: "Prompt ZAI@n",
+  appId: "com.zaian.promptszaian",
+  appName: "PromptsZAIan",
   webDir: "../public",
   server: {
     url: PRODUCTION_URL,

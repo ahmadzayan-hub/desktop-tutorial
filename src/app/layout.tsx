@@ -7,28 +7,27 @@ import TrialBanner from "@/components/TrialBanner";
 import { CONTACT_EMAIL } from "@/lib/contact";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-const TITLE = "Prompt ZAI@n · موجة زيان — AI Prompt Writing Assistant";
+const TITLE = "PromptsZAIan · موجة زيان — AI Prompt Engineering Studio";
 const DESCRIPTION =
-  "Free from the UAE 🇦🇪 to the world. Turn rough ideas into perfectly engineered prompts for ChatGPT, Claude, Copilot, and Gemini. Multilingual (EN/AR), voice + file uploads, works offline.";
+  "Free from the UAE 🇦🇪 to the world. Engineer prompts of every kind — code, writing, research, video, audio, software, websites, reports, images — for ChatGPT, Claude, Copilot, and Gemini. Multilingual (EN/AR), voice + file uploads, works offline.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
-  title: { default: TITLE, template: "%s · Prompt ZAI@n" },
+  title: { default: TITLE, template: "%s · PromptsZAIan" },
   description: DESCRIPTION,
-  applicationName: "Prompt ZAI@n",
+  applicationName: "PromptsZAIan",
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, title: "Prompt ZAI@n", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "PromptsZAIan", statusBarStyle: "default" },
   icons: {
     icon: "/icon.svg",
     apple: "/icon.svg"
   },
   authors: [{ name: "Ahmad Zaian", url: `mailto:${CONTACT_EMAIL}` }],
   keywords: [
-    "Prompt ZAI@n",
+    "PromptsZAIan",
     "موجة زيان",
-    "Prompt Zaian",
     "prompt engineering",
-    "AI",
+    "AI prompts",
     "ChatGPT",
     "Claude",
     "Copilot",
@@ -36,6 +35,11 @@ export const metadata: Metadata = {
     "Arabic AI",
     "RTL",
     "voice prompt",
+    "image prompt",
+    "video prompt",
+    "audio prompt",
+    "software prompt",
+    "research prompt",
     "UAE",
     "Emirates",
     "free AI tool"
@@ -45,9 +49,9 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
     url: APP_URL,
-    siteName: "Prompt ZAI@n",
+    siteName: "PromptsZAIan",
     locale: "en_US",
-    images: [{ url: "/icon.svg", width: 512, height: 512, alt: "Prompt ZAI@n / موجة زيان" }]
+    images: [{ url: "/icon.svg", width: 512, height: 512, alt: "PromptsZAIan / موجة زيان" }]
   },
   twitter: {
     card: "summary_large_image",
@@ -91,8 +95,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              name: "Prompt ZAI@n",
-              alternateName: ["موجة زيان", "Prompt Zaian"],
+              name: "PromptsZAIan",
+              alternateName: ["موجة زيان", "Prompts ZAIan"],
               description: DESCRIPTION,
               url: APP_URL,
               applicationCategory: "ProductivityApplication",

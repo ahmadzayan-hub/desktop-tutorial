@@ -1,6 +1,9 @@
 /**
  * Minimal hero illustration: rough scribbled note → spark → polished card.
  * SVG, no images, RTL-safe (mirrors automatically when html[dir=rtl]).
+ *
+ * Colours come from CSS classes (`.hi-*`) defined in globals.css so the
+ * illustration adapts cleanly to dark mode.
  */
 export default function HeroIllustration({ className }: { className?: string }) {
   return (
@@ -11,31 +14,31 @@ export default function HeroIllustration({ className }: { className?: string }) 
       className={className}
     >
       <defs>
-        <linearGradient id="hi-card" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#eef2ff" />
-          <stop offset="100%" stopColor="#fae8ff" />
-        </linearGradient>
         <linearGradient id="hi-spark" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#6366f1" />
           <stop offset="100%" stopColor="#ec4899" />
+        </linearGradient>
+        <linearGradient id="hi-card" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#eef2ff" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#fae8ff" stopOpacity="0.9" />
         </linearGradient>
       </defs>
 
       {/* RAW NOTE (left) */}
       <g transform="translate(20,30)">
-        <rect width="180" height="180" rx="12" fill="#ffffff" stroke="#e2e8f0" strokeWidth="2" />
-        <path d="M22 36 H140" stroke="#cbd5e1" strokeWidth="3" strokeLinecap="round" />
-        <path d="M22 60 H120" stroke="#cbd5e1" strokeWidth="3" strokeLinecap="round" />
-        <path d="M22 84 H150" stroke="#cbd5e1" strokeWidth="3" strokeLinecap="round" />
+        <rect width="180" height="180" rx="12" className="hi-raw-bg" strokeWidth="2" />
+        <path d="M22 36 H140" className="hi-raw-line"  strokeWidth="3" strokeLinecap="round" />
+        <path d="M22 60 H120" className="hi-raw-line"  strokeWidth="3" strokeLinecap="round" />
+        <path d="M22 84 H150" className="hi-raw-line"  strokeWidth="3" strokeLinecap="round" />
         {/* messy scribble */}
         <path
           d="M22 118 q12 -18 28 0 t28 0 t28 0 t28 0 t28 0"
-          stroke="#94a3b8"
+          className="hi-raw-scribble"
           strokeWidth="3"
           fill="none"
           strokeLinecap="round"
         />
-        <text x="22" y="160" fontFamily="ui-sans-serif,system-ui" fontSize="13" fill="#94a3b8">raw idea…</text>
+        <text x="22" y="160" className="hi-raw-label" fontFamily="ui-sans-serif,system-ui" fontSize="13">raw idea…</text>
       </g>
 
       {/* ARROW + SPARK */}
@@ -64,17 +67,17 @@ export default function HeroIllustration({ className }: { className?: string }) 
 
       {/* POLISHED CARD (right) */}
       <g transform="translate(400,30)">
-        <rect width="180" height="180" rx="12" fill="url(#hi-card)" stroke="#c4b5fd" strokeWidth="2" />
-        <text x="22" y="34" fontFamily="ui-sans-serif,system-ui" fontSize="11" fontWeight="700" fill="#6d28d9">CONTEXT</text>
-        <path d="M22 46 H140" stroke="#c4b5fd" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M22 60 H110" stroke="#c4b5fd" strokeWidth="2.5" strokeLinecap="round" />
+        <rect width="180" height="180" rx="12" fill="url(#hi-card)" className="hi-card-stroke" strokeWidth="2" />
+        <text x="22" y="34"  className="hi-card-label" fontFamily="ui-sans-serif,system-ui" fontSize="11" fontWeight="700">CONTEXT</text>
+        <path d="M22 46 H140" className="hi-card-line" strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M22 60 H110" className="hi-card-line" strokeWidth="2.5" strokeLinecap="round" />
 
-        <text x="22" y="86" fontFamily="ui-sans-serif,system-ui" fontSize="11" fontWeight="700" fill="#6d28d9">TASK</text>
-        <path d="M22 98 H150" stroke="#c4b5fd" strokeWidth="2.5" strokeLinecap="round" />
+        <text x="22" y="86"  className="hi-card-label" fontFamily="ui-sans-serif,system-ui" fontSize="11" fontWeight="700">TASK</text>
+        <path d="M22 98 H150" className="hi-card-line" strokeWidth="2.5" strokeLinecap="round" />
 
-        <text x="22" y="124" fontFamily="ui-sans-serif,system-ui" fontSize="11" fontWeight="700" fill="#6d28d9">FORMAT</text>
-        <path d="M22 136 H100" stroke="#c4b5fd" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M22 150 H140" stroke="#c4b5fd" strokeWidth="2.5" strokeLinecap="round" />
+        <text x="22" y="124" className="hi-card-label" fontFamily="ui-sans-serif,system-ui" fontSize="11" fontWeight="700">FORMAT</text>
+        <path d="M22 136 H100" className="hi-card-line" strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M22 150 H140" className="hi-card-line" strokeWidth="2.5" strokeLinecap="round" />
 
         <circle cx="158" cy="160" r="7" fill="#10b981" />
         <path d="M155 160 l3 3 l5 -6" stroke="#fff" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />

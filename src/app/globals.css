@@ -50,6 +50,22 @@ button {
 
 pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 
+/* HeroIllustration — adapts to dark mode via these classes */
+.hi-raw-bg       { fill: #ffffff; stroke: #e2e8f0; }
+.hi-raw-line     { stroke: #cbd5e1; }
+.hi-raw-scribble { stroke: #94a3b8; }
+.hi-raw-label    { fill: #94a3b8; }
+.hi-card-stroke  { stroke: #c4b5fd; }
+.hi-card-line    { stroke: #c4b5fd; }
+.hi-card-label   { fill: #6d28d9; }
+html.dark .hi-raw-bg       { fill: #1e293b; stroke: #334155; }
+html.dark .hi-raw-line     { stroke: #475569; }
+html.dark .hi-raw-scribble { stroke: #64748b; }
+html.dark .hi-raw-label    { fill: #94a3b8; }
+html.dark .hi-card-stroke  { stroke: #7c3aed; }
+html.dark .hi-card-line    { stroke: #a78bfa; }
+html.dark .hi-card-label   { fill: #c4b5fd; }
+
 /* Subtle entrance for cards */
 @keyframes po-fade-in {
   from { opacity: 0; transform: translateY(4px); }

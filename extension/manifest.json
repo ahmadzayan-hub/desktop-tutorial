@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Prompt ZAI@n",
-  "short_name": "ZAI@n",
+  "name": "PromptsZAIan",
+  "short_name": "ZAIan",
   "version": "0.11.0",
   "description": "Polish any AI prompt for ChatGPT, Claude, Copilot, Gemini — free, EN/AR. From the UAE 🇦🇪 to the world.",
   "permissions": ["storage", "activeTab", "scripting", "contextMenus"],
@@ -16,13 +16,13 @@
   ],
   "background": { "service_worker": "background.js", "type": "module" },
   "action": {
-    "default_title": "Prompt ZAI@n",
+    "default_title": "PromptsZAIan",
     "default_popup": "popup.html"
   },
   "commands": {
     "_execute_action": {
       "suggested_key": { "default": "Alt+P", "mac": "Alt+P" },
-      "description": "Open Prompt ZAI@n"
+      "description": "Open PromptsZAIan suggestions"
     }
   },
   "options_page": "options.html",

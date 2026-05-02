@@ -1,14 +1,14 @@
 /**
  * BCP-47 voice locales with country flags and labels.
  *
- * The Web Speech API accepts a BCP-47 tag (e.g. "ar-AE", "en-GB"); browsers
+ * The Web Speech API accepts a BCP-47 tag (e.g. "ar-EG", "en-GB"); browsers
  * pick the matching recognition model. We expose a curated list — flag-first
  * so it scans visually — and remember the user's last choice in localStorage.
  *
- * Defaults:
- *   - Arabic locale → 🇦🇪 ar-AE  (Emirati). MSA is intentionally not in the
- *     menu; ar-AE covers Modern Standard speech well in practice on Chrome.
- *   - English locale → 🇺🇸 en-US.
+ * Default for Arabic is **🇪🇬 ar-EG** because it has the broadest media
+ * exposure in Arab speech datasets and recognises well across most dialects.
+ * MSA is intentionally not in the menu; users who want it pick the dialect
+ * closest to their speech.
  */
 
 export interface VoiceLocale {
@@ -19,18 +19,20 @@ export interface VoiceLocale {
 }
 
 export const VOICE_LOCALES_AR: VoiceLocale[] = [
+  { code: "ar-EG", flag: "🇪🇬", ar: "مصر",        en: "Egypt" },
   { code: "ar-AE", flag: "🇦🇪", ar: "الإمارات",   en: "UAE" },
   { code: "ar-SA", flag: "🇸🇦", ar: "السعودية",   en: "Saudi Arabia" },
-  { code: "ar-EG", flag: "🇪🇬", ar: "مصر",        en: "Egypt" },
   { code: "ar-KW", flag: "🇰🇼", ar: "الكويت",     en: "Kuwait" },
   { code: "ar-QA", flag: "🇶🇦", ar: "قطر",        en: "Qatar" },
   { code: "ar-BH", flag: "🇧🇭", ar: "البحرين",   en: "Bahrain" },
   { code: "ar-OM", flag: "🇴🇲", ar: "عُمان",      en: "Oman" },
   { code: "ar-JO", flag: "🇯🇴", ar: "الأردن",     en: "Jordan" },
+  { code: "ar-PS", flag: "🇵🇸", ar: "فلسطين",     en: "Palestine" },
   { code: "ar-LB", flag: "🇱🇧", ar: "لبنان",      en: "Lebanon" },
-  { code: "ar-SY", flag: "🇸🇾", ar: "الشام",      en: "Levantine" },
+  { code: "ar-SY", flag: "🇸🇾", ar: "سوريا",      en: "Syria" },
   { code: "ar-IQ", flag: "🇮🇶", ar: "العراق",     en: "Iraq" },
   { code: "ar-YE", flag: "🇾🇪", ar: "اليمن",      en: "Yemen" },
+  { code: "ar-SD", flag: "🇸🇩", ar: "السودان",   en: "Sudan" },
   { code: "ar-MA", flag: "🇲🇦", ar: "المغرب",    en: "Morocco" },
   { code: "ar-DZ", flag: "🇩🇿", ar: "الجزائر",   en: "Algeria" },
   { code: "ar-TN", flag: "🇹🇳", ar: "تونس",       en: "Tunisia" },

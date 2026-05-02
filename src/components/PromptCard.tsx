@@ -89,7 +89,7 @@ export default function PromptCard({ text, intent, className }: Props) {
     // Top — brand wordmark
     ctx.fillStyle = "#ffffff";
     ctx.font = "700 56px system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
-    ctx.fillText("Prompt ZAI@n", pad + 32, pad + 88);
+    ctx.fillText("PromptsZAIan", pad + 32, pad + 88);
     ctx.fillStyle = "rgba(255,255,255,0.7)";
     ctx.font = "500 28px system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
     ctx.fillText("موجة زيان · From the UAE 🇦🇪 to the world", pad + 32, pad + 132);
@@ -169,7 +169,7 @@ export default function PromptCard({ text, intent, className }: Props) {
       if (!url) return;
       const a = document.createElement("a");
       a.href = url;
-      a.download = `prompt-zaian-${new Date().toISOString().slice(0, 10)}.png`;
+      a.download = `promptszaian-${new Date().toISOString().slice(0, 10)}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -187,13 +187,13 @@ export default function PromptCard({ text, intent, className }: Props) {
       // Convert data URL → File so navigator.share can attach the image
       const res = await fetch(url);
       const blob = await res.blob();
-      const file = new File([blob], "prompt-zaian.png", { type: "image/png" });
+      const file = new File([blob], "promptszaian.png", { type: "image/png" });
       const navAny = navigator as Navigator & { canShare?: (data: ShareData) => boolean };
       if (typeof navigator !== "undefined" && navAny.canShare?.({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: "Prompt ZAI@n",
-          text: "Built with Prompt ZAI@n / موجة زيان"
+          title: "PromptsZAIan",
+          text: "Built with PromptsZAIan / موجة زيان"
         });
         return;
       }

@@ -9,19 +9,19 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-slate-200 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 grid sm:grid-cols-2 gap-4 text-xs text-slate-500">
+    <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 grid sm:grid-cols-2 gap-4 text-xs text-slate-500 dark:text-slate-400">
         <div>
-          <div className="font-medium text-slate-700">{t("app.name")}</div>
+          <div className="font-medium text-slate-700 dark:text-slate-200">{t("app.name")}</div>
           <p className="mt-1">{t("footer.note")}</p>
           <p className="mt-1 text-[11px]">© {year}</p>
         </div>
         <div className="sm:text-end">
-          <div className="font-medium text-slate-700">{t("footer.contact_title")}</div>
+          <div className="font-medium text-slate-700 dark:text-slate-200">{t("footer.contact_title")}</div>
           <p className="mt-1">
             <a
               href={CONTACT_MAILTO}
-              className="text-brand-700 hover:underline break-all"
+              className="text-brand-700 dark:text-brand-300 hover:underline break-all"
               aria-label={locale === "ar" ? `راسلنا على ${CONTACT_EMAIL}` : `Email us at ${CONTACT_EMAIL}`}
             >
               {CONTACT_EMAIL}

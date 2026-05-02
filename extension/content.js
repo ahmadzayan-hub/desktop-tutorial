@@ -1,4 +1,4 @@
-// Prompt ZAI@n — content script
+// PromptsZAIan — content script
 // Two enhancements per supported AI site:
 //
 //   1. ✨ Enhance button next to the composer — full polish flow
@@ -6,7 +6,7 @@
 //
 //   2. Live "Grammarly-style" suggestion bubble that appears above the
 //      composer while the user types. Suggestions come from POSTing the
-//      current draft to /api/v1/suggest on the configured Prompt ZAI@n
+//      current draft to /api/v1/suggest on the configured PromptsZAIan
 //      host, debounced 350 ms. Tapping a chip appends the suggestion's
 //      markdown to the composer — never replaces what the user wrote.
 //
@@ -79,7 +79,7 @@
     btn.type = "button";
     btn.className = "po-enhance-btn";
     btn.textContent = "✨ Enhance";
-    btn.title = "Polish with Prompt ZAI@n";
+    btn.title = "Polish with PromptsZAIan";
 
     const wrap = document.createElement("div");
     wrap.className = "po-wrap";
@@ -100,7 +100,7 @@
         writeValue(el, resp.data.final_prompt);
         btn.textContent = "✓ Enhanced";
       } catch (e) {
-        console.error("[ZAI@n]", e);
+        console.error("[PromptsZAIan]", e);
         btn.textContent = "Error";
       } finally {
         setTimeout(() => {
@@ -124,7 +124,7 @@
     suggestEl = document.createElement("div");
     suggestEl.className = "po-bubble";
     suggestEl.setAttribute("role", "region");
-    suggestEl.setAttribute("aria-label", "Prompt ZAI@n suggestions");
+    suggestEl.setAttribute("aria-label", "PromptsZAIan suggestions");
     suggestEl.style.display = "none";
     document.body.appendChild(suggestEl);
     positionBubble(anchor);

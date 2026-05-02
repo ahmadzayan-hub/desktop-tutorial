@@ -31,19 +31,19 @@ export default function TrialBanner() {
   const parts = message.split(CONTACT_EMAIL);
 
   return (
-    <div className="bg-gradient-to-r from-brand-50 via-violet-50 to-pink-50 border-b border-brand-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center gap-3 text-xs sm:text-sm text-slate-700">
+    <div className="bg-gradient-to-r from-brand-50 via-violet-50 to-pink-50 dark:from-brand-900/30 dark:via-violet-900/20 dark:to-pink-900/20 border-b border-brand-100 dark:border-slate-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center gap-3 text-xs sm:text-sm text-slate-700 dark:text-slate-200">
         <span className="inline-flex items-center justify-center rounded-full bg-brand-600 text-white w-5 h-5 text-[10px] font-bold flex-shrink-0">β</span>
         <p className="flex-1 leading-snug">
           {parts[0]}
-          <a href={CONTACT_MAILTO} className="text-brand-700 font-medium hover:underline break-all">
+          <a href={CONTACT_MAILTO} className="text-brand-700 dark:text-brand-300 font-medium hover:underline break-all">
             {CONTACT_EMAIL}
           </a>
           {parts[1] ?? ""}
         </p>
         <button
           onClick={dismiss}
-          className="btn-ghost text-xs px-2 py-1 text-slate-600 hover:text-slate-900"
+          className="btn-ghost text-xs px-2 py-1 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
         >
           {t("trial.dismiss")}
         </button>

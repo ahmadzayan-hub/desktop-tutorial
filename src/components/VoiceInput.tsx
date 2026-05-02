@@ -91,6 +91,13 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, className }: Pr
   const [voiceLocale, setVoiceLocale] = useState<VoiceLocale | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [smartSubmit, setSmartSubmit] = useState(false);
+  // What the recogniser is hearing *right now* — shown so the user has
+  // immediate proof that speech is being captured. Cleared on stop / on the
+  // next interim chunk.
+  const [liveText, setLiveText] = useState<string>("");
+  // True once at least one final transcript has arrived in this session;
+  // suppresses the "no speech detected" hint after that.
+  const [gotResult, setGotResult] = useState<boolean>(false);
 
   const recRef = useRef<SpeechRecognitionLike | null>(null);
   const userStoppedRef = useRef(false);
@@ -260,7 +267,7 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, className }: Pr
     rec.continuous = true;
     rec.interimResults = true;
     rec.maxAlternatives = 1;
-    rec.lang = voiceLocale?.code ?? (locale === "ar" ? "ar-AE" : "en-US");
+    rec.lang = voiceLocale?.code ?? (locale === "ar" ? "ar-EG" : "en-US");
 
     rec.onresult = (e: SpeechRecognitionEvent) => {
       let interim = "";
@@ -271,6 +278,9 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, className }: Pr
         if (r.isFinal) finalText += txt;
         else interim += txt;
       }
+      // Always show the live transcript pill — this is the user's confirmation
+      // that the recogniser is hearing them, even before a final arrives.
+      setLiveText(finalText || interim);
       if (finalText) {
         // Final overrides any pending interim → tell parent to replace+commit
         if (lastInterimRef.current) {
@@ -280,7 +290,10 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, className }: Pr
         }
         onTranscript(finalText, true);
         hasFinalRef.current = true;
+        setGotResult(true);
         lastVoiceAtRef.current = Date.now();
+        // Fade the pill briefly so finals feel "committed"
+        setTimeout(() => setLiveText(""), 1200);
       } else if (interim) {
         lastInterimRef.current = interim;
         onTranscript(interim, false);
@@ -318,6 +331,10 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, className }: Pr
     hasFinalRef.current = false;
     autoSubmittedRef.current = false;
     lastVoiceAtRef.current = Date.now();
+    // Reset diagnostic surface so an old transcript / state doesn't leak
+    // into a fresh listening session.
+    setLiveText("");
+    setGotResult(false);
 
     try {
       rec.start();
@@ -339,6 +356,7 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, className }: Pr
 
   function stop() {
     setStatus("idle");
+    setLiveText("");
     stopAll();
   }
 
@@ -377,8 +395,36 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, className }: Pr
   // Re-bind ref on every render so the always-current callback is reachable.
   onAutoSubmitRef.current = effectiveAutoSubmit;
 
+  // Diagnostic hint shown when audio is being captured but no transcript has
+  // arrived for ≥ 5 seconds. Helps the user realise their dialect setting
+  // is wrong, the language is mismatched, or the mic is picking up silence.
+  const showNoSpeechHint =
+    listening &&
+    !gotResult &&
+    !liveText &&
+    elapsed >= 5;
+
   return (
-    <div className={`flex items-center gap-1.5 ${className ?? ""}`}>
+    <div className={`relative flex items-center gap-1.5 ${className ?? ""}`}>
+      {/* Live-transcript popover — floats above the button row when active so
+          the user has visible proof the recogniser is hearing them. */}
+      {(listening && (liveText || showNoSpeechHint)) && (
+        <div
+          className="absolute bottom-full end-0 mb-2 max-w-[min(520px,calc(100vw-2rem))] min-w-[200px] rounded-xl border border-rose-300 dark:border-rose-700 bg-white dark:bg-slate-900 shadow-lg px-3 py-2 z-30 pointer-events-none"
+          aria-live="polite"
+        >
+          {liveText ? (
+            <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-100 whitespace-pre-wrap">
+              {liveText}
+            </p>
+          ) : (
+            <p className="text-xs text-amber-700 dark:text-amber-300">
+              {t("voice.no_speech_hint", { dialect: voiceLocale ? labelFor(voiceLocale, locale) : "—" })}
+            </p>
+          )}
+        </div>
+      )}
+
       {onAutoSubmit && (
         <button
           type="button"

@@ -1,8 +1,8 @@
 {
-  "name": "prompt-zaian-mobile",
+  "name": "promptszaian-mobile",
   "version": "0.10.0",
   "private": true,
-  "description": "Native iOS + Android shells for Prompt ZAI@n / موجة زيان (Capacitor).",
+  "description": "Native iOS + Android shells for PromptsZAIan / موجة زيان (Capacitor).",
   "scripts": {
     "android:init":  "npx cap add android",
     "android:open":  "npx cap open android",

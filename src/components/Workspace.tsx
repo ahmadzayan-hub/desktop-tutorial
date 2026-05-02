@@ -19,6 +19,7 @@ import TokenMeter from "@/components/TokenMeter";
 import PromptDiff from "@/components/PromptDiff";
 import InlineLintHints from "@/components/InlineLintHints";
 import LiveSuggestions from "@/components/LiveSuggestions";
+import DomainPicker from "@/components/DomainPicker";
 import ModelComparison from "@/components/ModelComparison";
 import VariantComparison from "@/components/VariantComparison";
 import PromptCard from "@/components/PromptCard";
@@ -99,6 +100,9 @@ export default function Workspace() {
   const [draftRestored, setDraftRestored] = useState(false);
   const [mode, setMode] = useState<"build" | "reverse">("build");
   const [historyFilter, setHistoryFilter] = useState<"all" | "starred">("all");
+  // null = let the engine auto-detect; non-null = user has explicitly locked
+  // a domain and we should pass it through to the engine.
+  const [forcedIntent, setForcedIntent] = useState<Intent | null>(null);
 
   // Hydrate a starter dropped from /templates, restore an auto-saved draft,
   // and rehydrate the local history list.
@@ -175,30 +179,36 @@ export default function Workspace() {
   }, [raw, model, files, locale]);
 
   function runLocal(quick: boolean, composed: string) {
-    const intent = detectIntentLocal(composed);
+    const detected = detectIntentLocal(composed);
+    // User-locked domain trumps auto-detection so the engine produces the
+    // right scaffold (e.g. don't fall into "image" when the user explicitly
+    // said "writing").
+    const effective = forcedIntent
+      ? { intent: forcedIntent, confidence: 1 }
+      : detected;
     if (quick) {
       const result = reconstructPromptLocal({
-        raw: composed, intent: intent.intent, qa: [], targetModel: model, locale
+        raw: composed, intent: effective.intent, qa: [], targetModel: model, locale
       });
       setSession({
         id: "local",
-        intent: intent.intent,
-        intent_confidence: intent.confidence,
+        intent: effective.intent,
+        intent_confidence: effective.confidence,
         questions: [],
         source: "local"
       });
       setFinalPrompt(result.final_prompt);
       setRationale(result.rationale);
       setInfo(locale === "ar" ? "وضع محلي — لا يحتاج إلى اتصال." : "Running locally — no backend needed.");
-      rememberHistory(raw, intent.intent, model, result.final_prompt);
+      rememberHistory(raw, effective.intent, model, result.final_prompt);
       setLoading(false);
       return;
     }
-    const questions: LocalQuestion[] = generateQuestionsLocal(composed, intent.intent, locale);
+    const questions: LocalQuestion[] = generateQuestionsLocal(composed, effective.intent, locale);
     setSession({
       id: "local",
-      intent: intent.intent,
-      intent_confidence: intent.confidence,
+      intent: effective.intent,
+      intent_confidence: effective.confidence,
       questions,
       source: "local"
     });
@@ -374,11 +384,13 @@ export default function Workspace() {
   const beforeStats = useMemo(() => stats(raw), [raw]);
   const afterStats = useMemo(() => (finalPrompt ? stats(finalPrompt) : null), [finalPrompt]);
   const hasOutput = Boolean(finalPrompt || (session && session.questions.length > 0));
-  // Live intent preview drives the style-pack picker (only shown for image prompts).
-  const previewIntent = useMemo<Intent>(
+  // Live intent preview drives the domain picker + style-pack visibility.
+  // If the user has explicitly locked a domain, that wins.
+  const detectedIntent = useMemo<Intent>(
     () => (raw.trim().length >= 6 ? detectIntentLocal(raw).intent : "other"),
     [raw]
   );
+  const previewIntent: Intent = forcedIntent ?? detectedIntent;
 
   return (
     <div className="mx-auto w-full max-w-7xl px-3 sm:px-6 lg:px-8 py-6 sm:py-10">
@@ -437,9 +449,18 @@ export default function Workspace() {
             <path d="M50 5 L58 42 L95 50 L58 58 L50 95 L42 58 L5 50 L42 42 Z" fill="url(#sp)"/>
           </svg>
 
+          {/* Domain picker — surfaces every supported prompt type so the
+              platform feels general-purpose, not image-only. */}
+          <DomainPicker
+            active={previewIntent}
+            autoDetected={forcedIntent === null}
+            onPick={(next) => setForcedIntent(next)}
+            className="mb-3"
+          />
+
           <div className="flex items-baseline justify-between gap-2 flex-wrap">
             <label className="text-sm font-medium" htmlFor="po-raw">{t("ws.label.raw")}</label>
-            <span className="text-xs text-slate-500 tabular-nums">
+            <span className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
               {t("ws.stats", { chars: beforeStats.chars, words: beforeStats.words })}
             </span>
           </div>
@@ -470,10 +491,10 @@ export default function Workspace() {
             text={raw}
             onApply={(appended) => setRaw((cur) => (cur || "") + appended)}
           />
-          <p className="mt-2 text-[11px] text-slate-500">{t("ws.shortcut.hint")}</p>
+          <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">{t("ws.shortcut.hint")}</p>
 
           {draftRestored && (
-            <div className="mt-3 flex items-center gap-2 flex-wrap rounded-md border border-amber-200 bg-amber-50 text-amber-800 px-3 py-2 text-xs" role="status">
+            <div className="mt-3 flex items-center gap-2 flex-wrap rounded-md border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200 px-3 py-2 text-xs" role="status">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <polyline points="23 4 23 10 17 10"/>
                 <path d="M20.49 15A9 9 0 1 1 5.64 5.64L23 10"/>
@@ -481,7 +502,7 @@ export default function Workspace() {
               <span className="flex-1">{t("draft.restored")}</span>
               <button
                 onClick={discardDraft}
-                className="btn-ghost px-2 py-0.5 text-xs hover:bg-amber-100"
+                className="btn-ghost px-2 py-0.5 text-xs hover:bg-amber-100 dark:hover:bg-amber-900/30"
               >
                 {t("draft.discard")}
               </button>
@@ -490,14 +511,16 @@ export default function Workspace() {
 
           <FileUpload files={files} onChange={setFiles} className="mt-4" />
           {files.length > 0 && (
-            <p className="mt-2 text-[11px] text-slate-500">{t("ws.privacy.files")}</p>
+            <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">{t("ws.privacy.files")}</p>
           )}
 
-          {(previewIntent === "image" || previewIntent === "design") && (
+          {/* Style packs only appear when the user has *explicitly* picked
+              the Image domain — auto-detection alone shouldn't make the
+              platform look image-focused. */}
+          {forcedIntent === "image" && (
             <StylePackPicker
               className="mt-4"
               onPick={(appended) => {
-                // Append-only — never overwrite the user's intent text.
                 setRaw((cur) => (cur.trim() + appended));
               }}
             />
@@ -542,15 +565,15 @@ export default function Workspace() {
           </div>
 
           {info && (
-            <div className="mt-3 rounded-md border border-sky-200 bg-sky-50 text-sky-800 p-3 text-sm flex items-start gap-2" role="status">
+            <div className="mt-3 rounded-md border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-900/20 text-sky-800 dark:text-sky-200 p-3 text-sm flex items-start gap-2" role="status">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 flex-shrink-0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
               <span>{info}</span>
             </div>
           )}
           {error && (
-            <div className="mt-3 rounded-md border border-rose-200 bg-rose-50 text-rose-800 p-3 text-sm" role="alert">
+            <div className="mt-3 rounded-md border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-900/20 text-rose-800 dark:text-rose-200 p-3 text-sm" role="alert">
               <div className="font-medium">{error.message}</div>
-              {error.hint && <div className="text-rose-700 text-xs mt-1">{error.hint}</div>}
+              {error.hint && <div className="text-rose-700 dark:text-rose-300 text-xs mt-1">{error.hint}</div>}
             </div>
           )}
 
@@ -643,7 +666,7 @@ export default function Workspace() {
                     <TokenMeter text={finalPrompt} model={model} />
                   </div>
 
-                  <pre className="mt-3 whitespace-pre-wrap rounded bg-slate-50 p-3 text-sm border border-slate-200 max-h-[60vh] overflow-auto">
+                  <pre className="mt-3 whitespace-pre-wrap rounded bg-slate-50 dark:bg-slate-950 dark:text-slate-100 p-3 text-sm border border-slate-200 dark:border-slate-700 max-h-[60vh] overflow-auto">
 {finalPrompt}
                   </pre>
 
@@ -667,7 +690,7 @@ export default function Workspace() {
                 <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="card">
                     <div className="text-xs text-slate-500 mb-1">{t("ws.before")}</div>
-                    <pre className="whitespace-pre-wrap rounded bg-slate-50 p-3 text-sm border border-slate-200 max-h-60 overflow-auto">
+                    <pre className="whitespace-pre-wrap rounded bg-slate-50 dark:bg-slate-950 dark:text-slate-100 p-3 text-sm border border-slate-200 dark:border-slate-700 max-h-60 overflow-auto">
 {raw}
                     </pre>
                     <div className="text-xs text-slate-500 mt-2">
@@ -676,7 +699,7 @@ export default function Workspace() {
                   </div>
                   <div className="card">
                     <div className="text-xs text-slate-500 mb-1">{t("ws.after")}</div>
-                    <pre className="whitespace-pre-wrap rounded bg-emerald-50 p-3 text-sm border border-emerald-200 max-h-60 overflow-auto">
+                    <pre className="whitespace-pre-wrap rounded bg-emerald-50 dark:bg-emerald-950/40 dark:text-emerald-100 p-3 text-sm border border-emerald-200 dark:border-emerald-800 max-h-60 overflow-auto">
 {finalPrompt}
                     </pre>
                     <div className="text-xs text-slate-500 mt-2">
@@ -734,21 +757,21 @@ function stats(s: string) {
 function IntentBadge({ intent }: { intent: string }) {
   const t = useT();
   const tone: Record<string, string> = {
-    coding: "bg-violet-50 text-violet-700",
-    writing: "bg-sky-50 text-sky-700",
-    research: "bg-amber-50 text-amber-700",
-    analysis: "bg-emerald-50 text-emerald-700",
-    planning: "bg-rose-50 text-rose-700",
-    creative: "bg-pink-50 text-pink-700",
-    design: "bg-fuchsia-50 text-fuchsia-700",
-    conversation: "bg-cyan-50 text-cyan-700",
-    image: "bg-orange-50 text-orange-700",
-    video: "bg-red-50 text-red-700",
-    audio: "bg-teal-50 text-teal-700",
-    software: "bg-indigo-50 text-indigo-700",
-    website: "bg-lime-50 text-lime-700",
-    report: "bg-stone-100 text-stone-700",
-    other: "bg-slate-100 text-slate-600"
+    coding:       "bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300",
+    writing:      "bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300",
+    research:     "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
+    analysis:     "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
+    planning:     "bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300",
+    creative:     "bg-pink-50 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300",
+    design:       "bg-fuchsia-50 text-fuchsia-700 dark:bg-fuchsia-900/30 dark:text-fuchsia-300",
+    conversation: "bg-cyan-50 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300",
+    image:        "bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
+    video:        "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300",
+    audio:        "bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300",
+    software:     "bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300",
+    website:      "bg-lime-50 text-lime-700 dark:bg-lime-900/30 dark:text-lime-300",
+    report:       "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-200",
+    other:        "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
   };
   const key = INTENT_KEYS[intent] ?? "intent.other";
   return (
@@ -759,11 +782,11 @@ function IntentBadge({ intent }: { intent: string }) {
 function Skeleton() {
   return (
     <div className="card shadow-sm" aria-hidden="true">
-      <div className="h-4 w-24 rounded bg-slate-200 animate-pulse" />
+      <div className="h-4 w-24 rounded bg-slate-200 dark:bg-slate-800 animate-pulse" />
       <div className="mt-3 space-y-2">
-        <div className="h-3 w-full rounded bg-slate-200 animate-pulse" />
-        <div className="h-3 w-5/6 rounded bg-slate-200 animate-pulse" />
-        <div className="h-3 w-2/3 rounded bg-slate-200 animate-pulse" />
+        <div className="h-3 w-full rounded bg-slate-200 dark:bg-slate-800 animate-pulse" />
+        <div className="h-3 w-5/6 rounded bg-slate-200 dark:bg-slate-800 animate-pulse" />
+        <div className="h-3 w-2/3 rounded bg-slate-200 dark:bg-slate-800 animate-pulse" />
       </div>
     </div>
   );

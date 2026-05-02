@@ -1,5 +1,51 @@
 # Changelog
 
+## v0.13.0 — 2026-05-02 — Brand rename, dark mode, voice fix, domain picker
+
+The "feels right end-to-end" release.
+
+- 🪪 **Renamed to PromptsZAIan** (single word, "ZAI" rendered in the brand
+  gradient). Arabic stays **موجة زيان**. Updated everywhere: dictionary,
+  layout metadata, OG/Twitter, JSON-LD, PWA manifest + shortcuts, browser
+  extension manifest + content script, mobile Capacitor config, share-card
+  canvas. Bundle id is now `com.zaian.promptszaian`.
+- 🌙 **Dark mode rebuilt**:
+  - Hero title used a slate-900 → slate-900 gradient that turned invisible
+    on the dark background — now flips to a white → slate-100 → white
+    gradient in dark mode.
+  - HeroIllustration's hard-coded `#fff` rectangles and `#cbd5e1` lines
+    moved into CSS classes (`.hi-*`) with proper dark variants in
+    `globals.css` so the illustration adapts cleanly.
+  - Every `pre` block in the workspace (final prompt + before/after
+    panels) now has dark backgrounds, dark borders, light text.
+  - Trial banner, footer, draft-restored strip, info/error banners,
+    skeletons, and the IntentBadge tone map all gained `dark:` variants.
+  - Quick spot-check on every visible surface — no more invisible text.
+- 🎙 **Voice recording — actually working feedback**:
+  - Added a **live transcript popover** that floats above the mic button
+    while listening, showing exactly what the recogniser is hearing in
+    real time (interim results stream in immediately).
+  - Added a **"no speech detected" diagnostic** that pops up after 5 s of
+    audio without any words, telling the user to try a different dialect.
+  - Both states give the user clear visible proof the recogniser is
+    alive, fixing the "I speak but nothing happens" failure mode.
+- 🇪🇬 **Egyptian dialect first**: reordered the Arabic voice list to put
+  🇪🇬 ar-EG at index 0 (also the default fallback). Added 🇵🇸 Palestine
+  and 🇸🇩 Sudan. Total: 18 Arabic dialects.
+- 🧰 **Domain picker = de-bias from "image-only"**: added a horizontal
+  pill strip above the textarea with all 15 prompt domains visible at
+  once (Writing, Coding, Software, Website, Research, Analysis, Report,
+  Planning, Creative, Design, Image, Video, Audio, Conversation, Other).
+  Auto-detects from the user's text, but a manual pick locks the intent
+  and overrides detection. The image style packs now appear *only* when
+  the user has explicitly locked the Image domain — no more accidental
+  image-flavoured output.
+- ✅ **Hard testing**: typecheck, 66 tests, production build all green.
+  Live smoke test against `next start`: every public route returns 200,
+  Arabic + English suggest API works, malformed JSON correctly returns
+  400, unauth `/api/v1/enhance` correctly returns 401, manifest +
+  sitemap + robots all serve the right content.
+
 ## v0.12.0 — 2026-05-01 — Real-time suggestions everywhere
 
 The "Grammarly for AI prompts" release.
