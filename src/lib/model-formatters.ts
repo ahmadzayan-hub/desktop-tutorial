@@ -13,6 +13,7 @@
 
 import type { Intent } from "@/lib/local-engine";
 import type { PromptStyle } from "@/lib/ai-models";
+import { expertPreamble } from "@/lib/expert-preamble";
 
 export interface FormatInput {
   raw: string;
@@ -21,6 +22,9 @@ export interface FormatInput {
   locale: "en" | "ar";
   /** Domain-specific scaffold (e.g. image visual spec, video shot list). */
   domainBlock?: string;
+  /** Display name of the target model. Used by the expert preamble so the
+   *  prompt can address the model by name and reflect the run's date. */
+  modelName?: string;
 }
 
 const L = {
@@ -416,7 +420,30 @@ const FORMATTERS: Record<PromptStyle, (i: FormatInput) => string> = {
   "generic":           fmt_generic
 };
 
+/**
+ * Styles that take a freeform-text scaffold and benefit from the expert
+ * preamble prepended (current date + senior-engineer rules). Argument-style
+ * formats — Midjourney `--ar 16:9 --v 7`, SDXL tag lists, music-genre
+ * prompts — would only be polluted by markdown text, so they're excluded.
+ */
+const PREAMBLE_FRIENDLY: ReadonlySet<PromptStyle> = new Set<PromptStyle>([
+  "openai-system",
+  "claude-xml",
+  "gemini-multimodal",
+  "grok-realtime",
+  "deepseek-reason",
+  "llama-instruct",
+  "mistral-tight",
+  "qwen-bilingual",
+  "cohere-tools",
+  "code-comments",
+  "code-spec",
+  "generic"
+]);
+
 export function formatPromptFor(style: PromptStyle, input: FormatInput): string {
   const fn = FORMATTERS[style] ?? fmt_generic;
-  return fn(input);
+  const body = fn(input);
+  if (!PREAMBLE_FRIENDLY.has(style)) return body;
+  return expertPreamble({ locale: input.locale, modelName: input.modelName }) + body;
 }

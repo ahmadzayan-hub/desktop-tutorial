@@ -1,5 +1,51 @@
 # Changelog
 
+## v0.18.0 — 2026-05-02 — Dark mode polish + real-time expert preamble
+
+The "every page reads cleanly, every prompt is dated" release.
+
+- 🌑 **Dark mode contrast bumped** on every card surface:
+  - Home example tiles use solid `slate-900` bases with coloured accent
+    borders. Title in `white`, body in `slate-100` — all three (Refactor,
+    Tweet, Summarise) now read crisply on AMOLED screens.
+  - StepCard body text moved from `slate-300` to `slate-200` and gained
+    `leading-relaxed` for breathing room.
+- 🔐 **Login page layout fix**:
+  - Replaced the cramped vertical stack with a two-column header (lock
+    icon + heading + paragraph) so the explanation no longer touches the
+    "Open the workspace" button.
+  - Wider spacing (`mt-5`), explicit gap between the action button and
+    the privacy-policy link.
+  - Title in `slate-900 / white`, body in `slate-700 / slate-200`.
+- 🅰️ **Wordmark sharpened**:
+  - The "ZAI" tri-letter now uses `tracking-wider` so the capital "I"
+    sits visibly apart from the following "an" — no more confusion with
+    a lowercase "l" in the OS sans-serif.
+  - "Studio" gets its own colour layer (`slate-700 / slate-200`) so the
+    two-word brand reads at every size.
+  - Browser title reordered to "ZAIan Studio — AI Prompt Engineering ·
+    زيان ستوديو", so truncation in narrow mobile tabs surfaces the brand
+    first.
+- 🧠 **Real-time + expert preamble in every prompt**:
+  - New `lib/expert-preamble.ts`: pure function that builds a markdown
+    block with **today's ISO date** and seven senior-engineer rules
+    (think then answer · cite verifiable facts · match user language ·
+    refuse to invent · explicit > implicit · surface caveats early ·
+    end with the next concrete step).
+  - The preamble is **prepended automatically** by `formatPromptFor()`
+    for every text/code style (OpenAI, Claude XML, Gemini, Grok,
+    DeepSeek, Llama, Mistral, Qwen, Cohere, Copilot-comments,
+    Cursor/Replit/v0 spec, Generic). Image/video/audio styles skip it
+    so they don't pollute argument-style prompts.
+  - The active model name is threaded through, so the preamble can
+    address it ("Target model: **Claude Opus 4.7**").
+  - Result: every generated prompt is dated **today**, calibrated for
+    today's flagship models, and bumped quality across the board.
+  - 5 new unit tests for the preamble.
+- ✅ **Hard testing**: 96 tests (was 91, +5 preamble), typecheck clean,
+  production build clean. Live smoke test: every route returns 200,
+  login fallback renders, wordmark uses the sharpened "ZAI" mark.
+
 ## v0.17.0 — 2026-05-02 — 100 GB uploads + Vision Reverse mode
 
 The "drop anything in, get the right prompt out" release.

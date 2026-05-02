@@ -418,7 +418,7 @@ export function reconstructPromptLocal(opts: {
   // model-formatters.ts owns the conversion; here we just pass the bundle
   // and the chosen prompt style.
   const body = formatPromptFor(model.promptStyle, {
-    raw, intent, qa, locale, domainBlock
+    raw, intent, qa, locale, domainBlock, modelName: model.name
   });
 
   // Light post-format pass (whitespace, code-fence cleanup) for legacy

@@ -7,7 +7,7 @@ import TrialBanner from "@/components/TrialBanner";
 import { CONTACT_EMAIL } from "@/lib/contact";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-const TITLE = "ZAIan Studio · زيان ستوديو — AI Prompt Engineering Studio";
+const TITLE = "ZAIan Studio — AI Prompt Engineering · زيان ستوديو";
 const DESCRIPTION =
   "Free from the UAE 🇦🇪 to the world. Engineer prompts of every kind — code, writing, research, video, audio, software, websites, reports, images — for ChatGPT, Claude, Copilot, and Gemini. Multilingual (EN/AR), voice + file uploads, works offline.";
 

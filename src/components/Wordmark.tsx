@@ -20,10 +20,14 @@ interface Props {
 export default function Wordmark({ className }: Props) {
   const { locale } = useI18n();
 
+  // The English wordmark: "ZAI" tri-letter rendered in the brand gradient
+  // with explicit `tracking-wide` so the capital "I" stays visually distinct
+  // from a lowercase "l" in the system sans-serif. Studio sits separately so
+  // the brand reads as two words at every size.
   const en = (
     <span className="font-bold tracking-tight">
-      <span className="text-brand-600 dark:text-brand-400">ZAI</span>an{" "}
-      <span className="font-semibold">Studio</span>
+      <span className="text-brand-600 dark:text-brand-300 tracking-wider">ZAI</span>an{" "}
+      <span className="font-semibold text-slate-700 dark:text-slate-200">Studio</span>
     </span>
   );
   const ar = (

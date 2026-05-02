@@ -107,12 +107,13 @@ function ExamplesSection() {
     window.location.href = "/workspace";
   }
 
-  // Tones in dark mode use a darker, more solid base so body text reads
-  // cleanly. The lighter "/30 → /10" gradient hid text on Samsung dark mode.
+  // Solid bases in dark mode (slate-800/900 with coloured borders) so body
+  // text in slate-100 reads with full contrast. Earlier translucent gradients
+  // washed text out on AMOLED screens.
   const toneClass: Record<string, string> = {
-    violet:  "from-violet-50 to-violet-100/60 border-violet-200 dark:from-violet-950 dark:to-slate-900 dark:border-violet-700",
-    sky:     "from-sky-50 to-sky-100/60 border-sky-200 dark:from-sky-950 dark:to-slate-900 dark:border-sky-700",
-    emerald: "from-emerald-50 to-emerald-100/60 border-emerald-200 dark:from-emerald-950 dark:to-slate-900 dark:border-emerald-700"
+    violet:  "from-violet-50 to-violet-100/60 border-violet-200 dark:from-slate-900 dark:to-slate-900 dark:border-violet-600",
+    sky:     "from-sky-50 to-sky-100/60 border-sky-200 dark:from-slate-900 dark:to-slate-900 dark:border-sky-600",
+    emerald: "from-emerald-50 to-emerald-100/60 border-emerald-200 dark:from-slate-900 dark:to-slate-900 dark:border-emerald-600"
   };
 
   return (
@@ -130,9 +131,9 @@ function ExamplesSection() {
               toneClass[e.tone]
             }
           >
-            <div className="text-sm font-medium text-slate-800 dark:text-slate-50">{t(e.titleKey)}</div>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-200 line-clamp-2">{t(e.bodyKey)}</p>
-            <span className="mt-3 inline-block text-xs font-semibold text-brand-700 dark:text-brand-300">
+            <div className="text-sm font-semibold text-slate-900 dark:text-white">{t(e.titleKey)}</div>
+            <p className="mt-1.5 text-sm text-slate-700 dark:text-slate-100 line-clamp-3 leading-relaxed">{t(e.bodyKey)}</p>
+            <span className="mt-3 inline-block text-xs font-semibold text-brand-700 dark:text-brand-200">
               {t("home.examples.try")} →
             </span>
           </button>
@@ -164,7 +165,7 @@ function StepCard({
         {icon}
       </div>
       <div className="mt-3 font-medium">{title}</div>
-      <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">{body}</p>
+      <p className="text-sm text-slate-700 dark:text-slate-200 mt-1 leading-relaxed">{body}</p>
     </div>
   );
 }

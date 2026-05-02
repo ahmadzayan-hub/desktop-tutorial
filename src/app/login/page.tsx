@@ -54,24 +54,31 @@ export default function LoginPage() {
     return (
       <div className="max-w-md mx-auto px-4 sm:px-6 py-12 sm:py-16">
         <h1 className="text-2xl font-semibold">{t("login.title")}</h1>
-        <div className="card mt-6 space-y-3">
-          <div className="text-sm font-medium text-slate-800 dark:text-slate-100">
-            {isAr ? "الدخول معطّل في هذا الإصدار" : "Sign-in is off in this build"}
+        <div className="card mt-6">
+          <div className="flex items-start gap-3">
+            <span aria-hidden="true" className="text-2xl shrink-0">🔒</span>
+            <div className="min-w-0 flex-1">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+                {isAr ? "الدخول معطّل في هذا الإصدار" : "Sign-in is off in this build"}
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-200">
+                {isAr
+                  ? "هذه النسخة تعمل بدون خادم خلفي، لذلك تسجيل الدخول معطّل. كل الميزات تعمل محلّيًا في متصفّحك."
+                  : "This build runs without a backend, so sign-in is disabled. Every feature still works locally in your browser."}
+              </p>
+            </div>
           </div>
-          <p className="text-sm text-slate-600 dark:text-slate-300">
-            {isAr
-              ? "هذه النسخة تعمل بدون خادم خلفي، لذلك تسجيل الدخول مُعطّل. كل الميزات تعمل محلّيًا في متصفّحك."
-              : "This build runs without a backend, so sign-in is disabled. Every feature still works locally in your browser."}
-          </p>
-          <Link href="/workspace" className="btn-primary w-full justify-center">
-            {isAr ? "افتح مساحة العمل" : "Open the workspace"}
-          </Link>
-          <Link
-            href="/privacy"
-            className="block text-xs text-center text-slate-500 dark:text-slate-400 hover:underline"
-          >
-            {isAr ? "اقرأ سياسة الخصوصية" : "Read the privacy policy"}
-          </Link>
+          <div className="mt-5 flex flex-col gap-3">
+            <Link href="/workspace" className="btn-primary w-full justify-center">
+              {isAr ? "افتح مساحة العمل" : "Open the workspace"}
+            </Link>
+            <Link
+              href="/privacy"
+              className="block text-xs text-center text-slate-500 dark:text-slate-400 hover:underline"
+            >
+              {isAr ? "اقرأ سياسة الخصوصية" : "Read the privacy policy"}
+            </Link>
+          </div>
         </div>
       </div>
     );
