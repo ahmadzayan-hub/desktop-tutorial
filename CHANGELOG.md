@@ -1,5 +1,40 @@
 # Changelog
 
+## v0.17.0 — 2026-05-02 — 100 GB uploads + Vision Reverse mode
+
+The "drop anything in, get the right prompt out" release.
+
+- 📦 **Files up to 100 GB.** Raised the declared cap from 10 MB to 100 GB
+  across the platform, mobile, desktop, and the browser extension. The
+  platform handles big files honestly, with three tiers:
+  - Text-like ≤ 200 KB → full content extracted into the prompt context.
+  - Image ≤ 5 MB → inlined as a data URL the AI model can see.
+  - Anything bigger → metadata only (filename · size · type), with a
+    visible "metadata only" badge on the file chip so the user knows.
+  - Human-readable size formatter now ranges KB / MB / GB / TB.
+- 🖼 **Vision Reverse mode.** Reverse now has two tabs: **Analyse a
+  prompt** (the existing flow) and **From an image** (new). Drop a
+  screenshot, design mock, or page, pick one of three actions, and we
+  generate a production-grade prompt ready to paste into ChatGPT / Claude
+  / Gemini:
+  - **📜 Extract written text** — verbatim transcription, preserves
+    structure, marks unreadable parts as `[unreadable]`.
+  - **🎨 Recreate this design** — component tree, design tokens (colours
+    in hex, typography, spacing), implementation plan (React + Tailwind
+    for web; SVG for slide/poster), accessibility notes.
+  - **✍️ Write similar content** — identifies content type (email, report,
+    blog, message), extracts tone + structure, writes a new piece in the
+    same shape for the user's scenario.
+  - Optional context input ("for a German fintech CTO", "in dark mode")
+    is threaded through every generated prompt.
+  - Small images embed as data URLs so vision models read them directly;
+    larger ones include a clear "drag this into the chat" instruction.
+  - Fully bilingual (EN/AR) prompts with localised section labels.
+  - 7 new unit tests for the prompt builders.
+- ✅ **Hard testing**: 91 tests (was 84), typecheck clean, production
+  build clean. Live smoke test: every route returns 200, workspace shows
+  the new "100 GB" upload note + Reverse tab, suggest API still works.
+
 ## v0.16.0 — 2026-05-02 — ZAIan Studio rename, voice fallback, push-it-further everywhere
 
 The "fix what users actually hit" release.
