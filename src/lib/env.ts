@@ -19,8 +19,12 @@ export const env = {
   extensionApiKey: process.env.EXTENSION_API_KEY ?? ""
 };
 
+export function isSupabaseConfigured(): boolean {
+  return Boolean(env.supabaseUrl && env.supabaseAnonKey);
+}
+
 export function assertSupabaseEnv() {
-  if (!env.supabaseUrl || !env.supabaseAnonKey) {
+  if (!isSupabaseConfigured()) {
     throw new Error(
       "Supabase env not configured (NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY)"
     );

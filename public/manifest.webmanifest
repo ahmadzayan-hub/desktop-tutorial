@@ -1,7 +1,7 @@
 {
-  "name": "Prompt Orchestrator",
-  "short_name": "Prompt Orch",
-  "description": "AI prompt writing assistant — multilingual, mobile-first.",
+  "name": "ZAIan Studio · زيان ستوديو",
+  "short_name": "ZAIan",
+  "description": "Free AI prompt engineering studio — from the UAE 🇦🇪 to the world. Every prompt domain, EN/AR, voice + file uploads.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -15,5 +15,30 @@
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
   ],
-  "categories": ["productivity", "utilities", "education"]
+  "categories": ["productivity", "utilities", "education"],
+  "share_target": {
+    "action": "/share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "shortcuts": [
+    {
+      "name": "Workspace",
+      "short_name": "Polish",
+      "description": "Open the prompt workspace",
+      "url": "/workspace",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Templates",
+      "short_name": "Templates",
+      "description": "Browse curated prompt templates",
+      "url": "/templates",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
 }

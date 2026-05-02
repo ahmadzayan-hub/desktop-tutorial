@@ -3,14 +3,14 @@ import { z } from "zod";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { requireUserOrg } from "@/lib/services/auth";
 import { reconstructPrompt, postFormatForModel } from "@/lib/services/formatter";
-import { handleError } from "@/lib/api-helpers";
+import { handleError, safeRoute } from "@/lib/api-helpers";
 import type { Template, TargetModel } from "@/lib/types";
 
 const Body = z.object({
   target_model: z.enum(["chatgpt", "claude", "copilot", "gemini", "generic"]).optional()
 });
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export const POST = safeRoute(async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireUserOrg(req.headers.get("x-org-id"));
   if (auth instanceof NextResponse) return auth;
 
@@ -87,4 +87,4 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   } catch (e) {
     return handleError(e);
   }
-}
+});

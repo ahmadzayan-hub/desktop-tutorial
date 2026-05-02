@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { requireUserOrg } from "@/lib/services/auth";
+import { safeRoute } from "@/lib/api-helpers";
 
 const Body = z.object({
   answers: z
@@ -14,7 +15,7 @@ const Body = z.object({
     .min(1)
 });
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export const POST = safeRoute(async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireUserOrg(req.headers.get("x-org-id"));
   if (auth instanceof NextResponse) return auth;
 
@@ -47,4 +48,4 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   await supabase.from("sessions").update({ status: "ready" }).eq("id", params.id);
 
   return NextResponse.json({ ok: true, count: rows.length });
-}
+});

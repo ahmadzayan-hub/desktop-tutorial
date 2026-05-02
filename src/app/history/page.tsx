@@ -28,7 +28,14 @@ export default function HistoryPage() {
       const r = await safeFetch<{ sessions: SessionRow[] }>("/api/sessions");
       if (cancelled) return;
       if (!r.ok || !r.data) {
-        setError(r.error ?? { message: "unknown" });
+        // Backend not configured / not signed in → show empty state, not an
+        // error. History only makes sense once a backend is wired up.
+        const code = r.error?.code;
+        if (code === "backend_not_configured" || r.status === 401 || r.status === 403) {
+          setRows([]);
+        } else {
+          setError(r.error ?? { message: "unknown" });
+        }
       } else {
         setRows(r.data.sessions ?? []);
       }
@@ -53,7 +60,7 @@ export default function HistoryPage() {
   }, [rows, query, intentFilter]);
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-10">
+    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
       <h1 className="text-2xl font-semibold">{t("history.title")}</h1>
 
       <div className="mt-4 flex gap-2 flex-wrap">

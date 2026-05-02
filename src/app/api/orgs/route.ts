@@ -1,13 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { getServerSupabase } from "@/lib/supabase/server";
+import { safeRoute } from "@/lib/api-helpers";
 
 const Body = z.object({
   name: z.string().min(1).max(120),
   slug: z.string().min(2).max(60).regex(/^[a-z0-9-]+$/)
 });
 
-export async function GET() {
+export const GET = safeRoute(async () => {
   const supabase = getServerSupabase();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
@@ -18,9 +19,9 @@ export async function GET() {
     .eq("user_id", user.id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ memberships: data });
-}
+});
 
-export async function POST(req: NextRequest) {
+export const POST = safeRoute(async (req: NextRequest) => {
   const supabase = getServerSupabase();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
@@ -44,4 +45,4 @@ export async function POST(req: NextRequest) {
   });
 
   return NextResponse.json({ org });
-}
+});

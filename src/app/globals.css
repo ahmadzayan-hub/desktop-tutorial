@@ -6,16 +6,21 @@
   color-scheme: light;
   --bg: #f8fafc;
 }
+html.dark {
+  color-scheme: dark;
+  --bg: #0b1120;
+}
 
 html, body {
-  @apply h-full bg-slate-50 text-slate-900 antialiased;
+  @apply h-full bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100;
 }
 html[dir="rtl"] body {
   font-family: "Segoe UI", "Tajawal", "IBM Plex Sans Arabic", system-ui, -apple-system, sans-serif;
 }
 
 textarea, input, select {
-  @apply rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition;
+  @apply rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition
+         dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400;
 }
 
 button {
@@ -29,10 +34,11 @@ button {
 }
 .btn-primary:hover { filter: brightness(1.05); transform: translateY(-1px); }
 .btn-primary:active { transform: translateY(0); }
-.btn-ghost { @apply bg-transparent text-slate-700 px-3 py-2 hover:bg-slate-100; }
+.btn-ghost { @apply bg-transparent text-slate-700 px-3 py-2 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800; }
 
 .card {
-  @apply rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition;
+  @apply rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition
+         dark:bg-slate-900 dark:border-slate-700;
 }
 
 .ms-2 { margin-inline-start: 0.5rem; }
@@ -43,6 +49,22 @@ button {
 .end-2 { inset-inline-end: 0.5rem; }
 
 pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+/* HeroIllustration — adapts to dark mode via these classes */
+.hi-raw-bg       { fill: #ffffff; stroke: #e2e8f0; }
+.hi-raw-line     { stroke: #cbd5e1; }
+.hi-raw-scribble { stroke: #94a3b8; }
+.hi-raw-label    { fill: #94a3b8; }
+.hi-card-stroke  { stroke: #c4b5fd; }
+.hi-card-line    { stroke: #c4b5fd; }
+.hi-card-label   { fill: #6d28d9; }
+html.dark .hi-raw-bg       { fill: #1e293b; stroke: #334155; }
+html.dark .hi-raw-line     { stroke: #475569; }
+html.dark .hi-raw-scribble { stroke: #64748b; }
+html.dark .hi-raw-label    { fill: #94a3b8; }
+html.dark .hi-card-stroke  { stroke: #7c3aed; }
+html.dark .hi-card-line    { stroke: #a78bfa; }
+html.dark .hi-card-label   { fill: #c4b5fd; }
 
 /* Subtle entrance for cards */
 @keyframes po-fade-in {

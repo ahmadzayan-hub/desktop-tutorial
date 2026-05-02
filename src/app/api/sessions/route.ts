@@ -5,7 +5,7 @@ import { requireUserOrg } from "@/lib/services/auth";
 import { detectIntent } from "@/lib/services/orchestration";
 import { findGaps, generateQuestions } from "@/lib/services/clarification";
 import { reconstructPrompt, postFormatForModel } from "@/lib/services/formatter";
-import { handleError } from "@/lib/api-helpers";
+import { handleError, safeRoute } from "@/lib/api-helpers";
 import type { TargetModel } from "@/lib/types";
 
 const Body = z.object({
@@ -16,7 +16,7 @@ const Body = z.object({
   quick: z.boolean().optional()
 });
 
-export async function POST(req: NextRequest) {
+export const POST = safeRoute(async (req: NextRequest) => {
   const auth = await requireUserOrg(req.headers.get("x-org-id"));
   if (auth instanceof NextResponse) return auth;
 
@@ -106,9 +106,9 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     return handleError(e);
   }
-}
+});
 
-export async function GET(req: NextRequest) {
+export const GET = safeRoute(async (req: NextRequest) => {
   const auth = await requireUserOrg(req.headers.get("x-org-id"));
   if (auth instanceof NextResponse) return auth;
 
@@ -121,4 +121,4 @@ export async function GET(req: NextRequest) {
     .limit(50);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ sessions: data });
-}
+});
