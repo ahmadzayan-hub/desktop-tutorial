@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireUser } from "@/lib/db/supabase-server";
 
 export async function GET() {
-  const { user, supabase } = await requireUser();
+  const { user, supabase, unauthorized } = await requireUser();
+  if (unauthorized) return unauthorized;
   const { data } = await supabase
     .from("users")
     .select("full_name, avatar_url, email")
@@ -13,7 +14,8 @@ export async function GET() {
 }
 
 export async function PUT(req: NextRequest) {
-  const { user, supabase } = await requireUser();
+  const { user, supabase, unauthorized } = await requireUser();
+  if (unauthorized) return unauthorized;
   const { full_name, avatar_url } = await req.json();
 
   const { data, error } = await supabase

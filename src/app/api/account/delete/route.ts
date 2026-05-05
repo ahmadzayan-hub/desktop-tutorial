@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { requireUser, createServiceClient } from "@/lib/db/supabase-server";
 
 export async function POST() {
-  const { user } = await requireUser();
+  const { user, unauthorized } = await requireUser();
+  if (unauthorized) return unauthorized;
   const admin = createServiceClient();
 
   await admin.from("deletion_requests").insert({

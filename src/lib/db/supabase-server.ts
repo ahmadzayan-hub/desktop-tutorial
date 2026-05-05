@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 export function createClient() {
   const cookieStore = cookies();
@@ -30,14 +31,25 @@ export function createServiceClient() {
 }
 
 export async function getUser() {
-  const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  return user;
+  try {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    return user;
+  } catch {
+    return null;
+  }
 }
 
 export async function requireUser() {
-  const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Response("Unauthorized", { status: 401 });
-  return { user, supabase };
+  try {
+    const supabase = createClient();
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error || !user) {
+      return { user: null, supabase, unauthorized: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
+    }
+    return { user, supabase, unauthorized: null };
+  } catch {
+    const supabase = createClient();
+    return { user: null, supabase, unauthorized: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
+  }
 }

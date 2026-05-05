@@ -3,7 +3,8 @@ import { requireUser } from "@/lib/db/supabase-server";
 import { createServiceClient } from "@/lib/db/supabase-server";
 
 export async function GET() {
-  const { user, supabase } = await requireUser();
+  const { user, supabase, unauthorized } = await requireUser();
+  if (unauthorized) return unauthorized;
   const { data, error } = await supabase
     .from("private_files")
     .select("*, courses(name)")
@@ -16,7 +17,8 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const { user, supabase } = await requireUser();
+  const { user, supabase, unauthorized } = await requireUser();
+  if (unauthorized) return unauthorized;
 
   const formData = await req.formData();
   const file = formData.get("file") as File | null;

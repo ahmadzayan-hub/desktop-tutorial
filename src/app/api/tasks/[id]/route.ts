@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireUser } from "@/lib/db/supabase-server";
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
-  const { user, supabase } = await requireUser();
+  const { user, supabase, unauthorized } = await requireUser();
+  if (unauthorized) return unauthorized;
   const body = await req.json();
 
   const { data, error } = await supabase
@@ -18,7 +19,8 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
-  const { user, supabase } = await requireUser();
+  const { user, supabase, unauthorized } = await requireUser();
+  if (unauthorized) return unauthorized;
   await supabase.from("tasks").delete().eq("id", params.id).eq("user_id", user.id);
   return new NextResponse(null, { status: 204 });
 }

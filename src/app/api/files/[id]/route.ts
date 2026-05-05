@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireUser } from "@/lib/db/supabase-server";
 
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
-  const { user, supabase } = await requireUser();
+  const { user, supabase, unauthorized } = await requireUser();
+  if (unauthorized) return unauthorized;
 
   const { data: file } = await supabase
     .from("private_files")

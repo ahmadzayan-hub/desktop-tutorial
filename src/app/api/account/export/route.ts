@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/db/supabase-server";
 
 export async function GET() {
-  const { user, supabase } = await requireUser();
+  const { user, supabase, unauthorized } = await requireUser();
+  if (unauthorized) return unauthorized;
 
   const [courses, grades, deadlines, announcements, files] = await Promise.all([
     supabase.from("courses").select("*").eq("user_id", user.id),

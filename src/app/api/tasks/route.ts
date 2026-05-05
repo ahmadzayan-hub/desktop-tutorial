@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireUser } from "@/lib/db/supabase-server";
 
 export async function GET() {
-  const { user, supabase } = await requireUser();
+  const { user, supabase, unauthorized } = await requireUser();
+  if (unauthorized) return unauthorized;
   const { data, error } = await supabase
     .from("tasks")
     .select("*, courses(name)")
@@ -15,7 +16,8 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const { user, supabase } = await requireUser();
+  const { user, supabase, unauthorized } = await requireUser();
+  if (unauthorized) return unauthorized;
   const body = await req.json();
 
   const { data, error } = await supabase

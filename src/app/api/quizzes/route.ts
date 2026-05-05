@@ -3,7 +3,8 @@ import { requireUser } from "@/lib/db/supabase-server";
 import { aiChat } from "@/lib/ai/client";
 
 export async function GET() {
-  const { user, supabase } = await requireUser();
+  const { user, supabase, unauthorized } = await requireUser();
+  if (unauthorized) return unauthorized;
   const { data, error } = await supabase
     .from("quizzes")
     .select("*, study_packs(topic, courses(name))")
@@ -20,7 +21,8 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const { user, supabase } = await requireUser();
+  const { user, supabase, unauthorized } = await requireUser();
+  if (unauthorized) return unauthorized;
   const { pack_id, num_questions = 10 } = await req.json();
 
   if (!pack_id) return NextResponse.json({ error: "pack_id required" }, { status: 400 });
