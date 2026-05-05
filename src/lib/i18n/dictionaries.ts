@@ -31,6 +31,14 @@ export const dict = {
 
     "home.examples.title": "What people are polishing today",
     "home.examples.try": "Try it",
+
+    "trends.section_title": "Today's trending prompts",
+    "trends.live_badge": "Live trends",
+    "trends.updated_for": "Updated for",
+    "trends.expand": "Show full prompt",
+    "trends.collapse": "Collapse",
+    "trends.refresh_hint": "Trends are personalised to your history and refresh daily · tailored for Middle East & Arabic users 🇦🇪",
+
     "home.examples.coding.title": "Refactor a slow component",
     "home.examples.coding.body": "Refactor my React table to handle 50k rows without jank.",
     "home.examples.writing.title": "Marketing tweet",
@@ -366,6 +374,14 @@ export const dict = {
 
     "home.examples.title": "أمثلة شائعة",
     "home.examples.try": "جرّبها",
+
+    "trends.section_title": "أبرز الموجّهات اليوم",
+    "trends.live_badge": "مباشر",
+    "trends.updated_for": "محدَّث ليوم",
+    "trends.expand": "عرض الموجِّه كاملًا",
+    "trends.collapse": "طيّ",
+    "trends.refresh_hint": "الاتجاهات مخصَّصة لسجلّ استخدامك وتتجدّد يوميًا · مصمَّمة لمستخدمي الشرق الأوسط والناطقين بالعربية 🇦🇪",
+
     "home.examples.coding.title": "إعادة هيكلة مكوّن بطيء",
     "home.examples.coding.body": "أعد هيكلة جدول React ليتعامل مع 50 ألف صف بسلاسة.",
     "home.examples.writing.title": "تغريدة تسويقية",

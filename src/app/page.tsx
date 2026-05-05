@@ -1,12 +1,14 @@
 "use client";
 
-import { useT } from "@/lib/i18n/I18nProvider";
+import { useT, useI18n } from "@/lib/i18n/I18nProvider";
 import HeroIllustration from "@/components/HeroIllustration";
 import { PenIcon, ChatIcon, SparkleIcon } from "@/components/StepIcons";
+import PromptTrends from "@/components/PromptTrends";
 import type { TargetModel } from "@/lib/types";
 
 export default function HomePage() {
   const t = useT();
+  const { locale } = useI18n();
   return (
     <div className="relative overflow-hidden">
       {/* soft gradient bg blobs */}
@@ -68,6 +70,9 @@ export default function HomePage() {
 
       {/* Concrete examples — landing pads into the workspace */}
       <ExamplesSection />
+
+      {/* Daily trending prompts — personalised + Middle East focus */}
+      <PromptTrends locale={locale} />
     </div>
   );
 }
