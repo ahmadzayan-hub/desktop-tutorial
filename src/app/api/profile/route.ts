@@ -1,0 +1,28 @@
+import { NextRequest, NextResponse } from "next/server";
+import { requireUser } from "@/lib/db/supabase-server";
+
+export async function GET() {
+  const { user, supabase } = await requireUser();
+  const { data } = await supabase
+    .from("users")
+    .select("full_name, avatar_url, email")
+    .eq("id", user.id)
+    .single();
+
+  return NextResponse.json(data || {});
+}
+
+export async function PUT(req: NextRequest) {
+  const { user, supabase } = await requireUser();
+  const { full_name, avatar_url } = await req.json();
+
+  const { data, error } = await supabase
+    .from("users")
+    .update({ full_name, avatar_url })
+    .eq("id", user.id)
+    .select()
+    .single();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+  return NextResponse.json(data);
+}
