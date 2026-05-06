@@ -185,10 +185,11 @@ const TRENDS_AR: TrendItem[] = [
 
 function dailySeed(): number {
   const now = new Date();
-  return now.getFullYear() * 1000 + Math.floor(
+  const dayOfYear = Math.floor(
     (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) -
-      Date.UTC(now.getFullYear(), 0, 0)) / 86_400_000
-  );
+      Date.UTC(now.getFullYear(), 0, 1)) / 86_400_000
+  ) + 1;
+  return now.getFullYear() * 1000 + dayOfYear;
 }
 
 function scoreItem(item: TrendItem, preferredIntents: string[]): number {

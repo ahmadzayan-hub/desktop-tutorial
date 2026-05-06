@@ -38,11 +38,12 @@ export const POST = safeRoute(async (req: NextRequest) => {
     .single();
   if (error || !org) return NextResponse.json({ error: error?.message }, { status: 500 });
 
-  await supabase.from("memberships").insert({
+  const { error: memberErr } = await supabase.from("memberships").insert({
     user_id: user.id,
     org_id: org.id,
     role: "owner"
   });
+  if (memberErr) return NextResponse.json({ error: memberErr.message }, { status: 500 });
 
   return NextResponse.json({ org });
 });

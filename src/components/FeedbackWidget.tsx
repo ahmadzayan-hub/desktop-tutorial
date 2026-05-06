@@ -123,7 +123,7 @@ export default function FeedbackWidget({
         </button>
         <button
           type="button"
-          onClick={() => setRating(-1)}
+          onClick={() => void send(-1)}
           disabled={busy}
           aria-label={t("feedback.down")}
           aria-pressed={rating === -1}

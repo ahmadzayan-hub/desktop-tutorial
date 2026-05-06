@@ -78,10 +78,13 @@ export const POST = safeRoute(async (req: NextRequest, { params }: { params: { i
       .single();
     if (insErr) return NextResponse.json({ error: insErr.message }, { status: 500 });
 
-    await supabase
+    const { error: sessionUpdateErr } = await supabase
       .from("sessions")
       .update({ status: "finalized", target_model: targetModel })
       .eq("id", params.id);
+    if (sessionUpdateErr) {
+      return NextResponse.json({ error: sessionUpdateErr.message }, { status: 500 });
+    }
 
     return NextResponse.json({ version });
   } catch (e) {

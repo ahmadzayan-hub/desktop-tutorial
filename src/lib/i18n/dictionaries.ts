@@ -87,7 +87,9 @@ export const dict = {
     "files.add": "Attach files",
     "files.remove": "Remove",
     "files.size": "{kb} KB",
-    "files.too_big": "File too large (max 100 GB).",
+    "files.too_big": '"{name}" is larger than 100 GB.',
+    "files.read_error": 'Could not read "{name}".',
+    "files.loading": "Loading…",
     "files.loaded": "Loaded into prompt context",
     "files.metadata_only": "Metadata only (file too large to read in browser)",
 
@@ -430,7 +432,9 @@ export const dict = {
     "files.add": "أرفق ملفات",
     "files.remove": "إزالة",
     "files.size": "{kb} كيلوبايت",
-    "files.too_big": "حجم الملف كبير جدًا (الحدّ 100 جيجابايت).",
+    "files.too_big": 'الملف "{name}" أكبر من 100 جيجابايت.',
+    "files.read_error": 'تعذّر قراءة "{name}".',
+    "files.loading": "جارٍ التحميل…",
     "files.loaded": "تمّت إضافته إلى سياق الموجِّه",
     "files.metadata_only": "البيانات الوصفية فقط (الملف كبير جدًا للقراءة داخل المتصفّح)",
 

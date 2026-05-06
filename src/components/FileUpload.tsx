@@ -80,11 +80,7 @@ export default function FileUpload({ files, onChange, className }: Props) {
       const next: AttachedFile[] = [...files];
       for (const f of Array.from(list)) {
         if (f.size > MAX_FILE_BYTES) {
-          setError(
-            locale === "ar"
-              ? `الملف "${f.name}" أكبر من 100 جيجابايت.`
-              : `"${f.name}" is larger than 100 GB.`
-          );
+          setError(t("files.too_big").replace("{name}", f.name));
           continue;
         }
 
@@ -101,18 +97,14 @@ export default function FileUpload({ files, onChange, className }: Props) {
             // Only call .text() when the file is small enough that the
             // browser can read it without OOMing. Anything bigger keeps a
             // clear "metadata only" promise to the user.
-            if (f.size <= TEXT_TRUNCATE * 8) {
+            if (f.size <= TEXT_TRUNCATE) {
               const raw = await readAsText(f);
               text = raw.slice(0, TEXT_TRUNCATE);
             }
           }
           // Binary files: only metadata is captured. no read needed.
-        } catch (e) {
-          setError(
-            locale === "ar"
-              ? `تعذّر قراءة "${f.name}".`
-              : `Could not read "${f.name}".`
-          );
+        } catch {
+          setError(t("files.read_error").replace("{name}", f.name));
           continue;
         }
 
@@ -152,9 +144,7 @@ export default function FileUpload({ files, onChange, className }: Props) {
             <polyline points="17 8 12 3 7 8" />
             <line x1="12" y1="3" x2="12" y2="15" />
           </svg>
-          {busy
-            ? (locale === "ar" ? "جارٍ التحميل…" : "Loading…")
-            : t("files.add")}
+          {busy ? t("files.loading") : t("files.add")}
         </button>
         <input
           ref={inputRef}
@@ -184,6 +174,9 @@ export default function FileUpload({ files, onChange, className }: Props) {
                 <img
                   src={f.dataUrl}
                   alt={f.name}
+                  loading="lazy"
+                  width={40}
+                  height={40}
                   className="w-10 h-10 rounded object-cover flex-shrink-0"
                 />
               ) : (

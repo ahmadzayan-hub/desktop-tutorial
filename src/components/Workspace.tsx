@@ -245,7 +245,7 @@ export default function Workspace() {
         .map((q) => ({ question: q.question, answer: (answers[q.id] ?? "").trim() }))
         .filter((p) => p.answer.length > 0);
       const result = reconstructPromptLocal({
-        raw: composed, intent: session.intent as never, qa, targetModel: model, locale
+        raw: composed, intent: (session.intent ?? "other") as import("@/lib/local-engine").Intent, qa, targetModel: model, locale
       });
       setFinalPrompt(result.final_prompt);
       setRationale(result.rationale);
@@ -274,7 +274,7 @@ export default function Workspace() {
         .map((q) => ({ question: q.question, answer: (answers[q.id] ?? "").trim() }))
         .filter((p) => p.answer.length > 0);
       const result = reconstructPromptLocal({
-        raw: composed, intent: session.intent as never, qa, targetModel: model, locale
+        raw: composed, intent: (session.intent ?? "other") as import("@/lib/local-engine").Intent, qa, targetModel: model, locale
       });
       setFinalPrompt(result.final_prompt);
       setRationale(result.rationale);
@@ -691,7 +691,11 @@ export default function Workspace() {
                     <TokenMeter text={finalPrompt} model={model} />
                   </div>
 
-                  <pre className="mt-3 whitespace-pre-wrap rounded bg-slate-50 dark:bg-slate-950 dark:text-slate-100 p-3 text-sm border border-slate-200 dark:border-slate-700 max-h-[60vh] overflow-auto">
+                  <pre
+                    className="mt-3 whitespace-pre-wrap rounded bg-slate-50 dark:bg-slate-950 dark:text-slate-100 p-3 text-sm border border-slate-200 dark:border-slate-700 max-h-[60vh] overflow-auto"
+                    aria-label={t("ws.final_title")}
+                    tabIndex={0}
+                  >
 {finalPrompt}
                   </pre>
 

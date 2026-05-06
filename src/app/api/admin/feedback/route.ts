@@ -66,8 +66,10 @@ export const GET = safeRoute(async (_req: NextRequest) => {
     byLocale[loc] = (byLocale[loc] ?? 0) + 1;
 
     if (r.comment && r.comment.startsWith("tags:")) {
-      const tags = r.comment.replace(/^tags:\s*/, "").split(",").map((s) => s.trim()).filter(Boolean);
-      for (const tag of tags) tagCounts[tag] = (tagCounts[tag] ?? 0) + 1;
+      try {
+        const tags = r.comment.replace(/^tags:\s*/, "").split(",").map((s) => s.trim()).filter(Boolean);
+        for (const tag of tags) tagCounts[tag] = (tagCounts[tag] ?? 0) + 1;
+      } catch { /* malformed comment — skip tag extraction */ }
     }
   }
 

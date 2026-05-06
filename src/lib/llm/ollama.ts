@@ -49,7 +49,9 @@ export async function generate(prompt: string, opts: OllamaOptions = {}): Promis
   }
 
   if (!res.ok) {
-    throw new Error(`Ollama error ${res.status}: ${await res.text()}`);
+    let body = "";
+    try { body = await res.text(); } catch { /* ignore */ }
+    throw new Error(`Ollama error ${res.status}${body ? `: ${body}` : ""}`);
   }
   const data = (await res.json()) as OllamaResponse;
   return data.response.trim();
