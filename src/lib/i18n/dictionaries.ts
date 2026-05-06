@@ -217,8 +217,6 @@ export const dict = {
     "settings.policy.body": "Plain-language summary of what we store.",
     "settings.policy.read": "Read",
 
-    "nav.settings": "Settings",
-
     "theme.label": "Theme",
     "theme.light": "Light",
     "theme.dark": "Dark",
@@ -567,8 +565,6 @@ export const dict = {
     "settings.policy.title": "سياسة الخصوصية",
     "settings.policy.body": "ملخّص بلغة بسيطة لما نخزّنه.",
     "settings.policy.read": "اقرأ",
-
-    "nav.settings": "الإعدادات",
 
     "theme.label": "المظهر",
     "theme.light": "فاتح",
