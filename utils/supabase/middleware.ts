@@ -14,8 +14,8 @@ export const updateSession = async (request: NextRequest) => {
     request: { headers: request.headers }
   });
 
-  // If env is missing, skip session refresh — the local engine handles UX.
-  if (!supabaseUrl || !supabaseKey) return supabaseResponse;
+  // If env is missing or still a placeholder, skip session refresh.
+  if (!supabaseUrl || !supabaseKey || supabaseUrl.includes("placeholder")) return supabaseResponse;
 
   const supabase = createServerClient(supabaseUrl, supabaseKey, {
     cookies: {
