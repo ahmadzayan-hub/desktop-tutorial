@@ -1,13 +1,13 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { dict, LOCALES, RTL_LOCALES, type DictKey, type Locale } from "./dictionaries";
+import { dict, LOCALES, RTL_LOCALES, type Locale } from "./dictionaries";
 
 interface I18nState {
   locale: Locale;
   dir: "ltr" | "rtl";
   setLocale: (l: Locale) => void;
-  t: (key: DictKey, vars?: Record<string, string | number>) => string;
+  t: (key: string, vars?: Record<string, string | number>) => string;
 }
 
 const I18nContext = createContext<I18nState | null>(null);
@@ -46,9 +46,9 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const t = useCallback(
-    (key: DictKey, vars?: Record<string, string | number>) => {
-      const table = (dict as unknown as Record<Locale, Record<DictKey, string>>)[locale];
-      let s = table[key] ?? (dict.en as Record<DictKey, string>)[key] ?? key;
+    (key: string, vars?: Record<string, string | number>) => {
+      const table = (dict as Record<Locale, Record<string, string>>)[locale];
+      let s = table?.[key] ?? (dict.en as Record<string, string>)[key] ?? key;
       if (vars) {
         for (const [k, v] of Object.entries(vars)) {
           s = s.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
