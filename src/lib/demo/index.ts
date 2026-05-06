@@ -30,15 +30,16 @@ export const DEMO_PROFILE = {
 export const DEMO_SUBSCRIPTION = {
   id: "sub-demo-001",
   user_id: DEMO_USER.id,
-  plan: "pro",
+  plan: "free",
   status: "active",
   ai_queries_used: 47,
-  ai_queries_limit: 2000,
-  current_period_end: d(25),
+  ai_queries_limit: 99999,
+  current_period_end: null,
   trial_ends_at: null,
   cancel_at_period_end: false,
-  stripe_customer_id: "cus_demo",
-  stripe_sub_id: "sub_demo",
+  stripe_customer_id: null,
+  stripe_sub_id: null,
+  all_features_free: true,
 };
 
 export const DEMO_COURSES = [

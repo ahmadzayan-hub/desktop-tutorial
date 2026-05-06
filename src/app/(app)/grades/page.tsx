@@ -8,6 +8,37 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { useToast } from "@/components/ui/Toast";
 import { BarChart3, Plus, TrendingUp, AlertTriangle, Target } from "lucide-react";
 
+// SVG Bar Chart
+function GradeBarChart({ data }: { data: { label: string; pct: number; color: string }[] }) {
+  if (!data.length) return null;
+  const max = 100;
+  return (
+    <div className="card">
+      <h3 className="font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+        <BarChart3 className="w-4 h-4 text-brand-500" />
+        Grade Distribution by Course
+      </h3>
+      <div className="flex items-end gap-4 h-36">
+        {data.map(({ label, pct, color }) => (
+          <div key={label} className="flex-1 flex flex-col items-center gap-1.5">
+            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{pct}%</span>
+            <div className="w-full rounded-t-lg transition-all" style={{ height: `${(pct / max) * 96}px`, backgroundColor: color }} />
+            <span className="text-[10px] text-slate-500 text-center leading-tight w-full truncate">{label}</span>
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-3 mt-4 flex-wrap">
+        {[{ label: "A (≥90%)", color: "#10b981" }, { label: "B (≥80%)", color: "#6366f1" }, { label: "C (≥70%)", color: "#f59e0b" }, { label: "Below C", color: "#ef4444" }].map(l => (
+          <div key={l.label} className="flex items-center gap-1.5 text-xs text-slate-500">
+            <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: l.color }} />
+            {l.label}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 interface Grade { id: string; course_id: string; category: string; item_name: string; score: number | null; max_score: number; weight: number; is_final: boolean; }
 interface Course { id: string; name: string; }
 
@@ -74,20 +105,30 @@ export default function GradesPage() {
         <Button onClick={() => setAddOpen(true)}><Plus size={16} />{t("grades.add_entry")}</Button>
       </div>
 
+      {/* Bar chart visualization */}
+      {byCourse.length > 0 && (
+        <GradeBarChart data={byCourse.map(({ course, pct }) => ({
+          label: course.name.split(" ").slice(0, 2).join(" "),
+          pct: pct ?? 0,
+          color: (pct ?? 0) >= 90 ? "#10b981" : (pct ?? 0) >= 80 ? "#6366f1" : (pct ?? 0) >= 70 ? "#f59e0b" : "#ef4444",
+        }))} />
+      )}
+
       {/* GPA summary cards */}
       {byCourse.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {byCourse.map(({ course, pct, letterGrade: lg }) => (
-            <div key={course.id} className="card">
+            <div key={course.id} className="card hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-xs font-medium text-slate-500 truncate">{course.name}</p>
                 {pct !== null && pct < 70 && <AlertTriangle size={14} className="text-red-500 flex-shrink-0" />}
+                {pct !== null && pct >= 90 && <TrendingUp size={14} className="text-emerald-500 flex-shrink-0" />}
               </div>
-              <p className="text-3xl font-bold text-slate-900 dark:text-slate-100">{lg}</p>
-              {pct !== null && <p className="text-sm text-slate-400 mt-0.5">{pct}%</p>}
+              <p className={`text-4xl font-black ${(pct ?? 0) >= 80 ? "text-emerald-600 dark:text-emerald-400" : (pct ?? 0) >= 70 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400"}`}>{lg}</p>
+              {pct !== null && <p className="text-sm text-slate-400 mt-0.5 font-medium">{pct}%</p>}
               {pct !== null && (
-                <div className="mt-3 w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full">
-                  <div className={`h-full rounded-full ${pct >= 80 ? "bg-emerald-500" : pct >= 70 ? "bg-amber-500" : "bg-red-500"}`} style={{ width: `${pct}%` }} />
+                <div className="mt-3 w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full">
+                  <div className={`h-full rounded-full transition-all ${pct >= 80 ? "bg-emerald-500" : pct >= 70 ? "bg-amber-500" : "bg-red-500"}`} style={{ width: `${pct}%` }} />
                 </div>
               )}
             </div>

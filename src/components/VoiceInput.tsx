@@ -352,7 +352,7 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, onTypeInstead, 
       }
     };
 
-    rec.onerror = (e) => {
+    rec.onerror = (e: any) => {
       // Recoverable on mobile during pauses — keep going unless the user stopped
       if (
         !userStoppedRef.current &&
