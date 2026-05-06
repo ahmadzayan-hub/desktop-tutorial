@@ -7,6 +7,10 @@ export async function GET() {
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
+    return NextResponse.json({ totalUsers: 847, activeSubscriptions: 312, trialUsers: 94, aiCostThisMonth: 128.47, storageUsedGB: 24.3, failedJobs: 2 });
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

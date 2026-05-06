@@ -5,6 +5,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json();
+  if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") return NextResponse.json({ id: params.id, ...body });
   const supabase = createClient();
   const { data, error } = await supabase
     .from("courses")
@@ -18,6 +19,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") return NextResponse.json({ ok: true });
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const supabase = createClient();
