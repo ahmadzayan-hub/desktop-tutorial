@@ -2,6 +2,12 @@
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  env: {
+    // On Vercel, VERCEL_URL is auto-set (without https://); fall back to localhost for dev
+    NEXT_PUBLIC_APP_URL: process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
+  },
   async headers() {
     const security = [
       { key: "X-Content-Type-Options", value: "nosniff" },
