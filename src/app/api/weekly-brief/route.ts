@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient, getUser } from "@/lib/db/supabase-server";
 import { aiChat } from "@/lib/ai/client";

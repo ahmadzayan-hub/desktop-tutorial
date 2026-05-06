@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
@@ -14,7 +15,7 @@ interface Subscription {
   cancel_at_period_end: boolean;
 }
 
-export default function SubscriptionPage() {
+function SubscriptionContent() {
   const { t } = useI18n();
   const toast = useToast();
   const params = useSearchParams();
@@ -25,7 +26,9 @@ export default function SubscriptionPage() {
   useEffect(() => {
     if (params.get("success")) toast("success", "Subscription activated successfully!");
     if (params.get("canceled")) toast("info", "Checkout canceled.");
-    fetch("/api/subscription").then(r => r.ok && r.json()).then(d => { if (d) setSub(d); setLoading(false); });
+    fetch("/api/subscription")
+      .then(r => { if (r.ok) return r.json(); return null; })
+      .then(d => { if (d) setSub(d); setLoading(false); });
   }, []);
 
   async function openPortal() {
@@ -36,9 +39,13 @@ export default function SubscriptionPage() {
     setActionLoading(false);
   }
 
-  async function startCheckout(plan: string, interval: "monthly"|"annual") {
+  async function startCheckout(plan: string, interval: "monthly" | "annual") {
     setActionLoading(true);
-    const res = await fetch("/api/subscription/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ plan, interval }) });
+    const res = await fetch("/api/subscription/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ plan, interval }),
+    });
     if (res.ok) { const { url } = await res.json(); window.location.href = url; }
     else toast("error", t("error.generic"));
     setActionLoading(false);
@@ -50,7 +57,6 @@ export default function SubscriptionPage() {
     <div className="space-y-8 max-w-3xl">
       <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{t("subscription.title")}</h1>
 
-      {/* Current plan card */}
       {loading ? (
         <div className="skeleton h-40 rounded-2xl" />
       ) : sub && (
@@ -81,7 +87,6 @@ export default function SubscriptionPage() {
             </p>
           )}
 
-          {/* AI usage */}
           <div className="mb-6">
             <div className="flex items-center justify-between text-sm mb-2">
               <span className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
@@ -104,7 +109,6 @@ export default function SubscriptionPage() {
         </div>
       )}
 
-      {/* Upgrade plans */}
       {sub?.plan === "free" && (
         <div>
           <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">{t("subscription.upgrade")}</h2>
@@ -123,7 +127,7 @@ export default function SubscriptionPage() {
                     </li>
                   ))}
                 </ul>
-                <Button fullWidth onClick={() => startCheckout(plan.key as any, "monthly")} loading={actionLoading}>
+                <Button fullWidth onClick={() => startCheckout(plan.key as "student" | "pro", "monthly")} loading={actionLoading}>
                   {t("pricing.cta.paid")}
                 </Button>
               </div>
@@ -133,5 +137,13 @@ export default function SubscriptionPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function SubscriptionPage() {
+  return (
+    <Suspense fallback={<div className="skeleton h-40 rounded-2xl" />}>
+      <SubscriptionContent />
+    </Suspense>
   );
 }
