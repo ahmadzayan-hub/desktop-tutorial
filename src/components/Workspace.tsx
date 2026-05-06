@@ -28,6 +28,11 @@ import PromptCard from "@/components/PromptCard";
 import StylePackPicker from "@/components/StylePackPicker";
 import OnboardingTour from "@/components/OnboardingTour";
 import ReverseMode from "@/components/ReverseMode";
+import PromptMethodSelector from "@/components/PromptMethodSelector";
+import MetaPromptPanel from "@/components/MetaPromptPanel";
+import PromptBuilderWizard from "@/components/PromptBuilderWizard";
+import { recommendMethod } from "@/lib/prompt-methods";
+import type { MethodId } from "@/lib/prompt-methods";
 import {
   toggleBookmark,
   clearUnstarred
@@ -104,9 +109,9 @@ export default function Workspace() {
   const [draftRestored, setDraftRestored] = useState(false);
   const [mode, setMode] = useState<"build" | "reverse">("build");
   const [historyFilter, setHistoryFilter] = useState<"all" | "starred">("all");
-  // null = let the engine auto-detect; non-null = user has explicitly locked
-  // a domain and we should pass it through to the engine.
   const [forcedIntent, setForcedIntent] = useState<Intent | null>(null);
+  const [selectedMethod, setSelectedMethod] = useState<MethodId | null>(null);
+  const [showWizard, setShowWizard] = useState(false);
 
   // Hydrate a starter dropped from /templates, restore an auto-saved draft,
   // and rehydrate the local history list.
@@ -424,34 +429,63 @@ export default function Workspace() {
       <OnboardingTour />
 
       {/* Mode toggle: Build (default) or Reverse-analyse */}
-      <div className="mb-4 sm:mb-6 inline-flex rounded-full border border-slate-200 dark:border-slate-700 p-1 bg-white dark:bg-slate-900">
+      <div className="mb-4 sm:mb-6 flex flex-wrap items-center gap-2">
+        <div className="inline-flex rounded-full border border-slate-200 dark:border-slate-700 p-1 bg-white dark:bg-slate-900">
+          <button
+            type="button"
+            onClick={() => setMode("build")}
+            aria-pressed={mode === "build"}
+            className={
+              "px-4 py-1.5 rounded-full text-xs font-medium transition " +
+              (mode === "build"
+                ? "bg-brand-600 text-white shadow-sm"
+                : "text-slate-600 dark:text-slate-300 hover:text-slate-900")
+            }
+          >
+            ✍️ {t("mode.build")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("reverse")}
+            aria-pressed={mode === "reverse"}
+            className={
+              "px-4 py-1.5 rounded-full text-xs font-medium transition " +
+              (mode === "reverse"
+                ? "bg-brand-600 text-white shadow-sm"
+                : "text-slate-600 dark:text-slate-300 hover:text-slate-900")
+            }
+          >
+            🔍 {t("mode.reverse")}
+          </button>
+        </div>
         <button
           type="button"
-          onClick={() => setMode("build")}
-          aria-pressed={mode === "build"}
+          onClick={() => setShowWizard((v) => !v)}
           className={
-            "px-4 py-1.5 rounded-full text-xs font-medium transition " +
-            (mode === "build"
-              ? "bg-brand-600 text-white shadow-sm"
-              : "text-slate-600 dark:text-slate-300 hover:text-slate-900")
+            "inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium border transition " +
+            (showWizard
+              ? "bg-violet-600 text-white border-violet-600"
+              : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-violet-400 hover:text-violet-600 bg-white dark:bg-slate-900")
           }
         >
-          ✍️ {t("mode.build")}
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode("reverse")}
-          aria-pressed={mode === "reverse"}
-          className={
-            "px-4 py-1.5 rounded-full text-xs font-medium transition " +
-            (mode === "reverse"
-              ? "bg-brand-600 text-white shadow-sm"
-              : "text-slate-600 dark:text-slate-300 hover:text-slate-900")
-          }
-        >
-          🔍 {t("mode.reverse")}
+          🏗️ {locale === "ar" ? "معالج البناء" : "Prompt Wizard"}
         </button>
       </div>
+
+      {/* Prompt Builder Wizard overlay */}
+      {showWizard && (
+        <div className="mb-6">
+          <PromptBuilderWizard
+            onComplete={(text, _answers) => {
+              setRaw(text);
+              setShowWizard(false);
+              const rec = recommendMethod(text);
+              if (rec) setSelectedMethod(rec);
+            }}
+            onClose={() => setShowWizard(false)}
+          />
+        </div>
+      )}
 
       {mode === "reverse" ? (
         <ReverseMode />
@@ -556,6 +590,16 @@ export default function Workspace() {
               }}
             />
           )}
+
+          <div className="mt-4">
+            <PromptMethodSelector
+              value={selectedMethod}
+              onChange={setSelectedMethod}
+              rawText={raw}
+              intent={previewIntent}
+              compact
+            />
+          </div>
 
           <ModelPicker value={model} onChange={setModel} className="mt-4" />
 
@@ -698,6 +742,18 @@ export default function Workspace() {
                   >
 {finalPrompt}
                   </pre>
+
+                  <div className="mt-3">
+                    <MetaPromptPanel
+                      prompt={finalPrompt}
+                      onUseImproved={(improved) => {
+                        setRaw(improved);
+                        setFinalPrompt(null);
+                        setSession(null);
+                        setAnswers({});
+                      }}
+                    />
+                  </div>
 
                   <PromptDiff raw={raw} final={finalPrompt} className="mt-3" />
                   {rationale && (
