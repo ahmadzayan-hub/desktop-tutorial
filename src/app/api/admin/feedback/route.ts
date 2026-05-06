@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { safeRoute } from "@/lib/api-helpers";

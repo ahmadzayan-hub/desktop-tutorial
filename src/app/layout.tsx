@@ -1,125 +1,105 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n/I18nProvider";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import TrialBanner from "@/components/TrialBanner";
-import { CONTACT_EMAIL } from "@/lib/contact";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-const TITLE = "ZAIan Studio — AI Prompt Engineering · زيان ستوديو";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.tweenz.ae";
+const TITLE = "Tweenz AI Learning OS — MBA Study Platform | منصة التعلم الذكي";
 const DESCRIPTION =
-  "Free from the UAE 🇦🇪 to the world. Engineer prompts of every kind — code, writing, research, video, audio, software, websites, reports, images — for ChatGPT, Claude, Copilot, and Gemini. Multilingual (EN/AR), voice + file uploads, works offline.";
+  "Tweenz AI Learning OS — bilingual AI academic operating system for MBA and university students. Manage courses, lectures, study packs, grades, deadlines, and AI tutor chat in one professional platform. From UAE to the world. | نظام تشغيل أكاديمي ذكي ثنائي اللغة لطلاب الماجستير والجامعات.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
-  title: { default: TITLE, template: "%s · ZAIan Studio" },
+  title: { default: TITLE, template: "%s · Tweenz AI" },
   description: DESCRIPTION,
-  applicationName: "ZAIan Studio",
+  applicationName: "Tweenz AI",
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, title: "ZAIan Studio", statusBarStyle: "default" },
-  icons: {
-    icon: "/icon.svg",
-    apple: "/icon.svg"
-  },
-  authors: [{ name: "Ahmad Zaian", url: `mailto:${CONTACT_EMAIL}` }],
+  appleWebApp: { capable: true, title: "Tweenz AI", statusBarStyle: "default" },
+  icons: { icon: "/icon.svg", apple: "/apple-icon.png" },
+  authors: [{ name: "Tweenz AI", url: APP_URL }],
   keywords: [
-    "ZAIan Studio",
-    "زيان ستوديو",
-    "prompt engineering",
-    "AI prompts",
-    "ChatGPT",
-    "Claude",
-    "Copilot",
-    "Gemini",
-    "Arabic AI",
-    "RTL",
-    "voice prompt",
-    "image prompt",
-    "video prompt",
-    "audio prompt",
-    "software prompt",
-    "research prompt",
-    "UAE",
-    "Emirates",
-    "free AI tool"
+    "Tweenz AI", "MBA study app", "AI tutor", "study packs", "Moodle companion",
+    "bilingual education", "Arabic learning", "UAE EdTech", "online MBA",
+    "academic AI", "study flashcards", "grade tracker", "exam readiness",
+    "منصة تعليمية", "تعلم ذكي", "ماجستير", "طلاب الجامعة"
   ],
   openGraph: {
     type: "website",
     title: TITLE,
     description: DESCRIPTION,
     url: APP_URL,
-    siteName: "ZAIan Studio",
+    siteName: "Tweenz AI",
     locale: "en_US",
-    images: [{ url: "/icon.svg", width: 512, height: 512, alt: "ZAIan Studio · زيان ستوديو" }]
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Tweenz AI Learning OS" }]
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/icon.svg"]
+    images: ["/og-image.png"]
   },
-  robots: { index: true, follow: true }
+  robots: { index: true, follow: true },
+  alternates: { canonical: APP_URL },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#6366f1",
+  themeColor: "#2563eb",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 5
+  maximumScale: 5,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" dir="ltr">
+    <html lang="en" dir="ltr" suppressHydrationWarning>
       <head>
-        {/* Apply theme before first paint to avoid a flash. Reads the same
-            localStorage key + system preference that ThemeToggle uses. */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        {/* Prevent flash of wrong theme */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var k='po_theme_v1',v=localStorage.getItem(k);var d=v==='dark'||((v===null||v==='system')&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();`
+            __html: `(function(){try{var k='tz_theme',v=localStorage.getItem(k);var d=v==='dark'||((v===null||v==='system')&&window.matchMedia('(prefers-color-scheme:dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();`
           }}
         />
       </head>
       <body>
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:start-2 focus:z-50 focus:bg-white focus:px-3 focus:py-1.5 focus:rounded focus:shadow"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:start-2 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:rounded-xl focus:shadow-lg focus:text-brand-700 focus:font-medium"
         >
           Skip to content
         </a>
-        {/* JSON-LD: WebApplication schema for richer search results */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              name: "ZAIan Studio",
-              alternateName: ["زيان ستوديو", "Prompts ZAIan"],
+              name: "Tweenz AI Learning OS",
+              alternateName: ["Tweenz AI", "منصة Tweenz التعليمية"],
               description: DESCRIPTION,
               url: APP_URL,
-              applicationCategory: "ProductivityApplication",
+              applicationCategory: "EducationApplication",
               operatingSystem: "Any",
-              isAccessibleForFree: true,
               countryOfOrigin: { "@type": "Country", name: "United Arab Emirates" },
-              offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-              author: { "@type": "Person", name: "Ahmad Zaian", email: CONTACT_EMAIL },
-              inLanguage: ["en", "ar"]
+              offers: [
+                { "@type": "Offer", name: "Free Plan", price: "0", priceCurrency: "USD" },
+                { "@type": "Offer", name: "Student Plan", price: "12", priceCurrency: "USD" },
+              ],
+              inLanguage: ["en", "ar"],
+              audience: { "@type": "Audience", audienceType: "MBA and university students" }
             })
           }}
         />
         <I18nProvider>
-          <div className="min-h-screen flex flex-col">
-            <TrialBanner />
-            <Header />
-            <main id="main" className="flex-1">{children}</main>
-            <Footer />
-          </div>
+          {children}
         </I18nProvider>
         <script
           dangerouslySetInnerHTML={{
-            __html: `if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>{})); }`
+            __html: `if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}`
           }}
         />
       </body>
