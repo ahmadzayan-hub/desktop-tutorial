@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const supabase = createClient();
   const { data, error } = await supabase.from("announcements").select("*, courses(name)").eq("user_id", user.id).eq("is_archived", false).order("created_at", { ascending: false }).limit(limit);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json(data?.map(a => ({ ...a, course_name: (a.courses as any)?.name ?? "" })) ?? []);
+  return NextResponse.json(data?.map((a: any) => ({ ...a, course_name: (a.courses as any)?.name ?? "" })) ?? []);
 }
 
 export async function POST(req: NextRequest) {

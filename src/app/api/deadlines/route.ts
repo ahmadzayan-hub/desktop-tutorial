@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   else if (view === "month") q = q.lte("due_date", new Date(Date.now() + 30 * 86400000).toISOString());
   const { data, error } = await q;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json(data?.map(d => ({ ...d, course_name: (d.courses as any)?.name ?? "" })) ?? []);
+  return NextResponse.json(data?.map((d: any) => ({ ...d, course_name: (d.courses as any)?.name ?? "" })) ?? []);
 }
 
 export async function POST(req: NextRequest) {

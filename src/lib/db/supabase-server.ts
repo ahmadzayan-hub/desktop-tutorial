@@ -4,7 +4,24 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { isDemoMode, DEMO_USER } from "@/lib/demo";
 
+const PLACEHOLDER_URL = "https://placeholder.supabase.co";
+
+function isMissingSupabase() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  return !url || url.includes("placeholder") || url === PLACEHOLDER_URL;
+}
+
+function makeNullClient() {
+  return {
+    auth: {
+      getUser: async () => ({ data: { user: null }, error: null }),
+      signOut: async () => ({ error: null }),
+    },
+  } as any;
+}
+
 export function createClient() {
+  if (isMissingSupabase()) return makeNullClient();
   const cookieStore = cookies();
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -25,6 +42,7 @@ export function createClient() {
 }
 
 export function createServiceClient() {
+  if (isMissingSupabase()) return makeNullClient();
   return createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -44,8 +62,7 @@ export async function getUser() {
 
 export async function requireUser() {
   if (isDemoMode) {
-    const supabase = createClient();
-    return { user: DEMO_USER as any, supabase, unauthorized: null };
+    return { user: DEMO_USER as any, supabase: makeNullClient(), unauthorized: null };
   }
   try {
     const supabase = createClient();

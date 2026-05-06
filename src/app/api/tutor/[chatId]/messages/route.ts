@@ -38,7 +38,7 @@ export async function POST(req: NextRequest, { params }: { params: { chatId: str
     const chunks = await retrieveChunks(content, user.id, course_id, 8);
     if (chunks.length > 0) {
       const { data: files } = await supabase.from("private_files").select("id, name").eq("user_id", user.id);
-      const fileNames = new Map((files ?? []).map((f: any) => [f.id, f.name]));
+      const fileNames = new Map<string, string>((files ?? []).map((f: any) => [f.id, f.name]));
       contextText = buildContext(chunks, fileNames);
       citations = extractCitations(chunks, fileNames);
       isGrounded = true;
