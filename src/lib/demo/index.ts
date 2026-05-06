@@ -270,6 +270,77 @@ export const DEMO_WEEKLY_BRIEF = {
   created_at: d(-BASE.getDay()),
 };
 
+export const DEMO_MESSAGES = [
+  {
+    id: "msg-001",
+    thread_id: "thread-001",
+    from_id: "instructor-001",
+    from_name: "Dr. Khalid Al-Rashidi",
+    from_role: "instructor",
+    to_id: DEMO_USER.id,
+    subject: "Re: SWOT Analysis Submission — Late Penalty Waiver",
+    body: "Dear Sara,\n\nThank you for reaching out about your SWOT Analysis. I understand this has been a challenging week. Given your strong performance in the other assignments (78% overall), I am willing to waive 50% of the late penalty if you submit by tomorrow (Thursday, May 7) before 11:59 PM.\n\nPlease make sure the analysis covers:\n1. At least 4 points per quadrant\n2. UAE market context for the chosen company\n3. Strategic recommendations section (minimum 300 words)\n\nBest regards,\nDr. Khalid Al-Rashidi\nStrategic Management — MGMT 601",
+    read: false,
+    course_id: "course-001",
+    course_name: "Strategic Management",
+    created_at: d(-1, "T08:30:00.000Z"),
+    ai_summary: "Dr. Al-Rashidi agreed to waive 50% of the late penalty if you submit the SWOT Analysis by Thursday May 7 at midnight. He requires 4+ points per SWOT quadrant, UAE market context, and a 300-word strategy section.",
+    ai_reply_suggestion_en: "Dear Dr. Al-Rashidi,\n\nThank you so much for your understanding and for offering the penalty waiver. I truly appreciate your flexibility.\n\nI will submit the complete SWOT Analysis before 11:59 PM on Thursday, May 7. The report will include detailed analysis across all four quadrants with UAE market context and a comprehensive strategic recommendations section.\n\nThank you again for your support.\n\nBest regards,\nSara Al-Mansouri",
+    ai_reply_suggestion_ar: "عزيزي الدكتور خالد،\n\nشكراً جزيلاً على تفهمكم ومرونتكم في منح التمديد. أقدر ذلك كثيراً.\n\nسأقوم بتسليم تحليل SWOT كاملاً قبل الساعة 11:59 مساءً يوم الخميس 7 مايو، متضمناً تحليلاً شاملاً لجميع العناصر الأربعة مع السياق الإماراتي وتوصيات استراتيجية وافية.\n\nشكراً مجدداً على دعمكم.\n\nمع أطيب التحيات،\nسارة المنصوري",
+  },
+  {
+    id: "msg-002",
+    thread_id: "thread-002",
+    from_id: "instructor-002",
+    from_name: "Prof. Layla Hassan",
+    from_role: "instructor",
+    to_id: DEMO_USER.id,
+    subject: "Financial Analysis Mid-Term — Format Change Notice",
+    body: "Dear Students,\n\nPlease note an important update regarding the upcoming Financial Analysis mid-term exam (May 20).\n\nThe format has been changed from multiple-choice questions to two comprehensive case studies:\n\nCase Study 1 (50 pts): DCF Valuation — you will be given a company's financials and asked to build a complete valuation model.\nCase Study 2 (50 pts): Ratio Analysis — comparative analysis of two UAE-listed companies.\n\nSample case studies are now available on the course portal. Please review the WACC and DCF chapters thoroughly.\n\nBest,\nProf. Layla Hassan\nFinancial Analysis — FIN 502",
+    read: false,
+    course_id: "course-002",
+    course_name: "Financial Analysis",
+    created_at: d(-2, "T14:00:00.000Z"),
+    ai_summary: "The FIN 502 mid-term on May 20 changed format: now 2 case studies instead of MCQ. Case 1 = DCF valuation (50pts), Case 2 = ratio analysis of 2 UAE companies (50pts). Sample cases are on the portal.",
+    ai_reply_suggestion_en: "Dear Prof. Hassan,\n\nThank you for the timely notification about the format change. I have noted the two case study structure and will begin reviewing the DCF and WACC chapters immediately.\n\nCould you please clarify whether the DCF case study will include a terminal value calculation, and if we should use the Gordon Growth Model or Exit Multiple approach?\n\nThank you for your guidance.\n\nBest regards,\nSara Al-Mansouri",
+    ai_reply_suggestion_ar: "عزيزتي الأستاذة ليلى،\n\nشكراً للإخطار في الوقت المناسب عن تغيير الصيغة. سجّلت هيكل دراستَي الحالة وسأبدأ في مراجعة فصول DCF وWACC فوراً.\n\nهل يمكنكم توضيح ما إذا كانت دراسة الحالة الخاصة بـ DCF ستتضمن حساب القيمة الطرفية؟ وهل نستخدم نموذج نمو Gordon أم مضاعف الخروج؟\n\nشكراً على توجيهاتكم.\n\nمع أطيب التحيات،\nسارة المنصوري",
+  },
+  {
+    id: "msg-003",
+    thread_id: "thread-003",
+    from_id: "admin-001",
+    from_name: "Platform Admin",
+    from_role: "admin",
+    to_id: DEMO_USER.id,
+    subject: "Your Pro Subscription is Active — Welcome to Tweenz AI",
+    body: "Dear Sara,\n\nWelcome to Tweenz AI Learning OS — your Pro subscription is now active.\n\nYour plan includes:\n✓ 2,000 AI queries per month\n✓ Unlimited study pack generation\n✓ AI Tutor with RAG-powered answers\n✓ Smart deadline risk analysis\n✓ Priority support\n\nYou have used 47 of your 2,000 AI queries this month. Your subscription renews on May 31, 2026.\n\nIf you have any questions, reply to this message or visit the Help Center.\n\nBest,\nTweenz AI Team",
+    read: true,
+    course_id: null,
+    course_name: null,
+    created_at: d(-30, "T10:00:00.000Z"),
+    ai_summary: "Welcome message confirming Sara's Pro plan is active: 2,000 AI queries/month, unlimited study packs, AI Tutor, and priority support. She has used 47 queries. Renewal on May 31.",
+    ai_reply_suggestion_en: "Dear Tweenz AI Team,\n\nThank you for the warm welcome! I am excited to start using the platform. The AI Tutor and study pack features look especially useful for my MBA coursework.\n\nLooking forward to a productive semester!\n\nBest regards,\nSara Al-Mansouri",
+    ai_reply_suggestion_ar: "عزيز فريق Tweenz AI،\n\nشكراً على الترحيب الحار! أنا متحمسة للبدء في استخدام المنصة. تبدو ميزات المعلم الذكي وحزم الدراسة مفيدة بشكل خاص لدراستي في الماجستير.\n\nأتطلع إلى فصل دراسي منتج!\n\nمع أطيب التحيات،\nسارة المنصوري",
+  },
+  {
+    id: "msg-004",
+    thread_id: "thread-004",
+    from_id: "instructor-005",
+    from_name: "Prof. Omar Shaikh",
+    from_role: "instructor",
+    to_id: DEMO_USER.id,
+    subject: "Leadership Essay — Feedback on Outline",
+    body: "Dear Sara,\n\nI reviewed the outline you submitted for the Leadership Essay. Overall it is a good start, but I have some suggestions:\n\n1. Strengthen your theoretical framework — consider applying Transformational vs. Transactional Leadership theory to the UAE context\n2. Your case selection is strong (Emirates Group is an excellent example), but add a contrasting company for comparative depth\n3. The conclusion should link back to your personal leadership philosophy\n\nThe essay is due May 13. You are currently at 55% progress in this course — this essay represents 20% of your final grade, so please give it the attention it deserves.\n\nFeel free to visit office hours (Sunday 2-4 PM) if you need further guidance.\n\nBest,\nProf. Omar Shaikh\nLeadership & Org Behavior — HRM 501",
+    read: true,
+    course_id: "course-005",
+    course_name: "Leadership & Org Behavior",
+    created_at: d(-3, "T16:00:00.000Z"),
+    ai_summary: "Prof. Shaikh reviewed your Leadership Essay outline and suggested: (1) add Transformational vs. Transactional Leadership theory, (2) add a contrasting UAE company alongside Emirates Group, (3) link conclusion to personal leadership philosophy. Essay is 20% of grade, due May 13.",
+    ai_reply_suggestion_en: "Dear Prof. Shaikh,\n\nThank you for the detailed feedback on my essay outline. Your suggestions are very helpful.\n\nI will incorporate the Transformational vs. Transactional Leadership framework and add Etihad Airways as a contrasting case to Emirates Group for comparative analysis. I will also strengthen the conclusion to reflect my personal leadership philosophy.\n\nI may attend your office hours on Sunday to discuss the theoretical framework further.\n\nThank you for your continued support.\n\nBest regards,\nSara Al-Mansouri",
+    ai_reply_suggestion_ar: "عزيزي الأستاذ عمر،\n\nشكراً جزيلاً على ملاحظاتكم التفصيلية حول مخطط المقالة. اقتراحاتكم مفيدة جداً.\n\nسأدمج إطار القيادة التحويلية مقابل المعاملاتية وسأضيف الاتحاد للطيران كحالة مقارنة مع مجموعة الإمارات. كما سأعزز الخاتمة لتعكس فلسفتي القيادية الشخصية.\n\nقد أحضر ساعات مكتبكم يوم الأحد لمناقشة الإطار النظري.\n\nشكراً على دعمكم المستمر.\n\nمع أطيب التحيات،\nسارة المنصوري",
+  },
+];
+
 export const DEMO_TUTOR_CHATS = [
   { id: "chat-001", user_id: DEMO_USER.id, course_id: "course-001", title: "Porter's Five Forces Discussion", created_at: d(-3), updated_at: d(-1) },
   { id: "chat-002", user_id: DEMO_USER.id, course_id: "course-002", title: "DCF Valuation Help", created_at: d(-5), updated_at: d(-2) },
@@ -280,7 +351,7 @@ export const DEMO_TUTOR_CHATS = [
 type DemoKey =
   | "profile" | "subscription" | "courses" | "deadlines" | "announcements"
   | "tasks" | "grades" | "files" | "study-packs" | "flashcards" | "quizzes"
-  | "weekly-brief" | "tutor-chats" | "ok";
+  | "weekly-brief" | "tutor-chats" | "messages" | "ok";
 
 const DEMO_DATA: Record<DemoKey, unknown> = {
   profile: DEMO_PROFILE,
@@ -296,6 +367,7 @@ const DEMO_DATA: Record<DemoKey, unknown> = {
   quizzes: DEMO_QUIZZES,
   "weekly-brief": DEMO_WEEKLY_BRIEF,
   "tutor-chats": DEMO_TUTOR_CHATS,
+  messages: DEMO_MESSAGES,
   ok: { ok: true },
 };
 
