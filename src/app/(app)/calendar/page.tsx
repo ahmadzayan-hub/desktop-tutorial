@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useI18n } from "@/lib/i18n/context";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday, parseISO, getDay, addMonths, subMonths } from "date-fns";
 

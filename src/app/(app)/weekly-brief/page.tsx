@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useI18n } from "@/lib/i18n/context";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 import { Newspaper, RefreshCw, Sparkles, TrendingUp, AlertTriangle, Target, CheckCircle } from "lucide-react";
 import { format } from "date-fns";
 

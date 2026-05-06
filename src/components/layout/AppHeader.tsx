@@ -30,9 +30,10 @@ export function AppHeader({ onMenuClick, title }: AppHeaderProps) {
   const [searching, setSearching] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const searchRef = useRef<HTMLDivElement>(null);
-  const inputRef  = useRef<HTMLInputElement>(null);
-  const timeout   = useRef<NodeJS.Timeout | null>(null);
+  const searchRef  = useRef<HTMLDivElement>(null);
+  const inputRef   = useRef<HTMLInputElement>(null);
+  const timeout    = useRef<NodeJS.Timeout | null>(null);
+  const abortCtrl  = useRef<AbortController | null>(null);
 
   useEffect(() => {
     setDark(document.documentElement.classList.contains("dark"));
@@ -63,11 +64,14 @@ export function AppHeader({ onMenuClick, title }: AppHeaderProps) {
 
   const search = useCallback(async (q: string) => {
     if (q.trim().length < 2) { setResults([]); return; }
+    if (abortCtrl.current) abortCtrl.current.abort();
+    abortCtrl.current = new AbortController();
+    const signal = abortCtrl.current.signal;
     setSearching(true);
     try {
       const [cRes, dRes, gRes, pRes, fRes] = await Promise.all([
-        fetch("/api/courses"), fetch("/api/deadlines?view=all"),
-        fetch("/api/grades"), fetch("/api/study-packs"), fetch("/api/files"),
+        fetch("/api/courses", { signal }), fetch("/api/deadlines?view=all", { signal }),
+        fetch("/api/grades", { signal }), fetch("/api/study-packs", { signal }), fetch("/api/files", { signal }),
       ]);
       const [courses, deadlines, grades, packs, files] = await Promise.all([
         cRes.ok ? cRes.json() : [], dRes.ok ? dRes.json() : [],
@@ -86,6 +90,8 @@ export function AppHeader({ onMenuClick, title }: AppHeaderProps) {
       files.filter((f: any) => f.name?.toLowerCase().includes(lower)).slice(0, 2)
         .forEach((f: any) => found.push({ type: "file", label: f.name, subtitle: "File", href: "/files", icon: TYPE_ICON.file }));
       setResults(found.slice(0, 8));
+    } catch (err: any) {
+      if (err?.name !== "AbortError") setResults([]);
     } finally { setSearching(false); }
   }, []);
 

@@ -140,6 +140,7 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
           <NavLink href="/flashcards"    icon={<Zap size={17} />}             label={t("nav.flashcards")}      color="text-yellow-500"  onClose={onClose} />
           <NavLink href="/quizzes"       icon={<ClipboardList size={17} />}   label={t("nav.quizzes")}         color="text-orange-500"  onClose={onClose} />
           <NavLink href="/lecture"       icon={<Mic size={17} />}             label="Lecture Transcription"    color="text-red-500"     onClose={onClose} isNew />
+          <NavLink href="/learn"         icon={<Sparkles size={17} />}        label="Free MBA Courses"         color="text-pink-500"    onClose={onClose} isNew />
         </NavSection>
 
         <NavSection title="Collaboration">

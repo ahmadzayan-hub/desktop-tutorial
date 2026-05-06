@@ -3,6 +3,12 @@ import type { Config } from "tailwindcss";
 const config: Config = {
   content: ["./src/**/*.{ts,tsx,js,jsx,mdx}"],
   darkMode: "class",
+  safelist: [
+    "animate-stagger-1","animate-stagger-2","animate-stagger-3","animate-stagger-4","animate-stagger-5",
+    "animate-fade-up","animate-slide-right","animate-scale-in","animate-float","animate-float-slow",
+    "animate-gradient-x","animate-glow-pulse","animate-shimmer","animate-bounce-soft","animate-wave",
+    "stat-card-blue","stat-card-amber","stat-card-purple","stat-card-emerald",
+  ],
   theme: {
     extend: {
       colors: {

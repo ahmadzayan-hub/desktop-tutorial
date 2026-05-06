@@ -148,6 +148,22 @@ export default function DashboardPage() {
     },
   ];
 
+  if (loading) {
+    return (
+      <div className="space-y-7 animate-fade-in">
+        <div className="skeleton h-52 rounded-3xl" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1,2,3,4].map(i => <div key={i} className="skeleton h-28 rounded-2xl" />)}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div className="skeleton h-72 rounded-2xl" />
+          <div className="skeleton h-72 rounded-2xl" />
+        </div>
+        <div className="skeleton h-52 rounded-2xl" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-7">
 
@@ -259,9 +275,7 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          {loading ? (
-            <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="skeleton h-16 rounded-2xl" />)}</div>
-          ) : (
+          {(
             <div className="space-y-2.5">
               {courses.slice(0, 5).map((c, i) => {
                 const colors = ["#3b82f6","#a855f7","#14b8a6","#f59e0b","#ef4444"];
@@ -310,9 +324,7 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          {loading ? (
-            <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="skeleton h-14 rounded-2xl" />)}</div>
-          ) : deadlines.length === 0 ? (
+          {deadlines.length === 0 ? (
             <div className="py-8 text-center text-slate-400 text-sm">
               <CheckCircle className="w-10 h-10 mx-auto mb-2 text-emerald-400 opacity-60" />
               All caught up!

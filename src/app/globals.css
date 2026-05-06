@@ -10,7 +10,6 @@
   color-scheme: light;
   --bg: #f0f4ff;
   --sidebar-w: 268px;
-  --header-h: 64px;
   --glass-bg: rgba(255,255,255,0.72);
   --glass-border: rgba(255,255,255,0.5);
   --glass-shadow: 0 8px 32px rgba(31,38,135,0.15);
@@ -279,9 +278,19 @@ html.dark .card-hover:hover {
 
 .progress-fill {
   @apply h-full rounded-full transition-all duration-700;
+  /* background driven by inline style from Progress component — color prop works */
   background: linear-gradient(90deg, #3b82f6, #6366f1);
   position: relative;
   overflow: hidden;
+}
+
+/* ── Shimmer overlay (used in course cards) ──────────────────────── */
+
+.shimmer-overlay {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s linear infinite;
+  pointer-events: none;
 }
 
 .progress-fill::after {
@@ -535,10 +544,7 @@ html.dark .notif-dot::after { border-color: #0b1120; }
   animation: gradientX 8s ease infinite;
 }
 
-@keyframes gradientX {
-  0%,100% { background-position: 0% 50%; }
-  50%     { background-position: 100% 50%; }
-}
+/* gradientX keyframe lives in tailwind.config — no duplicate needed here */
 
 /* ── Floating label animation ────────────────────────────────────── */
 
@@ -562,3 +568,34 @@ html.dark .notif-dot::after { border-color: #0b1120; }
 @keyframes rippleAnim {
   to { transform: scale(4); opacity: 0; }
 }
+
+/* ── iOS: prevent auto-zoom on input focus (font-size < 16px) ───── */
+
+@media (max-width: 768px) {
+  textarea, input[type="text"], input[type="email"],
+  input[type="password"], input[type="number"], input[type="search"], select {
+    font-size: 16px !important;
+  }
+}
+
+/* ── Glass inner row (replaces dark:bg-slate-800 in list items) ─── */
+
+.row-glass {
+  background: rgba(255,255,255,0.5);
+  border-radius: 1rem;
+  transition: background 0.2s ease;
+}
+.row-glass:hover { background: rgba(255,255,255,0.7); }
+
+html.dark .row-glass { background: rgba(255,255,255,0.04); }
+html.dark .row-glass:hover { background: rgba(255,255,255,0.07); }
+
+/* ── Ensure card inner list items don't clash with glass bg ─────── */
+
+.card .list-item {
+  @apply rounded-2xl transition-colors duration-150;
+  background: rgba(248,250,252,0.6);
+}
+.card .list-item:hover { background: rgba(248,250,252,0.9); }
+html.dark .card .list-item { background: rgba(255,255,255,0.04); }
+html.dark .card .list-item:hover { background: rgba(255,255,255,0.07); }

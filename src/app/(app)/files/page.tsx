@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useI18n } from "@/lib/i18n/context";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 import { useDropzone } from "react-dropzone";
-import { Upload, File, FileText, Trash2, Eye, Loader2, CheckCircle, AlertCircle, Search } from "lucide-react";
+import { Upload, File, FileText, FolderOpen, Trash2, Eye, Loader2, CheckCircle, AlertCircle, Search } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 interface PrivateFile {
@@ -94,40 +94,47 @@ export default function FilesPage() {
   }
 
   return (
-    <div className="p-6 space-y-6" dir={dir}>
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t("files.title")}</h1>
-        <p className="text-sm text-slate-500 mt-1">{t("files.subtitle")}</p>
+    <div className="space-y-6 animate-fade-up" dir={dir}>
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-md">
+          <FolderOpen className="w-5 h-5 text-white" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t("files.title")}</h1>
+          <p className="text-sm text-slate-500 mt-0.5">{t("files.subtitle")}</p>
+        </div>
       </div>
 
       {/* Upload zone */}
-      <div className="card space-y-3">
-        <div className="flex items-center gap-3">
-          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">{t("files.linkToCourse")}</label>
-          <select
-            value={selectedCourseId}
-            onChange={e => setSelectedCourseId(e.target.value)}
-            className="w-48 text-sm"
-          >
+      <div className="card space-y-4">
+        <div className="flex items-center gap-3 flex-wrap">
+          <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">{t("files.linkToCourse")}</label>
+          <select value={selectedCourseId} onChange={e => setSelectedCourseId(e.target.value)} className="w-48 text-sm">
             <option value="">{t("files.noCourse")}</option>
             {courses.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </div>
         <div
           {...getRootProps()}
-          className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-colors
-            ${isDragActive ? "border-brand-500 bg-brand-50 dark:bg-brand-950/20" : "border-slate-200 dark:border-slate-700 hover:border-brand-400"}`}
+          className={`border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all duration-200
+            ${isDragActive
+              ? "border-brand-500 bg-brand-50/80 dark:bg-brand-950/30 scale-[1.01]"
+              : "border-white/60 dark:border-white/10 hover:border-brand-400 hover:bg-brand-50/40 dark:hover:bg-brand-950/20"}`}
         >
           <input {...getInputProps()} />
           {uploading ? (
-            <div className="flex flex-col items-center gap-2">
-              <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-              <p className="text-sm text-slate-500">{t("files.uploading")}</p>
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center">
+                <Loader2 className="w-6 h-6 text-brand-500 animate-spin" />
+              </div>
+              <p className="text-sm font-medium text-slate-600 dark:text-slate-400">{t("files.uploading")}</p>
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-2">
-              <Upload className="w-8 h-8 text-slate-400" />
-              <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-950/40 dark:to-indigo-950/30 flex items-center justify-center">
+                <Upload className="w-6 h-6 text-blue-500" />
+              </div>
+              <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                 {isDragActive ? t("files.dropNow") : t("files.dropOrClick")}
               </p>
               <p className="text-xs text-slate-400">{t("files.supportedFormats")}</p>
@@ -165,11 +172,11 @@ export default function FilesPage() {
           <p className="text-slate-500">{t("files.noFiles")}</p>
         </div>
       ) : (
-        <div className="card divide-y divide-slate-100 dark:divide-slate-800 p-0 overflow-hidden">
+        <div className="card p-0 overflow-hidden">
           {filtered.map(file => (
-            <div key={file.id} className="flex items-center gap-4 px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-              <div className="p-2 bg-brand-50 dark:bg-brand-950/30 rounded-lg">
-                <File className="w-5 h-5 text-brand-600" />
+            <div key={file.id} className="flex items-center gap-4 px-5 py-4 row-glass border-b border-white/40 dark:border-white/5 last:border-0 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-950/40 dark:to-indigo-950/30 flex items-center justify-center flex-shrink-0">
+                <File className="w-5 h-5 text-blue-500" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{file.file_name}</p>

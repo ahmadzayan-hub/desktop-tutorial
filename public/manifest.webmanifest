@@ -4,7 +4,7 @@
   "description": "Your MBA study life, organized by AI. Bilingual AI academic platform.",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#f8fafc",
+  "background_color": "#f0f4ff",
   "theme_color": "#2563eb",
   "orientation": "portrait-primary",
   "lang": "en",

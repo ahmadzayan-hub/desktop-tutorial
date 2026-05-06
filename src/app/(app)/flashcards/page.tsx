@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useI18n } from "@/lib/i18n/context";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 import { Layers, ChevronLeft, ChevronRight, RotateCcw, ThumbsUp, ThumbsDown, BookOpen } from "lucide-react";
 
 interface Flashcard {
@@ -82,10 +82,15 @@ export default function FlashcardsPage() {
   const progress = cards.length ? ((current) / cards.length) * 100 : 0;
 
   return (
-    <div className="p-6 space-y-6" dir={dir}>
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t("flashcards.title")}</h1>
-        <p className="text-sm text-slate-500 mt-1">{t("flashcards.subtitle")}</p>
+    <div className="space-y-6 animate-fade-up" dir={dir}>
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-md">
+          <Layers className="w-5 h-5 text-white" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t("flashcards.title")}</h1>
+          <p className="text-sm text-slate-500 mt-0.5">{t("flashcards.subtitle")}</p>
+        </div>
       </div>
 
       {/* Pack selector */}
@@ -138,12 +143,15 @@ export default function FlashcardsPage() {
           {/* Card */}
           <div className="flip-card h-64 cursor-pointer" onClick={() => setFlipped(f => !f)}>
             <div className={`flip-card-inner h-full ${flipped ? "flipped" : ""}`}>
-              <div className="flip-card-front absolute inset-0 card flex flex-col items-center justify-center p-8 text-center">
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-4">{t("flashcards.question")}</p>
-                <p className="text-xl font-semibold text-slate-900 dark:text-white">{card.front}</p>
-                <p className="text-xs text-slate-400 mt-6">{t("flashcards.tapToReveal")}</p>
+              <div className="flip-card-front absolute inset-0 card flex flex-col items-center justify-center p-8 text-center" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.85), rgba(239,246,255,0.9))" }}>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">{t("flashcards.question")}</p>
+                <p className="text-xl font-bold text-slate-900 dark:text-white">{card.front}</p>
+                <p className="text-xs text-slate-400 mt-6 flex items-center gap-1.5">
+                  <span className="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center text-[9px]">↕</span>
+                  {t("flashcards.tapToReveal")}
+                </p>
               </div>
-              <div className="flip-card-back absolute inset-0 card flex flex-col items-center justify-center p-8 text-center bg-brand-50 dark:bg-brand-950/30 border-brand-200 dark:border-brand-800">
+              <div className="flip-card-back absolute inset-0 card flex flex-col items-center justify-center p-8 text-center" style={{ background: "linear-gradient(135deg, rgba(239,246,255,0.9), rgba(224,231,255,0.9))" }}>
                 <p className="text-xs font-semibold text-brand-600 dark:text-brand-400 uppercase tracking-wide mb-4">{t("flashcards.answer")}</p>
                 <p className="text-lg text-slate-800 dark:text-slate-200">{card.back}</p>
               </div>

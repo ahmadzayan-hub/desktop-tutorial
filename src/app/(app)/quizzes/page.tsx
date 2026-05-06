@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useI18n } from "@/lib/i18n/context";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 import { Brain, Plus, CheckCircle, XCircle, RefreshCw, X, Sparkles } from "lucide-react";
 
 interface Quiz {

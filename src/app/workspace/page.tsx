@@ -1,8 +1,4 @@
-"use client";
-import Workspace from "@/components/Workspace";
-
-export const dynamic = "force-dynamic";
-
+import { redirect } from "next/navigation";
 export default function WorkspacePage() {
-  return <Workspace />;
+  redirect("/group-project");
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useI18n } from "@/lib/i18n/context";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 import { BookOpen, Plus, Sparkles, ChevronDown, ChevronUp, RefreshCw, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 

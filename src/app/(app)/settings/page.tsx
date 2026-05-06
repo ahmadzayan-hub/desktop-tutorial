@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useI18n } from "@/lib/i18n/context";
-import { User, Globe, Bell, Shield, Trash2, Download, Lock, Eye, EyeOff, CheckCircle } from "lucide-react";
+import { useI18n } from "@/lib/i18n/I18nProvider";
+import { User, Globe, Bell, Shield, Trash2, Download, Lock, Eye, EyeOff, CheckCircle, LogOut, GraduationCap, Sparkles } from "lucide-react";
+import Link from "next/link";
 
 interface Profile {
   full_name?: string;
@@ -81,7 +82,29 @@ export default function SettingsPage() {
               {t(label as any)}
             </button>
           ))}
+          <div className="hidden md:flex flex-col gap-1 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+            <Link href="/onboarding" className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+              <Sparkles className="w-4 h-4 text-brand-500" /> Onboarding Tour
+            </Link>
+            <form action="/api/auth/signout" method="POST">
+              <button type="submit" className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 dark:hover:text-red-400 transition text-start">
+                <LogOut className="w-4 h-4" /> Sign Out
+              </button>
+            </form>
+          </div>
         </nav>
+
+        {/* Quick links */}
+        <div className="md:hidden flex gap-2 mb-2">
+          <Link href="/onboarding" className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-brand-50 dark:bg-brand-950/30 text-brand-600 dark:text-brand-400 text-xs font-semibold hover:bg-brand-100 transition">
+            <Sparkles className="w-3.5 h-3.5" /> Onboarding Tour
+          </Link>
+          <form action="/api/auth/signout" method="POST" className="flex-1">
+            <button type="submit" className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 text-xs font-semibold hover:bg-red-100 transition">
+              <LogOut className="w-3.5 h-3.5" /> Sign Out
+            </button>
+          </form>
+        </div>
 
         {/* Content */}
         <div className="flex-1 max-w-xl">

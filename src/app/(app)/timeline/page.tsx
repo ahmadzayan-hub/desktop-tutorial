@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useI18n } from "@/lib/i18n/context";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 import { Calendar, Clock, AlertTriangle, CheckCircle, Plus, X } from "lucide-react";
 import { format, parseISO, isToday, isTomorrow, isThisWeek } from "date-fns";
 

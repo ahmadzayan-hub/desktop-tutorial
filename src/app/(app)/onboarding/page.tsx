@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useI18n } from "@/lib/i18n/context";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 import { GraduationCap, ChevronRight, ChevronLeft, Check } from "lucide-react";
 
 const STEPS = ["welcome", "program", "goals", "preferences"] as const;
