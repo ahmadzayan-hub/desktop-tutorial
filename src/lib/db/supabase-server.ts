@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { isDemoMode, DEMO_USER } from "@/lib/demo";
 
 export function createClient() {
   const cookieStore = cookies();
@@ -31,6 +32,7 @@ export function createServiceClient() {
 }
 
 export async function getUser() {
+  if (isDemoMode) return DEMO_USER as any;
   try {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -41,6 +43,10 @@ export async function getUser() {
 }
 
 export async function requireUser() {
+  if (isDemoMode) {
+    const supabase = createClient();
+    return { user: DEMO_USER as any, supabase, unauthorized: null };
+  }
   try {
     const supabase = createClient();
     const { data: { user }, error } = await supabase.auth.getUser();

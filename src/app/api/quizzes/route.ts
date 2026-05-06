@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireUser } from "@/lib/db/supabase-server";
 import { aiChat } from "@/lib/ai/client";
+import { demoReturn } from "@/lib/demo";
 
 export async function GET() {
+  const demo = demoReturn("quizzes"); if (demo) return demo;
   const { user, supabase, unauthorized } = await requireUser();
   if (unauthorized) return unauthorized;
   const { data, error } = await supabase
@@ -21,6 +23,10 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
+    const { pack_id } = await req.json();
+    return NextResponse.json({ id: `quiz-${Date.now()}`, user_id: "demo-user", pack_id, title: "New Quiz", status: "ready", questions: [], num_questions: 0, created_at: new Date().toISOString() }, { status: 201 });
+  }
   const { user, supabase, unauthorized } = await requireUser();
   if (unauthorized) return unauthorized;
   const { pack_id, num_questions = 10 } = await req.json();

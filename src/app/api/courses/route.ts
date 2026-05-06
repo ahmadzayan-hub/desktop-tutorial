@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient, getUser } from "@/lib/db/supabase-server";
+import { demoReturn } from "@/lib/demo";
 
 export async function GET() {
+  const demo = demoReturn("courses"); if (demo) return demo;
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const supabase = createClient();
@@ -18,6 +20,10 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
+    const body = await req.json();
+    return NextResponse.json({ id: `course-${Date.now()}`, user_id: "demo-user", ...body, created_at: new Date().toISOString() }, { status: 201 });
+  }
   const body = await req.json();
   const supabase = createClient();
   const { data, error } = await supabase

@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireUser } from "@/lib/db/supabase-server";
+import { demoFlashcards } from "@/lib/demo";
 
 export async function GET(req: NextRequest) {
+  const packId = req.nextUrl.searchParams.get("pack_id");
+  const demo = demoFlashcards(packId); if (demo) return demo;
   const { user, supabase, unauthorized } = await requireUser();
   if (unauthorized) return unauthorized;
-  const packId = req.nextUrl.searchParams.get("pack_id");
 
   let query = supabase
     .from("flashcards")

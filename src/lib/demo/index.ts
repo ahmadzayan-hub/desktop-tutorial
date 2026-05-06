@@ -1,0 +1,320 @@
+import { NextResponse } from "next/server";
+
+export const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+
+// ─── Demo user ────────────────────────────────────────────────────────────────
+export const DEMO_USER = {
+  id: "demo-user-00000000-0000-0000-0000-000000000000",
+  email: "sara@tweenz.ae",
+  aud: "authenticated",
+  role: "authenticated",
+  user_metadata: { full_name: "Sara Al-Mansouri" },
+  app_metadata: {},
+  created_at: "2025-09-01T00:00:00.000Z",
+};
+
+// ─── Date helpers (relative to 2026-05-06) ────────────────────────────────────
+const BASE = new Date("2026-05-06T09:00:00.000Z");
+const d = (days: number, time = "T09:00:00.000Z") =>
+  new Date(BASE.getTime() + days * 86_400_000).toISOString().replace("T09:00:00.000Z", time);
+
+// ─── Mock data ────────────────────────────────────────────────────────────────
+
+export const DEMO_PROFILE = {
+  id: DEMO_USER.id,
+  full_name: "Sara Al-Mansouri",
+  avatar_url: null,
+  email: "sara@tweenz.ae",
+};
+
+export const DEMO_SUBSCRIPTION = {
+  id: "sub-demo-001",
+  user_id: DEMO_USER.id,
+  plan: "pro",
+  status: "active",
+  ai_queries_used: 47,
+  ai_queries_limit: 2000,
+  current_period_end: d(25),
+  trial_ends_at: null,
+  cancel_at_period_end: false,
+  stripe_customer_id: "cus_demo",
+  stripe_sub_id: "sub_demo",
+};
+
+export const DEMO_COURSES = [
+  { id: "course-001", user_id: DEMO_USER.id, name: "Strategic Management", code: "MGMT 601", instructor: "Dr. Khalid Al-Rashidi", progress: 78, status: "active", starred: true, color: "#6366f1", credits: 3, created_at: d(-60) },
+  { id: "course-002", user_id: DEMO_USER.id, name: "Financial Analysis", code: "FIN 502", instructor: "Prof. Layla Hassan", progress: 65, status: "active", starred: false, color: "#0ea5e9", credits: 3, created_at: d(-58) },
+  { id: "course-003", user_id: DEMO_USER.id, name: "Operations & Supply Chain", code: "OPS 503", instructor: "Dr. Ahmed Nasser", progress: 82, status: "active", starred: false, color: "#10b981", credits: 3, created_at: d(-55) },
+  { id: "course-004", user_id: DEMO_USER.id, name: "Digital Marketing", code: "MKT 604", instructor: "Dr. Rania Mostafa", progress: 90, status: "active", starred: true, color: "#f59e0b", credits: 3, created_at: d(-50) },
+  { id: "course-005", user_id: DEMO_USER.id, name: "Leadership & Org Behavior", code: "HRM 501", instructor: "Prof. Omar Shaikh", progress: 55, status: "active", starred: false, color: "#ec4899", credits: 3, created_at: d(-45) },
+];
+
+export const DEMO_DEADLINES = [
+  { id: "dl-001", user_id: DEMO_USER.id, title: "SWOT Analysis Report", type: "assignment", course_id: "course-001", course_name: "Strategic Management", due_date: d(-3, "T23:59:00.000Z"), risk: "overdue", is_done: false, priority: "high", notes: "Must include competitive analysis for UAE market", created_at: d(-20) },
+  { id: "dl-002", user_id: DEMO_USER.id, title: "Porter's Five Forces Case Study", type: "case_study", course_id: "course-001", course_name: "Strategic Management", due_date: d(2, "T23:59:00.000Z"), risk: "at_risk", is_done: false, priority: "high", notes: "Tesla Motors in the GCC region", created_at: d(-15) },
+  { id: "dl-003", user_id: DEMO_USER.id, title: "Marketing Campaign Proposal", type: "project", course_id: "course-004", course_name: "Digital Marketing", due_date: d(3, "T23:59:00.000Z"), risk: "at_risk", is_done: false, priority: "high", notes: "Social media strategy for Noon.com", created_at: d(-10) },
+  { id: "dl-004", user_id: DEMO_USER.id, title: "Financial Modeling Assignment", type: "assignment", course_id: "course-002", course_name: "Financial Analysis", due_date: d(5, "T23:59:00.000Z"), risk: "due_soon", is_done: false, priority: "medium", notes: "DCF valuation model for a UAE retail company", created_at: d(-12) },
+  { id: "dl-005", user_id: DEMO_USER.id, title: "HRM Leadership Essay", type: "essay", course_id: "course-005", course_name: "Leadership & Org Behavior", due_date: d(7, "T23:59:00.000Z"), risk: "due_soon", is_done: false, priority: "medium", notes: "Transformational vs. Transactional leadership (1500 words)", created_at: d(-8) },
+  { id: "dl-006", user_id: DEMO_USER.id, title: "Group Project Presentation", type: "presentation", course_id: "course-003", course_name: "Operations & Supply Chain", due_date: d(10, "T14:00:00.000Z"), risk: "safe", is_done: false, priority: "medium", notes: "Supply chain disruption analysis — 15-min slot", created_at: d(-5) },
+  { id: "dl-007", user_id: DEMO_USER.id, title: "Mid-term Exam: Financial Analysis", type: "exam", course_id: "course-002", course_name: "Financial Analysis", due_date: d(14, "T10:00:00.000Z"), risk: "safe", is_done: false, priority: "high", notes: "Chapters 1–6, open book, 2 hours", created_at: d(-3) },
+  { id: "dl-008", user_id: DEMO_USER.id, title: "Operations Research Paper", type: "paper", course_id: "course-003", course_name: "Operations & Supply Chain", due_date: d(19, "T23:59:00.000Z"), risk: "safe", is_done: false, priority: "low", notes: "10 pages minimum, APA format", created_at: d(-2) },
+];
+
+export const DEMO_ANNOUNCEMENTS = [
+  {
+    id: "ann-001", user_id: DEMO_USER.id, course_id: "course-001", course_name: "Strategic Management",
+    title: "Guest Speaker Session Rescheduled",
+    body: "The session with McKinsey partner Abdullah Al-Harbi has been rescheduled from May 8 to May 15. Location: Room B-204. Attendance is mandatory and counts toward your participation grade.",
+    source: "email", summary: "McKinsey guest lecture moved from May 8 to May 15 in Room B-204. Mandatory attendance.", required_action: "Update your calendar and confirm attendance via the portal by May 10.", risk_level: "medium", is_archived: false, created_at: d(-1),
+  },
+  {
+    id: "ann-002", user_id: DEMO_USER.id, course_id: "course-002", course_name: "Financial Analysis",
+    title: "Mid-term Exam Format Change",
+    body: "Based on feedback, the mid-term will now include 2 case study questions instead of 5 short-answer questions. The total marks remain at 100. The exam will focus on DCF, ratio analysis, and capital structure. Past exams are on Moodle.",
+    source: "email", summary: "Exam format updated: 2 case studies (not 5 short answers). Focus: DCF, ratios, capital structure.", required_action: "Review DCF models and ratio analysis from Weeks 1–5. Practice with past exam papers.", risk_level: "high", is_archived: false, created_at: d(-2),
+  },
+  {
+    id: "ann-003", user_id: DEMO_USER.id, course_id: "course-003", course_name: "Operations & Supply Chain",
+    title: "Group Project Deadline Extended",
+    body: "Due to the Emirates National Day holiday, the group project submission deadline has been moved to May 16. The presentation schedule remains unchanged. Please submit your slide deck to the course portal 48 hours before your presentation slot.",
+    source: "portal", summary: "Group project submission deadline extended to May 16. Presentations unchanged.", required_action: "Submit slide deck 48 hours before your presentation slot on May 10.", risk_level: "low", is_archived: false, created_at: d(-3),
+  },
+  {
+    id: "ann-004", user_id: DEMO_USER.id, course_id: "course-004", course_name: "Digital Marketing",
+    title: "Campaign Proposal Grading Rubric Updated",
+    body: "Please review the updated grading rubric on Moodle. Key change: creativity and innovation now carries 25% weight (was 15%). Strategic alignment remains the highest weighted criterion at 35%.",
+    source: "moodle", summary: "Rubric updated: creativity now 25%, strategic alignment 35%.", required_action: "Ensure your proposal demonstrates clear creative differentiation and strong strategic fit.", risk_level: "medium", is_archived: false, created_at: d(-4),
+  },
+];
+
+export const DEMO_TASKS = [
+  { id: "task-001", user_id: DEMO_USER.id, title: "Review Porter's 5 Forces lecture notes", status: "todo", priority: "high", course_id: "course-001", course_name: "Strategic Management", due_date: d(1), created_at: d(-2) },
+  { id: "task-002", user_id: DEMO_USER.id, title: "Read Chapter 8 — Financial Statement Analysis", status: "todo", priority: "high", course_id: "course-002", course_name: "Financial Analysis", due_date: d(3), created_at: d(-2) },
+  { id: "task-003", user_id: DEMO_USER.id, title: "Schedule group meeting for Operations project", status: "todo", priority: "medium", course_id: "course-003", course_name: "Operations & Supply Chain", due_date: d(2), created_at: d(-1) },
+  { id: "task-004", user_id: DEMO_USER.id, title: "Prepare Case Study slides (Tesla / GCC)", status: "in_progress", priority: "high", course_id: "course-001", course_name: "Strategic Management", due_date: d(2), created_at: d(-3) },
+  { id: "task-005", user_id: DEMO_USER.id, title: "Draft marketing campaign creative brief", status: "in_progress", priority: "high", course_id: "course-004", course_name: "Digital Marketing", due_date: d(3), created_at: d(-2) },
+  { id: "task-006", user_id: DEMO_USER.id, title: "Outline DCF model structure", status: "in_progress", priority: "medium", course_id: "course-002", course_name: "Financial Analysis", due_date: d(5), created_at: d(-1) },
+  { id: "task-007", user_id: DEMO_USER.id, title: "Submit MGMT 601 reading summary", status: "completed", priority: "low", course_id: "course-001", course_name: "Strategic Management", due_date: d(-7), created_at: d(-10) },
+  { id: "task-008", user_id: DEMO_USER.id, title: "Read HRM Chapter 3 — Motivation Theories", status: "completed", priority: "low", course_id: "course-005", course_name: "Leadership & Org Behavior", due_date: d(-5), created_at: d(-8) },
+  { id: "task-009", user_id: DEMO_USER.id, title: "Complete Operations Lab Report", status: "completed", priority: "medium", course_id: "course-003", course_name: "Operations & Supply Chain", due_date: d(-4), created_at: d(-9) },
+];
+
+export const DEMO_GRADES = [
+  { id: "gr-001", user_id: DEMO_USER.id, course_id: "course-001", course_name: "Strategic Management", category: "Assignment", item_name: "Industry Analysis Report", score: 82, max_score: 100, weight: 15, created_at: d(-30) },
+  { id: "gr-002", user_id: DEMO_USER.id, course_id: "course-001", course_name: "Strategic Management", category: "Participation", item_name: "Week 1–4 Class Participation", score: 18, max_score: 20, weight: 10, created_at: d(-20) },
+  { id: "gr-003", user_id: DEMO_USER.id, course_id: "course-002", course_name: "Financial Analysis", category: "Quiz", item_name: "Financial Ratios Quiz", score: 74, max_score: 100, weight: 10, created_at: d(-25) },
+  { id: "gr-004", user_id: DEMO_USER.id, course_id: "course-003", course_name: "Operations & Supply Chain", category: "Lab Report", item_name: "Lean Manufacturing Case", score: 91, max_score: 100, weight: 20, created_at: d(-18) },
+  { id: "gr-005", user_id: DEMO_USER.id, course_id: "course-004", course_name: "Digital Marketing", category: "Project", item_name: "Campaign Concept Pitch", score: 88, max_score: 100, weight: 25, created_at: d(-15) },
+  { id: "gr-006", user_id: DEMO_USER.id, course_id: "course-005", course_name: "Leadership & Org Behavior", category: "Participation", item_name: "Case Discussion Week 3", score: 76, max_score: 100, weight: 10, created_at: d(-22) },
+  { id: "gr-007", user_id: DEMO_USER.id, course_id: "course-002", course_name: "Financial Analysis", category: "Assignment", item_name: "Working Capital Analysis", score: 79, max_score: 100, weight: 15, created_at: d(-10) },
+];
+
+export const DEMO_FILES = [
+  { id: "file-001", user_id: DEMO_USER.id, course_id: "course-001", course_name: "Strategic Management", file_name: "StrategicMgmt_Week5_Porter.pdf", file_type: "application/pdf", file_size: 2_450_000, storage_path: "demo/file-001.pdf", processing_status: "ready", chunk_count: 18, created_at: d(-14) },
+  { id: "file-002", user_id: DEMO_USER.id, course_id: "course-002", course_name: "Financial Analysis", file_name: "FinancialAnalysis_Week3_DCF.pdf", file_type: "application/pdf", file_size: 3_200_000, storage_path: "demo/file-002.pdf", processing_status: "ready", chunk_count: 24, created_at: d(-12) },
+  { id: "file-003", user_id: DEMO_USER.id, course_id: "course-003", course_name: "Operations & Supply Chain", file_name: "Operations_CaseStudy_SupplyChain.pdf", file_type: "application/pdf", file_size: 1_800_000, storage_path: "demo/file-003.pdf", processing_status: "processing", chunk_count: 0, created_at: d(-1) },
+  { id: "file-004", user_id: DEMO_USER.id, course_id: "course-004", course_name: "Digital Marketing", file_name: "DigitalMarketing_Readings_Week4.pdf", file_type: "application/pdf", file_size: 4_100_000, storage_path: "demo/file-004.pdf", processing_status: "ready", chunk_count: 31, created_at: d(-9) },
+];
+
+export const DEMO_STUDY_PACKS = [
+  {
+    id: "pack-001", user_id: DEMO_USER.id, file_id: "file-001", course_id: "course-001", course_name: "Strategic Management",
+    title: "Porter's Five Forces — Complete Guide", topic: "Porter's Five Forces", status: "ready",
+    overview: "Porter's Five Forces is a strategic analysis framework developed by Michael Porter (Harvard, 1979) that evaluates competitive intensity and market attractiveness across five dimensions: competitive rivalry, threat of new entrants, bargaining power of buyers, bargaining power of suppliers, and threat of substitutes.",
+    summary: "This pack covers the complete Porter's Five Forces framework applied to real-world MBA case studies. You'll understand how to evaluate industry attractiveness, identify strategic positioning, and apply the model to UAE and GCC market contexts. The framework remains the gold standard for external environmental analysis in MBA programs worldwide.",
+    detailed_notes: "## Porter's Five Forces Framework\n\n### 1. Competitive Rivalry\n- Number of competitors, their size, and diversity\n- Industry growth rate — slow growth = higher rivalry\n- Fixed costs — high fixed costs pressure firms to compete on price\n- **UAE Context**: Telecoms (Etisalat vs. du) shows duopoly rivalry\n\n### 2. Threat of New Entrants\n- Barriers to entry: capital requirements, economies of scale, brand loyalty, regulatory\n- **Key insight**: High barriers = low threat = more attractive industry\n- Saudi Vision 2030 is reducing barriers in many sectors\n\n### 3. Bargaining Power of Buyers\n- Buyer concentration, price sensitivity, switching costs\n- When buyers are powerful, they squeeze margins\n- **Example**: Large UAE government procurement contracts\n\n### 4. Bargaining Power of Suppliers\n- Supplier concentration, uniqueness of input, switching cost\n- OPEC as the ultimate supplier power example\n\n### 5. Threat of Substitutes\n- Price-performance ratio of substitutes\n- **Digital disruption** = biggest source of substitution today\n\n## Applying the Framework\n1. Identify all relevant factors for each force\n2. Rate each force: Low / Medium / High\n3. Aggregate to determine overall industry attractiveness\n4. Link analysis to strategic recommendations",
+    key_takeaways: ["Porter's Five Forces provides a systematic way to assess industry attractiveness and competitive dynamics", "The most attractive industries have low rivalry, high entry barriers, weak buyers and suppliers, and few substitutes", "In the GCC context, government regulation and Vision programs significantly alter traditional force assessments", "Always pair Five Forces with internal analysis (VRIO/SWOT) for a complete strategic picture", "The framework is static — use Dynamic Capabilities theory to account for rapid change"],
+    glossary: [
+      { term: "Competitive Rivalry", definition: "The intensity of competition between existing players in an industry" },
+      { term: "Entry Barriers", definition: "Obstacles that prevent new competitors from easily entering a market" },
+      { term: "Switching Costs", definition: "Costs a buyer incurs when changing from one supplier/product to another" },
+      { term: "Value Chain", definition: "The sequence of activities a firm performs to deliver a product, analyzed alongside Five Forces" },
+      { term: "Industry Attractiveness", definition: "The profit potential of an industry based on its competitive structure" },
+    ],
+    mba_frameworks: [
+      { name: "SWOT Analysis", application: "Use alongside Five Forces — Five Forces covers external threats/opportunities, SWOT adds internal strengths/weaknesses" },
+      { name: "PESTLE Analysis", application: "Provides macro-environmental context that shapes the intensity of each force (e.g., political barriers to entry)" },
+      { name: "Value Chain Analysis", application: "Identifies where supplier/buyer power is concentrated along the production process" },
+    ],
+    exam_prep_notes: "Focus on: (1) Applying all 5 forces to a given case with evidence, not just listing them. (2) UAE/GCC-specific examples — professor emphasizes regional context. (3) Be able to argue which force is most important in a specific industry. Likely exam question: 'Apply Porter's Five Forces to the UAE aviation industry and recommend a strategic response.'",
+    created_at: d(-13),
+  },
+  {
+    id: "pack-002", user_id: DEMO_USER.id, file_id: "file-002", course_id: "course-002", course_name: "Financial Analysis",
+    title: "DCF Valuation — Master Reference", topic: "Discounted Cash Flow (DCF) Valuation", status: "ready",
+    overview: "Discounted Cash Flow (DCF) analysis is the foundational valuation method in corporate finance, calculating the present value of expected future free cash flows by discounting them at the Weighted Average Cost of Capital (WACC).",
+    summary: "DCF valuation translates a company's future earning potential into a present-day value. It is the primary tool used in investment banking, M&A, and corporate strategy. This pack covers free cash flow projection, WACC calculation, terminal value estimation, and sensitivity analysis — all critical for the mid-term exam and your future career.",
+    detailed_notes: "## DCF Valuation Step-by-Step\n\n### Step 1: Project Free Cash Flows (FCF)\n- FCF = EBIT(1-t) + D&A − ΔWorking Capital − CapEx\n- Typically project 5–10 years explicitly\n- Use revenue growth rates, margin assumptions\n\n### Step 2: Calculate WACC\n- WACC = (E/V × Re) + (D/V × Rd × (1-t))\n- Re = Cost of equity (CAPM: Rf + β × ERP)\n- Rd = Pre-tax cost of debt × (1 - tax rate)\n- UAE context: Rf ≈ 4.5% (US 10yr), ERP ≈ 6.5%\n\n### Step 3: Terminal Value\n- Gordon Growth Model: TV = FCF_n+1 / (WACC − g)\n- Exit Multiple Method: TV = EBITDA × EV/EBITDA multiple\n- Terminal value often = 60–80% of total DCF value!\n\n### Step 4: Discount Back & Calculate Equity Value\n- PV of FCFs + PV of Terminal Value = Enterprise Value\n- EV − Net Debt = Equity Value\n- Equity Value / Shares Outstanding = Intrinsic Share Price\n\n### Step 5: Sensitivity Analysis\n- Key variables: WACC ± 1%, g ± 0.5%\n- Build a 2-variable sensitivity table in Excel",
+    key_takeaways: ["Terminal value dominates DCF — small changes in WACC or growth rate create large valuation swings", "FCF = EBIT(1-t) + D&A − CapEx − ΔNWC — memorize this formula", "WACC combines the cost of all capital sources weighted by their proportion in the capital structure", "Always run sensitivity analysis — a single-point DCF is misleading", "Cross-check DCF with comparable company analysis (EV/EBITDA multiples)"],
+    glossary: [
+      { term: "Free Cash Flow (FCF)", definition: "Cash generated by a business after accounting for capital expenditures — available to all capital providers" },
+      { term: "WACC", definition: "Weighted Average Cost of Capital — the blended rate of return required by equity and debt holders" },
+      { term: "Terminal Value", definition: "The value of all future cash flows beyond the explicit forecast period, often 60-80% of total DCF" },
+      { term: "EBITDA", definition: "Earnings Before Interest, Taxes, Depreciation & Amortization — a proxy for operating cash flow" },
+      { term: "Beta (β)", definition: "A measure of a stock's volatility relative to the market — used in CAPM to estimate cost of equity" },
+    ],
+    mba_frameworks: [
+      { name: "CAPM", application: "Used to estimate the cost of equity component of WACC" },
+      { name: "M&M Theorem", application: "Foundational theory explaining the relationship between capital structure and firm value in frictionless markets" },
+    ],
+    exam_prep_notes: "Mid-term will include a full DCF question. Practice: build a 3-statement model from scratch, compute WACC with given beta and market data, calculate terminal value both ways and explain the difference. Know the formula: FCF = EBIT(1-t) + D&A − CapEx − ΔNWC by heart.",
+    created_at: d(-11),
+  },
+  {
+    id: "pack-003", user_id: DEMO_USER.id, file_id: "file-004", course_id: "course-004", course_name: "Digital Marketing",
+    title: "Digital Marketing Strategy Framework", topic: "Digital Marketing & Campaign Strategy", status: "ready",
+    overview: "Modern digital marketing integrates paid, owned, and earned media across search, social, email, and content channels to reach target audiences with measurable precision, guided by data analytics and customer journey mapping.",
+    summary: "This pack covers the full digital marketing strategy lifecycle: audience segmentation, channel selection, content strategy, campaign execution, and ROI measurement. Special focus on social media marketing (Instagram, TikTok, LinkedIn) and performance marketing channels relevant to the UAE/GCC market.",
+    detailed_notes: "## Digital Marketing Strategy\n\n### The RACE Framework\n- **Reach**: Build awareness (SEO, paid ads, social)\n- **Act**: Drive interaction (content, landing pages)\n- **Convert**: Turn leads to customers (email, retargeting)\n- **Engage**: Build loyalty (CRM, community)\n\n### UAE Digital Landscape\n- 99% internet penetration\n- Highest Instagram and Twitter usage per capita globally\n- WhatsApp Business critical for B2C\n- TikTok fastest growing in 18–35 demographic\n\n### Campaign Planning\n1. Define SMART objectives\n2. Audience segmentation (demographic, psychographic, behavioral)\n3. Channel mix strategy\n4. Content calendar\n5. KPI dashboard setup\n6. A/B testing plan",
+    key_takeaways: ["UAE has one of the world's highest social media penetration rates — digital-first is mandatory", "RACE framework provides a customer journey structure for campaign planning", "Data-driven decisions: set KPIs before launching any campaign", "Influencer marketing is particularly powerful in UAE — 40% of consumers trust influencer recommendations"],
+    glossary: [
+      { term: "CTR", definition: "Click-Through Rate — percentage of impressions that result in a click" },
+      { term: "ROAS", definition: "Return on Ad Spend — revenue generated per dirham spent on advertising" },
+      { term: "Conversion Rate", definition: "Percentage of visitors/leads that complete a desired action" },
+      { term: "CAC", definition: "Customer Acquisition Cost — total marketing spend divided by new customers acquired" },
+    ],
+    mba_frameworks: [
+      { name: "STP (Segmentation, Targeting, Positioning)", application: "Foundation of digital campaign strategy — define who you're targeting before choosing channels" },
+      { name: "4Ps of Marketing", application: "Evolved to 7Ps for digital — add People, Process, Physical Evidence" },
+    ],
+    exam_prep_notes: "Proposal grading heavily weights strategic alignment (35%) and creativity (25%). Your proposal must: (1) clearly define the target segment, (2) justify channel selection with data, (3) include realistic KPIs, (4) show creative differentiation.",
+    created_at: d(-8),
+  },
+];
+
+export const DEMO_FLASHCARDS = [
+  { id: "fc-001", user_id: DEMO_USER.id, study_pack_id: "pack-001", pack_topic: "Porter's Five Forces", course_name: "Strategic Management", front: "What are Porter's Five Forces?", back: "1. Competitive Rivalry 2. Threat of New Entrants 3. Bargaining Power of Buyers 4. Bargaining Power of Suppliers 5. Threat of Substitutes. Together they determine industry attractiveness and profit potential.", created_at: d(-13) },
+  { id: "fc-002", user_id: DEMO_USER.id, study_pack_id: "pack-001", pack_topic: "Porter's Five Forces", course_name: "Strategic Management", front: "What factors increase the Threat of New Entrants?", back: "Low barriers to entry: weak brand loyalty, low capital requirements, no economies of scale, easy access to distribution channels, minimal regulatory hurdles, low switching costs.", created_at: d(-13) },
+  { id: "fc-003", user_id: DEMO_USER.id, study_pack_id: "pack-001", pack_topic: "Porter's Five Forces", course_name: "Strategic Management", front: "When is Buyer Power HIGH?", back: "When buyers are few and large, products are standardized/commodity, switching costs are low, buyers can integrate backward, price sensitivity is high, or buyers have full market information.", created_at: d(-13) },
+  { id: "fc-004", user_id: DEMO_USER.id, study_pack_id: "pack-001", pack_topic: "Porter's Five Forces", course_name: "Strategic Management", front: "What makes an industry highly attractive according to Five Forces?", back: "Low competitive rivalry, high barriers to entry, weak buyer power, weak supplier power, few or no substitutes. All five forces are 'weak' from a competitive threat perspective.", created_at: d(-13) },
+  { id: "fc-005", user_id: DEMO_USER.id, study_pack_id: "pack-001", pack_topic: "Porter's Five Forces", course_name: "Strategic Management", front: "Name a UAE industry example for high competitive rivalry.", back: "UAE Telecoms (Etisalat/e& vs. du) — duopoly with fierce competition on price, data bundles, and customer service. Both compete aggressively for market share in a mature market.", created_at: d(-13) },
+  { id: "fc-006", user_id: DEMO_USER.id, study_pack_id: "pack-002", pack_topic: "DCF Valuation", course_name: "Financial Analysis", front: "What is the formula for Free Cash Flow (FCF)?", back: "FCF = EBIT × (1 − Tax Rate) + Depreciation & Amortization − Capital Expenditures − Change in Net Working Capital\n\nOr simply: Net Operating Profit After Tax + Non-cash charges − Reinvestment", created_at: d(-11) },
+  { id: "fc-007", user_id: DEMO_USER.id, study_pack_id: "pack-002", pack_topic: "DCF Valuation", course_name: "Financial Analysis", front: "What is WACC and its formula?", back: "WACC = (E/V × Re) + (D/V × Rd × (1−t))\nWhere: E = equity value, D = debt value, V = E+D, Re = cost of equity, Rd = cost of debt, t = tax rate.\nIt represents the minimum required return on invested capital.", created_at: d(-11) },
+  { id: "fc-008", user_id: DEMO_USER.id, study_pack_id: "pack-002", pack_topic: "DCF Valuation", course_name: "Financial Analysis", front: "How do you calculate Terminal Value using the Gordon Growth Model?", back: "TV = FCF(n+1) / (WACC − g)\nWhere: FCF(n+1) = next year's free cash flow after the forecast period, g = perpetual growth rate (typically 2-3% for mature companies). Terminal value often represents 60-80% of total enterprise value.", created_at: d(-11) },
+  { id: "fc-009", user_id: DEMO_USER.id, study_pack_id: "pack-002", pack_topic: "DCF Valuation", course_name: "Financial Analysis", front: "What is CAPM and when is it used in DCF?", back: "CAPM: Re = Rf + β × (Rm − Rf)\nRf = risk-free rate, β = beta (systematic risk), Rm−Rf = equity risk premium.\nUsed to estimate the cost of equity in the WACC calculation. In the UAE, Rf ≈ 4.5% (US 10yr Treasury), ERP ≈ 6.5%.", created_at: d(-11) },
+  { id: "fc-010", user_id: DEMO_USER.id, study_pack_id: "pack-002", pack_topic: "DCF Valuation", course_name: "Financial Analysis", front: "Why is sensitivity analysis critical in DCF valuation?", back: "DCF outputs are highly sensitive to WACC and terminal growth rate assumptions. A 1% change in WACC or g can change the implied share price by 20-40%. Sensitivity analysis shows the range of possible outcomes and helps identify key value drivers.", created_at: d(-11) },
+  { id: "fc-011", user_id: DEMO_USER.id, study_pack_id: "pack-003", pack_topic: "Digital Marketing Strategy", course_name: "Digital Marketing", front: "What is the RACE Digital Marketing Framework?", back: "RACE = Reach → Act → Convert → Engage\nReach: Build brand awareness. Act: Drive website/app interaction. Convert: Turn visitors into customers. Engage: Build repeat purchase and loyalty. Maps the full customer lifecycle.", created_at: d(-8) },
+  { id: "fc-012", user_id: DEMO_USER.id, study_pack_id: "pack-003", pack_topic: "Digital Marketing Strategy", course_name: "Digital Marketing", front: "What does ROAS stand for and how is it calculated?", back: "ROAS = Return On Ad Spend = Revenue Generated / Ad Spend × 100%\nExample: If you spend AED 10,000 on ads and generate AED 50,000 in revenue, ROAS = 500%. A ROAS above 400% is typically considered healthy in e-commerce.", created_at: d(-8) },
+];
+
+export const DEMO_QUIZZES = [
+  {
+    id: "quiz-001", user_id: DEMO_USER.id, pack_id: "pack-001", pack_topic: "Porter's Five Forces", course_name: "Strategic Management",
+    title: "Porter's Five Forces Quiz", num_questions: 5, status: "ready",
+    questions: [
+      { q: "Which of Porter's Five Forces directly examines competition from companies outside the current industry?", options: ["Competitive Rivalry", "Threat of New Entrants", "Threat of Substitutes", "Bargaining Power of Buyers"], answer: 2, explanation: "Threat of Substitutes examines products/services from OTHER industries that can fulfill the same customer need, unlike Competitive Rivalry which looks at current industry players." },
+      { q: "A market with high fixed costs and slow industry growth will typically exhibit:", options: ["Low competitive rivalry", "High competitive rivalry", "Weak supplier power", "Low threat of substitutes"], answer: 1, explanation: "High fixed costs pressure firms to maximize volume to cover costs, while slow growth means firms must fight for each other's market share — both increase competitive rivalry." },
+      { q: "Which factor would DECREASE Bargaining Power of Buyers?", options: ["Low switching costs", "Standardized products", "High buyer concentration", "High switching costs"], answer: 3, explanation: "High switching costs make it expensive for buyers to change suppliers, reducing their leverage and bargaining power." },
+      { q: "In the UAE telecom industry, the duopoly of Etisalat (e&) and du represents:", options: ["Low competitive rivalry due to only 2 players", "High competitive rivalry due to mature market and regulatory constraints", "Threat of substitutes from internet calling apps", "High threat of new entrants"], answer: 1, explanation: "Even with only 2 players, a mature market with limited growth means both firms compete intensely for market share, creating high rivalry. Regulatory barriers also prevent price-based competition." },
+      { q: "Porter's Five Forces is primarily used to:", options: ["Analyze a company's internal capabilities", "Evaluate industry attractiveness and competitive intensity", "Assess macroeconomic factors", "Determine optimal capital structure"], answer: 1, explanation: "Five Forces is an EXTERNAL analysis tool (industry-level), not internal. For internal analysis, use VRIO or Value Chain. For macro factors, use PESTLE." },
+    ],
+    created_at: d(-12),
+  },
+  {
+    id: "quiz-002", user_id: DEMO_USER.id, pack_id: "pack-002", pack_topic: "DCF Valuation", course_name: "Financial Analysis",
+    title: "DCF Valuation Fundamentals Quiz", num_questions: 5, status: "ready",
+    questions: [
+      { q: "In the FCF formula FCF = EBIT(1-t) + D&A − CapEx − ΔNWC, why is D&A added back?", options: ["Because it increases revenue", "Because it is a non-cash expense that reduces taxable income but not actual cash flow", "Because it represents future investment", "Because it reduces WACC"], answer: 1, explanation: "D&A is a non-cash accounting charge — it reduces EBIT but doesn't actually consume cash. So we add it back to get true cash flow." },
+      { q: "If WACC = 10% and terminal growth rate = 2%, and next year's FCF = AED 100M, what is the Terminal Value?", options: ["AED 800M", "AED 1,000M", "AED 1,250M", "AED 500M"], answer: 2, explanation: "TV = FCF / (WACC − g) = 100 / (0.10 − 0.02) = 100 / 0.08 = AED 1,250M" },
+      { q: "The terminal value in a typical DCF model represents approximately what percentage of total enterprise value?", options: ["10-20%", "30-40%", "60-80%", "90-100%"], answer: 2, explanation: "Terminal value typically represents 60-80% of total DCF enterprise value for mature companies, which is why small changes in WACC and growth rate assumptions are so impactful." },
+      { q: "WACC should be used as the discount rate when:", options: ["Discounting equity cash flows", "Discounting free cash flows to the firm (FCFF)", "Calculating the risk-free rate", "Discounting dividends"], answer: 1, explanation: "WACC represents the return required by ALL capital providers (equity + debt). Use it to discount FCFF (firm-level cash flows). Use Cost of Equity to discount FCFE (equity-level cash flows)." },
+      { q: "A company's beta (β) of 1.5 indicates:", options: ["The stock is 50% less volatile than the market", "The stock moves exactly with the market", "The stock is 50% more volatile than the market", "The company has 1.5x the industry average earnings"], answer: 2, explanation: "Beta measures systematic (market) risk. β > 1 means the stock amplifies market moves — a 10% market move implies a 15% stock move. Higher beta = higher required return in CAPM." },
+    ],
+    created_at: d(-10),
+  },
+];
+
+export const DEMO_WEEKLY_BRIEF = {
+  id: "wb-001",
+  user_id: DEMO_USER.id,
+  week_start: d(-BASE.getDay()),
+  week_end: d(6 - BASE.getDay()),
+  summary: "Critical week ahead — two at-risk deadlines require immediate action. The Porter's Five Forces Case Study (due in 2 days) and Marketing Campaign Proposal (due in 3 days) must be your top priorities. The Financial Analysis mid-term in 14 days requires early preparation given the format change. Overall academic standing remains strong with your Operations performance leading at 91%.",
+  content: {
+    summary: "Critical week ahead — two at-risk deadlines require immediate action. The Porter's Five Forces Case Study (due in 2 days) and Marketing Campaign Proposal (due in 3 days) must be your top priorities. The Financial Analysis mid-term in 14 days requires early preparation given the format change. Overall academic standing remains strong with your Operations performance leading at 91%.",
+    courses_status: "Digital Marketing (90% progress) and Operations (82%) are on track. Strategic Management (78%) needs attention on the overdue SWOT report. Financial Analysis (65%) requires focused effort before the mid-term. Leadership & Org Behavior (55%) is lagging — dedicate time this weekend.",
+    urgent_items: [
+      "Submit overdue SWOT Analysis Report for Strategic Management IMMEDIATELY",
+      "Complete Porter's Five Forces Case Study (due in 2 days) — Tesla in GCC context",
+      "Finalize Marketing Campaign Proposal draft (due in 3 days)",
+    ],
+    upcoming_deadlines: [
+      "Porter's Five Forces Case Study — May 8 (2 days) — Strategic Management",
+      "Marketing Campaign Proposal — May 9 (3 days) — Digital Marketing",
+      "Financial Modeling Assignment — May 11 (5 days) — Financial Analysis",
+      "HRM Leadership Essay — May 13 (7 days) — Leadership & Org Behavior",
+    ],
+    grade_risks: [
+      "Financial Analysis (65% overall progress) — mid-term exam in 14 days with format change",
+      "Leadership & Org Behavior (55% progress) — below class average, may affect final grade",
+    ],
+    recommended_study_plan: "Today (Wed): Focus 100% on Porter's Case Study — use Study Pack 1 and flashcards.\nThu: Complete and submit Porter's Case Study AM, begin Marketing Proposal outline PM.\nFri: Marketing Proposal draft and review with group.\nSat: Submit Marketing Proposal. Start Financial Modeling Assignment.\nSun: Financial Modeling progress + begin HRM Leadership Essay outline.\nMon–Tue: HRM Essay writing + review Financial Analysis chapters 1–6.",
+    weekend_plan: "Saturday: Marketing campaign proposal final review + submission (deadline is May 9 EOD). Afternoon: Begin DCF model skeleton for the Financial Modeling Assignment.\nSunday: Complete Financial Modeling Assignment first draft. Evening: 2 hours of Leadership & Org Behavior readings to close the progress gap.",
+    instructor_questions: [
+      "Prof. Layla Hassan (Financial Analysis): Can you confirm which DCF methods will be tested — Exit Multiple or Gordon Growth Model, or both?",
+      "Dr. Khalid Al-Rashidi (Strategic Management): Is the overdue SWOT Analysis still acceptable for partial credit?",
+      "Dr. Rania Mostafa (Digital Marketing): Should the campaign proposal target a real UAE brand or can we create a fictional one?",
+    ],
+  },
+  created_at: d(-BASE.getDay()),
+};
+
+export const DEMO_TUTOR_CHATS = [
+  { id: "chat-001", user_id: DEMO_USER.id, course_id: "course-001", title: "Porter's Five Forces Discussion", created_at: d(-3), updated_at: d(-1) },
+  { id: "chat-002", user_id: DEMO_USER.id, course_id: "course-002", title: "DCF Valuation Help", created_at: d(-5), updated_at: d(-2) },
+];
+
+// ─── Demo response helper ──────────────────────────────────────────────────────
+
+type DemoKey =
+  | "profile" | "subscription" | "courses" | "deadlines" | "announcements"
+  | "tasks" | "grades" | "files" | "study-packs" | "flashcards" | "quizzes"
+  | "weekly-brief" | "tutor-chats" | "ok";
+
+const DEMO_DATA: Record<DemoKey, unknown> = {
+  profile: DEMO_PROFILE,
+  subscription: DEMO_SUBSCRIPTION,
+  courses: DEMO_COURSES,
+  deadlines: DEMO_DEADLINES,
+  announcements: DEMO_ANNOUNCEMENTS,
+  tasks: DEMO_TASKS,
+  grades: DEMO_GRADES,
+  files: DEMO_FILES,
+  "study-packs": DEMO_STUDY_PACKS,
+  flashcards: DEMO_FLASHCARDS,
+  quizzes: DEMO_QUIZZES,
+  "weekly-brief": DEMO_WEEKLY_BRIEF,
+  "tutor-chats": DEMO_TUTOR_CHATS,
+  ok: { ok: true },
+};
+
+export function demoReturn(key: DemoKey, status = 200): NextResponse | null {
+  if (!isDemoMode) return null;
+  return NextResponse.json(DEMO_DATA[key], { status });
+}
+
+// Filter deadlines by view param (mirrors the real API logic)
+export function demoDeadlines(view: string | null): NextResponse | null {
+  if (!isDemoMode) return null;
+  const now = new Date();
+  let result = DEMO_DEADLINES;
+  if (view === "today") {
+    result = DEMO_DEADLINES.filter(d => new Date(d.due_date) <= new Date(now.getTime() + 86_400_000));
+  } else if (view === "week") {
+    result = DEMO_DEADLINES.filter(d => new Date(d.due_date) <= new Date(now.getTime() + 7 * 86_400_000));
+  } else if (view === "month") {
+    result = DEMO_DEADLINES.filter(d => new Date(d.due_date) <= new Date(now.getTime() + 30 * 86_400_000));
+  }
+  // "all" or "at_risk" — return relevant subsets
+  if (view === "at_risk") {
+    result = DEMO_DEADLINES.filter(d => d.risk === "at_risk" || d.risk === "overdue");
+  }
+  return NextResponse.json(result);
+}
+
+// Return flashcards, optionally filtered by pack_id
+export function demoFlashcards(packId: string | null): NextResponse | null {
+  if (!isDemoMode) return null;
+  const cards = packId ? DEMO_FLASHCARDS.filter(f => f.study_pack_id === packId) : DEMO_FLASHCARDS;
+  return NextResponse.json(cards);
+}

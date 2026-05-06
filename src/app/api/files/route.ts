@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireUser } from "@/lib/db/supabase-server";
 import { createServiceClient } from "@/lib/db/supabase-server";
+import { demoReturn } from "@/lib/demo";
 
 export async function GET() {
+  const demo = demoReturn("files"); if (demo) return demo;
   const { user, supabase, unauthorized } = await requireUser();
   if (unauthorized) return unauthorized;
   const { data, error } = await supabase
@@ -17,6 +19,11 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
+    const formData = await req.formData();
+    const file = formData.get("file") as File | null;
+    return NextResponse.json({ id: `file-${Date.now()}`, user_id: "demo-user", file_name: file?.name ?? "demo.pdf", file_type: file?.type ?? "application/pdf", file_size: file?.size ?? 0, processing_status: "ready", chunk_count: 10, created_at: new Date().toISOString() }, { status: 201 });
+  }
   const { user, supabase, unauthorized } = await requireUser();
   if (unauthorized) return unauthorized;
 

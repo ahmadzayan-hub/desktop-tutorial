@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireUser } from "@/lib/db/supabase-server";
+import { demoReturn } from "@/lib/demo";
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+  if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
+    const body = await req.json();
+    return NextResponse.json({ id: params.id, ...body });
+  }
   const { user, supabase, unauthorized } = await requireUser();
   if (unauthorized) return unauthorized;
   const body = await req.json();

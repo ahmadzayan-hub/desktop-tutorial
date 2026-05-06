@@ -1,8 +1,10 @@
 export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { requireUser } from "@/lib/db/supabase-server";
+import { demoReturn } from "@/lib/demo";
 
 export async function GET() {
+  const demo = demoReturn("tasks"); if (demo) return demo;
   const { user, supabase, unauthorized } = await requireUser();
   if (unauthorized) return unauthorized;
   const { data, error } = await supabase
@@ -17,6 +19,10 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
+    const body = await req.json();
+    return NextResponse.json({ id: `task-${Date.now()}`, user_id: "demo-user", ...body, created_at: new Date().toISOString() }, { status: 201 });
+  }
   const { user, supabase, unauthorized } = await requireUser();
   if (unauthorized) return unauthorized;
   const body = await req.json();

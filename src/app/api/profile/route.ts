@@ -1,8 +1,10 @@
 export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { requireUser } from "@/lib/db/supabase-server";
+import { demoReturn } from "@/lib/demo";
 
 export async function GET() {
+  const demo = demoReturn("profile"); if (demo) return demo;
   const { user, supabase, unauthorized } = await requireUser();
   if (unauthorized) return unauthorized;
   const { data } = await supabase
@@ -15,6 +17,7 @@ export async function GET() {
 }
 
 export async function PUT(req: NextRequest) {
+  const demo = demoReturn("profile"); if (demo) return demo;
   const { user, supabase, unauthorized } = await requireUser();
   if (unauthorized) return unauthorized;
   const { full_name, avatar_url } = await req.json();

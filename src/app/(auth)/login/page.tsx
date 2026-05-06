@@ -113,7 +113,23 @@ export default function LoginPage() {
         {t("auth.login.google")}
       </button>
 
-      <p className="mt-6 text-center text-sm text-slate-500">
+      {/* Demo mode entry point */}
+      <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-brand-50 to-indigo-50 dark:from-brand-950/30 dark:to-indigo-950/30 border border-brand-200 dark:border-brand-800">
+        <p className="text-xs font-semibold text-brand-700 dark:text-brand-400 mb-1 flex items-center gap-1.5">
+          <GraduationCap className="w-3.5 h-3.5" /> Try Demo — No signup needed
+        </p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+          Explore all features as Sara Al-Mansouri, a full-time MBA student with real courses, deadlines, and study materials.
+        </p>
+        <button
+          onClick={() => window.location.href = "/dashboard"}
+          className="w-full py-2.5 px-4 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-colors"
+        >
+          Enter Demo Dashboard →
+        </button>
+      </div>
+
+      <p className="mt-4 text-center text-sm text-slate-500">
         {t("auth.login.no_account")}{" "}
         <Link href="/signup" className="text-brand-600 hover:text-brand-700 font-medium dark:text-brand-400">
           {t("auth.login.signup_link")}

@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient, getUser } from "@/lib/db/supabase-server";
 import { aiChat } from "@/lib/ai/client";
+import { demoReturn } from "@/lib/demo";
 
 export async function GET() {
+  const demo = demoReturn("study-packs"); if (demo) return demo;
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const supabase = createClient();
@@ -15,6 +17,9 @@ export async function POST(req: NextRequest) {
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { file_id, course_id, title } = await req.json();
+  if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
+    return NextResponse.json({ id: `pack-${Date.now()}`, user_id: "demo-user", file_id, course_id, title: title || "New Study Pack", status: "generating", generating: true, created_at: new Date().toISOString() }, { status: 201 });
+  }
   const supabase = createClient();
 
   // Check AI quota
