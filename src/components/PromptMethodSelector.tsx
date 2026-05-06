@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n/I18nProvider";
-import { PROMPT_METHODS, recommendMethod, type MethodId, type PromptMethod } from "@/lib/prompt-methods";
+import { PROMPT_METHODS, recommendMethod, getMethod, type MethodId, type PromptMethod } from "@/lib/prompt-methods";
 
 interface Props {
   value: MethodId | null;
@@ -254,6 +254,3 @@ function MethodCard({
   );
 }
 
-function getMethod(id: MethodId): PromptMethod {
-  return PROMPT_METHODS.find((m) => m.id === id) ?? PROMPT_METHODS[0];
-}

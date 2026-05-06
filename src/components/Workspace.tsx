@@ -31,7 +31,7 @@ import ReverseMode from "@/components/ReverseMode";
 import PromptMethodSelector from "@/components/PromptMethodSelector";
 import MetaPromptPanel from "@/components/MetaPromptPanel";
 import PromptBuilderWizard from "@/components/PromptBuilderWizard";
-import { recommendMethod } from "@/lib/prompt-methods";
+import { PROMPT_METHODS, recommendMethod } from "@/lib/prompt-methods";
 import type { MethodId } from "@/lib/prompt-methods";
 import {
   toggleBookmark,
@@ -148,7 +148,14 @@ export default function Workspace() {
   }, [raw, model]);
 
   function composedPrompt(): string {
-    return raw + formatAttachedAsContext(files, locale);
+    const base = raw + formatAttachedAsContext(files, locale);
+    if (!selectedMethod) return base;
+    const m = PROMPT_METHODS.find((pm) => pm.id === selectedMethod);
+    if (!m) return base;
+    const directive = locale === "ar"
+      ? `[أسلوب الموجِّه: ${m.name_ar} — ${m.tagline_ar}]\n\n`
+      : `[Prompt Method: ${m.name_en} — ${m.tagline_en}]\n\n`;
+    return directive + base;
   }
 
   const startSession = useCallback(async (quick = false) => {
@@ -250,7 +257,7 @@ export default function Workspace() {
         .map((q) => ({ question: q.question, answer: (answers[q.id] ?? "").trim() }))
         .filter((p) => p.answer.length > 0);
       const result = reconstructPromptLocal({
-        raw: composed, intent: (session.intent ?? "other") as import("@/lib/local-engine").Intent, qa, targetModel: model, locale
+        raw: composed, intent: (session.intent ?? "other") as Intent, qa, targetModel: model, locale
       });
       setFinalPrompt(result.final_prompt);
       setRationale(result.rationale);
@@ -279,7 +286,7 @@ export default function Workspace() {
         .map((q) => ({ question: q.question, answer: (answers[q.id] ?? "").trim() }))
         .filter((p) => p.answer.length > 0);
       const result = reconstructPromptLocal({
-        raw: composed, intent: (session.intent ?? "other") as import("@/lib/local-engine").Intent, qa, targetModel: model, locale
+        raw: composed, intent: (session.intent ?? "other") as Intent, qa, targetModel: model, locale
       });
       setFinalPrompt(result.final_prompt);
       setRationale(result.rationale);

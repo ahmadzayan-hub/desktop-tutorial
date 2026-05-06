@@ -53,9 +53,8 @@ export default function LibraryPage() {
       );
     }
     if (cat !== "All" && cat !== "الكل") {
-      const mapEn = Object.entries(INTENT_TO_CAT_EN).find(([, v]) => v === cat)?.[0];
-      const mapAr = Object.entries(INTENT_TO_CAT_AR).find(([, v]) => v === cat)?.[0];
-      const intentKey = mapEn ?? mapAr;
+      const map = ar ? INTENT_TO_CAT_AR : INTENT_TO_CAT_EN;
+      const intentKey = Object.entries(map).find(([, v]) => v === cat)?.[0];
       if (intentKey) list = list.filter((e) => e.intent === intentKey);
     }
     return list;

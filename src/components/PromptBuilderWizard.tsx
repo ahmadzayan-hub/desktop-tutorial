@@ -256,6 +256,7 @@ export default function PromptBuilderWizard({ onComplete, onClose }: Props) {
           placeholder={ar ? current.placeholder_ar : current.placeholder_en}
           rows={3}
           className="w-full resize-none"
+          aria-required={current.required}
           autoFocus
         />
       </div>

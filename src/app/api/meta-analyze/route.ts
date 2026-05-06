@@ -50,42 +50,42 @@ export async function POST(req: NextRequest) {
 
   const L = (en: string, ar_: string) => (ar ? ar_ : en);
 
-  // Clarity
-  if (score.clarity >= 15) {
+  // Clarity (0-10 scale)
+  if (score.clarity >= 7) {
     strengths.push(L("Well-structured sentences with good length", "جمل منظّمة بطول جيد"));
-  } else if (score.clarity < 8) {
+  } else if (score.clarity < 5) {
     weaknesses.push(L("Prompt is too vague or too short", "الموجِّه غامض أو قصير جدًا"));
     improvements.push(L("Add at least 2–3 sentences to provide context", "أضف جملتين إلى ثلاث جمل لتوفير السياق"));
   }
 
-  // Specificity
-  if (score.specificity >= 14) {
+  // Specificity (0-10 scale)
+  if (score.specificity >= 7) {
     strengths.push(L("Uses specific numbers and concrete details", "يستخدم أرقامًا محددة وتفاصيل ملموسة"));
-  } else if (score.specificity < 8) {
+  } else if (score.specificity < 4) {
     weaknesses.push(L("Lacks specific numbers, names, or technical terms", "يفتقر إلى أرقام أو أسماء أو مصطلحات تقنية محددة"));
     improvements.push(L("Include at least one number, metric, or named reference", "أضف رقمًا أو مقياسًا أو مرجعًا مسمّى على الأقل"));
   }
 
-  // Structure
-  if (score.structure >= 14) {
+  // Structure (0-10 scale)
+  if (score.structure >= 7) {
     strengths.push(L("Good use of headers and structured sections", "استخدام جيد للعناوين والأقسام المنظّمة"));
-  } else if (score.structure < 8) {
+  } else if (score.structure < 4) {
     weaknesses.push(L("No clear structure or section breaks", "لا توجد بنية واضحة أو فواصل بين الأقسام"));
     improvements.push(L("Add headings like ## Goal, ## Context, ## Output Format", "أضف عناوين مثل ## الهدف، ## السياق، ## صيغة المخرج"));
   }
 
-  // Audience
-  if (score.audience >= 14) {
+  // Audience (0-10 scale)
+  if (score.audience >= 7) {
     strengths.push(L("Audience is clearly defined", "الجمهور محدد بوضوح"));
-  } else if (score.audience < 8) {
+  } else if (score.audience < 4) {
     weaknesses.push(L("No target audience specified", "لم يتم تحديد الجمهور المستهدف"));
     improvements.push(L("Add 'for a [role/audience]' clause", "أضف عبارة 'لـ [الدور/الجمهور]'"));
   }
 
-  // Format
-  if (score.format >= 14) {
+  // Format (0-10 scale)
+  if (score.format >= 7) {
     strengths.push(L("Output format is well-defined", "صيغة المخرج محددة جيدًا"));
-  } else if (score.format < 8) {
+  } else if (score.format < 4) {
     weaknesses.push(L("Output format not specified", "صيغة المخرج غير محددة"));
     improvements.push(L("Specify the format: bullet list, table, JSON, paragraph, numbered list", "حدّد الصيغة: قائمة نقطية، جدول، JSON، فقرة، قائمة مرقمة"));
   }

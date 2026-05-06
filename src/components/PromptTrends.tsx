@@ -91,7 +91,7 @@ interface PromptTrendsProps {
 
 export default function PromptTrends({ locale = "en" }: PromptTrendsProps) {
   const t = useT();
-  const { trends, date, loading, error } = useTrends(locale);
+  const { trends, date, loading, error, refetch } = useTrends(locale);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
 
@@ -128,7 +128,26 @@ export default function PromptTrends({ locale = "en" }: PromptTrendsProps) {
     );
   }
 
-  if (error || trends.length === 0) return null;
+  if (error) {
+    return (
+      <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pb-12">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 p-8 text-center">
+          <div className="text-3xl mb-3" aria-hidden="true">📡</div>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+            {locale === "ar" ? "تعذّر تحميل الاتجاهات" : "Could not load trends"}
+          </p>
+          <button
+            onClick={refetch}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold px-4 py-2 transition focus:outline-none focus:ring-2 focus:ring-brand-500"
+          >
+            {locale === "ar" ? "↺ أعد المحاولة" : "↺ Retry"}
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  if (trends.length === 0) return null;
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pb-12 sm:pb-16">

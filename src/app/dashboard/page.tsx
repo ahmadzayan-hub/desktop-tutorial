@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { loadHistory } from "@/lib/local-history";
 import type { LocalHistoryEntry } from "@/lib/local-history";
@@ -81,12 +81,13 @@ const MODEL_EMOJI: Record<string, string> = {
 export default function DashboardPage() {
   const { locale } = useI18n();
   const ar = locale === "ar";
-  const [stats, setStats] = useState<Stats | null>(null);
+  const [history, setHistory] = useState<LocalHistoryEntry[]>([]);
 
   useEffect(() => {
-    const history = loadHistory();
-    setStats(computeStats(history));
+    setHistory(loadHistory());
   }, []);
+
+  const stats = useMemo(() => history.length ? computeStats(history) : null, [history]);
 
   if (!stats) {
     return (
