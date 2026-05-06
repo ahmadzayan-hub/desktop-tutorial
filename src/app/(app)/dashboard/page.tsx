@@ -1,14 +1,13 @@
 "use client";
 import { useI18n } from "@/lib/i18n/I18nProvider";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { Progress } from "@/components/ui/Progress";
 import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
-import { EmptyState } from "@/components/ui/EmptyState";
 import {
   BookOpen, Clock, Megaphone, BarChart3, Bot, Package, Newspaper,
-  AlertTriangle, CheckCircle, TrendingUp, Zap, Plus, ArrowRight
+  AlertTriangle, CheckCircle, TrendingUp, Zap, ArrowRight, Mic,
+  Users, Trophy, Star, Flame, Target, Brain,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -16,189 +15,365 @@ interface Course { id: string; name: string; code: string; progress: number; ins
 interface Deadline { id: string; title: string; course_name: string; due_date: string; risk: "safe"|"due_soon"|"at_risk"|"overdue"; type: string; }
 interface Announcement { id: string; title: string; summary: string; risk_level: string; course_name: string; created_at: string; }
 
+/* ── 3D tilt card hook ── */
+function useTilt(strength = 12) {
+  const ref = useRef<HTMLDivElement>(null);
+  function handleMove(e: React.MouseEvent<HTMLDivElement>) {
+    const el = ref.current; if (!el) return;
+    const r = el.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width  - 0.5;
+    const y = (e.clientY - r.top)  / r.height - 0.5;
+    el.style.transform = `perspective(800px) rotateY(${x * strength}deg) rotateX(${-y * strength}deg) translateZ(6px)`;
+  }
+  function handleLeave() {
+    if (ref.current) ref.current.style.transform = "perspective(800px) rotateY(0deg) rotateX(0deg) translateZ(0px)";
+  }
+  return { ref, onMouseMove: handleMove, onMouseLeave: handleLeave };
+}
+
+/* ── Animated counter ── */
+function AnimatedNumber({ value, suffix = "" }: { value: number | string; suffix?: string }) {
+  const [display, setDisplay] = useState(0);
+  const num = typeof value === "number" ? value : parseFloat(value) || 0;
+  useEffect(() => {
+    let start = 0;
+    const step = num / 30;
+    const t = setInterval(() => {
+      start += step;
+      if (start >= num) { setDisplay(num); clearInterval(t); }
+      else setDisplay(Math.floor(start));
+    }, 20);
+    return () => clearInterval(t);
+  }, [num]);
+  return <>{typeof value === "string" && isNaN(num) ? value : display}{suffix}</>;
+}
+
+/* ── SVG ring progress ── */
+function RingProgress({ value, size = 56, stroke = 5, color = "#3b82f6" }: { value: number; size?: number; stroke?: number; color?: string }) {
+  const r = (size - stroke) / 2;
+  const circ = 2 * Math.PI * r;
+  const dash = (value / 100) * circ;
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: "rotate(-90deg)" }}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(148,163,184,0.2)" strokeWidth={stroke} />
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={stroke}
+        strokeDasharray={`${dash} ${circ - dash}`} strokeLinecap="round"
+        style={{ transition: "stroke-dasharray 1s cubic-bezier(0.4,0,0.2,1)" }}
+      />
+    </svg>
+  );
+}
+
 export default function DashboardPage() {
   const { t } = useI18n();
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [deadlines, setDeadlines] = useState<Deadline[]>([]);
+  const [courses, setCourses]           = useState<Course[]>([]);
+  const [deadlines, setDeadlines]       = useState<Deadline[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading]           = useState(true);
 
   useEffect(() => {
     async function load() {
       try {
         const [cRes, dRes, aRes] = await Promise.all([
-          fetch("/api/courses"),
-          fetch("/api/deadlines?view=week"),
-          fetch("/api/announcements?limit=5"),
+          fetch("/api/courses"), fetch("/api/deadlines?view=week"), fetch("/api/announcements?limit=5"),
         ]);
         if (cRes.ok) setCourses(await cRes.json());
         if (dRes.ok) setDeadlines(await dRes.json());
         if (aRes.ok) setAnnouncements(await aRes.json());
-      } finally {
-        setLoading(false);
-      }
+      } finally { setLoading(false); }
     }
     load();
   }, []);
 
   const hour = new Date().getHours();
-  const greetingKey = hour < 12 ? "dashboard.greeting.morning" : hour < 17 ? "dashboard.greeting.afternoon" : "dashboard.greeting.evening";
-  const greeting = t(greetingKey as any, { name: "Student" });
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
   const riskColors: Record<string, "red"|"yellow"|"green"|"blue"> = {
-    overdue: "red", at_risk: "red", due_soon: "yellow", safe: "green"
+    overdue: "red", at_risk: "red", due_soon: "yellow", safe: "green",
+  };
+  const riskLabels: Record<string, string> = {
+    overdue: "Overdue", at_risk: "At Risk", due_soon: "Due Soon", safe: "Safe",
   };
 
-  const riskLabels: Record<string, string> = {
-    overdue: t("dashboard.overdue"),
-    at_risk: t("dashboard.at_risk"),
-    due_soon: t("dashboard.due_soon"),
-    safe: "Safe",
-  };
+  const tilt1 = useTilt(10);
+  const tilt2 = useTilt(10);
+  const tilt3 = useTilt(10);
+  const tilt4 = useTilt(10);
+  const tilts = [tilt1, tilt2, tilt3, tilt4];
+
+  const stats = [
+    {
+      icon: <BookOpen size={22} />,
+      label: "Active Courses",
+      value: loading ? "—" : courses.length,
+      suffix: "",
+      href: "/courses",
+      color: "from-brand-500 to-blue-600",
+      glow: "stat-card-blue",
+      ring: "#3b82f6",
+      bg: "from-brand-50/80 to-blue-50/80 dark:from-brand-950/40 dark:to-blue-950/30",
+    },
+    {
+      icon: <Clock size={22} />,
+      label: "Upcoming Deadlines",
+      value: loading ? "—" : deadlines.length,
+      suffix: "",
+      href: "/timeline",
+      color: "from-amber-500 to-orange-500",
+      glow: "stat-card-amber",
+      ring: "#f59e0b",
+      bg: "from-amber-50/80 to-orange-50/80 dark:from-amber-950/40 dark:to-orange-950/30",
+    },
+    {
+      icon: <Megaphone size={22} />,
+      label: "Announcements",
+      value: loading ? "—" : announcements.length,
+      suffix: "",
+      href: "/announcements",
+      color: "from-purple-500 to-violet-600",
+      glow: "stat-card-purple",
+      ring: "#a855f7",
+      bg: "from-purple-50/80 to-violet-50/80 dark:from-purple-950/40 dark:to-violet-950/30",
+    },
+    {
+      icon: <BarChart3 size={22} />,
+      label: "Exam Readiness",
+      value: 72,
+      suffix: "%",
+      href: "/grades",
+      color: "from-emerald-500 to-teal-500",
+      glow: "stat-card-emerald",
+      ring: "#10b981",
+      bg: "from-emerald-50/80 to-teal-50/80 dark:from-emerald-950/40 dark:to-teal-950/30",
+    },
+  ];
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Greeting + focus question */}
-      <div className="bg-gradient-to-br from-brand-600 to-teal-600 rounded-2xl p-6 text-white">
-        <h1 className="text-2xl font-bold mb-1">{greeting}</h1>
-        <p className="text-white/80 text-sm mb-4">{t("dashboard.focus")}</p>
-        <Link href="/ask-mba">
-          <button className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 border border-white/20 rounded-xl px-4 py-2 text-sm font-medium transition">
-            <Bot size={16} />
-            Ask My MBA Agent
-            <ArrowRight size={14} />
-          </button>
-        </Link>
+    <div className="space-y-7">
+
+      {/* ── Hero banner ── */}
+      <div className="relative rounded-3xl overflow-hidden hero-gradient p-7 text-white shadow-float animate-stagger-1">
+        {/* Floating orbs inside banner */}
+        <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-20 animate-float-slow"
+          style={{ background: "radial-gradient(circle, rgba(255,255,255,0.3), transparent)", transform: "translate(30%,-30%)" }} />
+        <div className="absolute bottom-0 left-1/3 w-40 h-40 rounded-full opacity-10 animate-float"
+          style={{ background: "radial-gradient(circle, rgba(255,255,255,0.4), transparent)", transform: "translateY(40%)" }} />
+
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center gap-6">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="animate-wave inline-block text-xl">👋</span>
+              <span className="text-white/70 text-sm font-medium">{greeting}</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-1 leading-tight">
+              Sara Al-Mansouri
+            </h1>
+            <p className="text-white/75 text-sm mb-5 leading-relaxed max-w-md">
+              MBA Year 2 · 5 active courses · Your AI tutor is ready to help you excel today.
+            </p>
+            <div className="flex flex-wrap gap-2.5">
+              <Link href="/tutor">
+                <button className="flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 rounded-2xl px-4 py-2.5 text-sm font-semibold transition-all hover:scale-105 press">
+                  <Brain size={15} className="text-white" />
+                  Ask AI Tutor
+                  <ArrowRight size={13} />
+                </button>
+              </Link>
+              <Link href="/lecture">
+                <button className="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 rounded-2xl px-4 py-2.5 text-sm font-medium transition-all hover:scale-105 press">
+                  <Mic size={15} />
+                  Start Lecture
+                </button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Stats mini-ring */}
+          <div className="flex gap-4 sm:flex-col sm:gap-3">
+            <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-sm rounded-2xl px-4 py-3 border border-white/20">
+              <div className="relative">
+                <RingProgress value={72} size={44} stroke={4} color="#34d399" />
+                <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white">72%</span>
+              </div>
+              <div>
+                <p className="text-xs text-white/60">Readiness</p>
+                <p className="text-sm font-bold text-white">Exam Ready</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-sm rounded-2xl px-4 py-3 border border-white/20">
+              <Flame size={24} className="text-orange-300 animate-pulse-soft" />
+              <div>
+                <p className="text-xs text-white/60">Study Streak</p>
+                <p className="text-sm font-bold text-white">14 days 🔥</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Stats row */}
+      {/* ── 3D Stat cards ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { icon: <BookOpen size={20} className="text-brand-600" />, label: t("dashboard.courses_active"), value: courses.filter(c => true).length, href: "/courses", bg: "bg-brand-50 dark:bg-brand-950/30" },
-          { icon: <Clock size={20} className="text-amber-600" />, label: t("dashboard.upcoming_deadlines"), value: deadlines.length, href: "/timeline", bg: "bg-amber-50 dark:bg-amber-950/30" },
-          { icon: <Megaphone size={20} className="text-purple-600" />, label: t("dashboard.unread_announcements"), value: announcements.length, href: "/announcements", bg: "bg-purple-50 dark:bg-purple-950/30" },
-          { icon: <BarChart3 size={20} className="text-emerald-600" />, label: t("dashboard.exam_readiness"), value: "72%", href: "/grades", bg: "bg-emerald-50 dark:bg-emerald-950/30" },
-        ].map(stat => (
-          <Link key={stat.label} href={stat.href}>
-            <div className={`card-hover cursor-pointer ${stat.bg}`}>
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center shadow-sm">
-                  {stat.icon}
+        {stats.map((s, i) => (
+          <Link key={s.label} href={s.href}>
+            <div
+              ref={tilts[i].ref}
+              onMouseMove={tilts[i].onMouseMove}
+              onMouseLeave={tilts[i].onMouseLeave}
+              className={`card-hover ${s.glow} cursor-pointer bg-gradient-to-br ${s.bg} animate-stagger-${(i+1) as 1|2|3|4}`}
+              style={{ transition: "transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease", willChange: "transform" }}
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${s.color} flex items-center justify-center text-white shadow-md`}>
+                  {s.icon}
                 </div>
+                <RingProgress value={typeof s.value === "number" ? Math.min(s.value * 10, 100) : 40} size={36} stroke={3.5} color={s.ring} />
               </div>
-              <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{stat.value}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{stat.label}</p>
+              <p className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                {!loading && typeof s.value === "number"
+                  ? <AnimatedNumber value={s.value} suffix={s.suffix} />
+                  : s.value
+                }
+              </p>
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">{s.label}</p>
             </div>
           </Link>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* My Courses */}
-        <div className="card">
+      {/* ── Main grid ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+        {/* Courses */}
+        <div className="card animate-stagger-1">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="font-semibold text-slate-900 dark:text-slate-100">{t("nav.courses")}</h2>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-500 to-blue-600 flex items-center justify-center shadow-sm">
+                <BookOpen size={15} className="text-white" />
+              </div>
+              <h2 className="font-bold text-slate-900 dark:text-slate-100">My Courses</h2>
+            </div>
             <Link href="/courses">
-              <Button variant="ghost" size="sm">
-                <Plus size={15} />
-                {t("courses.add")}
-              </Button>
+              <button className="flex items-center gap-1 text-xs text-brand-600 dark:text-brand-400 font-semibold hover:underline">
+                View all <ArrowRight size={12} />
+              </button>
             </Link>
           </div>
+
           {loading ? (
-            <div className="space-y-3">
-              {[1,2,3].map(i => <div key={i} className="skeleton h-16 rounded-xl" />)}
-            </div>
-          ) : courses.length === 0 ? (
-            <EmptyState
-              icon={<BookOpen />}
-              title={t("dashboard.no_courses")}
-              action={{ label: t("dashboard.add_course"), onClick: () => window.location.href = "/courses" }}
-            />
+            <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="skeleton h-16 rounded-2xl" />)}</div>
           ) : (
-            <div className="space-y-3">
-              {courses.slice(0, 5).map(c => (
-                <Link key={c.id} href={`/courses/${c.id}`}>
-                  <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer">
-                    <div className="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-950/40 flex items-center justify-center flex-shrink-0">
-                      <BookOpen size={18} className="text-brand-600" />
+            <div className="space-y-2.5">
+              {courses.slice(0, 5).map((c, i) => {
+                const colors = ["#3b82f6","#a855f7","#14b8a6","#f59e0b","#ef4444"];
+                const col = colors[i % colors.length];
+                return (
+                  <Link key={c.id} href={`/courses/${c.id}`}>
+                    <div className="group flex items-center gap-3.5 p-3 rounded-2xl hover:bg-white/60 dark:hover:bg-white/5 transition cursor-pointer press">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-xs font-bold shadow-sm flex-shrink-0 transition-transform group-hover:scale-105"
+                        style={{ background: `linear-gradient(135deg, ${col}, ${col}99)` }}>
+                        {c.code?.slice(0,2) || "CO"}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{c.name}</p>
+                        <p className="text-xs text-slate-400 truncate">{c.instructor}</p>
+                        <div className="mt-1.5 flex items-center gap-2">
+                          <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(148,163,184,0.2)" }}>
+                            <div className="h-full rounded-full transition-all duration-700 relative overflow-hidden"
+                              style={{ width: `${c.progress}%`, background: `linear-gradient(90deg, ${col}, ${col}cc)` }}>
+                              <div className="absolute inset-0 shimmer-overlay" />
+                            </div>
+                          </div>
+                          <span className="text-[10px] font-bold text-slate-400">{c.progress}%</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">{c.name}</p>
-                      <p className="text-xs text-slate-400">{c.instructor}</p>
-                      <Progress value={c.progress} size="sm" className="mt-1.5" />
-                    </div>
-                    <span className="text-xs text-slate-400 flex-shrink-0">{c.progress}%</span>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
           )}
         </div>
 
-        {/* Upcoming Deadlines */}
-        <div className="card">
+        {/* Deadlines */}
+        <div className="card animate-stagger-2">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="font-semibold text-slate-900 dark:text-slate-100">{t("dashboard.upcoming_deadlines")}</h2>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-sm">
+                <Clock size={15} className="text-white" />
+              </div>
+              <h2 className="font-bold text-slate-900 dark:text-slate-100">Upcoming Deadlines</h2>
+            </div>
             <Link href="/timeline">
-              <Button variant="ghost" size="sm">
-                {t("timeline.add")}
-                <Plus size={15} />
-              </Button>
+              <button className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400 font-semibold hover:underline">
+                Timeline <ArrowRight size={12} />
+              </button>
             </Link>
           </div>
+
           {loading ? (
-            <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="skeleton h-14 rounded-xl" />)}</div>
+            <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="skeleton h-14 rounded-2xl" />)}</div>
           ) : deadlines.length === 0 ? (
-            <EmptyState icon={<Clock />} title={t("timeline.empty")} />
+            <div className="py-8 text-center text-slate-400 text-sm">
+              <CheckCircle className="w-10 h-10 mx-auto mb-2 text-emerald-400 opacity-60" />
+              All caught up!
+            </div>
           ) : (
             <div className="space-y-2.5">
-              {deadlines.slice(0, 6).map(d => (
-                <div key={d.id} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
-                  {d.risk === "overdue" || d.risk === "at_risk"
-                    ? <AlertTriangle size={16} className="text-red-500 flex-shrink-0" />
-                    : d.risk === "due_soon"
-                    ? <Clock size={16} className="text-amber-500 flex-shrink-0" />
-                    : <CheckCircle size={16} className="text-emerald-500 flex-shrink-0" />
-                  }
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">{d.title}</p>
-                    <p className="text-xs text-slate-400">{d.course_name}</p>
+              {deadlines.slice(0, 6).map(d => {
+                const isUrgent = d.risk === "overdue" || d.risk === "at_risk";
+                const isSoon = d.risk === "due_soon";
+                const borderColor = isUrgent ? "#ef4444" : isSoon ? "#f59e0b" : "#10b981";
+                return (
+                  <div key={d.id}
+                    className="flex items-center gap-3 p-3 rounded-2xl transition hover:bg-white/60 dark:hover:bg-white/5 cursor-pointer"
+                    style={{ borderLeft: `3px solid ${borderColor}`, paddingLeft: "12px" }}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{d.title}</p>
+                      <p className="text-xs text-slate-400">{d.course_name}</p>
+                    </div>
+                    <div className="flex-shrink-0 text-right space-y-1">
+                      <Badge color={riskColors[d.risk] || "gray"}>{riskLabels[d.risk]}</Badge>
+                      <p className="text-[10px] text-slate-400">{format(new Date(d.due_date), "MMM d")}</p>
+                    </div>
                   </div>
-                  <div className="flex-shrink-0 text-end">
-                    <Badge color={riskColors[d.risk] || "gray"}>{riskLabels[d.risk]}</Badge>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      {format(new Date(d.due_date), "MMM d")}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
       </div>
 
-      {/* AI Recommendations */}
-      <div className="card">
+      {/* ── AI Recommendations ── */}
+      <div className="card animate-stagger-3">
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-9 h-9 bg-teal-100 dark:bg-teal-950/40 rounded-xl flex items-center justify-center">
-            <Zap size={18} className="text-teal-600" />
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center shadow-md">
+            <Zap size={17} className="text-white" />
           </div>
-          <h2 className="font-semibold text-slate-900 dark:text-slate-100">{t("dashboard.ai_recommendations")}</h2>
-          <span className="badge-blue text-xs">{t("label.ai")}</span>
+          <div>
+            <h2 className="font-bold text-slate-900 dark:text-slate-100">AI Recommendations</h2>
+            <p className="text-xs text-slate-400">Personalized for your learning journey</p>
+          </div>
+          <span className="ml-auto text-[10px] bg-gradient-to-r from-teal-500 to-brand-500 text-white rounded-full px-2.5 py-0.5 font-bold uppercase tracking-wider">AI</span>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
           {[
-            { icon: <Package size={18} className="text-purple-600" />, title: "Generate Study Pack", body: "Strategic Management Lecture 3 is processed. Generate your study pack now.", href: "/study-packs", color: "bg-purple-50 dark:bg-purple-950/30" },
-            { icon: <Zap size={18} className="text-amber-600" />, title: "Review Flashcards", body: "18 flashcards pending review for Finance module.", href: "/flashcards", color: "bg-amber-50 dark:bg-amber-950/30" },
-            { icon: <Bot size={18} className="text-brand-600" />, title: "Ask Your Tutor", body: "You have an exam in 5 days. Start exam prep with your AI tutor.", href: "/tutor", color: "bg-brand-50 dark:bg-brand-950/30" },
+            { icon: <Package size={18} />, title: "Generate Study Pack", body: "Strategic Management Lecture 3 is ready. Generate your AI study pack now.", href: "/study-packs", grad: "from-purple-500 to-violet-600", bg: "from-purple-50/80 to-violet-50/60 dark:from-purple-950/30 dark:to-violet-950/20" },
+            { icon: <Zap size={18} />,     title: "Review Flashcards",   body: "18 flashcards due for review in Finance module. Beat the forgetting curve.", href: "/flashcards",  grad: "from-amber-500 to-orange-500", bg: "from-amber-50/80 to-orange-50/60 dark:from-amber-950/30 dark:to-orange-950/20" },
+            { icon: <Bot size={18} />,     title: "Exam Prep Session",   body: "Exam in 5 days. Your AI tutor is ready for a focused prep session.", href: "/tutor",         grad: "from-brand-500 to-blue-600",  bg: "from-brand-50/80 to-blue-50/60 dark:from-brand-950/30 dark:to-blue-950/20" },
           ].map((r, i) => (
             <Link key={i} href={r.href}>
-              <div className={`flex gap-3 p-4 rounded-xl cursor-pointer hover:shadow-card-hover transition ${r.color}`}>
-                <div className="flex-shrink-0 mt-0.5">{r.icon}</div>
-                <div>
-                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1">{r.title}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{r.body}</p>
+              <div className={`group relative p-4 rounded-2xl bg-gradient-to-br ${r.bg} border border-white/60 dark:border-white/10 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg press overflow-hidden`}>
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style={{ background: `radial-gradient(circle at top right, rgba(255,255,255,0.08), transparent)` }} />
+                <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${r.grad} flex items-center justify-center text-white mb-3 shadow-md group-hover:scale-110 transition-transform`}>
+                  {r.icon}
+                </div>
+                <p className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1.5">{r.title}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{r.body}</p>
+                <div className="flex items-center gap-1 mt-3 text-xs font-semibold text-brand-600 dark:text-brand-400">
+                  Start now <ArrowRight size={11} className="group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
             </Link>
@@ -206,48 +381,60 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Recent Announcements */}
+      {/* ── Quick actions ── */}
+      <div className="animate-stagger-4">
+        <h2 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">Quick Actions</h2>
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+          {[
+            { href: "/study-packs",   icon: <Package size={20} />,   label: "Study Packs",   grad: "from-purple-500 to-violet-600" },
+            { href: "/tutor",         icon: <Bot size={20} />,        label: "AI Tutor",      grad: "from-teal-500 to-cyan-500" },
+            { href: "/weekly-brief",  icon: <Newspaper size={20} />,  label: "Weekly Brief",  grad: "from-brand-500 to-blue-600" },
+            { href: "/ask-mba",       icon: <TrendingUp size={20} />, label: "Ask MBA",       grad: "from-emerald-500 to-teal-500" },
+            { href: "/achievements",  icon: <Trophy size={20} />,     label: "Achievements",  grad: "from-gold-500 to-amber-500" },
+            { href: "/group-project", icon: <Users size={20} />,      label: "Workspace",     grad: "from-indigo-500 to-purple-500" },
+          ].map((qa, i) => (
+            <Link key={qa.href} href={qa.href}>
+              <div className={`group card-hover flex flex-col items-center gap-2.5 py-5 text-center cursor-pointer press animate-stagger-${Math.min(i+1,5) as 1|2|3|4|5}`}>
+                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${qa.grad} flex items-center justify-center text-white shadow-md group-hover:scale-110 group-hover:shadow-lg transition-all duration-200`}>
+                  {qa.icon}
+                </div>
+                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 leading-tight text-center">{qa.label}</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Recent announcements ── */}
       {announcements.length > 0 && (
-        <div className="card">
+        <div className="card animate-fade-up">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="font-semibold text-slate-900 dark:text-slate-100">{t("nav.announcements")}</h2>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center shadow-sm">
+                <Megaphone size={15} className="text-white" />
+              </div>
+              <h2 className="font-bold text-slate-900 dark:text-slate-100">Announcements</h2>
+            </div>
             <Link href="/announcements">
-              <Button variant="ghost" size="sm">View all <ArrowRight size={14} /></Button>
+              <button className="flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400 font-semibold hover:underline">
+                View all <ArrowRight size={12} />
+              </button>
             </Link>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {announcements.map(a => (
-              <div key={a.id} className="flex gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
-                <Megaphone size={16} className="text-slate-400 flex-shrink-0 mt-0.5" />
+              <div key={a.id} className="flex gap-3 p-3.5 rounded-2xl bg-white/50 dark:bg-white/5 hover:bg-white/70 dark:hover:bg-white/8 transition cursor-pointer">
+                <div className="w-2 h-2 rounded-full bg-purple-400 mt-2 flex-shrink-0 animate-pulse-soft" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{a.title}</p>
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{a.title}</p>
                   {a.summary && <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">{a.summary}</p>}
                 </div>
-                <span className="text-xs text-slate-400 flex-shrink-0">{a.course_name}</span>
+                <span className="text-[10px] text-slate-400 flex-shrink-0 mt-0.5">{a.course_name}</span>
               </div>
             ))}
           </div>
         </div>
       )}
-
-      {/* Quick actions */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[
-          { href: "/study-packs", icon: <Package size={20} />, label: t("nav.study_packs"), color: "text-purple-600 bg-purple-100 dark:bg-purple-950/40" },
-          { href: "/tutor", icon: <Bot size={20} />, label: t("nav.tutor"), color: "text-teal-600 bg-teal-100 dark:bg-teal-950/40" },
-          { href: "/weekly-brief", icon: <Newspaper size={20} />, label: t("nav.weekly_brief"), color: "text-brand-600 bg-brand-100 dark:bg-brand-950/40" },
-          { href: "/ask-mba", icon: <TrendingUp size={20} />, label: t("nav.ask_mba"), color: "text-emerald-600 bg-emerald-100 dark:bg-emerald-950/40" },
-        ].map(qa => (
-          <Link key={qa.href} href={qa.href}>
-            <div className="card-hover flex flex-col items-center gap-2.5 py-5 text-center cursor-pointer">
-              <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${qa.color}`}>
-                {qa.icon}
-              </div>
-              <span className="text-xs font-medium text-slate-700 dark:text-slate-300">{qa.label}</span>
-            </div>
-          </Link>
-        ))}
-      </div>
     </div>
   );
 }

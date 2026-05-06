@@ -1,37 +1,38 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { ToastProvider } from "@/components/ui/Toast";
-import { GraduationCap, X } from "lucide-react";
 import type { ReactNode } from "react";
-
-const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [demoBannerDismissed, setDemoBannerDismissed] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   return (
     <ToastProvider>
-      <div className="app-layout">
+      {/* Animated background mesh */}
+      <div className="bg-mesh" aria-hidden>
+        <div className="orb orb-1" />
+        <div className="orb orb-2" />
+        <div className="orb orb-3" />
+        <div className="orb orb-4" />
+      </div>
+
+      <div className="app-layout relative z-10">
         <Sidebar mobileOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <div className="app-main flex flex-col min-h-screen">
+
+        <div className="app-main">
           <AppHeader onMenuClick={() => setSidebarOpen(true)} />
-          {DEMO_MODE && !demoBannerDismissed && (
-            <div className="flex items-center gap-3 px-4 py-2.5 bg-gradient-to-r from-brand-600 to-indigo-600 text-white text-sm">
-              <GraduationCap className="w-4 h-4 flex-shrink-0" />
-              <p className="flex-1">
-                <span className="font-semibold">Demo Mode</span>
-                {" — "}You're logged in as <span className="font-semibold">Sara Al-Mansouri</span>, MBA Year 2. All data is pre-loaded for testing. Changes won't be saved.
-              </p>
-              <button onClick={() => setDemoBannerDismissed(true)} className="flex-shrink-0 hover:opacity-70 transition-opacity" aria-label="Dismiss">
-                <X className="w-4 h-4" />
-              </button>
+          <main
+            id="main"
+            className={`flex-1 px-4 sm:px-6 py-6 max-w-7xl w-full mx-auto transition-opacity duration-500 ${mounted ? "opacity-100" : "opacity-0"}`}
+          >
+            <div className="animate-fade-up">
+              {children}
             </div>
-          )}
-          <main id="main" className="flex-1 px-4 sm:px-6 py-6 max-w-7xl w-full mx-auto">
-            {children}
           </main>
         </div>
       </div>

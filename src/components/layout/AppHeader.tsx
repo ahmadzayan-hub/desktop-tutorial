@@ -1,24 +1,24 @@
 "use client";
-import { Menu, Bell, Sun, Moon, Search, X, BookOpen, Clock, BarChart3, Package, FileText } from "lucide-react";
+import {
+  Menu, Bell, Sun, Moon, Search, X, BookOpen, Clock, BarChart3, Package,
+  FileText, Command, Sparkles, Globe,
+} from "lucide-react";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import clsx from "clsx";
 
-interface AppHeaderProps {
-  onMenuClick: () => void;
-  title?: string;
-}
-
+interface AppHeaderProps { onMenuClick: () => void; title?: string; }
 interface SearchResult {
   type: string; label: string; href: string; subtitle?: string; icon: React.ReactNode;
 }
 
 const TYPE_ICON: Record<string, React.ReactNode> = {
-  course: <BookOpen className="w-4 h-4 text-brand-500" />,
-  deadline: <Clock className="w-4 h-4 text-amber-500" />,
-  grade: <BarChart3 className="w-4 h-4 text-emerald-500" />,
-  pack: <Package className="w-4 h-4 text-purple-500" />,
-  file: <FileText className="w-4 h-4 text-blue-500" />,
+  course:   <BookOpen  className="w-4 h-4 text-brand-500" />,
+  deadline: <Clock     className="w-4 h-4 text-amber-500" />,
+  grade:    <BarChart3 className="w-4 h-4 text-emerald-500" />,
+  pack:     <Package   className="w-4 h-4 text-purple-500" />,
+  file:     <FileText  className="w-4 h-4 text-blue-500" />,
 };
 
 export function AppHeader({ onMenuClick, title }: AppHeaderProps) {
@@ -29,15 +29,15 @@ export function AppHeader({ onMenuClick, title }: AppHeaderProps) {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [searching, setSearching] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const searchTimeout = useRef<NodeJS.Timeout | null>(null);
+  const inputRef  = useRef<HTMLInputElement>(null);
+  const timeout   = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setDark(document.documentElement.classList.contains("dark"));
   }, []);
 
-  // Close on outside click
   useEffect(() => {
     function handler(e: MouseEvent) {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -48,7 +48,6 @@ export function AppHeader({ onMenuClick, title }: AppHeaderProps) {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Keyboard shortcut Ctrl+K / Cmd+K
   useEffect(() => {
     function handler(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -56,7 +55,7 @@ export function AppHeader({ onMenuClick, title }: AppHeaderProps) {
         setShowSearch(true);
         setTimeout(() => inputRef.current?.focus(), 50);
       }
-      if (e.key === "Escape") setShowSearch(false);
+      if (e.key === "Escape") { setShowSearch(false); setNotifOpen(false); }
     }
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
@@ -76,33 +75,29 @@ export function AppHeader({ onMenuClick, title }: AppHeaderProps) {
       ]);
       const lower = q.toLowerCase();
       const found: SearchResult[] = [];
-      courses.filter((c: any) => c.name?.toLowerCase().includes(lower) || c.code?.toLowerCase().includes(lower)).slice(0, 3).forEach((c: any) =>
-        found.push({ type: "course", label: c.name, subtitle: c.code, href: `/courses/${c.id}`, icon: TYPE_ICON.course }));
-      deadlines.filter((d: any) => d.title?.toLowerCase().includes(lower) || d.course_name?.toLowerCase().includes(lower)).slice(0, 3).forEach((d: any) =>
-        found.push({ type: "deadline", label: d.title, subtitle: d.course_name, href: "/timeline", icon: TYPE_ICON.deadline }));
-      grades.filter((g: any) => g.item_name?.toLowerCase().includes(lower) || g.category?.toLowerCase().includes(lower)).slice(0, 2).forEach((g: any) =>
-        found.push({ type: "grade", label: g.item_name, subtitle: g.category, href: "/grades", icon: TYPE_ICON.grade }));
-      packs.filter((p: any) => p.title?.toLowerCase().includes(lower)).slice(0, 2).forEach((p: any) =>
-        found.push({ type: "pack", label: p.title, subtitle: "Study Pack", href: "/study-packs", icon: TYPE_ICON.pack }));
-      files.filter((f: any) => f.name?.toLowerCase().includes(lower)).slice(0, 2).forEach((f: any) =>
-        found.push({ type: "file", label: f.name, subtitle: "File", href: "/files", icon: TYPE_ICON.file }));
+      courses.filter((c: any) => c.name?.toLowerCase().includes(lower) || c.code?.toLowerCase().includes(lower)).slice(0, 3)
+        .forEach((c: any) => found.push({ type: "course", label: c.name, subtitle: c.code, href: `/courses/${c.id}`, icon: TYPE_ICON.course }));
+      deadlines.filter((d: any) => d.title?.toLowerCase().includes(lower)).slice(0, 3)
+        .forEach((d: any) => found.push({ type: "deadline", label: d.title, subtitle: d.course_name, href: "/timeline", icon: TYPE_ICON.deadline }));
+      grades.filter((g: any) => g.item_name?.toLowerCase().includes(lower)).slice(0, 2)
+        .forEach((g: any) => found.push({ type: "grade", label: g.item_name, subtitle: g.category, href: "/grades", icon: TYPE_ICON.grade }));
+      packs.filter((p: any) => p.title?.toLowerCase().includes(lower)).slice(0, 2)
+        .forEach((p: any) => found.push({ type: "pack", label: p.title, subtitle: "Study Pack", href: "/study-packs", icon: TYPE_ICON.pack }));
+      files.filter((f: any) => f.name?.toLowerCase().includes(lower)).slice(0, 2)
+        .forEach((f: any) => found.push({ type: "file", label: f.name, subtitle: "File", href: "/files", icon: TYPE_ICON.file }));
       setResults(found.slice(0, 8));
-    } finally {
-      setSearching(false);
-    }
+    } finally { setSearching(false); }
   }, []);
 
   function handleQuery(e: React.ChangeEvent<HTMLInputElement>) {
     const q = e.target.value;
     setQuery(q);
-    if (searchTimeout.current) clearTimeout(searchTimeout.current);
-    searchTimeout.current = setTimeout(() => search(q), 300);
+    if (timeout.current) clearTimeout(timeout.current);
+    timeout.current = setTimeout(() => search(q), 280);
   }
 
   function navigate(href: string) {
-    setShowSearch(false);
-    setQuery("");
-    setResults([]);
+    setShowSearch(false); setQuery(""); setResults([]);
     router.push(href);
   }
 
@@ -113,33 +108,57 @@ export function AppHeader({ onMenuClick, title }: AppHeaderProps) {
     localStorage.setItem("tz_theme", next ? "dark" : "light");
   };
 
+  const NOTIFS = [
+    { id: 1, title: "Assignment due in 2 days", body: "Strategic Management — Case Study 3", time: "2h ago", dot: "bg-amber-400" },
+    { id: 2, title: "New AI study pack ready", body: "Finance Module 4 summary generated", time: "4h ago", dot: "bg-brand-400" },
+    { id: 3, title: "Grade posted", body: "Operations Management midterm: 88/100", time: "1d ago", dot: "bg-emerald-400" },
+  ];
+
   return (
-    <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-950/90 backdrop-blur-sm border-b border-slate-200 dark:border-slate-800 h-16 flex items-center px-4 sm:px-6 gap-3">
-      <button onClick={onMenuClick} className="md:hidden btn-ghost p-2" aria-label="Open menu">
-        <Menu size={20} />
+    <header className="header-glass sticky top-0 z-30 h-16 flex items-center px-4 sm:px-6 gap-3 flex-shrink-0">
+
+      {/* Mobile hamburger */}
+      <button
+        onClick={onMenuClick}
+        className="md:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-white/60 dark:hover:bg-white/10 transition press"
+        aria-label="Open menu"
+      >
+        <Menu size={19} />
       </button>
 
       {title && (
-        <h1 className="text-base font-semibold text-slate-800 dark:text-slate-100 hidden sm:block">{title}</h1>
+        <h1 className="text-sm font-semibold text-slate-800 dark:text-slate-100 hidden sm:block mr-1">{title}</h1>
       )}
 
-      {/* Search bar */}
-      <div className="flex-1 max-w-md relative" ref={searchRef}>
+      {/* Search */}
+      <div className="flex-1 max-w-sm relative" ref={searchRef}>
         <button
           onClick={() => { setShowSearch(true); setTimeout(() => inputRef.current?.focus(), 50); }}
-          className="hidden sm:flex w-full items-center gap-2 px-3 py-1.5 text-sm text-slate-400 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+          className={clsx(
+            "hidden sm:flex w-full items-center gap-2.5 px-3.5 py-2 text-sm text-slate-400 rounded-2xl transition-all duration-200 border",
+            "bg-white/60 border-white/70 hover:bg-white/80 hover:border-white dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10"
+          )}
         >
-          <Search className="w-4 h-4" />
-          <span className="flex-1 text-left">Search courses, deadlines, files…</span>
-          <kbd className="text-xs bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded px-1.5 py-0.5">⌘K</kbd>
+          <Search className="w-3.5 h-3.5 flex-shrink-0" />
+          <span className="flex-1 text-left text-xs">Search anything…</span>
+          <kbd className="hidden lg:flex items-center gap-0.5 text-[10px] bg-white/80 dark:bg-white/10 border border-slate-200/60 dark:border-white/10 rounded-lg px-1.5 py-0.5 text-slate-400">
+            <Command className="w-2.5 h-2.5" />K
+          </kbd>
         </button>
-        <button onClick={() => { setShowSearch(true); setTimeout(() => inputRef.current?.focus(), 50); }} className="sm:hidden btn-ghost p-2">
+
+        <button
+          onClick={() => { setShowSearch(true); setTimeout(() => inputRef.current?.focus(), 50); }}
+          className="sm:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-white/60 dark:hover:bg-white/10 transition"
+        >
           <Search size={18} />
         </button>
 
+        {/* Search overlay */}
         {showSearch && (
-          <div className="absolute top-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden min-w-[320px]">
-            <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-100 dark:border-slate-800">
+          <div className="absolute top-0 left-0 right-0 z-50 min-w-[320px] rounded-3xl overflow-hidden shadow-float border border-white/60 dark:border-white/10 animate-scale-in"
+            style={{ background: "var(--glass-bg)", backdropFilter: "blur(20px) saturate(1.8)" }}
+          >
+            <div className="flex items-center gap-2.5 px-4 py-3 border-b border-white/50 dark:border-white/10">
               <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
               <input
                 ref={inputRef}
@@ -148,63 +167,149 @@ export function AppHeader({ onMenuClick, title }: AppHeaderProps) {
                 value={query}
                 onChange={handleQuery}
                 autoFocus
+                style={{ border: "none", boxShadow: "none", padding: 0 }}
               />
               {query && (
-                <button onClick={() => { setQuery(""); setResults([]); }} className="text-slate-400 hover:text-slate-600">
+                <button onClick={() => { setQuery(""); setResults([]); }} className="text-slate-400 hover:text-slate-600 transition">
                   <X className="w-4 h-4" />
                 </button>
               )}
-              <button onClick={() => setShowSearch(false)} className="text-slate-400 hover:text-slate-600 ml-1">
-                <kbd className="text-xs border border-slate-200 dark:border-slate-600 rounded px-1 py-0.5">Esc</kbd>
+              <button onClick={() => setShowSearch(false)} className="text-[10px] border border-slate-200 dark:border-slate-600 rounded-lg px-1.5 py-0.5 text-slate-400 hover:text-slate-600 transition">
+                Esc
               </button>
             </div>
+
             {searching && (
-              <div className="px-4 py-3 text-sm text-slate-400">Searching…</div>
+              <div className="px-4 py-4 flex items-center gap-2 text-sm text-slate-400">
+                <div className="w-3 h-3 rounded-full border-2 border-brand-500 border-t-transparent animate-spin" />
+                Searching…
+              </div>
             )}
+
             {!searching && results.length > 0 && (
-              <ul className="py-1 max-h-80 overflow-y-auto">
+              <ul className="py-1 max-h-72 overflow-y-auto">
                 {results.map((r, i) => (
                   <li key={i}>
                     <button
                       onClick={() => navigate(r.href)}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-left"
+                      className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/50 dark:hover:bg-white/5 text-left transition"
                     >
                       <span className="flex-shrink-0">{r.icon}</span>
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">{r.label}</p>
                         {r.subtitle && <p className="text-xs text-slate-400 truncate">{r.subtitle}</p>}
                       </div>
-                      <span className="ml-auto text-xs text-slate-300 dark:text-slate-600 capitalize flex-shrink-0">{r.type}</span>
+                      <span className="text-[10px] bg-white/60 dark:bg-white/10 text-slate-400 rounded-lg px-1.5 py-0.5 capitalize flex-shrink-0">{r.type}</span>
                     </button>
                   </li>
                 ))}
               </ul>
             )}
+
             {!searching && query.length >= 2 && results.length === 0 && (
-              <div className="px-4 py-6 text-center text-sm text-slate-400">No results for "{query}"</div>
+              <div className="px-4 py-6 text-center text-sm text-slate-400">
+                No results for "<span className="text-slate-600 dark:text-slate-300 font-medium">{query}</span>"
+              </div>
             )}
+
             {!query && (
-              <div className="px-4 py-3 text-xs text-slate-400">
-                Quick links: <button onClick={() => navigate("/courses")} className="text-brand-500 hover:underline mr-2">Courses</button>
-                <button onClick={() => navigate("/timeline")} className="text-brand-500 hover:underline mr-2">Deadlines</button>
-                <button onClick={() => navigate("/grades")} className="text-brand-500 hover:underline">Grades</button>
+              <div className="px-4 py-3">
+                <p className="text-[10px] text-slate-400 mb-2 uppercase tracking-wider font-semibold">Quick access</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {["Courses", "Deadlines", "Grades", "Files", "Tutor"].map(link => (
+                    <button
+                      key={link}
+                      onClick={() => navigate(`/${link.toLowerCase()}`)}
+                      className="text-xs bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 rounded-xl px-2.5 py-1 hover:bg-brand-100 dark:hover:bg-brand-900/50 transition font-medium"
+                    >
+                      {link}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
           </div>
         )}
       </div>
 
-      <div className="flex items-center gap-1.5">
-        <button onClick={() => setLocale(locale === "en" ? "ar" : "en")} className="btn-ghost text-xs px-2.5 py-1.5 font-medium" aria-label="Toggle language">
+      {/* Right controls */}
+      <div className="flex items-center gap-1">
+
+        {/* Language toggle */}
+        <button
+          onClick={() => setLocale(locale === "en" ? "ar" : "en")}
+          className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-500 hover:bg-white/60 dark:hover:bg-white/10 hover:text-slate-700 dark:hover:text-slate-300 transition press"
+          aria-label="Toggle language"
+        >
+          <Globe className="w-3.5 h-3.5" />
           {t("lang.toggle")}
         </button>
-        <button onClick={toggleTheme} className="btn-ghost p-2" aria-label="Toggle theme">
-          {dark ? <Sun size={18} /> : <Moon size={18} />}
+
+        {/* Theme toggle */}
+        <button
+          onClick={toggleTheme}
+          className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-white/60 dark:hover:bg-white/10 hover:text-slate-700 dark:hover:text-slate-300 transition press"
+          aria-label="Toggle theme"
+        >
+          {dark
+            ? <Sun size={17} className="text-amber-400 animate-spin-slow" />
+            : <Moon size={17} />
+          }
         </button>
-        <button className="btn-ghost p-2 relative" aria-label="Notifications">
-          <Bell size={18} />
-          <span className="absolute top-1.5 end-1.5 w-2 h-2 bg-red-500 rounded-full" />
-        </button>
+
+        {/* Notifications */}
+        <div className="relative">
+          <button
+            onClick={() => setNotifOpen(!notifOpen)}
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-white/60 dark:hover:bg-white/10 transition press relative"
+            aria-label="Notifications"
+          >
+            <Bell size={17} />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-slate-900 animate-pulse-soft" />
+          </button>
+
+          {notifOpen && (
+            <div
+              className="absolute top-full right-0 mt-2 w-80 rounded-3xl overflow-hidden shadow-float z-50 animate-scale-in border border-white/60 dark:border-white/10"
+              style={{ background: "var(--glass-bg)", backdropFilter: "blur(20px) saturate(1.8)" }}
+            >
+              <div className="px-4 py-3 border-b border-white/50 dark:border-white/10 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Bell className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                  <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">Notifications</span>
+                  <span className="text-xs bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 rounded-full px-1.5 py-0.5 font-bold">3</span>
+                </div>
+                <button onClick={() => setNotifOpen(false)} className="text-slate-400 hover:text-slate-600 transition">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="divide-y divide-white/30 dark:divide-white/5">
+                {NOTIFS.map(n => (
+                  <div key={n.id} className="px-4 py-3 hover:bg-white/40 dark:hover:bg-white/5 transition cursor-pointer">
+                    <div className="flex items-start gap-2.5">
+                      <span className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${n.dot}`} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{n.title}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">{n.body}</p>
+                        <p className="text-[10px] text-slate-400 mt-1">{n.time}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="px-4 py-2.5 border-t border-white/30 dark:border-white/5">
+                <button className="w-full text-xs text-brand-600 dark:text-brand-400 font-semibold hover:underline">
+                  View all notifications
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* User avatar */}
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-sm cursor-pointer hover:shadow-glow transition press ml-0.5">
+          SA
+        </div>
       </div>
     </header>
   );
