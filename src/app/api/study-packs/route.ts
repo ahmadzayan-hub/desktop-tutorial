@@ -69,7 +69,7 @@ ${content.slice(0, 8000)}`;
     const cleaned = response.replace(/```json\n?|\n?```/g, "").trim();
     const parsed = JSON.parse(cleaned);
 
-    await supabase.from("study_packs").update({
+    const { error: updateError } = await supabase.from("study_packs").update({
       status: "ready",
       overview: parsed.overview,
       summary: parsed.summary,
@@ -81,6 +81,7 @@ ${content.slice(0, 8000)}`;
       exam_prep_notes: parsed.exam_prep_notes,
       updated_at: new Date().toISOString(),
     }).eq("id", packId);
+    if (updateError) throw new Error(updateError.message);
 
     // Generate flashcards
     const fcPrompt = `Based on the lecture below, generate 10 flashcards. Respond with JSON array: [{"front": "Question or term", "back": "Answer or definition"}]\n\nContent:\n${content.slice(0, 4000)}`;
@@ -89,7 +90,8 @@ ${content.slice(0, 8000)}`;
       { role: "user", content: fcPrompt },
     ], { maxTokens: 1500 });
     const fcCleaned = fcResponse.replace(/```json\n?|\n?```/g, "").trim();
-    const flashcards = JSON.parse(fcCleaned);
+    let flashcards: unknown;
+    try { flashcards = JSON.parse(fcCleaned); } catch { flashcards = []; }
     if (Array.isArray(flashcards)) {
       const fcRows = flashcards.map((f: any) => ({ user_id: userId, study_pack_id: packId, front: f.front, back: f.back }));
       await supabase.from("flashcards").insert(fcRows);
@@ -97,7 +99,7 @@ ${content.slice(0, 8000)}`;
 
     // Log AI usage
     await supabase.from("ai_usage_logs").insert({ user_id: userId, operation: "study_pack", model: process.env.AI_MODEL ?? "claude-sonnet-4-6", input_tokens: Math.ceil(content.length / 4), output_tokens: 1000, success: true });
-    await supabase.from("subscriptions").update({ ai_queries_used: supabase.raw("ai_queries_used + 1") }).eq("user_id", userId);
+    await supabase.rpc("increment_ai_queries", { uid: userId }).catch(() => null);
 
   } catch (err) {
     await supabase.from("study_packs").update({ status: "failed" }).eq("id", packId);

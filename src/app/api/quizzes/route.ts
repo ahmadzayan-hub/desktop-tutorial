@@ -13,7 +13,7 @@ export async function GET() {
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   const quizzes = (data || []).map((q: any) => ({
     ...q,
     pack_topic: q.study_packs?.topic,
@@ -55,8 +55,12 @@ ${context}`;
   
   let questions: any[] = [];
   try {
-    const jsonMatch = response.match(/\[[\s\S]*\]/);
-    if (jsonMatch) questions = JSON.parse(jsonMatch[0]);
+    const cleaned = response.replace(/```json\n?|\n?```/g, "").trim();
+    const start = cleaned.indexOf("[");
+    const end = cleaned.lastIndexOf("]");
+    if (start === -1 || end === -1) throw new Error("no array");
+    questions = JSON.parse(cleaned.slice(start, end + 1));
+    if (!Array.isArray(questions)) throw new Error("not array");
   } catch {
     return NextResponse.json({ error: "Failed to parse quiz questions" }, { status: 500 });
   }
