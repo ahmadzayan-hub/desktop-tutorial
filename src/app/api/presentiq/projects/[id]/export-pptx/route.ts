@@ -1,18 +1,58 @@
 import {
   getRequestContext,
   getSupabase,
+  isDemoContext,
   loadBrandContext,
   renderDeck,
   writeAudit,
 } from "@/lib/presentiq";
 import { fail, json, notFound, unauthorized } from "@/lib/presentiq/api/response";
+import { getProject as getDemoProject } from "@/lib/presentiq/demo/store";
+import { buildDemoBlueprint, buildDemoSlides } from "@/lib/presentiq/demo/blueprint";
 
 export const runtime = "nodejs";
 export const maxDuration = 180;
 
+function safeFilename(s: string): string {
+  return (s || "presentation").replace(/[^\w؀-ۿ\-]+/g, "_").slice(0, 80);
+}
+
 export async function POST(_req: Request, { params }: { params: { id: string } }) {
   const ctx = await getRequestContext();
   if (!ctx) return unauthorized();
+
+  // Demo path — render PPTX in-memory and stream the binary directly.
+  if (isDemoContext(ctx)) {
+    const project = getDemoProject(params.id);
+    if (!project) return notFound("project");
+    const blueprint = project.blueprint ?? buildDemoBlueprint(project);
+    const slides =
+      project.slides && project.slides.length
+        ? project.slides
+        : buildDemoSlides({
+            title: project.title,
+            language_mode: project.language_mode,
+            blueprint,
+          });
+    const brandCtx = loadBrandContext(null, project.presentation_mode as any, project.language_mode);
+    let buf: Buffer;
+    try {
+      buf = await renderDeck({ title: project.title, ctx: brandCtx, slides });
+    } catch (e) {
+      return fail("render_failed", (e as Error).message, 500);
+    }
+    const body = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength) as unknown as BodyInit;
+    return new Response(body, {
+      status: 200,
+      headers: {
+        "content-type":
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "content-disposition": `attachment; filename="${safeFilename(project.title)}.pptx"`,
+        "cache-control": "no-store",
+      },
+    });
+  }
+
   const supabase = await getSupabase();
 
   const { data: project } = await supabase

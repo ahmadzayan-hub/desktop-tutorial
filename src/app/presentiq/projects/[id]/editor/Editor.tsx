@@ -65,9 +65,27 @@ export function Editor({ projectId, initialSlides, title }: { projectId: string;
     setBusy("pptx"); setError(null);
     try {
       const res = await fetch(`/api/presentiq/projects/${projectId}/export-pptx`, { method: "POST" });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error?.message ?? "failed");
-      if (data.url) window.open(data.url, "_blank");
+      const ct = res.headers.get("content-type") ?? "";
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error((data as any)?.error?.message ?? `export failed (${res.status})`);
+      }
+      if (ct.includes("application/json")) {
+        const data = await res.json();
+        if (data.url) window.open(data.url, "_blank");
+        else throw new Error("export response missing url");
+      } else {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const filename = (title || "presentation").replace(/[^\w؀-ۿ\-]+/g, "_") + ".pptx";
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1500);
+      }
     } catch (e) {
       setError((e as Error).message);
     } finally {

@@ -11,6 +11,12 @@
 
 import { randomUUID } from "node:crypto";
 import type { Slide, Blueprint, ProjectStatus } from "../types";
+import {
+  getCookieProject,
+  upsertCookieProject,
+  deleteCookieProject,
+  readCookieProjects,
+} from "./cookie-store";
 
 export type DemoProject = {
   id: string;
@@ -106,14 +112,30 @@ const DEMO_USER = "demo-user-pq";
 })();
 
 // ─── Projects ──────────────────────────────────────────────────────
+// Reads consult the cookie first (request-scoped, survives serverless
+// lambda boundaries) then fall back to the in-memory Map (which holds
+// the seeded demo project for the dashboard tour).
 
 export function listProjects(orgId: string) {
-  return Array.from(projects.values())
+  const cookieMap = readCookieProjects();
+  const merged = new Map<string, DemoProject>();
+  for (const p of projects.values()) merged.set(p.id, p);
+  for (const id of Object.keys(cookieMap)) {
+    const c = cookieMap[id];
+    if (c && c.organization_id === orgId) merged.set(id, c as DemoProject);
+  }
+  return Array.from(merged.values())
     .filter((p) => p.organization_id === orgId)
     .sort((a, b) => b.updated_at.localeCompare(a.updated_at));
 }
 
 export function getProject(id: string) {
+  const fromCookie = getCookieProject(id);
+  if (fromCookie) {
+    // Hydrate any in-flight blueprint/slides from the in-memory map if present
+    const inMem = projects.get(id);
+    return { ...(fromCookie as DemoProject), blueprint: inMem?.blueprint, slides: inMem?.slides };
+  }
   return projects.get(id) ?? null;
 }
 
@@ -122,19 +144,23 @@ export function createProject(input: Omit<DemoProject, "id" | "created_at" | "up
   const now = new Date().toISOString();
   const row: DemoProject = { ...input, id, status: "draft", created_at: now, updated_at: now };
   projects.set(id, row);
+  upsertCookieProject(row);
   return row;
 }
 
 export function updateProject(id: string, patch: Partial<DemoProject>) {
-  const row = projects.get(id);
-  if (!row) return null;
-  const next = { ...row, ...patch, updated_at: new Date().toISOString() };
+  const existing = projects.get(id) ?? (getCookieProject(id) as DemoProject | null);
+  if (!existing) return null;
+  const next: DemoProject = { ...existing, ...patch, updated_at: new Date().toISOString() };
   projects.set(id, next);
+  upsertCookieProject(next);
   return next;
 }
 
 export function deleteProject(id: string) {
-  return projects.delete(id);
+  const inMem = projects.delete(id);
+  const inCookie = deleteCookieProject(id);
+  return inMem || inCookie;
 }
 
 // ─── Brand kits ────────────────────────────────────────────────────
