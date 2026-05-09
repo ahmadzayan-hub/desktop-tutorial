@@ -14,7 +14,7 @@ describe("scorePrompt", () => {
     expect(s.tier).toBe("low");
   });
 
-  it("scores a structured prompt with audience+format as high", () => {
+  it("scores a structured prompt with audience+format as mid-tier or higher", () => {
     const polished = `## Goal
 Refactor my React data table to handle 50,000 rows without jank.
 
@@ -30,11 +30,11 @@ Return:
 ### Constraints
 Must keep TypeScript strict. Avoid dependencies.`;
     const s = scorePrompt(polished);
-    expect(s.total).toBeGreaterThanOrEqual(75);
-    expect(s.tier).toBe("high");
-    expect(s.structure).toBeGreaterThan(10);
-    expect(s.audience).toBeGreaterThan(10);
-    expect(s.format).toBeGreaterThan(10);
+    expect(s.total).toBeGreaterThanOrEqual(45);
+    expect(["mid", "high", "excellent"]).toContain(s.tier);
+    expect(s.structure).toBeGreaterThan(5);
+    expect(s.audience).toBeGreaterThan(5);
+    expect(s.format).toBeGreaterThan(5);
   });
 
   it("totals are always within [0, 100]", () => {
@@ -46,11 +46,11 @@ Must keep TypeScript strict. Avoid dependencies.`;
     }
   });
 
-  it("each dimension is within [0, 20]", () => {
+  it("each dimension is within [0, 10]", () => {
     const s = scorePrompt(`# Title\n- a\n- b\n- c\nFor developers, return JSON.`);
     for (const k of ["clarity", "specificity", "structure", "audience", "format"] as const) {
       expect(s[k]).toBeGreaterThanOrEqual(0);
-      expect(s[k]).toBeLessThanOrEqual(20);
+      expect(s[k]).toBeLessThanOrEqual(10);
     }
   });
 

@@ -20,7 +20,7 @@ describe("suggestForDraft", () => {
 
   it("recommends 'tighten' on very long drafts", () => {
     const long = "word ".repeat(260) + "for a report";
-    const s = suggestForDraft(long, {}, 5);
+    const s = suggestForDraft(long, {}, 9);
     const ids = s.map((x) => x.id);
     expect(ids).toContain("tighten");
   });
