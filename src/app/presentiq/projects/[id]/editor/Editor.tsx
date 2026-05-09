@@ -109,18 +109,31 @@ export function Editor({ projectId, initialSlides, title }: { projectId: string;
         <Card>
           <CardHeader title="Storyboard" subtitle={`${slides.length} slides`} />
           <CardBody className="space-y-1 max-h-[70vh] overflow-y-auto p-2">
-            {slides.map((s) => (
-              <button
-                key={s.id}
-                onClick={() => setActiveId(s.id)}
-                className={`w-full text-left px-3 py-2 rounded-lg border ${activeId === s.id ? "border-zinc-900 bg-zinc-50" : "border-transparent hover:bg-zinc-50"}`}
-              >
-                <div className="text-xs text-zinc-400">Slide {s.slide_number}</div>
-                <div className="text-sm font-medium truncate">{s.title_en ?? "Untitled"}</div>
-                {s.title_ar && <div className="text-xs text-zinc-600 truncate" dir="rtl">{s.title_ar}</div>}
-                <Badge tone={s.status === "approved" ? "green" : s.status === "locked" ? "navy" : "zinc"}>{s.status}</Badge>
-              </button>
-            ))}
+            {slides.map((s) => {
+              const isActive = activeId === s.id;
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => setActiveId(s.id)}
+                  className="w-full text-left px-3 py-2 rounded-lg transition-colors"
+                  style={{
+                    border: `1px solid ${isActive ? "var(--pq-primary)" : "transparent"}`,
+                    background: isActive ? "rgba(159,205,99,0.10)" : "transparent",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = "rgba(244,247,239,0.04)";
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+                  }}
+                >
+                  <div className="text-xs" style={{ color: "var(--pq-text-muted)" }}>Slide {s.slide_number}</div>
+                  <div className="text-sm font-medium truncate" style={{ color: "var(--pq-text-main)" }}>{s.title_en ?? "Untitled"}</div>
+                  {s.title_ar && <div className="text-xs truncate" dir="rtl" style={{ color: "var(--pq-text-secondary)" }}>{s.title_ar}</div>}
+                  <Badge tone={s.status === "approved" ? "green" : s.status === "locked" ? "navy" : "zinc"}>{s.status}</Badge>
+                </button>
+              );
+            })}
           </CardBody>
         </Card>
       </aside>
@@ -136,22 +149,28 @@ export function Editor({ projectId, initialSlides, title }: { projectId: string;
           } />
           <CardBody>
             {error && (
-              <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800 mb-4">{error}</div>
+              <div className="pq-alert mb-4">{error}</div>
             )}
             {!active ? (
-              <div className="text-sm text-zinc-500">Select a slide.</div>
+              <div className="text-sm" style={{ color: "var(--pq-text-secondary)" }}>Select a slide.</div>
             ) : (
               <div className="space-y-4">
-                <h2 className="text-2xl font-semibold tracking-tight">{active.title_en ?? "Untitled"}</h2>
-                {active.title_ar && (<h3 className="text-xl text-zinc-700" dir="rtl">{active.title_ar}</h3>)}
-                {active.key_message_en && <p className="text-zinc-700">{active.key_message_en}</p>}
-                {active.key_message_ar && <p className="text-zinc-700" dir="rtl">{active.key_message_ar}</p>}
+                <h2 className="text-2xl font-semibold tracking-tight" style={{ color: "var(--pq-text-main)" }}>{active.title_en ?? "Untitled"}</h2>
+                {active.title_ar && (<h3 className="text-xl" dir="rtl" style={{ color: "var(--pq-text-secondary)" }}>{active.title_ar}</h3>)}
+                {active.key_message_en && <p style={{ color: "var(--pq-text-secondary)" }}>{active.key_message_en}</p>}
+                {active.key_message_ar && <p dir="rtl" style={{ color: "var(--pq-text-secondary)" }}>{active.key_message_ar}</p>}
                 <SlideContent model={active.content_json} />
                 {(active.speaker_notes_en || active.speaker_notes_ar) && (
-                  <div className="mt-6 rounded-xl border border-zinc-200 p-4 bg-zinc-50">
-                    <div className="text-xs uppercase text-zinc-500 mb-1">Speaker notes</div>
-                    {active.speaker_notes_en && <p className="text-sm text-zinc-700">{active.speaker_notes_en}</p>}
-                    {active.speaker_notes_ar && <p className="text-sm text-zinc-700 mt-2" dir="rtl">{active.speaker_notes_ar}</p>}
+                  <div
+                    className="mt-6 rounded-xl p-4"
+                    style={{
+                      border: "1px solid var(--pq-border-soft)",
+                      background: "rgba(7,16,10,0.6)",
+                    }}
+                  >
+                    <div className="text-xs uppercase mb-1" style={{ color: "var(--pq-text-muted)" }}>Speaker notes</div>
+                    {active.speaker_notes_en && <p className="text-sm" style={{ color: "var(--pq-text-secondary)" }}>{active.speaker_notes_en}</p>}
+                    {active.speaker_notes_ar && <p className="text-sm mt-2" dir="rtl" style={{ color: "var(--pq-text-secondary)" }}>{active.speaker_notes_ar}</p>}
                   </div>
                 )}
               </div>
@@ -182,14 +201,30 @@ export function Editor({ projectId, initialSlides, title }: { projectId: string;
 
 function SlideContent({ model }: { model: any }) {
   if (!model) return null;
+  const SURFACE = "rgba(7,16,10,0.55)";
+  const BORDER  = "var(--pq-border-soft)";
+  const TEXT    = "var(--pq-text-main)";
+  const TEXT2   = "var(--pq-text-secondary)";
+  const MUTED   = "var(--pq-text-muted)";
+
   switch (model.kind) {
     case "cover":
       return (
-        <div className="rounded-2xl p-6 text-white" style={{ background: "var(--pq-grad-pine)", minHeight: 220 }}>
-          <div className="text-[10px] uppercase tracking-[0.25em] opacity-80">{model.subtitle ? "Cover" : "Title"}</div>
+        <div
+          className="rounded-2xl p-6"
+          style={{
+            background: "linear-gradient(135deg, #0F1F12 0%, #18281D 60%, #1F3324 130%)",
+            color: "var(--pq-text-main)",
+            border: "1px solid rgba(159,205,99,0.32)",
+            minHeight: 220,
+          }}
+        >
+          <div className="text-[10px] uppercase tracking-[0.25em]" style={{ color: "var(--pq-primary)" }}>
+            {model.subtitle ? "Cover" : "Title"}
+          </div>
           <div className="mt-2 text-3xl font-bold leading-tight">{model.title}</div>
-          {model.subtitle && <div className="mt-3 text-sm opacity-90 max-w-prose">{model.subtitle}</div>}
-          {model.date && <div className="mt-4 text-xs opacity-75">{model.date}</div>}
+          {model.subtitle && <div className="mt-3 text-sm max-w-prose" style={{ color: TEXT2 }}>{model.subtitle}</div>}
+          {model.date && <div className="mt-4 text-xs" style={{ color: MUTED }}>{model.date}</div>}
         </div>
       );
     case "bullets":
@@ -197,22 +232,28 @@ function SlideContent({ model }: { model: any }) {
       return (
         <ol className="space-y-2.5">{(model.bullets ?? []).map((b: string, i: number) => (
           <li key={i} className="flex items-start gap-3">
-            <span className="mt-0.5 grid place-items-center w-6 h-6 rounded-full text-xs font-semibold text-white shrink-0" style={{ background: "var(--pq-deep)" }}>{i + 1}</span>
-            <span className="text-zinc-800">{b}</span>
+            <span
+              className="mt-0.5 grid place-items-center w-6 h-6 rounded-full text-xs font-semibold shrink-0"
+              style={{ background: "var(--pq-primary)", color: "var(--pq-primary-text)" }}
+            >{i + 1}</span>
+            <span style={{ color: TEXT }}>{b}</span>
           </li>
         ))}</ol>
       );
     case "decision":
       return (
         <div>
-          <div className="rounded-xl p-4 text-white" style={{ background: "var(--pq-deep)" }}>
-            <div className="text-[10px] uppercase tracking-[0.25em] opacity-75">Recommendation</div>
+          <div className="rounded-xl p-4" style={{ background: "var(--pq-primary)", color: "var(--pq-primary-text)" }}>
+            <div className="text-[10px] uppercase tracking-[0.25em] opacity-80">Recommendation</div>
             <p className="text-lg font-semibold mt-1">{model.recommendation}</p>
           </div>
           <ol className="mt-4 space-y-2">{(model.rationale ?? []).map((b: string, i: number) => (
             <li key={i} className="flex items-start gap-3">
-              <span className="mt-0.5 grid place-items-center w-5 h-5 rounded-full text-[10px] font-semibold text-white shrink-0" style={{ background: "var(--pq-bronze)" }}>{i + 1}</span>
-              <span className="text-zinc-800 text-sm">{b}</span>
+              <span
+                className="mt-0.5 grid place-items-center w-5 h-5 rounded-full text-[10px] font-semibold shrink-0"
+                style={{ background: "var(--pq-accent-gold)", color: "#1A1305" }}
+              >{i + 1}</span>
+              <span className="text-sm" style={{ color: TEXT }}>{b}</span>
             </li>
           ))}</ol>
         </div>
@@ -220,24 +261,35 @@ function SlideContent({ model }: { model: any }) {
     case "kpi":
       return (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">{(model.cards ?? []).map((c: any, i: number) => (
-          <div key={i} className="relative rounded-xl border border-zinc-200 p-4 bg-white shadow-sm overflow-hidden">
-            <div className="absolute inset-x-0 top-0 h-1.5" style={{ background: "var(--pq-deep)" }} />
-            <div className="text-[10px] font-semibold tracking-widest text-zinc-500 uppercase mt-1">{c.label}</div>
-            <div className="text-3xl font-bold mt-1" style={{ color: "var(--pq-deep)" }}>{c.value}</div>
-            {c.delta && <div className="text-xs mt-1.5 font-medium" style={{ color: c.delta.startsWith("-") ? "#B91C1C" : "var(--pq-bronze)" }}>{c.delta}</div>}
+          <div key={i} className="relative rounded-xl p-4 overflow-hidden" style={{ background: SURFACE, border: `1px solid ${BORDER}` }}>
+            <div className="absolute inset-x-0 top-0 h-1.5" style={{ background: "var(--pq-primary)" }} />
+            <div className="text-[10px] font-semibold tracking-widest uppercase mt-1" style={{ color: MUTED }}>{c.label}</div>
+            <div className="text-3xl font-bold mt-1" style={{ color: "var(--pq-primary)" }}>{c.value}</div>
+            {c.delta && (
+              <div
+                className="text-xs mt-1.5 font-medium"
+                style={{ color: c.delta.startsWith("-") ? "var(--pq-accent-red)" : "var(--pq-accent-gold)" }}
+              >{c.delta}</div>
+            )}
           </div>
         ))}</div>
       );
     case "timeline":
       return (
         <div className="relative pt-8 pb-2">
-          <div className="absolute left-2 right-2 top-12 h-0.5" style={{ background: "var(--pq-deep)" }} />
+          <div className="absolute left-2 right-2 top-12 h-0.5" style={{ background: "rgba(159,205,99,0.45)" }} />
           <div className="grid" style={{ gridTemplateColumns: `repeat(${(model.milestones ?? []).length || 1}, 1fr)` }}>
             {(model.milestones ?? []).map((m: any, i: number) => (
               <div key={i} className="text-center px-2 relative">
-                <div className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold text-white" style={{ background: "var(--pq-deep)" }}>{m.date}</div>
-                <div className="mx-auto mt-2 w-3 h-3 rounded-full ring-2 ring-white" style={{ background: "var(--pq-bronze)" }} />
-                <div className="mt-2 text-xs text-zinc-700 leading-snug">{m.label}</div>
+                <div
+                  className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold"
+                  style={{ background: "var(--pq-primary)", color: "var(--pq-primary-text)" }}
+                >{m.date}</div>
+                <div
+                  className="mx-auto mt-2 w-3 h-3 rounded-full"
+                  style={{ background: "var(--pq-accent-gold)", boxShadow: "0 0 0 2px #07100A" }}
+                />
+                <div className="mt-2 text-xs leading-snug" style={{ color: TEXT }}>{m.label}</div>
               </div>
             ))}
           </div>
@@ -247,13 +299,21 @@ function SlideContent({ model }: { model: any }) {
       return (
         <table className="w-full text-sm border-separate border-spacing-0">
           <thead><tr>
-            <th className="px-2 py-1 bg-zinc-100 border-b border-zinc-200" />
-            {(model.cols ?? []).map((c: string) => (<th key={c} className="text-left bg-zinc-100 px-2 py-1 border-b border-zinc-200 text-xs">{c}</th>))}
+            <th className="px-2 py-1" style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}` }} />
+            {(model.cols ?? []).map((c: string) => (
+              <th
+                key={c}
+                className="text-left px-2 py-1 text-xs font-semibold"
+                style={{ background: SURFACE, borderBottom: `1px solid ${BORDER}`, color: "var(--pq-primary)" }}
+              >{c}</th>
+            ))}
           </tr></thead>
           <tbody>{(model.rows ?? []).map((r: string, i: number) => (
             <tr key={r}>
-              <td className="px-2 py-1 bg-zinc-50 font-medium text-xs">{r}</td>
-              {(model.cells?.[i] ?? []).map((cell: string, j: number) => (<td key={j} className="px-2 py-1 border-b border-zinc-100 text-xs">{cell}</td>))}
+              <td className="px-2 py-1 font-medium text-xs" style={{ background: SURFACE, color: TEXT }}>{r}</td>
+              {(model.cells?.[i] ?? []).map((cell: string, j: number) => (
+                <td key={j} className="px-2 py-1 text-xs" style={{ borderBottom: `1px solid ${BORDER}`, color: TEXT }}>{cell}</td>
+              ))}
             </tr>
           ))}</tbody>
         </table>
@@ -262,12 +322,12 @@ function SlideContent({ model }: { model: any }) {
       return (
         <div className="grid grid-cols-2 grid-rows-2 gap-2 aspect-[16/8]">
           {[
-            { key: "high_high", label: "High influence · High interest", color: "var(--pq-deep)" },
-            { key: "high_low",  label: "High influence · Low interest",  color: "var(--pq-olive)" },
-            { key: "low_high",  label: "Low influence · High interest",  color: "var(--pq-sage)" },
-            { key: "low_low",   label: "Low influence · Low interest",    color: "rgba(123,142,88,0.5)" },
+            { key: "high_high", label: "High influence · High interest", color: "var(--pq-primary)",     fg: "var(--pq-primary-text)" },
+            { key: "high_low",  label: "High influence · Low interest",  color: "var(--pq-accent-gold)", fg: "#1A1305" },
+            { key: "low_high",  label: "Low influence · High interest",  color: "var(--pq-accent-teal)", fg: "#062420" },
+            { key: "low_low",   label: "Low influence · Low interest",    color: "rgba(159,205,99,0.20)", fg: TEXT },
           ].map((q) => (
-            <div key={q.key} className="rounded-xl p-3 text-white" style={{ background: q.color }}>
+            <div key={q.key} className="rounded-xl p-3" style={{ background: q.color, color: q.fg }}>
               <div className="text-[10px] uppercase tracking-widest opacity-80">{q.label}</div>
               <ul className="mt-1.5 text-xs list-disc list-inside opacity-95">
                 {(model.quadrants?.[q.key] ?? []).map((n: string, i: number) => (<li key={i}>{n}</li>))}
@@ -279,16 +339,21 @@ function SlideContent({ model }: { model: any }) {
     case "next_steps":
       return (
         <table className="w-full text-sm border-separate border-spacing-0">
-          <thead><tr className="text-zinc-500 text-[10px] uppercase tracking-widest">
-            <th className="text-left py-1.5 pl-1 border-b border-zinc-200">Action</th>
-            <th className="text-left py-1.5 border-b border-zinc-200">Owner</th>
-            <th className="text-left py-1.5 border-b border-zinc-200">Due</th>
+          <thead><tr className="text-[10px] uppercase tracking-widest" style={{ color: MUTED }}>
+            <th className="text-left py-1.5 pl-1" style={{ borderBottom: `1px solid ${BORDER}` }}>Action</th>
+            <th className="text-left py-1.5"     style={{ borderBottom: `1px solid ${BORDER}` }}>Owner</th>
+            <th className="text-left py-1.5"     style={{ borderBottom: `1px solid ${BORDER}` }}>Due</th>
           </tr></thead>
           <tbody>{(model.actions ?? []).map((a: any, i: number) => (
-            <tr key={i} className="border-t border-zinc-100">
-              <td className="py-2 pl-1 text-zinc-800">{a.action}</td>
-              <td className="py-2 text-zinc-700"><span className="px-2 py-0.5 rounded-full text-xs" style={{ background: "rgba(66,87,34,0.12)", color: "var(--pq-deep)" }}>{a.owner}</span></td>
-              <td className="py-2 text-zinc-600">{a.due}</td>
+            <tr key={i} style={{ borderTop: `1px solid ${BORDER}` }}>
+              <td className="py-2 pl-1" style={{ color: TEXT }}>{a.action}</td>
+              <td className="py-2">
+                <span
+                  className="px-2 py-0.5 rounded-full text-xs"
+                  style={{ background: "rgba(159,205,99,0.14)", color: "var(--pq-primary)", border: "1px solid rgba(159,205,99,0.32)" }}
+                >{a.owner}</span>
+              </td>
+              <td className="py-2" style={{ color: TEXT2 }}>{a.due}</td>
             </tr>
           ))}</tbody>
         </table>
@@ -296,19 +361,25 @@ function SlideContent({ model }: { model: any }) {
     case "table":
       return (
         <table className="w-full text-sm border-separate border-spacing-0">
-          <thead><tr>{(model.headers ?? []).map((h: string) => (<th key={h} className="text-left text-white px-2 py-1.5 text-xs" style={{ background: "var(--pq-deep)" }}>{h}</th>))}</tr></thead>
+          <thead><tr>{(model.headers ?? []).map((h: string) => (
+            <th key={h} className="text-left px-2 py-1.5 text-xs" style={{ background: "var(--pq-primary)", color: "var(--pq-primary-text)" }}>{h}</th>
+          ))}</tr></thead>
           <tbody>{(model.rows ?? []).map((r: string[], i: number) => (
-            <tr key={i} style={{ background: i % 2 === 0 ? "white" : "rgba(123,142,88,0.06)" }}>
-              {r.map((c, j) => (<td key={j} className="px-2 py-1.5 border-b border-zinc-100">{c}</td>))}
+            <tr key={i} style={{ background: i % 2 === 0 ? "transparent" : "rgba(159,205,99,0.06)" }}>
+              {r.map((c, j) => (
+                <td key={j} className="px-2 py-1.5" style={{ borderBottom: `1px solid ${BORDER}`, color: TEXT }}>{c}</td>
+              ))}
             </tr>
           ))}</tbody>
         </table>
       );
     case "chart":
       return (
-        <div className="rounded-xl border border-zinc-200 p-4 bg-white">
-          <div className="text-xs font-semibold text-zinc-700 mb-2">{model.spec?.title ?? "Chart"}</div>
-          <div className="text-xs text-zinc-500">{model.spec?.kind ?? "column"} · {(model.spec?.categories ?? []).length} categories · {(model.spec?.series ?? []).length} series</div>
+        <div className="rounded-xl p-4" style={{ background: SURFACE, border: `1px solid ${BORDER}` }}>
+          <div className="text-xs font-semibold mb-2" style={{ color: TEXT }}>{model.spec?.title ?? "Chart"}</div>
+          <div className="text-xs" style={{ color: MUTED }}>
+            {model.spec?.kind ?? "column"} · {(model.spec?.categories ?? []).length} categories · {(model.spec?.series ?? []).length} series
+          </div>
           <div className="mt-3 grid grid-flow-col auto-cols-fr items-end gap-2 h-32">
             {(model.spec?.categories ?? []).map((cat: string, i: number) => {
               const max = Math.max(...((model.spec?.series ?? []).flatMap((s: any) => s.values ?? [0])).map(Math.abs));
@@ -318,11 +389,11 @@ function SlideContent({ model }: { model: any }) {
                     {(model.spec?.series ?? []).map((s: any, j: number) => {
                       const v = Math.abs(s.values?.[i] ?? 0);
                       const h = max > 0 ? (v / max) * 100 : 0;
-                      const colors = ["var(--pq-deep)", "var(--pq-bronze)", "var(--pq-sage)"];
+                      const colors = ["var(--pq-primary)", "var(--pq-accent-gold)", "var(--pq-accent-teal)"];
                       return <div key={j} className="w-3 rounded-t" style={{ height: `${h}%`, background: colors[j % 3] }} />;
                     })}
                   </div>
-                  <div className="text-[10px] text-zinc-500">{cat}</div>
+                  <div className="text-[10px]" style={{ color: MUTED }}>{cat}</div>
                 </div>
               );
             })}
@@ -330,6 +401,13 @@ function SlideContent({ model }: { model: any }) {
         </div>
       );
     default:
-      return <pre className="bg-zinc-100 p-3 rounded text-xs overflow-x-auto">{JSON.stringify(model, null, 2)}</pre>;
+      return (
+        <pre
+          className="p-3 rounded text-xs overflow-x-auto"
+          style={{ background: SURFACE, border: `1px solid ${BORDER}`, color: TEXT2 }}
+        >
+          {JSON.stringify(model, null, 2)}
+        </pre>
+      );
   }
 }

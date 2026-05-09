@@ -7,13 +7,19 @@ import { useI18n } from "@/lib/presentiq/i18n/context";
 import { LangToggle } from "@/components/presentiq/ui/LangToggle";
 import { PromoBanner } from "@/components/presentiq/ui/PromoBanner";
 import { SiteFooter } from "@/components/presentiq/ui/SiteFooter";
+import { Logo } from "@/components/presentiq/ui/Logo";
 
 export function PresentIqShell({ children }: { children: ReactNode }) {
   const { t, dir, lang } = useI18n();
   const pathname = usePathname() ?? "";
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const NAV: { href: string; key: any }[] = [
+  // Two parallel nav sets:
+  //  - The "marketing" header (Product / Solutions / Resources / Pricing /
+  //    Company), shown on the public landing & marketing-style pages.
+  //  - The "app" header (Dashboard / Projects / …), shown inside the app.
+  const isMarketing = pathname === "/presentiq" || pathname === "/presentiq/";
+  const APP_NAV: { href: string; key: any }[] = [
     { href: "/presentiq/dashboard",  key: "nav.dashboard" },
     { href: "/presentiq/projects",   key: "nav.projects" },
     { href: "/presentiq/templates",  key: "nav.templates" },
@@ -21,8 +27,17 @@ export function PresentIqShell({ children }: { children: ReactNode }) {
     { href: "/presentiq/changelog",  key: "nav.changelog" },
     { href: "/presentiq/contact",    key: "nav.contact" },
   ];
+  const MARKETING_NAV: { href: string; key: any }[] = [
+    { href: "/presentiq#product",   key: "marketing.nav.product" },
+    { href: "/presentiq#solutions", key: "marketing.nav.solutions" },
+    { href: "/presentiq#resources", key: "marketing.nav.resources" },
+    { href: "/presentiq#pricing",   key: "marketing.nav.pricing" },
+    { href: "/presentiq#company",   key: "marketing.nav.company" },
+  ];
+  const NAV = isMarketing ? MARKETING_NAV : APP_NAV;
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
+  const isActive = (href: string) =>
+    !href.includes("#") && (pathname === href || pathname.startsWith(href + "/"));
 
   return (
     <div dir={dir} lang={lang} style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
@@ -31,24 +46,15 @@ export function PresentIqShell({ children }: { children: ReactNode }) {
       <header
         className="sticky top-0 z-30"
         style={{
-          background: "rgba(250,248,238,0.92)",
+          background: "rgba(7,16,10,0.85)",
           backdropFilter: "blur(16px) saturate(1.4)",
-          borderBottom: "1px solid rgba(66,87,34,0.18)",
+          borderBottom: "1px solid var(--pq-border-soft)",
         }}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-6 min-w-0">
-            <Link href="/presentiq" className="flex items-center gap-2.5 shrink-0" aria-label="PresentIQ home">
-              <span
-                className="grid place-items-center h-9 w-9 rounded-xl text-xs font-bold"
-                style={{ background: "var(--pq-grad-pine)", color: "var(--pq-cream)" }}
-              >
-                PQ
-              </span>
-              <span className="text-base font-semibold tracking-tight" style={{ color: "var(--pq-text)" }}>
-                {t("brand.name")}
-              </span>
-              <span className="pq-pill ms-2 hidden md:inline-flex">v0.2 · {t("common.demo")}</span>
+            <Link href="/presentiq" className="flex items-center gap-2 shrink-0" aria-label="PresentIQ home">
+              <Logo variant="horizontal" height={26} />
             </Link>
             <nav className="hidden lg:flex items-center gap-1" aria-label="Primary">
               {NAV.map((n) => {
@@ -69,6 +75,15 @@ export function PresentIqShell({ children }: { children: ReactNode }) {
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <LangToggle />
+            {isMarketing && (
+              <Link
+                href="/presentiq/dashboard"
+                className="pq-btn pq-btn-ghost hidden sm:inline-flex"
+                style={{ padding: "0.5rem 0.85rem", fontSize: "0.82rem" }}
+              >
+                {t("marketing.nav.login")}
+              </Link>
+            )}
             <Link href="/presentiq/projects/new" className="pq-btn pq-btn-primary hidden sm:inline-flex">
               <span aria-hidden>＋</span> {t("nav.new")}
             </Link>
@@ -87,7 +102,10 @@ export function PresentIqShell({ children }: { children: ReactNode }) {
         {mobileOpen && (
           <nav
             className="lg:hidden border-t"
-            style={{ borderColor: "rgba(66,87,34,0.16)", background: "rgba(250,248,238,0.96)" }}
+            style={{
+              borderColor: "var(--pq-border-soft)",
+              background: "rgba(7,16,10,0.95)",
+            }}
             aria-label="Mobile primary"
           >
             <div className="mx-auto max-w-7xl px-4 py-2 flex flex-col gap-1">

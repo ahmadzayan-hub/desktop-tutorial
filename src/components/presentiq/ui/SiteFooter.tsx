@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useI18n } from "@/lib/presentiq/i18n/context";
+import { Logo } from "@/components/presentiq/ui/Logo";
 
 type Col = { titleKey: any; links: { key: any; href: string }[] };
 
@@ -63,21 +64,11 @@ export function SiteFooter() {
       <div className="pq-footer-top">
         <div className="pq-footer-grid">
           <div className="pq-footer-brand">
-            <div className="flex items-center gap-2.5">
-              <span
-                className="grid place-items-center h-9 w-9 rounded-xl text-xs font-bold"
-                style={{ background: "var(--pq-grad-pine)", color: "var(--pq-cream)" }}
-              >
-                PQ
-              </span>
-              <span className="text-base font-semibold tracking-tight" style={{ color: "var(--pq-text)" }}>
-                PresentIQ
-              </span>
-            </div>
-            <p className="text-sm mt-3 max-w-sm" style={{ color: "var(--pq-text-soft)", lineHeight: 1.55 }}>
+            <Logo variant="horizontal" height={28} byline />
+            <p className="text-sm mt-4 max-w-sm" style={{ color: "var(--pq-text-secondary)", lineHeight: 1.55 }}>
               {t("foot.tagline")}
             </p>
-            <ul className="mt-5 space-y-1.5 text-xs" style={{ color: "var(--pq-text-soft)" }}>
+            <ul className="mt-5 space-y-1.5 text-xs" style={{ color: "var(--pq-text-secondary)" }}>
               <li className="flex items-center gap-2">
                 <span aria-hidden>🛡️</span> {t("foot.trust").split(" · ")[0]}
               </li>
@@ -92,7 +83,7 @@ export function SiteFooter() {
 
           {COLUMNS.map((col) => (
             <nav key={String(col.titleKey)} aria-label={t(col.titleKey)}>
-              <h3 className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: "var(--pq-text-mute)" }}>
+              <h3 className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: "var(--pq-text-muted)" }}>
                 {t(col.titleKey)}
               </h3>
               <ul className="space-y-2">
@@ -101,7 +92,7 @@ export function SiteFooter() {
                     <Link
                       href={l.href}
                       className="text-sm hover:underline underline-offset-4"
-                      style={{ color: "var(--pq-text)" }}
+                      style={{ color: "var(--pq-text-secondary)" }}
                     >
                       {t(l.key)}
                     </Link>
@@ -115,10 +106,10 @@ export function SiteFooter() {
         {/* Newsletter */}
         <div className="pq-footer-newsletter mt-12">
           <div>
-            <h3 className="text-lg font-semibold" style={{ color: "var(--pq-text)" }}>
+            <h3 className="text-lg font-semibold" style={{ color: "var(--pq-text-main)" }}>
               {t("foot.newsletter.title")}
             </h3>
-            <p className="text-sm mt-1" style={{ color: "var(--pq-text-soft)" }}>
+            <p className="text-sm mt-1" style={{ color: "var(--pq-text-secondary)" }}>
               {t("foot.newsletter.lede")}
             </p>
           </div>
@@ -141,7 +132,7 @@ export function SiteFooter() {
             </button>
           </form>
           {submitted && (
-            <div className="text-xs mt-2" style={{ color: "var(--pq-sage)" }}>
+            <div className="text-xs mt-2" style={{ color: "var(--pq-primary)" }}>
               ✓ Thanks — we'll send the next briefing your way.
             </div>
           )}
@@ -150,7 +141,7 @@ export function SiteFooter() {
 
       {/* Bottom bar */}
       <div className="pq-footer-bottom">
-        <div className="text-xs" style={{ color: "var(--pq-text-mute)" }}>
+        <div className="text-xs" style={{ color: "var(--pq-text-muted)" }}>
           {t("foot.copyright")}
         </div>
         <div className="flex items-center gap-3" aria-label="Social links">
@@ -180,11 +171,11 @@ export function SiteFooter() {
             @
           </a>
         </div>
-        <div className="text-xs" style={{ color: "var(--pq-text-mute)" }}>
+        <div className="text-xs" style={{ color: "var(--pq-text-muted)" }}>
           {t("foot.line")}
           <a
             href="mailto:Ahmad.zaian@outlook.com"
-            style={{ color: "var(--pq-olive)", textDecoration: "underline" }}
+            style={{ color: "var(--pq-primary)", textDecoration: "underline" }}
           >
             Ahmad.zaian@outlook.com
           </a>

@@ -7,9 +7,9 @@ import { PresentIqShell } from "./_shell";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.tweenz.ae";
 const PRESENTIQ_URL = `${APP_URL.replace(/\/$/, "")}/presentiq`;
-const TITLE = "PresentIQ — Boardroom-ready AI presentations";
+const TITLE = "PresentIQ v0.3 — Boardroom-ready AI presentations";
 const DESCRIPTION =
-  "PresentIQ is an AI Agent Platform for corporate presentation generation: brand-governed, evidence-controlled, editable PPTX exports, and full Arabic-RTL bilingual support — from raw content to boardroom-ready deck in minutes.";
+  "PresentIQ by Zaian is an AI Agent Platform for corporate presentation generation: brand-governed, evidence-controlled, editable PPTX exports, and full Arabic-RTL bilingual support — from raw content to boardroom-ready deck in minutes.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),

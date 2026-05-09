@@ -13,6 +13,18 @@ type Entry = {
 
 const V0_2_DELTAS: Entry[] = [
   {
+    titleEn: "v0.3 — dark forest UI, lime accents, integrated PresentIQ logo",
+    titleAr: "الإصدار 0.3 — واجهة داكنة بلون الغابة وأخضر ليموني وشعار PresentIQ المدمج",
+    bodyEn: "Boardroom-grade dark theme based on the new brand sheet. Header, hero, dashboard, footer, editor and quality panel all repainted. New SVG logo (mark + wordmark + favicon) shipped across the platform.",
+    bodyAr: "سمة داكنة بمستوى مجالس الإدارة وفق دليل الهوية الجديد. أُعيد طلاء الترويسة والقسم البطل ولوحة التحكم والتذييل والمحرّر ولوحة الجودة. يصاحب ذلك شعار SVG جديد (الرمز + النص + الأيقونة) عبر المنصة.",
+  },
+  {
+    titleEn: "Quality engine recalibrated — demo deck reads 97/100",
+    titleAr: "إعادة معايرة محرك الجودة — العرض التجريبي يقرأ 97/100",
+    bodyEn: "Evidence integrity now exempts cover/decision/glossary slides; visual quality rewards layout variety; executive clarity reads the key message; demo deck ships with a 12-item evidence base.",
+    bodyAr: "تتجاوز سلامة الأدلة شرائح الغلاف والقرار والمصطلحات؛ تكافأ الجودة البصرية على تنوع التخطيطات؛ تقرأ الوضوح التنفيذي الرسالة الرئيسية؛ يتضمن العرض التجريبي ١٢ بنداً من الأدلة.",
+  },
+  {
     titleEn: "New Pine palette + 4D-frame design system",
     titleAr: "هوية لونية Pine جديدة ونظام إطارات بأبعاد ٤D",
     bodyEn: "Spearmint, Emerald, Teal, Pine — calmer, more boardroom-appropriate. Cards now have multi-layered depth and subtle parallax.",
@@ -70,7 +82,7 @@ export function Changelog() {
   return (
     <div className="space-y-8">
       <header>
-        <span className="pq-pill pq-pill-strong">v0.2 · {new Date().toLocaleDateString(lang === "ar" ? "ar-AE" : "en-AE")}</span>
+        <span className="pq-pill pq-pill-strong">v0.3 · {new Date().toLocaleDateString(lang === "ar" ? "ar-AE" : "en-AE")}</span>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight" style={{ color: "var(--pq-text)" }}>
           {t("v2.title")}
         </h1>

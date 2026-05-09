@@ -2,11 +2,15 @@ import { ButtonHTMLAttributes, ReactNode } from "react";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger";
 
-const styles: Record<Variant, string> = {
-  primary: "bg-zinc-900 text-white hover:bg-zinc-800 disabled:bg-zinc-400",
-  secondary: "bg-white text-zinc-900 border border-zinc-300 hover:bg-zinc-50",
-  ghost: "bg-transparent text-zinc-700 hover:bg-zinc-100",
-  danger: "bg-rose-600 text-white hover:bg-rose-500",
+/**
+ * v0.3 dark-themed button. Defers to the same .pq-btn class set used by
+ * marketing CTAs so the editor toolbar and the hero CTAs share styling.
+ */
+const variantClass: Record<Variant, string> = {
+  primary:   "pq-btn pq-btn-primary",
+  secondary: "pq-btn pq-btn-secondary",
+  ghost:     "pq-btn pq-btn-ghost",
+  danger:    "pq-btn pq-btn-danger",
 };
 
 export function Button({
@@ -18,7 +22,8 @@ export function Button({
   return (
     <button
       {...rest}
-      className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed ${styles[variant]} ${className}`}
+      className={`${variantClass[variant]} ${className}`}
+      style={{ padding: "0.55rem 1rem", fontSize: "0.85rem", ...(rest.style ?? {}) }}
     >
       {children}
     </button>

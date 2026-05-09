@@ -10,6 +10,7 @@ export type Lang = "en" | "ar";
 export const TRANSLATIONS = {
   // ─── Brand / nav ─────────────────────────────────────────────
   "brand.name":           { en: "PresentIQ",                          ar: "PresentIQ" },
+  "brand.byline":         { en: "by Zaian",                            ar: "بواسطة زيان" },
   "brand.tagline":        { en: "Boardroom-ready presentations",      ar: "عروض جاهزة لمجلس الإدارة" },
   "nav.dashboard":        { en: "Dashboard",                           ar: "لوحة التحكم" },
   "nav.projects":         { en: "Projects",                            ar: "المشاريع" },
@@ -21,17 +22,32 @@ export const TRANSLATIONS = {
   "nav.changelog":        { en: "What's new",                          ar: "الجديد" },
   "nav.new":              { en: "New presentation",                    ar: "عرض جديد" },
   "nav.lang":             { en: "العربية",                              ar: "English" },
+  // v0.3 marketing nav (Product / Solutions / Resources / Pricing / Company)
+  "marketing.nav.product":   { en: "Product",     ar: "المنتج" },
+  "marketing.nav.solutions": { en: "Solutions",   ar: "الحلول" },
+  "marketing.nav.resources": { en: "Resources",   ar: "المصادر" },
+  "marketing.nav.pricing":   { en: "Pricing",     ar: "الأسعار" },
+  "marketing.nav.company":   { en: "Company",     ar: "الشركة" },
+  "marketing.nav.login":     { en: "Log in",       ar: "تسجيل الدخول" },
 
   // ─── Landing ─────────────────────────────────────────────────
-  "land.pill":            { en: "v0.2 · AI Agent Platform · Editable PPTX · Bilingual RTL",
-                            ar: "الإصدار ٠٫٢ · منصة وكلاء ذكاء اصطناعي · PPTX قابلة للتحرير · ثنائية اللغة" },
-  "land.h1":              { en: "From raw content to boardroom-ready presentation in minutes.",
-                            ar: "من المحتوى الخام إلى عرض تقديمي جاهز لمجلس الإدارة في دقائق." },
-  "land.lede":            { en: "PresentIQ is an agentic workflow combining brand governance, evidence-controlled generation, editable PPTX rendering, full Arabic-RTL, and a 10-dimension quality score — enforced automatically.",
-                            ar: "منصة PresentIQ هي تدفّق ذكي متعدد الوكلاء يجمع بين حوكمة الهوية، التحقّق من الأدلة، إنتاج ملفات PPTX قابلة للتحرير، دعم كامل للعربية وRTL، ودرجة جودة من ١٠ أبعاد — يُطبَّق تلقائياً." },
+  "land.pill":            { en: "v0.3 · AI Agent Platform · Editable PPTX · Bilingual RTL",
+                            ar: "الإصدار ٠٫٣ · منصة وكلاء ذكاء اصطناعي · PPTX قابلة للتحرير · ثنائية اللغة" },
+  "land.h1.a":            { en: "Turn raw content into",
+                            ar: "حوّل المحتوى الخام إلى" },
+  "land.h1.hl":           { en: "boardroom-ready",
+                            ar: "عروض جاهزة لمجلس الإدارة" },
+  "land.h1.b":            { en: "presentations in minutes.",
+                            ar: "في دقائق." },
+  // Legacy single-line h1, kept for fallbacks.
+  "land.h1":              { en: "Turn raw content into boardroom-ready presentations in minutes.",
+                            ar: "حوّل المحتوى الخام إلى عروض جاهزة لمجلس الإدارة في دقائق." },
+  "land.lede":            { en: "PresentIQ is an AI agent platform that combines brand governance, evidence-controlled generation, editable PPTX output, Arabic RTL support, and a 10-dimension boardroom-readiness score — enforced automatically.",
+                            ar: "منصة PresentIQ هي تدفّق ذكي متعدد الوكلاء يجمع بين حوكمة الهوية، التحقّق من الأدلة، إنتاج PPTX قابلة للتحرير، دعم العربية وRTL، ودرجة جاهزية من ١٠ أبعاد — يُطبَّق تلقائياً." },
   "land.cta.start":       { en: "Start a presentation",                ar: "ابدأ عرضاً جديداً" },
   "land.cta.dashboard":   { en: "Open dashboard",                      ar: "افتح لوحة التحكم" },
   "land.cta.contact":     { en: "Talk to us",                          ar: "تواصل معنا" },
+  "land.trusted":         { en: "Trusted by top teams worldwide",      ar: "محل ثقة فرق عالمية رائدة" },
 
   // ─── Feature cards ───────────────────────────────────────────
   "feat.brand.title":     { en: "Brand Governance",                    ar: "حوكمة الهوية" },
@@ -53,8 +69,8 @@ export const TRANSLATIONS = {
   "feat.regen.body":      { en: "Edit one slide without regenerating the deck. Lock approved slides. Audit everything.",
                             ar: "حرّر شريحة واحدة دون إعادة توليد العرض كاملاً. اقفل الشرائح المعتمدة. سجّل كل شيء." },
 
-  // ─── New v0.2 differentiators ───────────────────────────────
-  "v2.title":             { en: "What's new in v0.2",                  ar: "الجديد في الإصدار ٠٫٢" },
+  // ─── New v0.3 differentiators ───────────────────────────────
+  "v2.title":             { en: "What's new in v0.3",                  ar: "الجديد في الإصدار ٠٫٣" },
   "v2.outline":           { en: "Outline editor — sketch the deck before generation",
                             ar: "محرّر المخطّط — اكتب الهيكل قبل التوليد" },
   "v2.theme":             { en: "Live theme picker with the new Pine palette",
@@ -189,8 +205,8 @@ export const TRANSLATIONS = {
   "foot.newsletter.email":{ en: "you@company.ae",                          ar: "you@company.ae" },
 
   // ─── Top promo banner ────────────────────────────────────────
-  "banner.0":             { en: "v0.2 · live now · Editable PPTX · Bilingual RTL",
-                            ar: "v0.2 · متاح الآن · PPTX قابل للتحرير · ثنائية RTL" },
+  "banner.0":             { en: "v0.3 · live now · Editable PPTX · Bilingual RTL · Dark UI",
+                            ar: "v0.3 · متاح الآن · PPTX قابل للتحرير · ثنائية RTL · واجهة داكنة" },
   "banner.1":             { en: "🛡️  Brand governance + 10-dimension quality, enforced automatically",
                             ar: "🛡️  حوكمة العلامة وجودة بـ١٠ أبعاد، تُطبَّق تلقائياً" },
   "banner.2":             { en: "🇦🇪  UAE-built · Boardrooms across GCC trust PresentIQ",
