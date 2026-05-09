@@ -58,19 +58,19 @@ const FORBIDDEN_GENERIC = [
 const corporateDefault: BrandRulesContext = {
   identity: { org_name: "Your Organisation", logos: {} },
   palette: {
-    primary: "#013230",   // Pine
-    secondary: "#0B6E69", // Teal
-    accent: ["#50C8C2", "#D1F2F0", "#0B6E69", "#013230", "#5EEAD4", "#A7F3D0"],
+    primary: "#425722",   // Zaytouni — olive
+    secondary: "#2A3815", // Deep olive
+    accent: ["#7B8E58", "#B68B3E", "#F4F2E9", "#2A3815", "#A0AC78", "#D8B265"],
     background: "#FFFFFF",
-    surface: "#F4FBFA",
-    foreground: "#013230",
+    surface: "#FAF8EE",
+    foreground: "#1B2410",
   },
   typography: {
     en_primary: "Inter",
     en_fallback: ["Calibri", "Arial"],
     ar_primary: "IBM Plex Sans Arabic",
     ar_fallback: ["Tajawal", "Noto Kufi Arabic", "Cairo", "Dubai"],
-    title_size_pt: [28, 36],
+    title_size_pt: [32, 40],
     body_size_pt: [14, 20],
     line_height: 1.35,
   },
@@ -82,7 +82,7 @@ const corporateDefault: BrandRulesContext = {
     slide_density: "low",
   },
   charts: {
-    palette: ["#013230", "#0B6E69", "#50C8C2", "#5EEAD4", "#A7F3D0", "#D1F2F0"],
+    palette: ["#425722", "#7B8E58", "#B68B3E", "#A0AC78", "#D8B265", "#2A3815"],
     grid: "minimal",
     label_size_pt: 11,
   },
@@ -153,12 +153,12 @@ const consultingPartner: BrandRulesContext = {
   ...corporateDefault,
   identity: { org_name: "Consulting Firm", logos: {} },
   palette: {
-    primary: "#013230",
-    secondary: "#0B6E69",
-    accent: ["#D4AF37", "#9CA3AF", "#0B6E69"],
+    primary: "#425722",
+    secondary: "#2A3815",
+    accent: ["#B68B3E", "#D4AF37", "#7B8E58", "#F4F2E9"],
     background: "#FFFFFF",
-    surface: "#F4FBFA",
-    foreground: "#013230",
+    surface: "#FAF8EE",
+    foreground: "#1B2410",
   },
   language: {
     ...corporateDefault.language,

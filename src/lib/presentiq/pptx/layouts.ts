@@ -14,30 +14,61 @@ export type Pptx = any;
 const BODY_X = 0.5;
 const BODY_W = SLIDE_W_IN - 1.0;
 
+// Vertical layout for content slides (in inches). Tuned so the title
+// band, key-message band, and body band don't overlap and respect the
+// master's 1.5"-margin rule under the title.
+const EYEBROW_Y = 0.5;
+const TITLE_Y   = 0.78;
+const TITLE_H   = 0.9;
+const KEYMSG_Y  = 1.78;   // sits just under the master's accent rule at 1.52"
+const KEYMSG_H  = 0.7;
+const BODY_Y    = 2.55;   // body always starts here, no matter title length
+const BODY_H    = SLIDE_H_IN - BODY_Y - 0.55;
+
+export function addEyebrow(slide: any, slideModel: Slide, ctx: BrandRulesContext) {
+  // Tiny all-caps section label — the visual breadcrumb above the title.
+  const purpose = slideModel.purpose;
+  if (!purpose) return;
+  slide.addText(purpose.toUpperCase(), {
+    x: ctx.layout.safe_margins_in,
+    y: EYEBROW_Y,
+    w: SLIDE_W_IN - 2 * ctx.layout.safe_margins_in,
+    h: 0.25,
+    fontFace: ctx.typography.en_primary,
+    fontSize: 9,
+    bold: true,
+    color: hex(ctx.palette.primary),
+    charSpacing: 4,
+  });
+}
+
 export function addTitle(slide: any, slideModel: Slide, ctx: BrandRulesContext) {
   const margin = ctx.layout.safe_margins_in;
   const titleEn = slideModel.title_en;
   const titleAr = slideModel.title_ar;
+  const enSize = ctx.typography.title_size_pt[1];
+  const arSize = ctx.typography.title_size_pt[0];
 
-  if (titleEn) {
-    slide.addText(buildRuns(titleEn, ctx, { bold: true, size: ctx.typography.title_size_pt[1] }), {
-      x: margin,
-      y: margin + 0.6,
-      w: SLIDE_W_IN - 2 * margin,
-      h: 0.9,
-      align: "left",
-      valign: "top",
+  if (titleEn && titleAr) {
+    // Side-by-side: EN left 60%, AR right 40% — never on the same baseline.
+    slide.addText(buildRuns(titleEn, ctx, { bold: true, size: enSize }), {
+      x: margin, y: TITLE_Y, w: (SLIDE_W_IN - 2 * margin) * 0.62, h: TITLE_H,
+      align: "left", valign: "top", color: hex(ctx.palette.foreground),
     });
-  }
-  if (titleAr) {
-    slide.addText(buildRuns(titleAr, ctx, { bold: true, size: ctx.typography.title_size_pt[0] }), {
-      x: margin,
-      y: margin + 1.5,
-      w: SLIDE_W_IN - 2 * margin,
-      h: 0.6,
-      align: "right",
-      valign: "top",
-      rtl: true,
+    slide.addText(buildRuns(titleAr, ctx, { bold: true, size: arSize, rtl: true, align: "right" }), {
+      x: margin + (SLIDE_W_IN - 2 * margin) * 0.62,
+      y: TITLE_Y, w: (SLIDE_W_IN - 2 * margin) * 0.38, h: TITLE_H,
+      align: "right", valign: "top", rtl: true, color: hex(ctx.palette.foreground),
+    });
+  } else if (titleEn) {
+    slide.addText(buildRuns(titleEn, ctx, { bold: true, size: enSize }), {
+      x: margin, y: TITLE_Y, w: SLIDE_W_IN - 2 * margin, h: TITLE_H,
+      align: "left", valign: "top", color: hex(ctx.palette.foreground),
+    });
+  } else if (titleAr) {
+    slide.addText(buildRuns(titleAr, ctx, { bold: true, size: arSize, rtl: true, align: "right" }), {
+      x: margin, y: TITLE_Y, w: SLIDE_W_IN - 2 * margin, h: TITLE_H,
+      align: "right", valign: "top", rtl: true, color: hex(ctx.palette.foreground),
     });
   }
 }
@@ -46,26 +77,25 @@ export function addKeyMessage(slide: any, slideModel: Slide, ctx: BrandRulesCont
   const margin = ctx.layout.safe_margins_in;
   const en = slideModel.key_message_en;
   const ar = slideModel.key_message_ar;
-  let y = margin + (slideModel.title_ar ? 2.3 : 1.7);
-  if (en) {
-    slide.addText(buildRuns(en, ctx, { size: ctx.typography.body_size_pt[1] }), {
-      x: margin,
-      y,
-      w: SLIDE_W_IN - 2 * margin,
-      h: 0.8,
-      color: hex(ctx.palette.secondary),
+  const w = SLIDE_W_IN - 2 * margin;
+  // Anchor the key message *below* the title rule. EN and AR get separate
+  // single-line bands so RTL flow stays clean and they don't visually merge.
+  if (en && ar) {
+    slide.addText(buildRuns(en, ctx, { size: ctx.typography.body_size_pt[1], color: hex(ctx.palette.primary) }), {
+      x: margin, y: KEYMSG_Y, w: w * 0.62, h: KEYMSG_H,
+      valign: "top", color: hex(ctx.palette.primary),
     });
-    y += 0.7;
-  }
-  if (ar) {
-    slide.addText(buildRuns(ar, ctx, { size: ctx.typography.body_size_pt[1] }), {
-      x: margin,
-      y,
-      w: SLIDE_W_IN - 2 * margin,
-      h: 0.8,
-      color: hex(ctx.palette.secondary),
-      align: "right",
-      rtl: true,
+    slide.addText(buildRuns(ar, ctx, { size: ctx.typography.body_size_pt[1], rtl: true, align: "right", color: hex(ctx.palette.primary) }), {
+      x: margin + w * 0.62, y: KEYMSG_Y, w: w * 0.38, h: KEYMSG_H,
+      align: "right", rtl: true, valign: "top", color: hex(ctx.palette.primary),
+    });
+  } else if (en) {
+    slide.addText(buildRuns(en, ctx, { size: ctx.typography.body_size_pt[1], color: hex(ctx.palette.primary) }), {
+      x: margin, y: KEYMSG_Y, w, h: KEYMSG_H, valign: "top", color: hex(ctx.palette.primary),
+    });
+  } else if (ar) {
+    slide.addText(buildRuns(ar, ctx, { size: ctx.typography.body_size_pt[1], rtl: true, align: "right", color: hex(ctx.palette.primary) }), {
+      x: margin, y: KEYMSG_Y, w, h: KEYMSG_H, align: "right", rtl: true, valign: "top", color: hex(ctx.palette.primary),
     });
   }
 }
@@ -106,64 +136,96 @@ export function renderSlideBody(slide: any, model: SlideModel, ctx: BrandRulesCo
 }
 
 function renderCover(slide: any, m: { title: string; subtitle?: string; date?: string }, ctx: BrandRulesContext) {
-  slide.addText(buildRuns(m.title, ctx, { bold: true, size: 44, color: "FFFFFF" }), {
-    x: 0.6, y: 2.3, w: SLIDE_W_IN - 1.2, h: 1.6, fontFace: ctx.typography.en_primary,
+  // Eyebrow: company name in small caps as a top label.
+  slide.addText(ctx.identity.org_name.toUpperCase(), {
+    x: 0.6, y: 1.2, w: SLIDE_W_IN - 1.2, h: 0.35,
+    fontFace: ctx.typography.en_primary, fontSize: 11, bold: true, color: "FFFFFF",
+    charSpacing: 6,
+  });
+  // Big cover title — boardroom scale.
+  slide.addText(buildRuns(m.title, ctx, { bold: true, size: 52, color: "FFFFFF" }), {
+    x: 0.6, y: 1.9, w: SLIDE_W_IN - 1.2, h: 2.4, fontFace: ctx.typography.en_primary,
+    valign: "top",
   });
   if (m.subtitle) {
-    slide.addText(buildRuns(m.subtitle, ctx, { size: 18, color: "FFFFFF" }), {
-      x: 0.6, y: 4.0, w: SLIDE_W_IN - 1.2, h: 0.8,
+    slide.addText(buildRuns(m.subtitle, ctx, { size: 20, color: "FFFFFF" }), {
+      x: 0.6, y: 4.6, w: SLIDE_W_IN - 1.2, h: 1.4, valign: "top",
     });
   }
   if (m.date) {
     slide.addText(m.date, {
-      x: 0.6, y: SLIDE_H_IN - 1.3, w: 4, h: 0.4, fontSize: 12, color: "FFFFFF",
+      x: 0.6, y: SLIDE_H_IN - 0.95, w: 4, h: 0.35, fontSize: 11, color: "FFFFFF",
       fontFace: ctx.typography.en_primary,
     });
   }
 }
 
-function renderBullets(slide: any, bullets: string[], ctx: BrandRulesContext, title?: string) {
-  const yStart = title ? 2.0 : 2.4;
+function renderBullets(slide: any, bullets: string[], ctx: BrandRulesContext, _title?: string) {
   const items = bullets.slice(0, ctx.layout.max_bullets_per_slide).map((b) => ({
     text: b,
-    options: { bullet: { code: "25CF" }, fontFace: isArabic(b) ? ctx.typography.ar_primary : ctx.typography.en_primary, fontSize: 18, paraSpaceAfter: 6, color: hex(ctx.palette.foreground), align: isArabic(b) ? "right" : "left", rtl: isArabic(b) },
+    options: { bullet: { code: "25CF" }, fontFace: isArabic(b) ? ctx.typography.ar_primary : ctx.typography.en_primary, fontSize: 18, paraSpaceAfter: 8, color: hex(ctx.palette.foreground), align: isArabic(b) ? "right" : "left", rtl: isArabic(b) },
   }));
-  slide.addText(items, { x: BODY_X, y: yStart, w: BODY_W, h: SLIDE_H_IN - yStart - 0.7, valign: "top" });
+  slide.addText(items, { x: BODY_X, y: BODY_Y, w: BODY_W, h: BODY_H, valign: "top" });
 }
 
 function renderDecision(slide: any, m: { recommendation: string; rationale: string[] }, ctx: BrandRulesContext) {
-  slide.addText(buildRuns(m.recommendation, ctx, { bold: true, size: 22, color: hex(ctx.palette.secondary) }), {
-    x: BODY_X, y: 2.0, w: BODY_W, h: 1.0,
+  // The decision master already shows "DECISION REQUIRED" as an eyebrow at
+  // x≈0.7 / y≈0.5 and a primary leading rule. We render a contained card
+  // with the recommendation in large weight, then a tight rationale list.
+  const cardX = 0.9, cardW = SLIDE_W_IN - 1.3;
+  const recY = 1.5, recH = 1.7;
+  slide.addShape("rect", {
+    x: cardX, y: recY, w: cardW, h: recH,
+    fill: { color: hex(ctx.palette.surface) },
+    line: { color: hex(ctx.palette.primary), width: 0.75 },
+    rectRadius: 0.12,
   });
+  slide.addText(buildRuns(m.recommendation, ctx, { bold: true, size: 26, color: hex(ctx.palette.primary) }), {
+    x: cardX + 0.3, y: recY + 0.25, w: cardW - 0.6, h: recH - 0.5,
+    valign: "middle",
+  });
+  const ratY = recY + recH + 0.4;
   const items = m.rationale.slice(0, ctx.layout.max_bullets_per_slide).map((r) => ({
     text: r,
-    options: { bullet: { code: "25B8" }, fontFace: ctx.typography.en_primary, fontSize: 16, color: hex(ctx.palette.foreground), align: isArabic(r) ? "right" : "left", rtl: isArabic(r) },
+    options: { bullet: { code: "25B8" }, fontFace: isArabic(r) ? ctx.typography.ar_primary : ctx.typography.en_primary, fontSize: 16, paraSpaceAfter: 6, color: hex(ctx.palette.foreground), align: isArabic(r) ? "right" : "left", rtl: isArabic(r) },
   }));
-  slide.addText(items, { x: BODY_X, y: 3.0, w: BODY_W, h: SLIDE_H_IN - 3.7, valign: "top" });
+  slide.addText(items, { x: cardX, y: ratY, w: cardW, h: SLIDE_H_IN - ratY - 0.5, valign: "top" });
 }
 
 function renderKpi(slide: any, m: { cards: { label: string; value: string; delta?: string }[] }, ctx: BrandRulesContext) {
   const cards = m.cards.slice(0, 4);
-  const w = (SLIDE_W_IN - 1.0 - 0.3 * (cards.length - 1)) / cards.length;
-  const y = 2.6;
+  const gap = 0.25;
+  const w = (BODY_W - gap * (cards.length - 1)) / cards.length;
+  const y = BODY_Y;
+  const h = 2.4;
   cards.forEach((c, i) => {
-    const x = 0.5 + i * (w + 0.3);
+    const x = BODY_X + i * (w + gap);
+    // A two-tone card: thin colour band on top, surface body underneath.
     slide.addShape("rect", {
-      x, y, w, h: 2.2,
+      x, y, w, h,
       fill: { color: hex(ctx.palette.surface) },
       line: { color: hex(ctx.palette.primary), width: 0.5 },
-      rectRadius: 0.08,
+      rectRadius: 0.10,
     });
-    slide.addText(buildRuns(c.value, ctx, { bold: true, size: 32, color: hex(ctx.palette.primary) }), {
-      x, y: y + 0.2, w, h: 0.9, align: "center",
+    slide.addShape("rect", {
+      x, y, w, h: 0.18,
+      fill: { color: hex(ctx.palette.primary) }, line: { color: hex(ctx.palette.primary), width: 0 },
+      rectRadius: 0.10,
     });
-    slide.addText(buildRuns(c.label, ctx, { size: 12, color: hex(ctx.palette.foreground) }), {
-      x, y: y + 1.1, w, h: 0.5, align: "center",
+    // Label
+    slide.addText(buildRuns(c.label.toUpperCase(), ctx, { size: 10, color: hex(ctx.palette.foreground) }), {
+      x: x + 0.2, y: y + 0.35, w: w - 0.4, h: 0.35, align: "left",
+      charSpacing: 4,
+    });
+    // Big number
+    slide.addText(buildRuns(c.value, ctx, { bold: true, size: 36, color: hex(ctx.palette.primary) }), {
+      x: x + 0.2, y: y + 0.7, w: w - 0.4, h: 1.1, align: "left", valign: "middle",
     });
     if (c.delta) {
       slide.addText(c.delta, {
-        x, y: y + 1.6, w, h: 0.4, align: "center",
-        fontFace: ctx.typography.en_primary, fontSize: 11, color: hex(ctx.palette.accent[0] ?? ctx.palette.secondary),
+        x: x + 0.2, y: y + h - 0.55, w: w - 0.4, h: 0.4, align: "left",
+        fontFace: ctx.typography.en_primary, fontSize: 11, bold: true,
+        color: hex(ctx.palette.accent[1] ?? ctx.palette.secondary),
       });
     }
   });
@@ -172,23 +234,23 @@ function renderKpi(slide: any, m: { cards: { label: string; value: string; delta
 function renderTimeline(slide: any, m: { milestones: { date: string; label: string; status?: string }[] }, ctx: BrandRulesContext) {
   const ms = m.milestones.slice(0, 6);
   if (!ms.length) return;
-  const y = 3.6;
-  const x0 = 0.7;
-  const x1 = SLIDE_W_IN - 0.7;
+  const y = BODY_Y + 1.4;
+  const x0 = 0.8;
+  const x1 = SLIDE_W_IN - 0.8;
   slide.addShape("line", { x: x0, y, w: x1 - x0, h: 0, line: { color: hex(ctx.palette.primary), width: 2 } });
   const step = (x1 - x0) / Math.max(1, ms.length - 1);
   ms.forEach((mi, i) => {
     const x = x0 + step * i;
     slide.addShape("ellipse", {
-      x: x - 0.12, y: y - 0.12, w: 0.24, h: 0.24,
-      fill: { color: hex(ctx.palette.secondary) }, line: { color: "FFFFFF", width: 1.5 },
-    });
-    slide.addText(buildRuns(mi.label, ctx, { size: 12 }), {
-      x: x - 1.0, y: y + 0.25, w: 2.0, h: 0.5, align: "center", color: hex(ctx.palette.foreground),
+      x: x - 0.14, y: y - 0.14, w: 0.28, h: 0.28,
+      fill: { color: hex(ctx.palette.primary) }, line: { color: "FFFFFF", width: 2 },
     });
     slide.addText(mi.date, {
-      x: x - 1.0, y: y - 0.7, w: 2.0, h: 0.4, align: "center",
-      fontFace: ctx.typography.en_primary, fontSize: 10, color: hex(ctx.palette.foreground),
+      x: x - 1.0, y: y - 0.85, w: 2.0, h: 0.4, align: "center",
+      fontFace: ctx.typography.en_primary, fontSize: 11, bold: true, color: hex(ctx.palette.primary),
+    });
+    slide.addText(buildRuns(mi.label, ctx, { size: 12, color: hex(ctx.palette.foreground) }), {
+      x: x - 1.1, y: y + 0.3, w: 2.2, h: 0.9, align: "center", valign: "top",
     });
   });
 }
@@ -196,8 +258,8 @@ function renderTimeline(slide: any, m: { milestones: { date: string; label: stri
 function renderProcess(slide: any, m: { steps: { label: string; description?: string }[] }, ctx: BrandRulesContext) {
   const steps = m.steps.slice(0, 5);
   if (!steps.length) return;
-  const y = 3.0;
-  const w = (SLIDE_W_IN - 1.0 - 0.3 * (steps.length - 1)) / steps.length;
+  const y = BODY_Y + 0.4;
+  const w = (BODY_W - 0.3 * (steps.length - 1)) / steps.length;
   steps.forEach((s, i) => {
     const x = 0.5 + i * (w + 0.3);
     slide.addShape("roundRect", { x, y, w, h: 1.4, fill: { color: hex(ctx.palette.primary) }, rectRadius: 0.1 });
@@ -229,11 +291,11 @@ function renderMatrix(slide: any, m: { rows: string[]; cols: string[]; cells: st
       },
     })),
   );
-  slide.addTable(tbl, { x: 0.5, y: 2.3, w: SLIDE_W_IN - 1.0, colW: undefined, rowH: 0.45 });
+  slide.addTable(tbl, { x: BODY_X, y: BODY_Y, w: BODY_W, colW: undefined, rowH: 0.45 });
 }
 
 function renderRiskHeatmap(slide: any, m: { risks: { name: string; likelihood: 1 | 2 | 3; impact: 1 | 2 | 3 }[] }, ctx: BrandRulesContext) {
-  const x0 = 1.5, y0 = 2.6, cell = 1.4;
+  const x0 = 1.5, y0 = BODY_Y + 0.1, cell = 1.3;
   // colors: 1=green 2=amber 3=red
   const palette = [["10B981","FBBF24","EF4444"],["10B981","F59E0B","EF4444"],["FBBF24","EF4444","B91C1C"]];
   for (let l = 0; l < 3; l++) {
@@ -257,7 +319,7 @@ function renderRiskHeatmap(slide: any, m: { risks: { name: string; likelihood: 1
 
 function renderBeforeAfter(slide: any, m: { before: string[]; after: string[] }, ctx: BrandRulesContext) {
   const colW = (SLIDE_W_IN - 1.5) / 2;
-  const y = 2.4;
+  const y = BODY_Y;
   const renderCol = (items: string[], x: number, label: string, color: string) => {
     slide.addShape("rect", { x, y, w: colW, h: 4.2, fill: { color: hex(color) }, line: { color: "FFFFFF", width: 0 } });
     slide.addText(label, { x: x + 0.2, y: y + 0.1, w: colW - 0.4, h: 0.5, fontFace: ctx.typography.en_primary, fontSize: 16, bold: true, color: "FFFFFF" });
@@ -274,7 +336,7 @@ function renderBeforeAfter(slide: any, m: { before: string[]; after: string[] },
 function renderChart(slide: any, spec: ChartSpec, ctx: BrandRulesContext) {
   const data = spec.series.map((s) => ({ name: s.name, labels: spec.categories, values: s.values }));
   const opts: any = {
-    x: 0.6, y: 2.3, w: SLIDE_W_IN - 1.2, h: 4.4,
+    x: BODY_X, y: BODY_Y, w: BODY_W, h: BODY_H,
     chartColors: ctx.charts.palette.map(hex),
     showLegend: spec.showLegend ?? true,
     legendPos: "b",
@@ -322,11 +384,11 @@ function renderTable(slide: any, m: { headers: string[]; rows: string[][] }, ctx
       },
     })),
   );
-  slide.addTable([header, ...body], { x: 0.5, y: 2.4, w: SLIDE_W_IN - 1.0, rowH: 0.4 });
+  slide.addTable([header, ...body], { x: BODY_X, y: BODY_Y, w: BODY_W, rowH: 0.4 });
 }
 
 function renderStakeholderMap(slide: any, m: { quadrants: any }, ctx: BrandRulesContext) {
-  const x0 = 1.5, y0 = 2.4, w = SLIDE_W_IN - 3.0, h = 4.0;
+  const x0 = 1.5, y0 = BODY_Y, w = SLIDE_W_IN - 3.0, h = SLIDE_H_IN - y0 - 0.9;
   const half = w / 2, halfH = h / 2;
   // Quadrant background
   slide.addShape("rect", { x: x0, y: y0, w, h, fill: { color: hex(ctx.palette.surface) }, line: { color: hex(ctx.palette.primary), width: 0.5 } });
@@ -370,8 +432,8 @@ function renderBilingual(slide: any, m: { en: SlideModel; ar: SlideModel }, ctx:
     const arItems = ar.slice(0, ctx.layout.max_bullets_per_slide).map((b) => ({
       text: b, options: { bullet: { code: "25CF" }, fontFace: ctx.typography.ar_primary, fontSize: 14, rtl: true, align: "right" },
     }));
-    sub.addText(enItems, { x: 0.5, y: 2.4, w: halfW, h: 4.4, valign: "top" });
-    sub.addText(arItems, { x: 0.5 + halfW + 0.5, y: 2.4, w: halfW, h: 4.4, valign: "top" });
+    sub.addText(enItems, { x: BODY_X, y: BODY_Y, w: halfW, h: BODY_H, valign: "top" });
+    sub.addText(arItems, { x: BODY_X + halfW + 0.5, y: BODY_Y, w: halfW, h: BODY_H, valign: "top" });
   } else {
     // fallback: render the EN on the slide
     renderSlideBody(slide, m.en, ctx);
