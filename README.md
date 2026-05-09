@@ -1,96 +1,90 @@
-# Prompt Orchestrator
+# PresentIQ
 
-A 100% free, multi-tenant SaaS that turns rough user ideas into polished,
-model-aware prompts. Built on **Next.js + Supabase + Ollama + Vercel** —
-zero hosting, database, and AI fees.
+**From raw content to boardroom-ready presentation in minutes, with corporate
+standards enforced automatically.**
 
-## Features
+PresentIQ is an **AI Agent Platform** for corporate presentation generation. It
+is not an LLM prompt wrapper — it is a multi-agent workflow that combines:
 
-- Raw prompt intake with intent detection
-- Rule + LLM gap analysis → clarification questions
-- Multi-step Q&A session state
-- Final prompt reconstruction with rationale
-- Model-specific formatting for ChatGPT, Claude, Copilot, generic
-- Prompt history + versioning
-- Multi-tenant orgs with Postgres Row-Level Security
-- Chrome (Manifest V3) browser extension that injects into ChatGPT, Claude,
-  Copilot, and Gemini
+1. Corporate brand governance
+2. Evidence-controlled content generation
+3. Editable PPTX rendering
+4. Arabic-English bilingual + RTL capability
+5. Boardroom storytelling
+6. 10-dimension corporate quality scoring
+7. Secure enterprise file handling
+8. Human review and approval workflow
+9. Fast per-slide regeneration
+10. Export to PPTX and PDF
 
-## Folder structure
+> **Mission:** behave like an AI-powered corporate presentation office.
 
-```
-.
-├── extension/                  Chrome MV3 extension
-│   ├── manifest.json
-│   ├── background.js           service worker
-│   ├── content.js / content.css inject Enhance button
-│   ├── popup.html / popup.js / popup.css
-│   └── options.html / options.js
-├── supabase/
-│   ├── migrations/0001_init.sql full schema + RLS
-│   └── seed.sql                public templates
-├── src/
-│   ├── app/                    Next.js App Router
-│   │   ├── layout.tsx, page.tsx, globals.css
-│   │   ├── login/page.tsx
-│   │   ├── workspace/page.tsx
-│   │   ├── templates/page.tsx
-│   │   ├── history/page.tsx
-│   │   └── api/
-│   │       ├── health/
-│   │       ├── orgs/
-│   │       ├── templates/[id]/
-│   │       ├── sessions/[id]/answers/
-│   │       ├── sessions/[id]/finalize/
-│   │       └── extension/enhance/
-│   ├── components/
-│   │   └── Workspace.tsx
-│   └── lib/
-│       ├── env.ts, types.ts
-│       ├── supabase/{server,browser}.ts
-│       ├── llm/{ollama,prompts}.ts
-│       └── services/{orchestration,clarification,template,formatter,auth}.ts
-├── package.json, tsconfig.json, next.config.mjs
-├── tailwind.config.ts, postcss.config.mjs
-└── docs/
-    ├── API.md
-    └── DEPLOY.md
-```
+## Documentation
 
-## Quick start
+The 14 design documents live in [`docs/presentiq/`](./docs/presentiq/README.md):
+
+1. [Product Requirements](./docs/presentiq/01-PRD.md)
+2. [System Architecture](./docs/presentiq/02-ARCHITECTURE.md)
+3. [Agent Workflow](./docs/presentiq/03-AGENT-WORKFLOW.md)
+4. [Database Schema](./docs/presentiq/04-DATABASE.md)
+5. [API Specification](./docs/presentiq/05-API.md)
+6. [UI / Wireframes](./docs/presentiq/06-UI.md)
+7. [Brand Governance Engine](./docs/presentiq/07-BRAND-GOVERNANCE.md)
+8. [Evidence Engine](./docs/presentiq/08-EVIDENCE-ENGINE.md)
+9. [Arabic RTL Engine](./docs/presentiq/09-ARABIC-RTL.md)
+10. [PPTX Rendering Strategy](./docs/presentiq/10-PPTX-RENDERING.md)
+11. [Security Architecture](./docs/presentiq/11-SECURITY.md)
+12. [Billing Architecture](./docs/presentiq/12-BILLING.md)
+13. [MVP Implementation Plan](./docs/presentiq/13-MVP-PLAN.md)
+14. [Testing Plan](./docs/presentiq/14-TESTING.md)
+
+## Stack
+
+- **Frontend:** Next.js 14 (App Router) · React 18 · TypeScript · Tailwind · Framer Motion
+- **API:** Next.js Route Handlers · Zod validation · Supabase Auth
+- **DB:** Postgres (Supabase) + pgvector + Row-Level Security
+- **AI:** Pluggable model providers (Anthropic, Mock) · 17-agent orchestrator · prompt registry · canonical-input cache
+- **PPTX:** `pptxgenjs` · master slides · theme tokens · RTL paragraphs · charts/tables/diagrams · template intelligence
+- **Billing:** Stripe Checkout + Customer Portal + signed Webhooks
+- **Storage:** Supabase Storage (per-tenant prefixes) · short-lived signed URLs
+
+## Quick Start
 
 ```bash
 # 1. Install
 npm install
 
-# 2. Configure
+# 2. Configure environment
 cp .env.example .env.local
-# Fill in NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY,
-# SUPABASE_SERVICE_ROLE_KEY, and OLLAMA_BASE_URL.
 
-# 3. Run Ollama (in another terminal)
-ollama pull llama3
-ollama pull mistral
-ollama pull phi3
-ollama serve
+# 3. Apply database migration
+psql "$SUPABASE_DB_URL" -f supabase/migrations/0010_presentiq_init.sql
 
-# 4. Apply Supabase schema
-#   psql "$SUPABASE_DB_URL" -f supabase/migrations/0001_init.sql
-# (or paste it into the Supabase SQL editor)
-
-# 5. Start the app
+# 4. Run dev server
 npm run dev
-# open http://localhost:3000
+# open http://localhost:3000/presentiq
 ```
 
-## Browser extension
+If `ANTHROPIC_API_KEY` is not set, the orchestrator falls back to a deterministic
+mock provider so the full pipeline runs end-to-end without any API key.
 
-```bash
-# Chrome → chrome://extensions → Developer mode → "Load unpacked"
-# select the ./extension folder.
-# Then open the extension Options page and set:
-#   API base URL = your Vercel/localhost URL
-#   API key      = the EXTENSION_API_KEY value from .env.local
+## Project Layout
+
+```
+src/
+  lib/presentiq/        engine: types, brand, evidence, RTL, security, quality,
+                        AI orchestrator, prompts, PPTX renderer, template
+                        intelligence, storage, Stripe, auth
+  app/presentiq/        UI: landing, dashboard, wizard, editor, brand kits,
+                        admin, billing
+  app/api/presentiq/    REST: organisations, brand kits, projects, files,
+                        blueprint, slides, regenerate, quality, exports,
+                        comments, audit, billing webhook
+  components/presentiq/ UI primitives + QualityPanel
+docs/presentiq/         the 14 design documents
+supabase/migrations/    0010_presentiq_init.sql (full DDL + RLS + seed)
 ```
 
-See [docs/API.md](docs/API.md) and [docs/DEPLOY.md](docs/DEPLOY.md).
+## License
+
+Proprietary. All rights reserved.
