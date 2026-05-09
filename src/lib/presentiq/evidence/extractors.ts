@@ -69,11 +69,11 @@ export async function extractFromBuffer(
 // ----------- format-specific best-effort parsers -----------
 
 async function tryPdf(buf: Buffer): Promise<{ text: string; pages: { number: number; text: string }[] }> {
-  // Optional dependency: pdf-parse. We avoid hard requires so the build does not fail
-  // when the dep is absent; in production the dep is added via package.json.
+  // Optional dependency: pdf-parse. Imported dynamically and cast to `any`
+  // because the package has no shipped type declarations.
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const pdfParse = (await import("pdf-parse")).default;
+    const mod: any = await import("pdf-parse" as any);
+    const pdfParse = (mod && (mod.default ?? mod)) as (b: Buffer) => Promise<{ text?: string }>;
     const result = await pdfParse(buf);
     const text: string = result.text ?? "";
     return { text, pages: [{ number: 1, text }] };

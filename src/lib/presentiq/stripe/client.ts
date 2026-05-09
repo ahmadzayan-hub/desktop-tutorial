@@ -10,7 +10,7 @@ export function getStripe(): Stripe {
   if (cached) return cached;
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) throw new Error("stripe_not_configured");
-  cached = new Stripe(key, { apiVersion: "2024-06-20" as Stripe.LatestApiVersion });
+  cached = new Stripe(key, { apiVersion: "2024-06-20" as any });
   return cached;
 }
 
