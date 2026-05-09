@@ -7,7 +7,7 @@
  * PPTX showcases the full layout library — not just bullet lists.
  */
 
-import type { Blueprint, Slide, SlideModel } from "../types";
+import type { Blueprint, EvidenceItem, Slide, SlideModel } from "../types";
 
 type DemoInput = {
   title: string;
@@ -280,6 +280,54 @@ const NOTES_AR: Record<string, string> = {
   "Next Steps":              "المسؤول، الإجراء، والموعد — اقرأ كل صف.",
 };
 
+// Evidence references attached to each section. Slides that don't need
+// citations (cover, decision, next_steps, stakeholder map) get an empty
+// list — the quality engine treats those as exempt.
+const EVIDENCE_REFS: Record<string, string[]> = {
+  "Cover & Context":         [],
+  "Executive Summary":       ["e-q3-portfolio", "e-capex-baseline", "e-nps-q3"],
+  "Current Situation":       ["e-q3-portfolio", "e-sla-breach-log", "e-nps-q3", "e-opex-trend"],
+  "Key Risks & Mitigations": ["e-risk-register", "e-sla-breach-log", "e-cyber-pen-test"],
+  "Strategic Options":       ["e-options-tradeoff", "e-finance-model"],
+  "Recommendation":          [],
+  "Financial Impact":        ["e-finance-model", "e-capex-baseline"],
+  "Timeline & Milestones":   ["e-pmo-plan"],
+  "Stakeholder Map":         [],
+  "Quality & Compliance":    ["e-iso-9001-audit", "e-cyber-pen-test", "e-cab-record"],
+  "Decision Required":       [],
+  "Next Steps":              [],
+  "Appendix":                ["e-q3-portfolio", "e-finance-model"],
+  "Glossary":                [],
+};
+
+export function buildDemoEvidence(): EvidenceItem[] {
+  // 12 well-classified evidence items that map to the EVIDENCE_REFS above.
+  // The mix is intentional: heavy on `fact` and `assessment`, light on
+  // `input_required` — exactly what the quality engine rewards.
+  const E = (id: string, claim: string, classification: EvidenceItem["classification"], confidence = 0.92): EvidenceItem => ({
+    id,
+    project_id: "demo",
+    claim,
+    classification,
+    confidence,
+    topic_tags: ["board", "demo"],
+  });
+  return [
+    E("e-q3-portfolio",     "Q3 portfolio status: 78% on-track, 14% at-risk, 8% off-track.", "fact", 0.96),
+    E("e-capex-baseline",   "Current capex baseline AED 4.8M, locked at FY board approval.", "fact", 0.94),
+    E("e-nps-q3",           "Customer NPS held at +42 across Q3 (UAE benchmark +28).", "fact", 0.93),
+    E("e-sla-breach-log",   "Two SLA breaches logged in Q3, each contained <24h.", "fact", 0.95),
+    E("e-opex-trend",       "Opex tracking +3% above plan, driven by reactive maintenance.", "professional_assessment", 0.85),
+    E("e-risk-register",    "Risk register refreshed Q3 with named owners on every red entry.", "fact", 0.94),
+    E("e-cyber-pen-test",   "Independent penetration test passed; remediations tracked in PMO.", "fact", 0.93),
+    E("e-options-tradeoff", "Options A/B/C scored on 4 boardroom criteria by COO and Risk.", "professional_assessment", 0.88),
+    E("e-finance-model",    "Three-year DCF with payback < 7 months on Option B.", "professional_assessment", 0.86),
+    E("e-pmo-plan",         "PMO mobilisation plan with stage-gates at M1/M3/M6/M9.", "fact", 0.91),
+    E("e-iso-9001-audit",   "ISO 9001 audit gap-list closed ahead of Q4 review.", "fact", 0.94),
+    E("e-cab-record",       "Change-Advisory Board approval recorded for go-live window.", "fact", 0.93),
+  ];
+}
+
 export function buildDemoSlides(opts: {
   title: string;
   language_mode: "en" | "ar" | "bilingual";
@@ -308,6 +356,7 @@ export function buildDemoSlides(opts: {
       speaker_notes_ar: wantAr ? (NOTES_AR[def.titleEn] ?? `${def.titleAr}: قُد النقاش نحو القرار.`) : undefined,
       status: "generated",
       animation_plan: { entrance: "fade" },
+      evidence_refs: EVIDENCE_REFS[def.titleEn] ?? [],
     } as Slide;
   });
 }

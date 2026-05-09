@@ -136,106 +136,189 @@ export function renderSlideBody(slide: any, model: SlideModel, ctx: BrandRulesCo
 }
 
 function renderCover(slide: any, m: { title: string; subtitle?: string; date?: string }, ctx: BrandRulesContext) {
-  // Eyebrow: company name in small caps as a top label.
+  const accent = hex(ctx.palette.accent[0] ?? ctx.palette.secondary);
+  // ── 4-band hero composition ─────────────────────────────────────
+  // Tall accent rule on the leading edge — the boardroom "leading flag".
+  slide.addShape("rect", {
+    x: 0.6, y: 1.0, w: 0.16, h: 4.2,
+    fill: { color: accent }, line: { color: accent, width: 0 },
+  });
+  // Eyebrow chip with the org name (high-contrast, small caps).
+  slide.addShape("roundRect", {
+    x: 0.95, y: 1.05, w: 4.0, h: 0.4, rectRadius: 0.08,
+    fill: { color: accent, transparency: 80 },
+    line: { color: accent, width: 0 },
+  });
   slide.addText(ctx.identity.org_name.toUpperCase(), {
-    x: 0.6, y: 1.2, w: SLIDE_W_IN - 1.2, h: 0.35,
-    fontFace: ctx.typography.en_primary, fontSize: 11, bold: true, color: "FFFFFF",
-    charSpacing: 6,
+    x: 1.05, y: 1.07, w: 3.85, h: 0.36,
+    fontFace: ctx.typography.en_primary, fontSize: 10.5, bold: true, color: "FFFFFF",
+    charSpacing: 6, valign: "middle",
   });
   // Big cover title — boardroom scale.
-  slide.addText(buildRuns(m.title, ctx, { bold: true, size: 52, color: "FFFFFF" }), {
-    x: 0.6, y: 1.9, w: SLIDE_W_IN - 1.2, h: 2.4, fontFace: ctx.typography.en_primary,
+  slide.addText(buildRuns(m.title, ctx, { bold: true, size: 54, color: "FFFFFF" }), {
+    x: 0.95, y: 1.7, w: SLIDE_W_IN - 1.55, h: 2.6, fontFace: ctx.typography.en_primary,
     valign: "top",
+  });
+  // Underline rule between title and subtitle.
+  slide.addShape("rect", {
+    x: 0.95, y: 4.45, w: 1.6, h: 0.06,
+    fill: { color: accent }, line: { color: accent, width: 0 },
   });
   if (m.subtitle) {
     slide.addText(buildRuns(m.subtitle, ctx, { size: 20, color: "FFFFFF" }), {
-      x: 0.6, y: 4.6, w: SLIDE_W_IN - 1.2, h: 1.4, valign: "top",
+      x: 0.95, y: 4.65, w: SLIDE_W_IN - 1.6, h: 1.6, valign: "top",
     });
   }
   if (m.date) {
     slide.addText(m.date, {
-      x: 0.6, y: SLIDE_H_IN - 0.95, w: 4, h: 0.35, fontSize: 11, color: "FFFFFF",
-      fontFace: ctx.typography.en_primary,
+      x: 0.95, y: SLIDE_H_IN - 1.0, w: 4, h: 0.35, fontSize: 11, color: "FFFFFF",
+      fontFace: ctx.typography.en_primary, charSpacing: 2,
     });
   }
+  // Footer label on the right — boardroom signature.
+  slide.addText("PRESENTIQ · BOARDROOM-READY", {
+    x: SLIDE_W_IN - 5.6, y: SLIDE_H_IN - 1.0, w: 5, h: 0.35,
+    fontFace: ctx.typography.en_primary, fontSize: 9, bold: true, color: "FFFFFF",
+    align: "right", charSpacing: 4,
+  });
 }
 
 function renderBullets(slide: any, bullets: string[], ctx: BrandRulesContext, _title?: string) {
-  const items = bullets.slice(0, ctx.layout.max_bullets_per_slide).map((b) => ({
+  const max = ctx.layout.max_bullets_per_slide;
+  const list = bullets.slice(0, max);
+  // Numbered indicator chips on the leading edge — modern boardroom "ruled list" feel.
+  list.forEach((_, i) => {
+    slide.addShape("ellipse", {
+      x: BODY_X, y: BODY_Y + 0.05 + i * 0.65, w: 0.32, h: 0.32,
+      fill: { color: hex(ctx.palette.primary) },
+      line: { color: hex(ctx.palette.primary), width: 0 },
+      shadow: { type: "outer", angle: 90, blur: 6, offset: 1.5, color: "000000", opacity: 0.18 },
+    });
+    slide.addText(String(i + 1), {
+      x: BODY_X, y: BODY_Y + 0.05 + i * 0.65, w: 0.32, h: 0.32,
+      fontFace: ctx.typography.en_primary, fontSize: 11, bold: true, color: "FFFFFF",
+      align: "center", valign: "middle",
+    });
+  });
+  const items = list.map((b) => ({
     text: b,
-    options: { bullet: { code: "25CF" }, fontFace: isArabic(b) ? ctx.typography.ar_primary : ctx.typography.en_primary, fontSize: 18, paraSpaceAfter: 8, color: hex(ctx.palette.foreground), align: isArabic(b) ? "right" : "left", rtl: isArabic(b) },
+    options: {
+      fontFace: isArabic(b) ? ctx.typography.ar_primary : ctx.typography.en_primary,
+      fontSize: 17, paraSpaceAfter: 12,
+      color: hex(ctx.palette.foreground),
+      align: isArabic(b) ? "right" : "left",
+      rtl: isArabic(b),
+    },
   }));
-  slide.addText(items, { x: BODY_X, y: BODY_Y, w: BODY_W, h: BODY_H, valign: "top" });
+  slide.addText(items, {
+    x: BODY_X + 0.55, y: BODY_Y, w: BODY_W - 0.55, h: BODY_H, valign: "top",
+  });
 }
 
 function renderDecision(slide: any, m: { recommendation: string; rationale: string[] }, ctx: BrandRulesContext) {
-  // The decision master already shows "DECISION REQUIRED" as an eyebrow at
-  // x≈0.7 / y≈0.5 and a primary leading rule. We render a contained card
-  // with the recommendation in large weight, then a tight rationale list.
+  const accent = hex(ctx.palette.accent[0] ?? ctx.palette.secondary);
   const cardX = 0.9, cardW = SLIDE_W_IN - 1.3;
-  const recY = 1.5, recH = 1.7;
+  const recY = 1.5, recH = 1.85;
+  // Recommendation card — primary fill, white text for boardroom emphasis.
   slide.addShape("roundRect", {
     x: cardX, y: recY, w: cardW, h: recH,
-    fill: { color: hex(ctx.palette.surface) },
-    line: { color: hex(ctx.palette.primary), width: 0.75 },
-    rectRadius: 0.12,
-    shadow: { type: "outer", angle: 90, blur: 16, offset: 5, color: "000000", opacity: 0.22 },
+    fill: { color: hex(ctx.palette.primary) },
+    line: { color: hex(ctx.palette.primary), width: 0 },
+    rectRadius: 0.16,
+    shadow: { type: "outer", angle: 90, blur: 22, offset: 6, color: "000000", opacity: 0.28 },
   });
-  // Leading rule on the card (small accent flag)
+  // Bronze/accent leading edge for contrast
   slide.addShape("rect", {
-    x: cardX, y: recY, w: 0.16, h: recH,
-    fill: { color: hex(ctx.palette.primary) }, line: { color: hex(ctx.palette.primary), width: 0 },
+    x: cardX, y: recY, w: 0.22, h: recH,
+    fill: { color: accent }, line: { color: accent, width: 0 },
   });
-  slide.addText(buildRuns(m.recommendation, ctx, { bold: true, size: 26, color: hex(ctx.palette.primary) }), {
-    x: cardX + 0.3, y: recY + 0.25, w: cardW - 0.6, h: recH - 0.5,
+  // "RECOMMENDATION" eyebrow
+  slide.addText("RECOMMENDATION", {
+    x: cardX + 0.5, y: recY + 0.25, w: cardW - 0.8, h: 0.32,
+    fontFace: ctx.typography.en_primary, fontSize: 10, bold: true,
+    color: "FFFFFF", charSpacing: 6,
+  });
+  slide.addText(buildRuns(m.recommendation, ctx, { bold: true, size: 26, color: "FFFFFF" }), {
+    x: cardX + 0.5, y: recY + 0.65, w: cardW - 0.8, h: recH - 0.85,
     valign: "middle",
   });
+  // Rationale list — numbered cards instead of plain bullets.
   const ratY = recY + recH + 0.4;
-  const items = m.rationale.slice(0, ctx.layout.max_bullets_per_slide).map((r) => ({
-    text: r,
-    options: { bullet: { code: "25B8" }, fontFace: isArabic(r) ? ctx.typography.ar_primary : ctx.typography.en_primary, fontSize: 16, paraSpaceAfter: 6, color: hex(ctx.palette.foreground), align: isArabic(r) ? "right" : "left", rtl: isArabic(r) },
-  }));
-  slide.addText(items, { x: cardX, y: ratY, w: cardW, h: SLIDE_H_IN - ratY - 0.5, valign: "top" });
+  const ratH = SLIDE_H_IN - ratY - 0.5;
+  const list = m.rationale.slice(0, ctx.layout.max_bullets_per_slide);
+  const rowH = Math.min(0.62, ratH / Math.max(1, list.length));
+  list.forEach((r, i) => {
+    const ry = ratY + i * (rowH + 0.04);
+    slide.addShape("ellipse", {
+      x: cardX, y: ry + 0.05, w: 0.34, h: 0.34,
+      fill: { color: accent }, line: { color: accent, width: 0 },
+    });
+    slide.addText(String(i + 1), {
+      x: cardX, y: ry + 0.05, w: 0.34, h: 0.34,
+      fontFace: ctx.typography.en_primary, fontSize: 11, bold: true, color: "FFFFFF",
+      align: "center", valign: "middle",
+    });
+    slide.addText(buildRuns(r, ctx, { size: 15, color: hex(ctx.palette.foreground) }), {
+      x: cardX + 0.5, y: ry, w: cardW - 0.5, h: rowH,
+      valign: "middle", align: isArabic(r) ? "right" : "left", rtl: isArabic(r),
+    });
+  });
 }
 
 function renderKpi(slide: any, m: { cards: { label: string; value: string; delta?: string }[] }, ctx: BrandRulesContext) {
   const cards = m.cards.slice(0, 4);
-  const gap = 0.25;
+  const gap = 0.28;
   const w = (BODY_W - gap * (cards.length - 1)) / cards.length;
   const y = BODY_Y;
-  const h = 2.4;
-  const SHADOW = { type: "outer", angle: 90, blur: 14, offset: 4, color: "000000", opacity: 0.18 } as const;
+  const h = 2.6;
+  const SHADOW = { type: "outer", angle: 90, blur: 18, offset: 5, color: "000000", opacity: 0.22 } as const;
   cards.forEach((c, i) => {
     const x = BODY_X + i * (w + gap);
-    // Layered card: surface body with drop-shadow, primary top band for the
-    // 3D-ish "stat strip" feel boardroom decks expect.
+    // Card body
     slide.addShape("roundRect", {
       x, y, w, h,
       fill: { color: hex(ctx.palette.surface) },
       line: { color: hex(ctx.palette.primary), width: 0.5 },
-      rectRadius: 0.10,
+      rectRadius: 0.14,
       shadow: SHADOW,
     });
+    // Top accent strip — taller for a clearer "stat card" silhouette.
     slide.addShape("roundRect", {
-      x, y, w, h: 0.22,
+      x, y, w, h: 0.32,
       fill: { color: hex(ctx.palette.primary) },
       line: { color: hex(ctx.palette.primary), width: 0 },
-      rectRadius: 0.10,
+      rectRadius: 0.14,
+    });
+    // Tiny status dot (left of label) for visual rhythm.
+    slide.addShape("ellipse", {
+      x: x + 0.22, y: y + 0.55, w: 0.14, h: 0.14,
+      fill: { color: hex(ctx.palette.accent[0] ?? ctx.palette.secondary) },
+      line: { color: hex(ctx.palette.primary), width: 0 },
     });
     // Label
     slide.addText(buildRuns(c.label.toUpperCase(), ctx, { size: 10, color: hex(ctx.palette.foreground) }), {
-      x: x + 0.2, y: y + 0.35, w: w - 0.4, h: 0.35, align: "left",
-      charSpacing: 4,
+      x: x + 0.45, y: y + 0.5, w: w - 0.6, h: 0.35, align: "left",
+      charSpacing: 5, bold: true,
     });
     // Big number
-    slide.addText(buildRuns(c.value, ctx, { bold: true, size: 36, color: hex(ctx.palette.primary) }), {
-      x: x + 0.2, y: y + 0.7, w: w - 0.4, h: 1.1, align: "left", valign: "middle",
+    slide.addText(buildRuns(c.value, ctx, { bold: true, size: 38, color: hex(ctx.palette.primary) }), {
+      x: x + 0.22, y: y + 0.95, w: w - 0.4, h: 1.15, align: "left", valign: "middle",
+    });
+    // Footer separator
+    slide.addShape("rect", {
+      x: x + 0.22, y: y + h - 0.6, w: w - 0.44, h: 0.012,
+      fill: { color: hex(ctx.palette.primary), transparency: 80 },
+      line: { color: hex(ctx.palette.primary), width: 0 },
     });
     if (c.delta) {
+      const positive = /^[+▲]/.test(c.delta) || /\+\s*\d/.test(c.delta);
+      const deltaColor = positive
+        ? hex(ctx.palette.accent[0] ?? ctx.palette.secondary)
+        : hex(ctx.palette.accent[1] ?? ctx.palette.secondary);
       slide.addText(c.delta, {
-        x: x + 0.2, y: y + h - 0.55, w: w - 0.4, h: 0.4, align: "left",
+        x: x + 0.22, y: y + h - 0.55, w: w - 0.4, h: 0.4, align: "left",
         fontFace: ctx.typography.en_primary, fontSize: 11, bold: true,
-        color: hex(ctx.palette.accent[1] ?? ctx.palette.secondary),
+        color: deltaColor,
       });
     }
   });
@@ -244,30 +327,46 @@ function renderKpi(slide: any, m: { cards: { label: string; value: string; delta
 function renderTimeline(slide: any, m: { milestones: { date: string; label: string; status?: string }[] }, ctx: BrandRulesContext) {
   const ms = m.milestones.slice(0, 6);
   if (!ms.length) return;
-  const y = BODY_Y + 1.4;
+  const y = BODY_Y + 1.6;
   const x0 = 0.8;
   const x1 = SLIDE_W_IN - 0.8;
+  // Track: a faint base line + a coloured progress segment for "now" milestones
+  slide.addShape("line", { x: x0, y, w: x1 - x0, h: 0, line: { color: hex(ctx.palette.primary), width: 1, transparency: 60 } });
   slide.addShape("line", { x: x0, y, w: x1 - x0, h: 0, line: { color: hex(ctx.palette.primary), width: 2 } });
   const step = (x1 - x0) / Math.max(1, ms.length - 1);
   ms.forEach((mi, i) => {
     const x = x0 + step * i;
-    // 3D-ish milestone dot: shadow ring → solid fill → highlight inset.
+    // Outer ring (shadow halo)
     slide.addShape("ellipse", {
-      x: x - 0.16, y: y - 0.16, w: 0.32, h: 0.32,
+      x: x - 0.20, y: y - 0.20, w: 0.40, h: 0.40,
+      fill: { color: hex(ctx.palette.surface) },
+      line: { color: hex(ctx.palette.primary), width: 0 },
+      shadow: { type: "outer", angle: 90, blur: 10, offset: 2, color: "000000", opacity: 0.30 },
+    });
+    // Outer dot (accent)
+    slide.addShape("ellipse", {
+      x: x - 0.14, y: y - 0.14, w: 0.28, h: 0.28,
       fill: { color: hex(ctx.palette.accent[0] ?? ctx.palette.secondary) },
       line: { color: "FFFFFF", width: 0 },
-      shadow: { type: "outer", angle: 90, blur: 8, offset: 2, color: "000000", opacity: 0.25 },
     });
+    // Inner dot (primary)
     slide.addShape("ellipse", {
-      x: x - 0.12, y: y - 0.12, w: 0.24, h: 0.24,
+      x: x - 0.07, y: y - 0.07, w: 0.14, h: 0.14,
       fill: { color: hex(ctx.palette.primary) }, line: { color: "FFFFFF", width: 1.5 },
     });
-    slide.addText(mi.date, {
-      x: x - 1.0, y: y - 0.85, w: 2.0, h: 0.4, align: "center",
-      fontFace: ctx.typography.en_primary, fontSize: 11, bold: true, color: hex(ctx.palette.primary),
+    // Date pill above the dot
+    slide.addShape("roundRect", {
+      x: x - 0.55, y: y - 1.05, w: 1.1, h: 0.42, rectRadius: 0.18,
+      fill: { color: hex(ctx.palette.primary) },
+      line: { color: hex(ctx.palette.primary), width: 0 },
     });
+    slide.addText(mi.date, {
+      x: x - 0.55, y: y - 1.05, w: 1.1, h: 0.42, align: "center", valign: "middle",
+      fontFace: ctx.typography.en_primary, fontSize: 11, bold: true, color: "FFFFFF",
+    });
+    // Label below
     slide.addText(buildRuns(mi.label, ctx, { size: 12, color: hex(ctx.palette.foreground) }), {
-      x: x - 1.1, y: y + 0.3, w: 2.2, h: 0.9, align: "center", valign: "top",
+      x: x - 1.2, y: y + 0.35, w: 2.4, h: 1.1, align: "center", valign: "top",
     });
   });
 }

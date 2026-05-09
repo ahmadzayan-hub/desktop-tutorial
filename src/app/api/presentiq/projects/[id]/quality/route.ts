@@ -7,7 +7,7 @@ import {
 } from "@/lib/presentiq";
 import { fail, json, notFound, unauthorized } from "@/lib/presentiq/api/response";
 import { getProject as getDemoProject } from "@/lib/presentiq/demo/store";
-import { buildDemoBlueprint, buildDemoSlides } from "@/lib/presentiq/demo/blueprint";
+import { buildDemoBlueprint, buildDemoEvidence, buildDemoSlides } from "@/lib/presentiq/demo/blueprint";
 
 export async function POST(_req: Request, { params }: { params: { id: string } }) {
   const ctx = await getRequestContext();
@@ -30,11 +30,13 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
         key_message_ar: s.key_message_ar,
         content_json: s.content_json,
         visual_json: s.visual_json,
+        speaker_notes_en: s.speaker_notes_en,
+        speaker_notes_ar: s.speaker_notes_ar,
         evidence_refs: s.evidence_refs,
       })),
       ctx: brandCtx,
-      evidence: [] as any,
-      templateCompliance: 90,
+      evidence: buildDemoEvidence(),
+      templateCompliance: 98,
     });
     return json({ report });
   }

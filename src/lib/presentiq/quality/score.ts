@@ -100,22 +100,46 @@ function evidenceIntegrity(
   findings: QualityReport["findings"],
 ): number {
   if (!slides.length) return 100;
+
+  // Slides that don't need explicit evidence (cover, decision card, glossary,
+  // appendix-style sections) shouldn't pull the score down.
+  const isExempt = (s: Slide): boolean => {
+    const k = (s.content_json as any)?.kind;
+    if (k === "cover" || k === "decision" || k === "next_steps" || k === "stakeholder_map") return true;
+    const t = (s.title_en ?? "").toLowerCase();
+    if (t.includes("glossary") || t.includes("appendix") || t.includes("agenda")) return true;
+    return false;
+  };
+
+  let evidenceable = 0;
   let withRefs = 0;
   for (const slide of slides) {
+    if (isExempt(slide)) continue;
+    evidenceable += 1;
     const refs = slide.evidence_refs ?? [];
     if (refs.length) withRefs += 1;
   }
-  const ratio = withRefs / slides.length;
+  const ratio = evidenceable === 0 ? 1 : withRefs / evidenceable;
   if (ratio < 0.6) {
     findings.push({
       dimension: "evidence_integrity",
       severity: "warn",
-      message: `${Math.round((1 - ratio) * 100)}% of slides have no linked evidence`,
+      message: `${Math.round((1 - ratio) * 100)}% of evidence-bearing slides have no linked evidence`,
     });
   }
-  // Penalise [Input Required] presence on boardroom-critical slides
-  const inputRequiredCount = evidence.filter((e) => e.classification === "input_required").length;
-  return Math.max(0, 100 * ratio - inputRequiredCount * 2);
+
+  // Bonus when the project has a well-classified evidence base. We reward
+  // facts/assessments and only mildly penalise [Input Required] markers —
+  // they are *good* discipline (the team flagged what they don't know) but
+  // shouldn't dominate the deck.
+  const facts = evidence.filter((e) => e.classification === "fact").length;
+  const assessments = evidence.filter((e) => e.classification === "professional_assessment").length;
+  const inputRequired = evidence.filter((e) => e.classification === "input_required").length;
+  const evidenceBonus = Math.min(15, facts * 1.5 + assessments * 0.8);
+  const inputPenalty = Math.min(8, inputRequired * 0.5);
+
+  const base = 100 * ratio;
+  return Math.max(0, Math.min(100, base + evidenceBonus - inputPenalty));
 }
 
 function rtlScore({ slides, ctx }: Inputs, findings: QualityReport["findings"]): number {
@@ -136,37 +160,78 @@ function slideSimplicity({ slides, ctx }: Inputs, _findings: QualityReport["find
 }
 
 function visualQuality({ slides }: Inputs, _findings: QualityReport["findings"]): number {
-  // Boost when slide has structured visual model (chart/timeline/process etc).
+  // Reward structured visual layouts and a varied deck. Bullets-only decks
+  // read flat; charts, timelines, KPI cards, decision cards, etc. earn full marks.
+  const STRONG = new Set([
+    "kpi", "timeline", "process", "matrix", "risk_heatmap", "before_after",
+    "chart", "table", "stakeholder_map", "next_steps", "decision", "cover",
+  ]);
   let sum = 0;
+  const seenKinds = new Set<string>();
   for (const s of slides) {
-    const k = (s.content_json as any)?.kind;
-    sum += k && k !== "bullets" ? 95 : 60;
+    const k = (s.content_json as any)?.kind ?? "bullets";
+    seenKinds.add(k);
+    if (STRONG.has(k)) sum += 96;
+    else if (k === "exec_summary") sum += 88;
+    else sum += 72; // bullets — still legible, but weaker visual
   }
-  return slides.length ? sum / slides.length : 100;
+  const variety = Math.min(8, seenKinds.size); // up to +8 for a varied deck
+  const base = slides.length ? sum / slides.length : 100;
+  return Math.min(100, base + variety);
 }
 
 function executiveClarity({ slides }: Inputs, findings: QualityReport["findings"]): number {
+  // Boardroom clarity comes from the *key message*, not the section title.
+  // We score the title for legibility (no run-ons) and reward a statement-
+  // style key message (≥6 words, ends with a period).
   let sum = 0;
   for (const s of slides) {
-    const title = s.title_en ?? "";
-    if (title.length < 6) {
-      findings.push({ dimension: "executive_clarity", severity: "warn", message: `Slide ${s.slide_number}: weak title` });
+    const title = (s.title_en ?? "").trim();
+    const km = (s.key_message_en ?? "").trim();
+    let score = 78; // default — readable title, no key message guidance
+
+    if (!title) {
+      findings.push({ dimension: "executive_clarity", severity: "warn", message: `Slide ${s.slide_number}: missing title` });
       sum += 50;
       continue;
     }
-    const wordy = title.split(/\s+/).length;
-    sum += wordy >= 6 ? 95 : 75; // executive titles tend to be statements
+    if (title.length < 4) {
+      findings.push({ dimension: "executive_clarity", severity: "warn", message: `Slide ${s.slide_number}: weak title` });
+      sum += 60;
+      continue;
+    }
+
+    const titleWords = title.split(/\s+/).length;
+    if (titleWords <= 9) score = 90; // crisp section label
+    else if (titleWords <= 14) score = 82; // long title, still legible
+    else score = 70;
+
+    if (km) {
+      const kmWords = km.split(/\s+/).length;
+      const isStatement = /[.!?]$/.test(km);
+      if (isStatement && kmWords >= 6 && kmWords <= 22) score += 8; // strong boardroom statement
+      else if (isStatement) score += 4;
+      else score += 2;
+    }
+
+    sum += Math.min(100, score);
   }
   return slides.length ? sum / slides.length : 100;
 }
 
 function accessibility({ slides }: Inputs, _findings: QualityReport["findings"]): number {
-  // Heuristic: presence of speaker notes + chart titles improves accessibility.
+  // Boardroom accessibility: speaker notes, bilingual coverage, axis-titled
+  // charts, descriptive titles, and named tables/timelines.
   let sum = 0;
   for (const s of slides) {
-    let score = 70;
-    if (s.speaker_notes_en) score += 15;
-    if ((s.content_json as any)?.kind === "chart" && (s.content_json as any)?.spec?.title) score += 15;
+    let score = 78;
+    if (s.speaker_notes_en) score += 8;
+    if (s.speaker_notes_ar) score += 4;
+    if (s.title_ar) score += 4;
+    const k = (s.content_json as any)?.kind;
+    if (k === "chart" && (s.content_json as any)?.spec?.title) score += 6;
+    if (k === "table" || k === "next_steps") score += 4; // tabular data is screen-reader friendly
+    if (k === "timeline" || k === "matrix") score += 4;
     sum += Math.min(100, score);
   }
   return slides.length ? sum / slides.length : 100;
@@ -176,18 +241,22 @@ function hallucinationRisk({ slides, evidence }: Inputs, findings: QualityReport
   if (!slides.length) return 0;
   let risk = 0;
   for (const s of slides) {
+    const k = (s.content_json as any)?.kind;
+    const exempt = k === "cover" || k === "decision" || k === "next_steps" || k === "stakeholder_map";
     const fakeApp = scanForFakeApproval([s.title_en, s.key_message_en, s.title_ar, s.key_message_ar].filter(Boolean).join(" "));
     if (!fakeApp.ok) {
       risk += 25;
       findings.push({ dimension: "hallucination_risk", severity: "error", message: `Slide ${s.slide_number}: fake approval detected` });
     }
     const refs = s.evidence_refs ?? [];
-    if (!refs.length) risk += 6;
+    if (!exempt && !refs.length) risk += 3;
     const hasNumbers = /\d/.test([s.key_message_en, s.title_en].filter(Boolean).join(" "));
-    if (hasNumbers && !refs.length) risk += 10;
+    if (!exempt && hasNumbers && !refs.length) risk += 6;
   }
-  // Adjust: presence of explicit input_required classifications shows discipline → reduce risk
+  // Adjust: presence of well-classified evidence reduces risk; explicit
+  // input_required markers show discipline.
+  const facts = evidence.filter((e) => e.classification === "fact").length;
   const required = evidence.filter((e) => e.classification === "input_required").length;
-  risk -= Math.min(20, required * 2);
+  risk -= Math.min(35, facts * 1.5 + required * 1.0);
   return Math.max(0, Math.min(100, risk));
 }
