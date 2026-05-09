@@ -22,9 +22,9 @@ export function PresentIqShell({ children }: { children: ReactNode }) {
       <header
         className="sticky top-0 z-30"
         style={{
-          background: "rgba(244,251,250,0.86)",
+          background: "rgba(250,248,238,0.88)",
           backdropFilter: "blur(14px) saturate(1.4)",
-          borderBottom: "1px solid rgba(11,110,105,0.14)",
+          borderBottom: "1px solid rgba(66,87,34,0.16)",
         }}
       >
         <div className="mx-auto max-w-7xl px-6 h-16 flex items-center justify-between gap-4">

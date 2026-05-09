@@ -27,7 +27,7 @@ export function Dashboard({ items }: { items: Project[] }) {
     <div className="space-y-8">
       <header className="flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight" style={{ color: "var(--pq-pine)" }}>
+          <h1 className="text-3xl font-semibold tracking-tight" style={{ color: "var(--pq-text)" }}>
             {t("dash.title")}
           </h1>
           <p className="text-sm mt-1" style={{ color: "var(--pq-text-soft)" }}>{t("dash.lede")}</p>
@@ -43,7 +43,7 @@ export function Dashboard({ items }: { items: Project[] }) {
             <div className="text-xs uppercase tracking-widest" style={{ color: "var(--pq-text-mute)" }}>
               {s.label}
             </div>
-            <div className="text-3xl font-semibold mt-2" style={{ color: "var(--pq-pine)" }}>
+            <div className="text-3xl font-semibold mt-2" style={{ color: "var(--pq-text)" }}>
               {s.value}
             </div>
           </Frame4D>
@@ -51,8 +51,8 @@ export function Dashboard({ items }: { items: Project[] }) {
       </section>
 
       <Frame4D className="p-0 overflow-hidden" interactive={false}>
-        <div className="px-6 py-4 border-b" style={{ borderColor: "rgba(11,110,105,0.12)" }}>
-          <h2 className="text-base font-semibold" style={{ color: "var(--pq-pine)" }}>
+        <div className="px-6 py-4 border-b" style={{ borderColor: "rgba(66,87,34,0.16)" }}>
+          <h2 className="text-base font-semibold" style={{ color: "var(--pq-text)" }}>
             {t("dash.recent")}
           </h2>
           <p className="text-xs mt-0.5" style={{ color: "var(--pq-text-soft)" }}>
@@ -63,20 +63,20 @@ export function Dashboard({ items }: { items: Project[] }) {
           {items.length === 0 ? (
             <div className="text-sm" style={{ color: "var(--pq-text-soft)" }}>
               {t("dash.empty")}{" "}
-              <Link href="/presentiq/projects/new" style={{ color: "var(--pq-teal)", textDecoration: "underline" }}>
+              <Link href="/presentiq/projects/new" style={{ color: "var(--pq-olive)", textDecoration: "underline" }}>
                 {t("dash.empty.cta")}
               </Link>
               .
             </div>
           ) : (
-            <ul className="divide-y" style={{ borderColor: "rgba(11,110,105,0.10)" }}>
+            <ul className="divide-y" style={{ borderColor: "rgba(66,87,34,0.14)" }}>
               {items.map((p) => (
                 <li key={p.id} className="py-3 flex items-center justify-between gap-4">
                   <div className="min-w-0">
                     <Link
                       href={`/presentiq/projects/${p.id}`}
                       className="font-medium hover:underline"
-                      style={{ color: "var(--pq-pine)" }}
+                      style={{ color: "var(--pq-text)" }}
                     >
                       {p.title}
                     </Link>

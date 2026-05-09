@@ -71,7 +71,7 @@ export function Changelog() {
     <div className="space-y-8">
       <header>
         <span className="pq-pill pq-pill-strong">v0.2 · {new Date().toLocaleDateString(lang === "ar" ? "ar-AE" : "en-AE")}</span>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight" style={{ color: "var(--pq-pine)" }}>
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight" style={{ color: "var(--pq-text)" }}>
           {t("v2.title")}
         </h1>
         <p className="mt-2 text-sm" style={{ color: "var(--pq-text-soft)" }}>
@@ -84,7 +84,7 @@ export function Changelog() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {V0_2_DELTAS.map((e) => (
           <Frame4D key={e.titleEn} className="p-5">
-            <h3 className="font-semibold" style={{ color: "var(--pq-pine)" }}>
+            <h3 className="font-semibold" style={{ color: "var(--pq-text)" }}>
               {lang === "ar" ? e.titleAr : e.titleEn}
             </h3>
             <p className="text-sm mt-2" style={{ color: "var(--pq-text-soft)", lineHeight: 1.55 }}>

@@ -51,21 +51,46 @@ export function Wizard() {
   const next = () => setStep((s) => Math.min(s + 1, STEPS.length - 1));
   const prev = () => setStep((s) => Math.max(s - 1, 0));
 
+  function clampedBrief() {
+    const slides = Math.min(60, Math.max(3, Number.isFinite(slideCount) ? Math.round(slideCount) : 10));
+    const mins   = Math.min(180, Math.max(5, Number.isFinite(duration)   ? Math.round(duration)   : 20));
+    return { slides, mins };
+  }
+
   async function createProject() {
     setBusy(true); setError(null);
+    const { slides, mins } = clampedBrief();
+    if (slides !== slideCount) setSlideCount(slides);
+    if (mins   !== duration)   setDuration(mins);
+    if (!title || title.trim().length < 2) {
+      setError("Title is required (at least 2 characters).");
+      setBusy(false);
+      return;
+    }
     try {
       const res = await fetch("/api/presentiq/projects", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          title, audience, objective, decision_required: decision,
-          language_mode: language, presentation_mode: mode,
+          title: title.trim(),
+          audience: audience.trim() || undefined,
+          objective: objective.trim() || undefined,
+          decision_required: decision.trim() || undefined,
+          language_mode: language,
+          presentation_mode: mode,
           confidentiality_level: confidentiality,
-          target_slide_count: slideCount, target_duration_min: duration,
+          target_slide_count: slides,
+          target_duration_min: mins,
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data?.error?.message ?? "create_failed");
+      if (!res.ok) {
+        const issues = Array.isArray(data?.error?.details) ? data.error.details : [];
+        const friendly = issues
+          .map((i: any) => `${(i.path ?? []).join(".") || "field"}: ${i.message}`)
+          .join("; ");
+        throw new Error(friendly || data?.error?.message || "create_failed");
+      }
       setCreatedId(data.project.id);
       next();
     } catch (e) {
@@ -126,10 +151,10 @@ export function Wizard() {
 
   return (
     <Frame4D className="p-0 overflow-hidden" interactive={false}>
-      <div className="px-6 py-5 border-b" style={{ borderColor: "rgba(11,110,105,0.12)" }}>
+      <div className="px-6 py-5 border-b" style={{ borderColor: "rgba(66,87,34,0.16)" }}>
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div>
-            <h2 className="text-lg font-semibold" style={{ color: "var(--pq-pine)" }}>{t(STEPS[step])}</h2>
+            <h2 className="text-lg font-semibold" style={{ color: "var(--pq-text)" }}>{t(STEPS[step])}</h2>
             <p className="text-xs mt-0.5" style={{ color: "var(--pq-text-mute)" }}>
               Step {step + 1} of {STEPS.length}
             </p>
@@ -141,7 +166,7 @@ export function Wizard() {
                 className="inline-block h-1.5 rounded-full transition-all"
                 style={{
                   width: i === step ? 24 : 8,
-                  background: i <= step ? "var(--pq-teal)" : "rgba(11,110,105,0.18)",
+                  background: i <= step ? "var(--pq-olive)" : "rgba(66,87,34,0.22)",
                 }}
               />
             ))}
@@ -151,10 +176,7 @@ export function Wizard() {
 
       <div className="px-6 py-6 space-y-5">
         {error && (
-          <div
-            className="rounded-xl px-3 py-2 text-sm"
-            style={{ background: "rgba(239,68,68,0.10)", color: "#7f1d1d", border: "1px solid rgba(239,68,68,0.22)" }}
-          >
+          <div className="pq-alert" role="alert">
             {t("wiz.error")}: {error}
           </div>
         )}
@@ -170,16 +192,16 @@ export function Wizard() {
                   type="button"
                   className="text-start rounded-2xl p-4 transition border"
                   style={{
-                    background: active ? "var(--pq-grad-pine)" : "rgba(255,255,255,0.85)",
-                    borderColor: active ? "var(--pq-teal)" : "rgba(11,110,105,0.18)",
-                    color: active ? "var(--pq-spearmint)" : "var(--pq-pine)",
-                    boxShadow: active ? "0 14px 28px -10px rgba(1,50,48,0.40)" : "0 1px 2px rgba(0,0,0,0.04)",
+                    background: active ? "var(--pq-grad-pine)" : "rgba(255,255,255,0.92)",
+                    borderColor: active ? "var(--pq-olive)" : "rgba(66,87,34,0.20)",
+                    color: active ? "var(--pq-cream)" : "var(--pq-deep)",
+                    boxShadow: active ? "0 14px 28px -10px rgba(42,56,21,0.42)" : "0 1px 2px rgba(0,0,0,0.04)",
                   }}
                 >
                   <div className="font-semibold">{lang === "ar" ? m.nameAr : m.nameEn}</div>
                   <div
                     className="text-xs mt-1"
-                    style={{ color: active ? "rgba(209,242,240,0.85)" : "var(--pq-text-soft)" }}
+                    style={{ color: active ? "rgba(244,242,233,0.86)" : "var(--pq-text-soft)" }}
                   >
                     {lang === "ar" ? m.descAr : m.descEn}
                   </div>
@@ -217,11 +239,25 @@ export function Wizard() {
             </div>
             <div>
               <label>{t("wiz.slides")}</label>
-              <input type="number" min={3} max={60} value={slideCount} onChange={(e) => setSlideCount(Number(e.target.value))} />
+              <input
+                type="number"
+                min={3}
+                max={60}
+                value={slideCount}
+                onChange={(e) => setSlideCount(Number(e.target.value))}
+                onBlur={() => setSlideCount((v) => Math.min(60, Math.max(3, Number.isFinite(v) ? Math.round(v) : 10)))}
+              />
             </div>
             <div>
               <label>{t("wiz.duration")}</label>
-              <input type="number" min={5} max={180} value={duration} onChange={(e) => setDuration(Number(e.target.value))} />
+              <input
+                type="number"
+                min={5}
+                max={180}
+                value={duration}
+                onChange={(e) => setDuration(Number(e.target.value))}
+                onBlur={() => setDuration((v) => Math.min(180, Math.max(5, Number.isFinite(v) ? Math.round(v) : 20)))}
+              />
             </div>
             <div>
               <label>{t("wiz.confidentiality")}</label>
@@ -256,7 +292,7 @@ export function Wizard() {
             {filesUploaded.length > 0 && (
               <div
                 className="rounded-xl px-3 py-2 text-sm"
-                style={{ background: "rgba(80,200,194,0.18)", color: "var(--pq-pine)", border: "1px solid rgba(11,110,105,0.18)" }}
+                style={{ background: "rgba(123,142,88,0.20)", color: "var(--pq-deep)", border: "1px solid rgba(66,87,34,0.22)" }}
               >
                 Uploaded: {filesUploaded.join(", ")}
               </div>
@@ -280,12 +316,12 @@ export function Wizard() {
                   <li
                     key={s.slide_number}
                     className="rounded-xl px-3 py-2 text-sm flex gap-3"
-                    style={{ background: "rgba(80,200,194,0.10)", border: "1px solid rgba(11,110,105,0.12)" }}
+                    style={{ background: "rgba(123,142,88,0.12)", border: "1px solid rgba(66,87,34,0.16)" }}
                   >
-                    <span className="font-semibold" style={{ color: "var(--pq-teal)" }}>
+                    <span className="font-semibold" style={{ color: "var(--pq-olive)" }}>
                       {String(s.slide_number).padStart(2, "0")}
                     </span>
-                    <span style={{ color: "var(--pq-pine)" }}>
+                    <span style={{ color: "var(--pq-deep)" }}>
                       <strong>{s.title}</strong>
                       <span style={{ color: "var(--pq-text-mute)" }}> — {s.purpose}</span>
                     </span>
@@ -310,7 +346,7 @@ export function Wizard() {
 
         {step === 6 && <div className="text-sm" style={{ color: "var(--pq-text-soft)" }}>Redirecting to editor…</div>}
 
-        <div className="flex items-center justify-between pt-5 border-t" style={{ borderColor: "rgba(11,110,105,0.10)" }}>
+        <div className="flex items-center justify-between pt-5 border-t" style={{ borderColor: "rgba(66,87,34,0.14)" }}>
           <button onClick={prev} disabled={step === 0 || busy} className="pq-btn pq-btn-ghost">
             <span className="pq-flip" aria-hidden>←</span> {t("wiz.back")}
           </button>

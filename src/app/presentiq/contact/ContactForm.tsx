@@ -39,7 +39,7 @@ export function ContactForm() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-3xl font-semibold tracking-tight" style={{ color: "var(--pq-pine)" }}>
+        <h1 className="text-3xl font-semibold tracking-tight" style={{ color: "var(--pq-text)" }}>
           {t("ctc.title")}
         </h1>
         <p className="text-sm mt-2" style={{ color: "var(--pq-text-soft)" }}>{t("ctc.lede")}</p>
@@ -67,7 +67,7 @@ export function ContactForm() {
 
       <Frame4D className="p-6" interactive={false}>
         {sent ? (
-          <div className="text-sm" style={{ color: "var(--pq-pine)" }}>{t("ctc.sent")}</div>
+          <div className="text-sm" style={{ color: "var(--pq-text)" }}>{t("ctc.sent")}</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">

@@ -19,7 +19,7 @@ export function ProjectsList({ items }: { items: Project[] }) {
   return (
     <div className="space-y-6">
       <header className="flex items-end justify-between gap-4 flex-wrap">
-        <h1 className="text-3xl font-semibold tracking-tight" style={{ color: "var(--pq-pine)" }}>
+        <h1 className="text-3xl font-semibold tracking-tight" style={{ color: "var(--pq-text)" }}>
           {t("proj.title")}
         </h1>
         <Link href="/presentiq/projects/new" className="pq-btn pq-btn-primary">＋ {t("nav.new")}</Link>
@@ -40,14 +40,14 @@ export function ProjectsList({ items }: { items: Project[] }) {
                   <th className="text-start">{t("proj.col.updated")}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y" style={{ borderColor: "rgba(11,110,105,0.10)" }}>
+              <tbody className="divide-y" style={{ borderColor: "rgba(66,87,34,0.14)" }}>
                 {items.map((p) => (
                   <tr key={p.id}>
                     <td className="py-3">
                       <Link
                         href={`/presentiq/projects/${p.id}`}
                         className="font-medium hover:underline"
-                        style={{ color: "var(--pq-pine)" }}
+                        style={{ color: "var(--pq-text)" }}
                       >
                         {p.title}
                       </Link>

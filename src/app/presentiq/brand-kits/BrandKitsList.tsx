@@ -19,7 +19,7 @@ export function BrandKitsList({ items }: { items: Kit[] }) {
   return (
     <div className="space-y-6">
       <header className="flex items-end justify-between gap-4 flex-wrap">
-        <h1 className="text-3xl font-semibold tracking-tight" style={{ color: "var(--pq-pine)" }}>
+        <h1 className="text-3xl font-semibold tracking-tight" style={{ color: "var(--pq-text)" }}>
           {t("bk.title")}
         </h1>
         <Link href="/presentiq/brand-kits/new" className="pq-btn pq-btn-primary">＋ {t("bk.new")}</Link>
@@ -37,7 +37,7 @@ export function BrandKitsList({ items }: { items: Kit[] }) {
                 <Link
                   href={`/presentiq/brand-kits/${k.id}`}
                   className="font-semibold hover:underline"
-                  style={{ color: "var(--pq-pine)" }}
+                  style={{ color: "var(--pq-text)" }}
                 >
                   {k.name}
                 </Link>
@@ -48,7 +48,7 @@ export function BrandKitsList({ items }: { items: Kit[] }) {
                   <span
                     key={i}
                     className="h-5 w-5 rounded-md"
-                    style={{ background: String(c), border: "1px solid rgba(11,110,105,0.18)" }}
+                    style={{ background: String(c), border: "1px solid rgba(66,87,34,0.22)" }}
                   />
                 ))}
               </div>

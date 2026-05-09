@@ -27,11 +27,11 @@ const TEMPLATES: Template[] = [
 ];
 
 const FRAMEWORK_TINT: Record<Template["framework"], string> = {
-  Pyramid: "linear-gradient(135deg, rgba(80,200,194,0.16), rgba(11,110,105,0.10))",
-  SCQA:    "linear-gradient(135deg, rgba(80,200,194,0.22), rgba(80,200,194,0.05))",
-  RACI:    "linear-gradient(135deg, rgba(11,110,105,0.18), rgba(80,200,194,0.05))",
-  OKR:     "linear-gradient(135deg, rgba(209,242,240,0.7), rgba(80,200,194,0.10))",
-  PESTEL:  "linear-gradient(135deg, rgba(11,110,105,0.22), rgba(11,110,105,0.06))",
+  Pyramid: "linear-gradient(135deg, rgba(123,142,88,0.18), rgba(66,87,34,0.10))",
+  SCQA:    "linear-gradient(135deg, rgba(123,142,88,0.24), rgba(123,142,88,0.06))",
+  RACI:    "linear-gradient(135deg, rgba(66,87,34,0.20), rgba(123,142,88,0.05))",
+  OKR:     "linear-gradient(135deg, rgba(244,242,233,0.85), rgba(123,142,88,0.12))",
+  PESTEL:  "linear-gradient(135deg, rgba(182,139,62,0.22), rgba(66,87,34,0.10))",
 };
 
 export function TemplatesGallery() {
@@ -40,7 +40,7 @@ export function TemplatesGallery() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-3xl font-semibold tracking-tight" style={{ color: "var(--pq-pine)" }}>
+        <h1 className="text-3xl font-semibold tracking-tight" style={{ color: "var(--pq-text)" }}>
           {t("tpl.title")}
         </h1>
         <p className="text-sm mt-2" style={{ color: "var(--pq-text-soft)" }}>{t("tpl.lede")}</p>
@@ -61,7 +61,7 @@ export function TemplatesGallery() {
               </span>
             </div>
             <div className="p-5">
-              <h3 className="font-semibold" style={{ color: "var(--pq-pine)" }}>
+              <h3 className="font-semibold" style={{ color: "var(--pq-text)" }}>
                 {lang === "ar" ? tp.nameAr : tp.nameEn}
               </h3>
               <p className="text-sm mt-1" style={{ color: "var(--pq-text-soft)" }}>

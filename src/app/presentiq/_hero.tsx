@@ -27,7 +27,7 @@ export function Hero() {
           <span className="pq-pill pq-pill-strong">{t("land.pill")}</span>
           <h1
             className="mt-7 font-semibold tracking-tight"
-            style={{ fontSize: "clamp(2.2rem, 5vw, 3.6rem)", lineHeight: 1.06, color: "var(--pq-pine)" }}
+            style={{ fontSize: "clamp(2.2rem, 5vw, 3.6rem)", lineHeight: 1.06, color: "var(--pq-text)" }}
           >
             {t("land.h1")}
           </h1>
@@ -52,7 +52,7 @@ export function Hero() {
       <section className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {FEATURES.map((f) => (
           <Frame4D key={String(f.titleKey)} className="p-6">
-            <h3 className="text-base font-semibold" style={{ color: "var(--pq-pine)" }}>
+            <h3 className="text-base font-semibold" style={{ color: "var(--pq-text)" }}>
               {t(f.titleKey)}
             </h3>
             <p className="text-sm mt-2" style={{ color: "var(--pq-text-soft)", lineHeight: 1.55 }}>
