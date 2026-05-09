@@ -14,22 +14,24 @@
  */
 
 import { cookies } from "next/headers";
-import type { DemoProject } from "./store";
+import type { DemoBrandKit, DemoProject } from "./store";
 
-const COOKIE = "pq_demo_state";
-const MAX_PROJECTS = 5;
-const MAX_BYTES = 3500;
+const COOKIE_PROJECTS = "pq_demo_state";
+const COOKIE_KITS     = "pq_demo_kits";
+const MAX_PROJECTS    = 5;
+const MAX_KITS        = 5;
+const MAX_BYTES       = 3500;
 
-type Slim = Omit<DemoProject, "blueprint" | "slides">;
+type SlimProject = Omit<DemoProject, "blueprint" | "slides">;
 
-function slim(p: DemoProject): Slim {
+function slimProject(p: DemoProject): SlimProject {
   const { blueprint, slides, ...rest } = p;
   return rest;
 }
 
-export function readCookieProjects(): Record<string, Slim> {
+function readCookie<T = any>(name: string): Record<string, T> {
   try {
-    const raw = cookies().get(COOKIE)?.value;
+    const raw = cookies().get(name)?.value;
     if (!raw) return {};
     const parsed = JSON.parse(decodeURIComponent(raw));
     return (parsed && typeof parsed === "object") ? parsed : {};
@@ -38,22 +40,10 @@ export function readCookieProjects(): Record<string, Slim> {
   }
 }
 
-export function writeCookieProjects(projects: Record<string, DemoProject | Slim>) {
-  const ids = Object.keys(projects).sort((a, b) =>
-    String(projects[b]?.updated_at ?? "").localeCompare(String(projects[a]?.updated_at ?? ""))
-  );
-  let kept: Record<string, Slim> = {};
-  for (const id of ids.slice(0, MAX_PROJECTS)) {
-    kept[id] = slim(projects[id] as DemoProject);
-  }
-  let json = JSON.stringify(kept);
-  while (json.length > MAX_BYTES && Object.keys(kept).length > 1) {
-    const oldest = Object.keys(kept).pop()!;
-    delete kept[oldest];
-    json = JSON.stringify(kept);
-  }
+function writeCookie(name: string, value: Record<string, unknown>) {
   try {
-    cookies().set(COOKIE, encodeURIComponent(json), {
+    const json = JSON.stringify(value);
+    cookies().set(name, encodeURIComponent(json), {
       path: "/",
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 30,
@@ -64,13 +54,36 @@ export function writeCookieProjects(projects: Record<string, DemoProject | Slim>
   }
 }
 
+// ─── Projects ─────────────────────────────────────────────────────────
+
+export function readCookieProjects(): Record<string, SlimProject> {
+  return readCookie<SlimProject>(COOKIE_PROJECTS);
+}
+
+export function writeCookieProjects(projects: Record<string, DemoProject | SlimProject>) {
+  const ids = Object.keys(projects).sort((a, b) =>
+    String(projects[b]?.updated_at ?? "").localeCompare(String(projects[a]?.updated_at ?? ""))
+  );
+  let kept: Record<string, SlimProject> = {};
+  for (const id of ids.slice(0, MAX_PROJECTS)) {
+    kept[id] = slimProject(projects[id] as DemoProject);
+  }
+  let json = JSON.stringify(kept);
+  while (json.length > MAX_BYTES && Object.keys(kept).length > 1) {
+    const oldest = Object.keys(kept).pop()!;
+    delete kept[oldest];
+    json = JSON.stringify(kept);
+  }
+  writeCookie(COOKIE_PROJECTS, kept);
+}
+
 export function upsertCookieProject(p: DemoProject) {
   const all = readCookieProjects();
-  all[p.id] = slim(p);
+  all[p.id] = slimProject(p);
   writeCookieProjects(all);
 }
 
-export function getCookieProject(id: string): Slim | null {
+export function getCookieProject(id: string): SlimProject | null {
   const all = readCookieProjects();
   return all[id] ?? null;
 }
@@ -81,4 +94,38 @@ export function deleteCookieProject(id: string) {
   delete all[id];
   writeCookieProjects(all);
   return true;
+}
+
+// ─── Brand kits ───────────────────────────────────────────────────────
+
+export function readCookieBrandKits(): Record<string, DemoBrandKit> {
+  return readCookie<DemoBrandKit>(COOKIE_KITS);
+}
+
+export function writeCookieBrandKits(kits: Record<string, DemoBrandKit>) {
+  const ids = Object.keys(kits).sort((a, b) =>
+    String(kits[b]?.created_at ?? "").localeCompare(String(kits[a]?.created_at ?? ""))
+  );
+  let kept: Record<string, DemoBrandKit> = {};
+  for (const id of ids.slice(0, MAX_KITS)) {
+    kept[id] = kits[id];
+  }
+  let json = JSON.stringify(kept);
+  while (json.length > MAX_BYTES && Object.keys(kept).length > 1) {
+    const oldest = Object.keys(kept).pop()!;
+    delete kept[oldest];
+    json = JSON.stringify(kept);
+  }
+  writeCookie(COOKIE_KITS, kept);
+}
+
+export function upsertCookieBrandKit(k: DemoBrandKit) {
+  const all = readCookieBrandKits();
+  all[k.id] = k;
+  writeCookieBrandKits(all);
+}
+
+export function getCookieBrandKit(id: string): DemoBrandKit | null {
+  const all = readCookieBrandKits();
+  return all[id] ?? null;
 }

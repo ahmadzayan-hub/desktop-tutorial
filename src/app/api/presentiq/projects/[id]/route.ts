@@ -1,17 +1,31 @@
 import { getRequestContext, getSupabase, isDemoContext, writeAudit } from "@/lib/presentiq";
 import { fail, json, notFound } from "@/lib/presentiq/api/response";
 import { getProject as getDemoProject, updateProject as updateDemoProject, deleteProject as deleteDemoProject } from "@/lib/presentiq/demo/store";
+import { buildDemoBlueprint, buildDemoSlides } from "@/lib/presentiq/demo/blueprint";
 
 export async function GET(_req: Request, { params }: { params: { id: string } }) {
   const ctx = await getRequestContext();
   if (isDemoContext(ctx)) {
     const demo = getDemoProject(params.id);
     if (!demo) return notFound("project");
+    // Slides are deterministic functions of the brief — regenerate on demand
+    // when the in-memory cache is empty (different lambda from the one that
+    // generated them). The cookie store deliberately drops slides to stay
+    // under the ~4 KB browser limit.
+    const blueprint = demo.blueprint ?? buildDemoBlueprint(demo);
+    const slides =
+      demo.slides && demo.slides.length
+        ? demo.slides
+        : buildDemoSlides({
+            title: demo.title,
+            language_mode: demo.language_mode,
+            blueprint,
+          });
     return json({
-      project: demo,
+      project: { ...demo, blueprint },
       files: [],
-      slides: demo.slides ?? [],
-      versions: demo.slides ? [{ id: "demo-v1", version_number: 1, readiness_score: 0.84 }] : [],
+      slides,
+      versions: [{ id: "demo-v1", version_number: 1, readiness_score: 0.84 }],
     });
   }
   const supabase = await getSupabase();

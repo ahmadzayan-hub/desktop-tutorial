@@ -28,6 +28,13 @@ export function Editor({ projectId, initialSlides, title }: { projectId: string;
 
   const active = useMemo(() => slides.find((s) => s.id === activeId) ?? null, [slides, activeId]);
 
+  async function readJsonOrText(res: Response): Promise<any> {
+    const text = await res.text();
+    if (!text) return null;
+    try { return JSON.parse(text); }
+    catch { return { error: { message: text.slice(0, 240) || `${res.status} ${res.statusText}` } }; }
+  }
+
   async function regen(instruction: string) {
     if (!active) return;
     setBusy(instruction); setError(null);
@@ -37,8 +44,9 @@ export function Editor({ projectId, initialSlides, title }: { projectId: string;
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ instruction }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error?.message ?? "failed");
+      const data = await readJsonOrText(res);
+      if (!res.ok) throw new Error(data?.error?.message ?? `failed (${res.status})`);
+      if (!data?.slide) throw new Error("response missing slide payload");
       setSlides((prev) => prev.map((s) => (s.id === active.id ? { ...s, ...data.slide } : s)));
     } catch (e) {
       setError((e as Error).message);
@@ -51,8 +59,9 @@ export function Editor({ projectId, initialSlides, title }: { projectId: string;
     setBusy("quality"); setError(null);
     try {
       const res = await fetch(`/api/presentiq/projects/${projectId}/quality`, { method: "POST" });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error?.message ?? "failed");
+      const data = await readJsonOrText(res);
+      if (!res.ok) throw new Error(data?.error?.message ?? `failed (${res.status})`);
+      if (!data?.report) throw new Error("response missing report payload");
       setQuality(data.report);
     } catch (e) {
       setError((e as Error).message);

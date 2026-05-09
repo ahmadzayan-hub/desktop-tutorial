@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/presentiq/i18n/context";
 import { Frame4D } from "@/components/presentiq/ui/Frame4D";
+import { CURATED_PALETTES, FONT_PAIRS } from "@/lib/presentiq/brand/presets";
 
 type Mode = { code: string; nameEn: string; nameAr: string; descEn: string; descAr: string };
 
@@ -42,6 +43,10 @@ export function Wizard() {
   const [files, setFiles] = useState<File[]>([]);
   const [filesUploaded, setFilesUploaded] = useState<string[]>([]);
   const [outline, setOutline] = useState<{ slide_number: number; title: string; purpose: string }[] | null>(null);
+
+  const [paletteId, setPaletteId] = useState<string>(CURATED_PALETTES[0].id);
+  const [fontPairId, setFontPairId] = useState<string>(FONT_PAIRS[0].id);
+  const [brandKitId, setBrandKitId] = useState<string | null>(null);
 
   const STEPS: any[] = [
     "wiz.steps.mode", "wiz.steps.brief", "wiz.steps.sources",
@@ -92,6 +97,54 @@ export function Wizard() {
         throw new Error(friendly || data?.error?.message || "create_failed");
       }
       setCreatedId(data.project.id);
+      next();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function saveBrandSelection() {
+    // Materialise the selected palette + font pair as a brand kit, then
+    // attach it to the project so the PPTX renderer picks it up.
+    if (!createdId) { next(); return; }
+    setBusy(true); setError(null);
+    try {
+      const palette = CURATED_PALETTES.find((p) => p.id === paletteId) ?? CURATED_PALETTES[0];
+      const fonts = FONT_PAIRS.find((f) => f.id === fontPairId) ?? FONT_PAIRS[0];
+      const kitRes = await fetch("/api/presentiq/brand-kits", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          name: `${palette.nameEn} · ${fonts.label}`,
+          colors: {
+            primary: palette.colors.primary,
+            secondary: palette.colors.secondary,
+            accent_1: palette.colors.accent[0],
+            accent_2: palette.colors.accent[1],
+            accent_3: palette.colors.accent[2],
+            background: palette.colors.background,
+            surface: palette.colors.surface,
+            foreground: palette.colors.foreground,
+          },
+          fonts: { en_primary: fonts.en, ar_primary: fonts.ar },
+        }),
+      });
+      const kitData = await kitRes.json();
+      if (!kitRes.ok) throw new Error(kitData?.error?.message ?? "brand_kit_failed");
+      const kitId = kitData.brand_kit.id;
+      setBrandKitId(kitId);
+
+      const patchRes = await fetch(`/api/presentiq/projects/${createdId}`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ brand_kit_id: kitId }),
+      });
+      if (!patchRes.ok) {
+        const d = await patchRes.json().catch(() => ({}));
+        throw new Error(d?.error?.message ?? "patch_failed");
+      }
       next();
     } catch (e) {
       setError((e as Error).message);
@@ -301,8 +354,61 @@ export function Wizard() {
         )}
 
         {step === 3 && (
-          <div className="space-y-4 text-sm" style={{ color: "var(--pq-text-soft)" }}>
-            <p>{t("wiz.brand.note")}</p>
+          <div className="space-y-5">
+            <p className="text-sm" style={{ color: "var(--pq-text-soft)" }}>
+              {lang === "ar"
+                ? "اختر لوحة الألوان وزوج الخطوط (إنجليزي/عربي). يمكنك دائمًا تخصيص حقيبة العلامة لاحقًا."
+                : "Pick a colour palette and an EN/AR font pair. You can always customise the brand kit later."}
+            </p>
+
+            <div>
+              <div className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--pq-text-mute)" }}>
+                {lang === "ar" ? "لوحة الألوان" : "Palette"}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {CURATED_PALETTES.map((p) => {
+                  const active = paletteId === p.id;
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => setPaletteId(p.id)}
+                      className="text-start rounded-2xl p-4 border transition"
+                      style={{
+                        background: active ? "rgba(123,142,88,0.16)" : "rgba(255,255,255,0.92)",
+                        borderColor: active ? p.colors.primary : "rgba(66,87,34,0.20)",
+                        boxShadow: active ? "0 14px 28px -10px rgba(42,56,21,0.30)" : "0 1px 2px rgba(0,0,0,0.04)",
+                      }}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <div className="font-semibold" style={{ color: "var(--pq-text)" }}>
+                            {lang === "ar" ? p.nameAr : p.nameEn}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          {[p.colors.primary, p.colors.secondary, p.colors.accent[0], p.colors.accent[1], p.colors.surface].map((c, i) => (
+                            <span key={i} className="h-5 w-5 rounded-md" style={{ background: c, border: "1px solid rgba(0,0,0,0.08)" }} />
+                          ))}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <div className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--pq-text-mute)" }}>
+                {lang === "ar" ? "زوج الخطوط (إنجليزي · عربي)" : "Font pair (EN · AR)"}
+              </div>
+              <select value={fontPairId} onChange={(e) => setFontPairId(e.target.value)}>
+                {FONT_PAIRS.map((f) => (
+                  <option key={f.id} value={f.id}>{f.label}</option>
+                ))}
+              </select>
+            </div>
+
             <span className="pq-pill">{mode.replace(/_/g, " ")}</span>
           </div>
         )}
@@ -361,7 +467,11 @@ export function Wizard() {
               {busy ? t("wiz.creating") : files.length ? t("wiz.continue") : t("wiz.skip")}
             </button>
           )}
-          {step === 3 && <button onClick={next} disabled={busy} className="pq-btn pq-btn-primary">{t("wiz.continue")}</button>}
+          {step === 3 && (
+            <button onClick={saveBrandSelection} disabled={busy} className="pq-btn pq-btn-primary">
+              {busy ? t("wiz.creating") : t("wiz.continue")}
+            </button>
+          )}
         </div>
       </div>
     </Frame4D>

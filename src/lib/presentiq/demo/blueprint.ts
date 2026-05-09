@@ -295,6 +295,7 @@ export function buildDemoSlides(opts: {
     const content = contentForSection(s.title, allTitles, total, i, title, blueprint.key_message);
 
     return {
+      id: `demo-slide-${s.slide_number}`,
       slide_number: s.slide_number,
       title_en: def.titleEn,
       title_ar: wantAr ? def.titleAr : undefined,

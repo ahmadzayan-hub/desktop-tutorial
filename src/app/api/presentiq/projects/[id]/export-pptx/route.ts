@@ -7,7 +7,7 @@ import {
   writeAudit,
 } from "@/lib/presentiq";
 import { fail, json, notFound, unauthorized } from "@/lib/presentiq/api/response";
-import { getProject as getDemoProject } from "@/lib/presentiq/demo/store";
+import { getProject as getDemoProject, getBrandKit as getDemoBrandKit } from "@/lib/presentiq/demo/store";
 import { buildDemoBlueprint, buildDemoSlides } from "@/lib/presentiq/demo/blueprint";
 
 export const runtime = "nodejs";
@@ -34,7 +34,8 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
             language_mode: project.language_mode,
             blueprint,
           });
-    const brandCtx = loadBrandContext(null, project.presentation_mode as any, project.language_mode);
+    const kit = project.brand_kit_id ? getDemoBrandKit(project.brand_kit_id) : null;
+    const brandCtx = loadBrandContext(kit as any, project.presentation_mode as any, project.language_mode);
     let buf: Buffer;
     try {
       buf = await renderDeck({ title: project.title, ctx: brandCtx, slides });

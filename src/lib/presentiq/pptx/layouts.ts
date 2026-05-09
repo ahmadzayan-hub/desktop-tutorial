@@ -174,11 +174,17 @@ function renderDecision(slide: any, m: { recommendation: string; rationale: stri
   // with the recommendation in large weight, then a tight rationale list.
   const cardX = 0.9, cardW = SLIDE_W_IN - 1.3;
   const recY = 1.5, recH = 1.7;
-  slide.addShape("rect", {
+  slide.addShape("roundRect", {
     x: cardX, y: recY, w: cardW, h: recH,
     fill: { color: hex(ctx.palette.surface) },
     line: { color: hex(ctx.palette.primary), width: 0.75 },
     rectRadius: 0.12,
+    shadow: { type: "outer", angle: 90, blur: 16, offset: 5, color: "000000", opacity: 0.22 },
+  });
+  // Leading rule on the card (small accent flag)
+  slide.addShape("rect", {
+    x: cardX, y: recY, w: 0.16, h: recH,
+    fill: { color: hex(ctx.palette.primary) }, line: { color: hex(ctx.palette.primary), width: 0 },
   });
   slide.addText(buildRuns(m.recommendation, ctx, { bold: true, size: 26, color: hex(ctx.palette.primary) }), {
     x: cardX + 0.3, y: recY + 0.25, w: cardW - 0.6, h: recH - 0.5,
@@ -198,18 +204,22 @@ function renderKpi(slide: any, m: { cards: { label: string; value: string; delta
   const w = (BODY_W - gap * (cards.length - 1)) / cards.length;
   const y = BODY_Y;
   const h = 2.4;
+  const SHADOW = { type: "outer", angle: 90, blur: 14, offset: 4, color: "000000", opacity: 0.18 } as const;
   cards.forEach((c, i) => {
     const x = BODY_X + i * (w + gap);
-    // A two-tone card: thin colour band on top, surface body underneath.
-    slide.addShape("rect", {
+    // Layered card: surface body with drop-shadow, primary top band for the
+    // 3D-ish "stat strip" feel boardroom decks expect.
+    slide.addShape("roundRect", {
       x, y, w, h,
       fill: { color: hex(ctx.palette.surface) },
       line: { color: hex(ctx.palette.primary), width: 0.5 },
       rectRadius: 0.10,
+      shadow: SHADOW,
     });
-    slide.addShape("rect", {
-      x, y, w, h: 0.18,
-      fill: { color: hex(ctx.palette.primary) }, line: { color: hex(ctx.palette.primary), width: 0 },
+    slide.addShape("roundRect", {
+      x, y, w, h: 0.22,
+      fill: { color: hex(ctx.palette.primary) },
+      line: { color: hex(ctx.palette.primary), width: 0 },
       rectRadius: 0.10,
     });
     // Label
@@ -241,9 +251,16 @@ function renderTimeline(slide: any, m: { milestones: { date: string; label: stri
   const step = (x1 - x0) / Math.max(1, ms.length - 1);
   ms.forEach((mi, i) => {
     const x = x0 + step * i;
+    // 3D-ish milestone dot: shadow ring → solid fill → highlight inset.
     slide.addShape("ellipse", {
-      x: x - 0.14, y: y - 0.14, w: 0.28, h: 0.28,
-      fill: { color: hex(ctx.palette.primary) }, line: { color: "FFFFFF", width: 2 },
+      x: x - 0.16, y: y - 0.16, w: 0.32, h: 0.32,
+      fill: { color: hex(ctx.palette.accent[0] ?? ctx.palette.secondary) },
+      line: { color: "FFFFFF", width: 0 },
+      shadow: { type: "outer", angle: 90, blur: 8, offset: 2, color: "000000", opacity: 0.25 },
+    });
+    slide.addShape("ellipse", {
+      x: x - 0.12, y: y - 0.12, w: 0.24, h: 0.24,
+      fill: { color: hex(ctx.palette.primary) }, line: { color: "FFFFFF", width: 1.5 },
     });
     slide.addText(mi.date, {
       x: x - 1.0, y: y - 0.85, w: 2.0, h: 0.4, align: "center",

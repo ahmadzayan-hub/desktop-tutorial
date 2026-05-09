@@ -7,6 +7,8 @@ const CreateSchema = z.object({
   name: z.string().min(2).max(120),
   is_default: z.boolean().optional(),
   preset: z.enum(["corporate", "government", "consulting", "uae_pine"]).optional(),
+  colors: z.record(z.string()).optional(),
+  fonts: z.record(z.string()).optional(),
 });
 
 export async function GET() {
@@ -36,8 +38,8 @@ export async function POST(req: Request) {
       name: parsed.data.name,
       is_default: parsed.data.is_default ?? false,
       preset: parsed.data.preset,
-      colors: {},
-      fonts: {},
+      colors: parsed.data.colors ?? {},
+      fonts: parsed.data.fonts ?? {},
       logos: [],
     });
     return json({ brand_kit: kit }, { status: 201 });

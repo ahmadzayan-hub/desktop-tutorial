@@ -166,6 +166,90 @@ const consultingPartner: BrandRulesContext = {
   },
 };
 
+// ─── Curated palettes ────────────────────────────────────────────────
+// Hand-picked, modern boardroom palettes the wizard exposes as one-click
+// "apply" cards. Each palette ships with a chart ramp and an EN+AR font
+// suggestion; the foreground/background are tuned for WCAG AA contrast.
+
+export type CuratedPalette = {
+  id: string;
+  nameEn: string;
+  nameAr: string;
+  colors: {
+    primary: string;
+    secondary: string;
+    accent: string[];
+    background: string;
+    surface: string;
+    foreground: string;
+  };
+  charts: string[];
+  fonts: {
+    en_primary: string;
+    ar_primary: string;
+  };
+};
+
+export const CURATED_PALETTES: CuratedPalette[] = [
+  {
+    id: "zaytouni",
+    nameEn: "Zaytouni — Olive",
+    nameAr: "زيتوني — أخضر زيتي",
+    colors: {
+      primary: "#425722", secondary: "#2A3815",
+      accent: ["#7B8E58", "#B68B3E", "#F4F2E9", "#A0AC78", "#D8B265", "#2A3815"],
+      background: "#FFFFFF", surface: "#FAF8EE", foreground: "#1B2410",
+    },
+    charts: ["#425722", "#7B8E58", "#B68B3E", "#A0AC78", "#D8B265", "#2A3815"],
+    fonts: { en_primary: "Inter", ar_primary: "IBM Plex Sans Arabic" },
+  },
+  {
+    id: "midnight",
+    nameEn: "Midnight — Indigo & Gold",
+    nameAr: "منتصف الليل — نيلي وذهبي",
+    colors: {
+      primary: "#1E1B4B", secondary: "#312E81",
+      accent: ["#6366F1", "#FBBF24", "#E0E7FF", "#A5B4FC", "#FDE68A", "#312E81"],
+      background: "#FFFFFF", surface: "#F5F3FF", foreground: "#0F0E2C",
+    },
+    charts: ["#1E1B4B", "#6366F1", "#FBBF24", "#A5B4FC", "#FDE68A", "#312E81"],
+    fonts: { en_primary: "Inter", ar_primary: "IBM Plex Sans Arabic" },
+  },
+  {
+    id: "sand",
+    nameEn: "Sand — Bronze & Charcoal",
+    nameAr: "رمل — برونزي وفحمي",
+    colors: {
+      primary: "#1F2937", secondary: "#B45309",
+      accent: ["#D97706", "#92400E", "#FEF3C7", "#374151", "#9CA3AF", "#FBBF24"],
+      background: "#FFFFFF", surface: "#FAF7F2", foreground: "#111827",
+    },
+    charts: ["#1F2937", "#B45309", "#D97706", "#92400E", "#9CA3AF", "#FBBF24"],
+    fonts: { en_primary: "Source Sans 3", ar_primary: "Tajawal" },
+  },
+  {
+    id: "slate",
+    nameEn: "Boardroom — Slate & Emerald",
+    nameAr: "قاعة المجلس — رمادي وزمردي",
+    colors: {
+      primary: "#0F172A", secondary: "#065F46",
+      accent: ["#10B981", "#22D3EE", "#E2E8F0", "#94A3B8", "#34D399", "#1E293B"],
+      background: "#FFFFFF", surface: "#F8FAFC", foreground: "#0F172A",
+    },
+    charts: ["#0F172A", "#10B981", "#22D3EE", "#94A3B8", "#34D399", "#1E293B"],
+    fonts: { en_primary: "Inter", ar_primary: "Cairo" },
+  },
+];
+
+// Curated EN/AR font pairs — used by the brand-kit picker in the wizard.
+export const FONT_PAIRS: { id: string; en: string; ar: string; label: string }[] = [
+  { id: "inter-plex",    en: "Inter",          ar: "IBM Plex Sans Arabic", label: "Inter · IBM Plex" },
+  { id: "source-tajawal",en: "Source Sans 3",  ar: "Tajawal",              label: "Source Sans · Tajawal" },
+  { id: "inter-cairo",   en: "Inter",          ar: "Cairo",                label: "Inter · Cairo" },
+  { id: "lora-amiri",    en: "Lora",           ar: "Amiri",                label: "Lora · Amiri (formal)" },
+  { id: "system",        en: "system-ui",      ar: "system-ui",            label: "System default" },
+];
+
 export const BUILT_IN_PRESETS: Record<PresentationMode | "default", BrandRulesContext> = {
   default: corporateDefault,
   corporate_boardroom: corporateDefault,

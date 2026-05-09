@@ -1,14 +1,44 @@
 import {
   getRequestContext,
   getSupabase,
+  isDemoContext,
   loadBrandContext,
   scoreDeck,
 } from "@/lib/presentiq";
 import { fail, json, notFound, unauthorized } from "@/lib/presentiq/api/response";
+import { getProject as getDemoProject } from "@/lib/presentiq/demo/store";
+import { buildDemoBlueprint, buildDemoSlides } from "@/lib/presentiq/demo/blueprint";
 
 export async function POST(_req: Request, { params }: { params: { id: string } }) {
   const ctx = await getRequestContext();
   if (!ctx) return unauthorized();
+
+  if (isDemoContext(ctx)) {
+    const demo = getDemoProject(params.id);
+    if (!demo) return notFound("project");
+    const blueprint = demo.blueprint ?? buildDemoBlueprint(demo);
+    const slides = demo.slides && demo.slides.length
+      ? demo.slides
+      : buildDemoSlides({ title: demo.title, language_mode: demo.language_mode, blueprint });
+    const brandCtx = loadBrandContext(null, demo.presentation_mode as any, demo.language_mode);
+    const report = scoreDeck({
+      slides: slides.map((s: any) => ({
+        slide_number: s.slide_number,
+        title_en: s.title_en,
+        title_ar: s.title_ar,
+        key_message_en: s.key_message_en,
+        key_message_ar: s.key_message_ar,
+        content_json: s.content_json,
+        visual_json: s.visual_json,
+        evidence_refs: s.evidence_refs,
+      })),
+      ctx: brandCtx,
+      evidence: [] as any,
+      templateCompliance: 90,
+    });
+    return json({ report });
+  }
+
   const supabase = await getSupabase();
 
   const { data: project } = await supabase

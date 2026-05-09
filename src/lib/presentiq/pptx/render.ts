@@ -37,6 +37,12 @@ export async function renderDeck(args: {
       kind === "decision" ? "PQ_DECISION" :
       "PQ_CONTENT";
     const slide = pptx.addSlide({ masterName });
+    // Soft fade transition between slides for a "live" boardroom feel.
+    if (typeof slide.transition === "function") {
+      try { slide.transition({ type: "fade" }); } catch { /* unsupported in some pptxgenjs versions */ }
+    } else {
+      try { (slide as any).transition = { type: "fade" }; } catch { /* ignore */ }
+    }
 
     // Cover and decision masters own the title + key-message slots.
     // For other slides, render the eyebrow → title → key message stack.

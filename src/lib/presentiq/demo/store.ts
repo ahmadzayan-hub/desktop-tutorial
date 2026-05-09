@@ -16,6 +16,9 @@ import {
   upsertCookieProject,
   deleteCookieProject,
   readCookieProjects,
+  getCookieBrandKit,
+  upsertCookieBrandKit,
+  readCookieBrandKits,
 } from "./cookie-store";
 
 export type DemoProject = {
@@ -166,15 +169,21 @@ export function deleteProject(id: string) {
 }
 
 // ─── Brand kits ────────────────────────────────────────────────────
+// Cookie-backed (same rationale as projects: each Vercel route runs in
+// its own lambda so module-level state isn't shared).
 
 export function listBrandKits(orgId: string) {
-  return Array.from(brandKits.values())
+  const cookieMap = readCookieBrandKits();
+  const merged = new Map<string, DemoBrandKit>();
+  for (const k of brandKits.values()) merged.set(k.id, k);
+  for (const id of Object.keys(cookieMap)) merged.set(id, cookieMap[id]);
+  return Array.from(merged.values())
     .filter((k) => k.organization_id === orgId)
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
 
 export function getBrandKit(id: string) {
-  return brandKits.get(id) ?? null;
+  return getCookieBrandKit(id) ?? brandKits.get(id) ?? null;
 }
 
 export function createBrandKit(input: Omit<DemoBrandKit, "id" | "created_at">) {
@@ -188,6 +197,7 @@ export function createBrandKit(input: Omit<DemoBrandKit, "id" | "created_at">) {
     }
   }
   brandKits.set(id, row);
+  upsertCookieBrandKit(row);
   return row;
 }
 
