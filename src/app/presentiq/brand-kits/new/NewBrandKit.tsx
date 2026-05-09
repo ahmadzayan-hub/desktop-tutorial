@@ -38,7 +38,7 @@ export function NewBrandKit() {
         {error && <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800">{error}</div>}
         <div>
           <Label>Name</Label>
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. RTA · Rail Agency" />
+          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Acme Government · Boardroom" />
         </div>
         <label className="flex items-center gap-2 text-sm text-zinc-700">
           <input type="checkbox" checked={defaultKit} onChange={(e) => setDefaultKit(e.target.checked)} />

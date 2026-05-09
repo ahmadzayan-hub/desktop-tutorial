@@ -67,13 +67,13 @@ type BrandRulesContext = {
 };
 ```
 
-## 3. RTA Mode Preset (built-in)
+## 3. UAE Pine Boardroom Mode Preset (built-in)
 
 ```ts
 const rtaBoardroomPreset = {
   palette: {
-    primary: "#171C8F",   // RTA navy
-    secondary: "#EE0032", // RTA red
+    primary: "#013230",   // Pine
+    secondary: "#0B6E69", // Teal
     accent: ["#00B0B9","#025EE1","#00B154","#FF7100","#FFB800","#8031C8"],
     background: "#FFFFFF",
     surface:    "#F4F5F9",

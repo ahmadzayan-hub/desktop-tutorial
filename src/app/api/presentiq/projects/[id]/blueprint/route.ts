@@ -2,21 +2,32 @@ import {
   buildOrchestrator,
   getRequestContext,
   getSupabase,
+  isDemoContext,
   loadBrandContext,
   resolveProvider,
   writeAudit,
 } from "@/lib/presentiq";
 import { BriefSchema } from "@/lib/presentiq/types";
-import { fail, json, notFound, unauthorized } from "@/lib/presentiq/api/response";
+import { fail, json, notFound } from "@/lib/presentiq/api/response";
+import { getProject as getDemoProject, updateProject as updateDemoProject } from "@/lib/presentiq/demo/store";
+import { buildDemoBlueprint } from "@/lib/presentiq/demo/blueprint";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
 
 export async function POST(_req: Request, { params }: { params: { id: string } }) {
   const ctx = await getRequestContext();
-  if (!ctx) return unauthorized();
-  const supabase = await getSupabase();
 
+  // Demo path — synthesise a deterministic blueprint and store it.
+  if (isDemoContext(ctx)) {
+    const demoProject = getDemoProject(params.id);
+    if (!demoProject) return notFound("project");
+    const blueprint = buildDemoBlueprint(demoProject);
+    updateDemoProject(params.id, { status: "blueprint_ready", blueprint });
+    return json({ blueprint });
+  }
+
+  const supabase = await getSupabase();
   const { data: project } = await supabase
     .from("pq_presentation_projects")
     .select("*")
@@ -39,7 +50,6 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
   });
   if (!briefParse.success) return fail("invalid_brief", "project missing fields", 400);
 
-  // Load brand kit (if any)
   let kit = null;
   if (project.brand_kit_id) {
     const { data } = await supabase.from("pq_brand_kits").select("*").eq("id", project.brand_kit_id).maybeSingle();
@@ -47,7 +57,6 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
   }
   const brandCtx = loadBrandContext(kit, project.presentation_mode, project.language_mode);
 
-  // Load evidence
   const { data: evidence } = await supabase
     .from("pq_evidence_items")
     .select("id,project_id,source_file_id,claim,value,classification,confidence,source_reference,topic_tags")
@@ -64,11 +73,7 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
 
   let blueprint;
   try {
-    blueprint = await orch.runBlueprint({
-      brief: briefParse.data,
-      evidence: (evidence ?? []) as any,
-      ctx: brandCtx,
-    });
+    blueprint = await orch.runBlueprint({ brief: briefParse.data, evidence: (evidence ?? []) as any, ctx: brandCtx });
   } catch (e) {
     return fail("generation_failed", (e as Error).message, 500);
   }

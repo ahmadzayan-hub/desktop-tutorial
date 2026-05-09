@@ -1,12 +1,12 @@
 import { randomUUID } from "node:crypto";
-import { extractFromBuffer, getRequestContext, getSupabase, scanForInjection, writeAudit, sanitiseForAgent, heuristicClassify } from "@/lib/presentiq";
-import { fail, json, notFound, unauthorized } from "@/lib/presentiq/api/response";
+import { extractFromBuffer, getRequestContext, getSupabase, isDemoContext, scanForInjection, writeAudit, sanitiseForAgent, heuristicClassify } from "@/lib/presentiq";
+import { fail, json, notFound } from "@/lib/presentiq/api/response";
 
 const MAX = 50 * 1024 * 1024; // 50 MB
 
 export async function GET(_req: Request, { params }: { params: { id: string } }) {
   const ctx = await getRequestContext();
-  if (!ctx) return unauthorized();
+  if (isDemoContext(ctx)) return json({ items: [] });
   const supabase = await getSupabase();
   const { data } = await supabase
     .from("pq_source_files")
@@ -19,7 +19,17 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 
 export async function POST(req: Request, { params }: { params: { id: string } }) {
   const ctx = await getRequestContext();
-  if (!ctx) return unauthorized();
+
+  // Demo path — accept files but skip persistence; return their metadata.
+  if (isDemoContext(ctx)) {
+    const form = await req.formData().catch(() => null);
+    if (!form) return fail("invalid_form", "expected multipart form", 400);
+    const files = form.getAll("file").filter((f): f is File => f instanceof File);
+    return json({
+      items: files.map((f) => ({ id: randomUUID(), filename: f.name, status: "clean" })),
+    });
+  }
+
   const supabase = await getSupabase();
 
   const { data: project } = await supabase

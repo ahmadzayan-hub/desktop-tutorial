@@ -2,21 +2,50 @@ import {
   buildOrchestrator,
   getRequestContext,
   getSupabase,
+  isDemoContext,
   loadBrandContext,
   resolveProvider,
   writeAudit,
 } from "@/lib/presentiq";
 import { BriefSchema, type Slide } from "@/lib/presentiq/types";
-import { fail, json, notFound, unauthorized } from "@/lib/presentiq/api/response";
+import { fail, json, notFound } from "@/lib/presentiq/api/response";
+import { getProject as getDemoProject, updateProject as updateDemoProject } from "@/lib/presentiq/demo/store";
+import { buildDemoBlueprint, buildDemoSlides } from "@/lib/presentiq/demo/blueprint";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
 export async function POST(_req: Request, { params }: { params: { id: string } }) {
   const ctx = await getRequestContext();
-  if (!ctx) return unauthorized();
-  const supabase = await getSupabase();
 
+  // Demo path — synthesise slides without calling Anthropic.
+  if (isDemoContext(ctx)) {
+    const demoProject = getDemoProject(params.id);
+    if (!demoProject) return notFound("project");
+    const blueprint = demoProject.blueprint ?? buildDemoBlueprint(demoProject);
+    const slides = buildDemoSlides({
+      title: demoProject.title,
+      language_mode: demoProject.language_mode,
+      blueprint,
+    });
+    updateDemoProject(params.id, { status: "ready", blueprint, slides });
+    return json({
+      deck_version: { id: "demo-v1", version_number: 1, readiness_score: 0.84 },
+      slides,
+      quality: {
+        scores: {
+          boardroom_readiness: 0.84, brand_compliance: 0.91, evidence_integrity: 0.78,
+          rtl: demoProject.language_mode === "en" ? 1 : 0.95, slide_simplicity: 0.88,
+          visual_quality: 0.82, executive_clarity: 0.86, accessibility: 0.9,
+          hallucination_risk: 0.12, template_compliance: 0.94,
+        },
+        findings: [],
+        recommendations: [],
+      },
+    });
+  }
+
+  const supabase = await getSupabase();
   const { data: project } = await supabase
     .from("pq_presentation_projects")
     .select("*")
@@ -78,7 +107,6 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
     return fail("generation_failed", (e as Error).message, 500);
   }
 
-  // Persist a new deck version + slides.
   const { data: lastVersion } = await supabase
     .from("pq_deck_versions")
     .select("version_number")
@@ -100,7 +128,6 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
     .select()
     .single();
 
-  // Replace prior slides for this version
   await supabase.from("pq_slides").delete().eq("project_id", project.id);
   await supabase.from("pq_slides").insert(
     slides.map((s) => ({

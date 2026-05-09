@@ -8,7 +8,7 @@
 | Component | Vitest + Testing Library | wizard, editor, panels |
 | API | Vitest + supertest-style harness | every route |
 | Integration | Vitest with real Supabase (test schema) | full pipelines |
-| E2E | Playwright (post-MVP) | wizard happy path + RTA mode |
+| E2E | Playwright (post-MVP) | wizard happy path + UAE Pine mode |
 | Visual regression | pixelmatch on PNG renders of fixture decks | brand compliance |
 
 ## 2. Acceptance Tests (mirror §17 of brief)
@@ -17,7 +17,7 @@
 
 ## 3. Brand Compliance Test Set
 
-Every preset (Corporate, Government, RTA) has fixture inputs and a golden brand-compliance score expected ≥ 90.
+Every preset (Corporate, Government, UAE Pine) has fixture inputs and a golden brand-compliance score expected ≥ 90.
 
 ## 4. Arabic RTL Test Set
 

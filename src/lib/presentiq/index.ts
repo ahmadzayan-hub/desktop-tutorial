@@ -16,6 +16,6 @@ export { canonicalHash, MemoryAiCache } from "./ai/cache";
 export { renderDeck } from "./pptx/render";
 export { extractTemplate } from "./pptx/template-intelligence";
 export { PLANS, getPlan } from "./stripe/plans";
-export { getRequestContext, requireRole } from "./auth/context";
+export { getRequestContext, requireRole, isDemoContext } from "./auth/context";
 export { getSupabase, getServiceRoleSupabase } from "./storage/supabase";
 export { writeAudit } from "./storage/audit";

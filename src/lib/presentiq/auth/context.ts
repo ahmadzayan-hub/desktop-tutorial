@@ -4,23 +4,47 @@
  * Used by every API route that performs tenant-scoped reads/writes.
  * RLS still enforces isolation; this is for application-level access checks
  * and audit logging.
+ *
+ * Demo mode: when Supabase env is missing OR there is no logged-in user,
+ * we return a synthetic demo context so the trial wizard, dashboard,
+ * brand kits and slide generation work end-to-end without any setup.
  */
 
 import { getSupabase } from "../storage/supabase";
+import { DEMO_ORG_ID, DEMO_USER_ID } from "../demo/store";
 
 export type RequestContext = {
   userId: string;
   orgId: string;
   email: string;
   role: "owner" | "admin" | "editor" | "reviewer" | "viewer";
+  isDemo?: boolean;
 };
 
-export async function getRequestContext(): Promise<RequestContext | null> {
+const DEMO_CONTEXT: RequestContext = {
+  userId: DEMO_USER_ID,
+  orgId: DEMO_ORG_ID,
+  email: "trial@presentiq.local",
+  role: "owner",
+  isDemo: true,
+};
+
+function isSupabaseConfigured(): boolean {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+  );
+}
+
+export async function getRequestContext(): Promise<RequestContext> {
+  // Trial / demo path — when Supabase is not configured, always return demo.
+  if (!isSupabaseConfigured()) return DEMO_CONTEXT;
+
   try {
     const supabase = await getSupabase();
     const { data: userResult } = await supabase.auth.getUser();
     const user = userResult?.user;
-    if (!user) return null;
+    if (!user) return DEMO_CONTEXT;
 
     const { data: row } = await supabase
       .from("pq_users")
@@ -31,7 +55,7 @@ export async function getRequestContext(): Promise<RequestContext | null> {
     // First-login bootstrap: if pq_users row doesn't exist, create a personal org.
     if (!row) {
       const created = await bootstrapUser(supabase, user.id, user.email ?? "");
-      if (!created) return null;
+      if (!created) return DEMO_CONTEXT;
       return { userId: user.id, orgId: created.org_id, email: user.email ?? "", role: "owner" };
     }
 
@@ -42,7 +66,7 @@ export async function getRequestContext(): Promise<RequestContext | null> {
       role: (row.role ?? "editor") as RequestContext["role"],
     };
   } catch {
-    return null;
+    return DEMO_CONTEXT;
   }
 }
 
@@ -77,4 +101,8 @@ async function bootstrapUser(
 
 export function requireRole(ctx: RequestContext, ...allowed: RequestContext["role"][]): boolean {
   return allowed.includes(ctx.role);
+}
+
+export function isDemoContext(ctx: RequestContext): boolean {
+  return ctx.isDemo === true || ctx.orgId === DEMO_ORG_ID;
 }

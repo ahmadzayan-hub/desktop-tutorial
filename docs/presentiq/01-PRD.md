@@ -69,7 +69,7 @@ The MVP is accepted only when **all 20** acceptance criteria from §17 of the br
 - Per-slide regeneration without re-running the full deck.
 - PPTX + PDF export.
 - Quality score panel.
-- RTA Boardroom Mode produces a decision-oriented deck.
+- UAE Pine Boardroom Mode produces a decision-oriented deck.
 - Admin audit logs.
 - Prompt-injection in uploads cannot override platform rules.
 - Stripe billing for web subscriptions is functional.

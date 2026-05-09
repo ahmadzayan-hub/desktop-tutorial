@@ -26,7 +26,7 @@ Arabic RTL support is mandatory and must export correctly into PowerPoint.
 
 ## 3. Translation Behaviour
 
-- The Translation Agent receives **English content + RTA terminology table + brand tone**.
+- The Translation Agent receives **English content + bilingual terminology table + brand tone**.
 - Output is **meaning-preserving**, not literal. The agent is explicitly told: "Do not perform word-for-word translation if it damages Arabic quality."
 - Approved EN→AR pairs are enforced via a deterministic post-processor before being sent to the renderer.
 

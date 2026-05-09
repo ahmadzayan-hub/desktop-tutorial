@@ -2,39 +2,48 @@
  * Built-in brand presets.
  *
  * Order of resolution:
- *   1. Mode preset (e.g. rta_boardroom)
+ *   1. Mode preset (e.g. corporate_boardroom)
  *   2. Organisation brand kit (if selected and applicable)
  *   3. Corporate default
+ *
+ * v0.2: removed any single-organisation references.
+ * "uae_pine_boardroom" is the new bilingual UAE-government-friendly preset
+ * using the Pine palette (Pine / Teal / Emerald / Spearmint).
  */
 
 import type { BrandRulesContext, PresentationMode } from "../types";
 
-export const rtaTerminology: { en: string; ar: string }[] = [
-  { en: "Roads and Transport Authority", ar: "هيئة الطرق والمواصلات" },
-  { en: "Government of Dubai", ar: "حكومة دبي" },
-  { en: "Rail Agency", ar: "مؤسسة القطارات" },
-  { en: "Trains Maintenance Department", ar: "إدارة صيانة القطارات" },
-  { en: "Dubai Metro", ar: "مترو دبي" },
-  { en: "Dubai Tram", ar: "ترام دبي" },
-  { en: "Maintenance", ar: "الصيانة" },
-  { en: "Asset Management", ar: "إدارة الأصول" },
-  { en: "Operational Continuity", ar: "استمرارية التشغيل" },
-  { en: "Safety", ar: "السلامة" },
-  { en: "Customer Happiness", ar: "إسعاد المتعاملين" },
-  { en: "Sustainability", ar: "الاستدامة" },
-  { en: "Digital Transformation", ar: "التحول الرقمي" },
-  { en: "Seamless and Sustainable Mobility", ar: "التنقل السلس والمستدام" },
+// Bilingual government / corporate boardroom terminology — neutral, no
+// org-specific references. Use as a starting point for new brand kits.
+export const bilingualTerminology: { en: string; ar: string }[] = [
+  { en: "Government Entity", ar: "جهة حكومية" },
+  { en: "Executive Committee", ar: "اللجنة التنفيذية" },
   { en: "Strategic Alignment", ar: "المواءمة الاستراتيجية" },
   { en: "Current Status", ar: "الوضع الحالي" },
   { en: "Key Risks", ar: "المخاطر الرئيسية" },
+  { en: "Risk Mitigation", ar: "معالجة المخاطر" },
   { en: "Recommendation", ar: "التوصية" },
   { en: "Decision Required", ar: "القرار المطلوب" },
   { en: "Next Steps", ar: "الخطوات التالية" },
-  { en: "Contract Variation", ar: "تعديل العقد" },
-  { en: "Extension of Time", ar: "تمديد المدة" },
+  { en: "Timeline", ar: "الجدول الزمني" },
+  { en: "Stakeholder", ar: "صاحب المصلحة" },
+  { en: "Operational Continuity", ar: "استمرارية التشغيل" },
+  { en: "Customer Happiness", ar: "إسعاد المتعاملين" },
+  { en: "Sustainability", ar: "الاستدامة" },
+  { en: "Digital Transformation", ar: "التحول الرقمي" },
+  { en: "Maintenance", ar: "الصيانة" },
+  { en: "Asset Management", ar: "إدارة الأصول" },
+  { en: "Safety", ar: "السلامة" },
+  { en: "Quality", ar: "الجودة" },
+  { en: "Compliance", ar: "الامتثال" },
+  { en: "Audit", ar: "التدقيق" },
   { en: "Root Cause Analysis", ar: "تحليل السبب الجذري" },
   { en: "Corrective and Preventive Actions", ar: "الإجراءات التصحيحية والوقائية" },
 ];
+
+// Backwards compatibility — older modules imported `rtaTerminology`.
+// Keep the export name so we don't break consumers, but it's now neutral.
+export const rtaTerminology = bilingualTerminology;
 
 const FORBIDDEN_GENERIC = [
   "we have decided",
@@ -49,18 +58,18 @@ const FORBIDDEN_GENERIC = [
 const corporateDefault: BrandRulesContext = {
   identity: { org_name: "Your Organisation", logos: {} },
   palette: {
-    primary: "#0F172A",
-    secondary: "#2563EB",
-    accent: ["#0EA5E9", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6"],
+    primary: "#013230",   // Pine
+    secondary: "#0B6E69", // Teal
+    accent: ["#50C8C2", "#D1F2F0", "#0B6E69", "#013230", "#5EEAD4", "#A7F3D0"],
     background: "#FFFFFF",
-    surface: "#F8FAFC",
-    foreground: "#0F172A",
+    surface: "#F4FBFA",
+    foreground: "#013230",
   },
   typography: {
     en_primary: "Inter",
     en_fallback: ["Calibri", "Arial"],
-    ar_primary: "Tajawal",
-    ar_fallback: ["Noto Kufi Arabic", "Alexandria", "Dubai"],
+    ar_primary: "IBM Plex Sans Arabic",
+    ar_fallback: ["Tajawal", "Noto Kufi Arabic", "Cairo", "Dubai"],
     title_size_pt: [28, 36],
     body_size_pt: [14, 20],
     line_height: 1.35,
@@ -73,7 +82,7 @@ const corporateDefault: BrandRulesContext = {
     slide_density: "low",
   },
   charts: {
-    palette: ["#2563EB", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#0EA5E9"],
+    palette: ["#013230", "#0B6E69", "#50C8C2", "#5EEAD4", "#A7F3D0", "#D1F2F0"],
     grid: "minimal",
     label_size_pt: 11,
   },
@@ -95,26 +104,26 @@ const corporateDefault: BrandRulesContext = {
   },
 };
 
-const rtaBoardroom: BrandRulesContext = {
+const uaePineBoardroom: BrandRulesContext = {
   ...corporateDefault,
-  identity: { org_name: "Roads and Transport Authority", logos: {} },
+  identity: { org_name: "Government Entity", logos: {} },
   palette: {
-    primary: "#171C8F",
-    secondary: "#EE0032",
-    accent: ["#00B0B9", "#025EE1", "#00B154", "#FF7100", "#FFB800", "#8031C8"],
+    primary: "#013230",
+    secondary: "#0B6E69",
+    accent: ["#50C8C2", "#D1F2F0", "#0B6E69", "#013230", "#5EEAD4", "#A7F3D0"],
     background: "#FFFFFF",
-    surface: "#F4F5F9",
-    foreground: "#171C8F",
+    surface: "#F4FBFA",
+    foreground: "#013230",
   },
   charts: {
-    palette: ["#171C8F", "#EE0032", "#00B0B9", "#025EE1", "#00B154", "#FF7100"],
+    palette: ["#013230", "#0B6E69", "#50C8C2", "#5EEAD4", "#A7F3D0", "#D1F2F0"],
     grid: "minimal",
     label_size_pt: 11,
   },
   language: {
     tone: "government_executive",
     forbidden_phrases: [...FORBIDDEN_GENERIC, "approved by His Highness"],
-    approved_terminology: rtaTerminology,
+    approved_terminology: bilingualTerminology,
     arabic_required: true,
     rtl_required: true,
   },
@@ -124,18 +133,19 @@ const governmentBoardroom: BrandRulesContext = {
   ...corporateDefault,
   identity: { org_name: "Government Entity", logos: {} },
   palette: {
-    primary: "#0B3D2E",
-    secondary: "#C8102E",
-    accent: ["#0EA5E9", "#FFB800", "#8031C8", "#10B981"],
+    primary: "#013230",
+    secondary: "#0B6E69",
+    accent: ["#50C8C2", "#D1F2F0", "#5EEAD4", "#A7F3D0"],
     background: "#FFFFFF",
-    surface: "#F4F6F8",
-    foreground: "#0B3D2E",
+    surface: "#F4FBFA",
+    foreground: "#013230",
   },
   language: {
     ...corporateDefault.language,
     tone: "government_executive",
     arabic_required: true,
     rtl_required: true,
+    approved_terminology: bilingualTerminology,
   },
 };
 
@@ -143,12 +153,12 @@ const consultingPartner: BrandRulesContext = {
   ...corporateDefault,
   identity: { org_name: "Consulting Firm", logos: {} },
   palette: {
-    primary: "#111827",
-    secondary: "#1F2937",
-    accent: ["#D4AF37", "#9CA3AF", "#1F2937"],
+    primary: "#013230",
+    secondary: "#0B6E69",
+    accent: ["#D4AF37", "#9CA3AF", "#0B6E69"],
     background: "#FFFFFF",
-    surface: "#F3F4F6",
-    foreground: "#111827",
+    surface: "#F4FBFA",
+    foreground: "#013230",
   },
   language: {
     ...corporateDefault.language,
@@ -160,7 +170,7 @@ export const BUILT_IN_PRESETS: Record<PresentationMode | "default", BrandRulesCo
   default: corporateDefault,
   corporate_boardroom: corporateDefault,
   government_boardroom: governmentBoardroom,
-  rta_boardroom: rtaBoardroom,
+  rta_boardroom: uaePineBoardroom, // Legacy key — now resolves to neutral UAE Pine boardroom preset
   consulting_partner: consultingPartner,
   sales_pitch: corporateDefault,
   project_steering: corporateDefault,

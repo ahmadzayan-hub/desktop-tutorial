@@ -30,7 +30,7 @@ PresentIQ is an **AI Agent Platform** for corporate presentation generation. Not
 src/
   lib/presentiq/
     types/             shared TS types + zod schemas
-    brand/             governance + presets (RTA, Government, Corporate, Consulting)
+    brand/             governance + presets (UAE Pine, Government, Corporate, Consulting)
     evidence/          file extractors + classifier
     rtl/               Arabic RTL validator + normaliser
     security/          prompt-injection + fake-approval detectors

@@ -599,3 +599,275 @@ html.dark .row-glass:hover { background: rgba(255,255,255,0.07); }
 .card .list-item:hover { background: rgba(248,250,252,0.9); }
 html.dark .card .list-item { background: rgba(255,255,255,0.04); }
 html.dark .card .list-item:hover { background: rgba(255,255,255,0.07); }
+
+/* ══════════════════════════════════════════════════════════════════
+   PresentIQ — Pine palette & 4D-frame system
+   Pine #013230 · Teal #0B6E69 · Emerald #50C8C2 · Spearmint #D1F2F0
+   ══════════════════════════════════════════════════════════════════ */
+
+:root {
+  --pq-spearmint: #D1F2F0;
+  --pq-emerald:   #50C8C2;
+  --pq-teal:      #0B6E69;
+  --pq-pine:      #013230;
+  --pq-deep:      #001A18;
+  --pq-mint-soft: #EAF8F7;
+  --pq-text:      #021E1C;
+  --pq-text-soft: rgba(2,30,28,0.66);
+  --pq-text-mute: rgba(2,30,28,0.46);
+  --pq-grad-hero: radial-gradient(1200px 600px at 10% -10%, rgba(80,200,194,0.30), transparent 60%),
+                  radial-gradient(900px 500px at 110% 0%, rgba(11,110,105,0.25), transparent 55%),
+                  linear-gradient(180deg, #F4FBFA 0%, #EAF8F7 100%);
+  --pq-grad-pine: linear-gradient(140deg, #013230 0%, #0B6E69 65%, #50C8C2 130%);
+  --pq-shadow-frame: 0 30px 60px -20px rgba(1,50,48,0.35), 0 12px 30px -10px rgba(11,110,105,0.20),
+                     inset 0 1px 0 rgba(255,255,255,0.65), inset 0 -1px 0 rgba(11,110,105,0.10);
+  --pq-shadow-frame-hover: 0 50px 90px -25px rgba(1,50,48,0.45), 0 24px 50px -15px rgba(11,110,105,0.30),
+                           inset 0 1px 0 rgba(255,255,255,0.85), inset 0 -1px 0 rgba(11,110,105,0.18);
+}
+
+html.dark {
+  --pq-text:      #EAF8F7;
+  --pq-text-soft: rgba(234,248,247,0.72);
+  --pq-text-mute: rgba(234,248,247,0.46);
+  --pq-mint-soft: rgba(80,200,194,0.06);
+  --pq-grad-hero: radial-gradient(1200px 600px at 10% -10%, rgba(80,200,194,0.18), transparent 60%),
+                  radial-gradient(900px 500px at 110% 0%, rgba(11,110,105,0.18), transparent 55%),
+                  linear-gradient(180deg, #001A18 0%, #001211 100%);
+  --pq-shadow-frame: 0 30px 60px -20px rgba(0,0,0,0.6), 0 12px 30px -10px rgba(11,110,105,0.30),
+                     inset 0 1px 0 rgba(80,200,194,0.18), inset 0 -1px 0 rgba(0,0,0,0.4);
+  --pq-shadow-frame-hover: 0 50px 90px -25px rgba(0,0,0,0.7), 0 24px 50px -15px rgba(11,110,105,0.40),
+                           inset 0 1px 0 rgba(80,200,194,0.30), inset 0 -1px 0 rgba(0,0,0,0.5);
+}
+
+/* PresentIQ-namespaced surface so we can scope without leaking into the rest of the app */
+[data-pq] {
+  background: var(--pq-grad-hero);
+  color: var(--pq-text);
+  font-family: "Inter","Segoe UI",system-ui,sans-serif;
+}
+
+[data-pq][dir="rtl"] {
+  font-family: "IBM Plex Sans Arabic","Tajawal","Noto Sans Arabic","Cairo",system-ui,sans-serif;
+}
+
+[data-pq] h1, [data-pq] h2, [data-pq] h3, [data-pq] h4 {
+  letter-spacing: -0.01em;
+  color: var(--pq-text);
+}
+
+[data-pq] [dir="rtl"] h1, [data-pq] [dir="rtl"] h2, [data-pq] [dir="rtl"] h3 {
+  letter-spacing: 0;
+}
+
+/* ── 4D Frame card ─ multi-layered depth, mint-on-pine, lifts on hover ── */
+
+.pq-frame {
+  position: relative;
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.92), rgba(244,251,250,0.88)),
+    linear-gradient(140deg, rgba(80,200,194,0.10), rgba(11,110,105,0.05));
+  background-blend-mode: normal, multiply;
+  border: 1px solid rgba(11,110,105,0.18);
+  box-shadow: var(--pq-shadow-frame);
+  transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, border-color .35s ease;
+  will-change: transform;
+}
+
+html.dark .pq-frame {
+  background:
+    linear-gradient(180deg, rgba(11,110,105,0.18), rgba(1,50,48,0.55)),
+    linear-gradient(140deg, rgba(80,200,194,0.08), rgba(11,110,105,0.04));
+  border: 1px solid rgba(80,200,194,0.18);
+}
+
+.pq-frame::before {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: 22px;
+  background: radial-gradient(800px 200px at 50% -20%, rgba(80,200,194,0.18), transparent 70%);
+  pointer-events: none;
+  opacity: .75;
+}
+
+.pq-frame::after {
+  content: "";
+  position: absolute; inset: -2px;
+  border-radius: 24px;
+  background: linear-gradient(140deg, rgba(80,200,194,0.30), rgba(1,50,48,0.05) 60%);
+  z-index: -1;
+  filter: blur(18px);
+  opacity: .45;
+  transition: opacity .35s ease;
+}
+
+.pq-frame.is-hover:hover,
+.pq-frame:hover {
+  transform: translateY(-4px) rotateX(0.4deg);
+  box-shadow: var(--pq-shadow-frame-hover);
+  border-color: rgba(11,110,105,0.32);
+}
+
+.pq-frame.is-hover:hover::after,
+.pq-frame:hover::after {
+  opacity: .75;
+}
+
+/* Pine-tinted frame variant — used for marquee / hero / decision-CTA cards */
+.pq-frame-pine {
+  background: var(--pq-grad-pine);
+  color: var(--pq-spearmint);
+  border-color: rgba(80,200,194,0.35);
+}
+.pq-frame-pine h1, .pq-frame-pine h2, .pq-frame-pine h3, .pq-frame-pine p {
+  color: var(--pq-spearmint);
+}
+
+/* ── Pine palette buttons (primary CTA across the platform) ── */
+
+.pq-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  border-radius: 999px;
+  font-weight: 600; font-size: 0.9rem;
+  padding: 0.7rem 1.25rem;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease, color .2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.pq-btn:active { transform: scale(0.97); }
+
+.pq-btn-primary {
+  background: var(--pq-grad-pine);
+  color: var(--pq-spearmint);
+  box-shadow: 0 12px 24px -10px rgba(1,50,48,0.5), inset 0 1px 0 rgba(255,255,255,0.18);
+}
+.pq-btn-primary:hover {
+  box-shadow: 0 18px 36px -12px rgba(1,50,48,0.65), inset 0 1px 0 rgba(255,255,255,0.28);
+  transform: translateY(-1px);
+}
+
+.pq-btn-secondary {
+  background: rgba(255,255,255,0.85);
+  color: var(--pq-pine);
+  border-color: rgba(11,110,105,0.25);
+  backdrop-filter: blur(8px);
+}
+.pq-btn-secondary:hover {
+  background: rgba(255,255,255,0.98);
+  border-color: var(--pq-teal);
+}
+html.dark .pq-btn-secondary {
+  background: rgba(80,200,194,0.10);
+  color: var(--pq-spearmint);
+  border-color: rgba(80,200,194,0.30);
+}
+
+.pq-btn-ghost {
+  color: var(--pq-pine);
+  background: transparent;
+}
+.pq-btn-ghost:hover { background: rgba(80,200,194,0.12); }
+html.dark .pq-btn-ghost { color: var(--pq-spearmint); }
+html.dark .pq-btn-ghost:hover { background: rgba(80,200,194,0.10); }
+
+/* ── Pine-aware form fields ── */
+
+[data-pq] input, [data-pq] textarea, [data-pq] select {
+  border-radius: 16px;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid rgba(11,110,105,0.22);
+  color: var(--pq-text);
+  padding: 0.7rem 0.95rem;
+  font-size: 0.95rem;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+[data-pq] input:focus, [data-pq] textarea:focus, [data-pq] select:focus {
+  outline: none;
+  border-color: var(--pq-teal);
+  box-shadow: 0 0 0 4px rgba(80,200,194,0.22);
+  background: #fff;
+}
+html.dark [data-pq] input, html.dark [data-pq] textarea, html.dark [data-pq] select {
+  background: rgba(1,50,48,0.7);
+  border-color: rgba(80,200,194,0.20);
+  color: var(--pq-spearmint);
+}
+
+[data-pq] label { color: var(--pq-text); font-weight: 600; font-size: 0.9rem; }
+
+/* ── Tag / pill / chip ── */
+
+.pq-pill {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  border-radius: 999px;
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 0.3rem 0.7rem;
+  background: rgba(80,200,194,0.18);
+  color: var(--pq-pine);
+  border: 1px solid rgba(11,110,105,0.20);
+}
+html.dark .pq-pill {
+  background: rgba(80,200,194,0.12);
+  color: var(--pq-spearmint);
+  border-color: rgba(80,200,194,0.22);
+}
+
+.pq-pill-strong {
+  background: var(--pq-pine);
+  color: var(--pq-spearmint);
+  border-color: var(--pq-teal);
+}
+
+/* ── Floating contact bubble ── */
+
+.pq-bubble {
+  position: fixed;
+  inset-inline-end: 1.1rem;
+  bottom: 1.1rem;
+  z-index: 60;
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  background: var(--pq-grad-pine);
+  color: var(--pq-spearmint);
+  box-shadow: 0 18px 30px -10px rgba(1,50,48,0.5);
+  font-weight: 600; font-size: 0.85rem;
+  text-decoration: none;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.pq-bubble:hover { transform: translateY(-2px); box-shadow: 0 22px 38px -10px rgba(1,50,48,0.6); }
+
+/* ── Animated mesh background for hero ── */
+
+.pq-mesh {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(closest-side, rgba(80,200,194,0.34), transparent 70%),
+    radial-gradient(closest-side, rgba(11,110,105,0.30), transparent 70%),
+    radial-gradient(closest-side, rgba(209,242,240,0.55), transparent 70%);
+  background-size: 60% 60%, 50% 50%, 70% 70%;
+  background-repeat: no-repeat;
+  background-position: 0% 0%, 100% 0%, 50% 100%;
+  opacity: .55;
+  filter: blur(40px);
+  animation: pq-mesh-drift 16s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes pq-mesh-drift {
+  0%   { background-position: 0% 0%, 100% 0%, 50% 100%; }
+  100% { background-position: 20% 10%, 80% 20%, 60% 90%; }
+}
+
+/* ── RTL flip helper for arrows / chevrons inside PresentIQ ── */
+[data-pq][dir="rtl"] .pq-flip { transform: scaleX(-1); }
+
+/* ── Status chips in dashboard table ── */
+.pq-status { padding: 0.18rem 0.55rem; border-radius: 999px; font-size: 0.72rem; font-weight: 600; }
+.pq-status-draft     { background: rgba(11,110,105,0.10); color: var(--pq-pine); }
+.pq-status-ready     { background: #DCFCE7; color: #065F46; }
+.pq-status-generating{ background: #FEF3C7; color: #92400E; }
+.pq-status-blueprint { background: rgba(80,200,194,0.18); color: var(--pq-pine); }

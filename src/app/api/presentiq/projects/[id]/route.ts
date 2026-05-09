@@ -1,9 +1,19 @@
-import { getRequestContext, getSupabase, writeAudit } from "@/lib/presentiq";
-import { fail, json, notFound, unauthorized } from "@/lib/presentiq/api/response";
+import { getRequestContext, getSupabase, isDemoContext, writeAudit } from "@/lib/presentiq";
+import { fail, json, notFound } from "@/lib/presentiq/api/response";
+import { getProject as getDemoProject, updateProject as updateDemoProject, deleteProject as deleteDemoProject } from "@/lib/presentiq/demo/store";
 
 export async function GET(_req: Request, { params }: { params: { id: string } }) {
   const ctx = await getRequestContext();
-  if (!ctx) return unauthorized();
+  if (isDemoContext(ctx)) {
+    const demo = getDemoProject(params.id);
+    if (!demo) return notFound("project");
+    return json({
+      project: demo,
+      files: [],
+      slides: demo.slides ?? [],
+      versions: demo.slides ? [{ id: "demo-v1", version_number: 1, readiness_score: 0.84 }] : [],
+    });
+  }
   const supabase = await getSupabase();
   const { data } = await supabase
     .from("pq_presentation_projects")
@@ -29,8 +39,6 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   const ctx = await getRequestContext();
-  if (!ctx) return unauthorized();
-  const supabase = await getSupabase();
   const patch = (await req.json().catch(() => ({}))) as Record<string, unknown>;
   const allowed = [
     "title", "audience", "objective", "decision_required",
@@ -41,6 +49,13 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   for (const k of allowed) if (k in patch) filtered[k] = patch[k];
   if (!Object.keys(filtered).length) return fail("invalid_input", "no changes", 400);
 
+  if (isDemoContext(ctx)) {
+    const updated = updateDemoProject(params.id, filtered as any);
+    if (!updated) return notFound("project");
+    return json({ project: updated });
+  }
+
+  const supabase = await getSupabase();
   const { data, error } = await supabase
     .from("pq_presentation_projects")
     .update(filtered)
@@ -58,8 +73,11 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
   const ctx = await getRequestContext();
-  if (!ctx) return unauthorized();
   if (!["owner", "admin"].includes(ctx.role)) return fail("forbidden", "owner/admin only", 403);
+  if (isDemoContext(ctx)) {
+    const ok = deleteDemoProject(params.id);
+    return ok ? json({ ok: true }) : notFound("project");
+  }
   const supabase = await getSupabase();
   const { error } = await supabase
     .from("pq_presentation_projects")
