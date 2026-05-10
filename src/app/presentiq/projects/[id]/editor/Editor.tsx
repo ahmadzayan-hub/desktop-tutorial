@@ -19,12 +19,30 @@ type Slide = {
   status: string;
 };
 
+// AI actions exposed in the right-hand panel. The `instruction` string is
+// what the regenerate-slide endpoint matches against (both demo + Supabase
+// orchestrators). `label` is what we show on the button + in the success
+// pill, `icon` is a short visual marker.
+const ACTIONS: { instruction: string; label: string; icon: string }[] = [
+  { instruction: "Regenerate this slide.",                                  label: "Regenerate",          icon: "↻" },
+  { instruction: "Simplify the slide. One idea, max 5 bullets.",            label: "Simplify",            icon: "≡" },
+  { instruction: "Make it more executive. Statement-style title, fewer words.", label: "Make executive",  icon: "◆" },
+  { instruction: "Make it more visual. Replace text with a chart or diagram.",  label: "Make visual",     icon: "▦" },
+  { instruction: "Translate to Arabic and add the Arabic version.",         label: "Translate to Arabic", icon: "ع" },
+  { instruction: "Convert to bilingual: keep EN, add formal corporate AR.", label: "Convert bilingual",   icon: "⇄" },
+  { instruction: "Add executive speaker notes in EN and AR.",               label: "Add speaker notes",   icon: "✎" },
+];
+
 export function Editor({ projectId, initialSlides, title }: { projectId: string; initialSlides: Slide[]; title: string }) {
   const [slides, setSlides] = useState<Slide[]>(initialSlides);
   const [activeId, setActiveId] = useState<string | null>(initialSlides[0]?.id ?? null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [quality, setQuality] = useState<any>(null);
+  // Most-recently-applied action label, shown as a transient "✓ Updated" pill
+  // next to the Actions panel so the user gets a clear success signal even
+  // when the change is subtle (e.g. a small key-message tweak).
+  const [lastApplied, setLastApplied] = useState<string | null>(null);
 
   const active = useMemo(() => slides.find((s) => s.id === activeId) ?? null, [slides, activeId]);
 
@@ -35,7 +53,7 @@ export function Editor({ projectId, initialSlides, title }: { projectId: string;
     catch { return { error: { message: text.slice(0, 240) || `${res.status} ${res.statusText}` } }; }
   }
 
-  async function regen(instruction: string) {
+  async function regen(instruction: string, label?: string) {
     if (!active) return;
     setBusy(instruction); setError(null);
     try {
@@ -48,6 +66,10 @@ export function Editor({ projectId, initialSlides, title }: { projectId: string;
       if (!res.ok) throw new Error(data?.error?.message ?? `failed (${res.status})`);
       if (!data?.slide) throw new Error("response missing slide payload");
       setSlides((prev) => prev.map((s) => (s.id === active.id ? { ...s, ...data.slide } : s)));
+      if (label) {
+        setLastApplied(label);
+        setTimeout(() => setLastApplied((cur) => (cur === label ? null : cur)), 2400);
+      }
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -143,8 +165,12 @@ export function Editor({ projectId, initialSlides, title }: { projectId: string;
         <Card>
           <CardHeader title={active ? `Slide ${active.slide_number}` : title} action={
             <div className="flex gap-2">
-              <Button variant="secondary" onClick={checkQuality} disabled={busy !== null}>Run quality</Button>
-              <Button onClick={exportPptx} disabled={busy !== null}>Export PPTX</Button>
+              <Button variant="liquid" onClick={checkQuality} disabled={busy !== null}>
+                {busy === "quality" ? <><span className="pq-spinner" aria-hidden /> Running…</> : "Run quality"}
+              </Button>
+              <Button variant="liquid-primary" onClick={exportPptx} disabled={busy !== null}>
+                {busy === "pptx" ? <><span className="pq-spinner" aria-hidden /> Exporting…</> : "Export PPTX"}
+              </Button>
             </div>
           } />
           <CardBody>
@@ -179,18 +205,37 @@ export function Editor({ projectId, initialSlides, title }: { projectId: string;
         </Card>
       </section>
 
-      {/* Actions panel */}
+      {/* Actions panel — liquid (frosted-glass) capsules for AI tweaks */}
       <aside className="col-span-12 lg:col-span-3 space-y-4">
         <Card>
-          <CardHeader title="Actions" />
-          <CardBody className="grid grid-cols-1 gap-2">
-            <Button variant="secondary" disabled={!active || busy !== null} onClick={() => regen("Regenerate this slide.")}>{busy === "Regenerate this slide." ? "…" : "Regenerate"}</Button>
-            <Button variant="secondary" disabled={!active || busy !== null} onClick={() => regen("Simplify the slide. One idea, max 5 bullets.")}>Simplify</Button>
-            <Button variant="secondary" disabled={!active || busy !== null} onClick={() => regen("Make it more executive. Statement-style title, fewer words.")}>Make executive</Button>
-            <Button variant="secondary" disabled={!active || busy !== null} onClick={() => regen("Make it more visual. Replace text with a chart or diagram.")}>Make visual</Button>
-            <Button variant="secondary" disabled={!active || busy !== null} onClick={() => regen("Translate to Arabic and add the Arabic version.")}>Translate to Arabic</Button>
-            <Button variant="secondary" disabled={!active || busy !== null} onClick={() => regen("Convert to bilingual: keep EN, add formal corporate AR.")}>Convert bilingual</Button>
-            <Button variant="secondary" disabled={!active || busy !== null} onClick={() => regen("Add executive speaker notes in EN and AR.")}>Add speaker notes</Button>
+          <CardHeader
+            title="Actions"
+            subtitle={lastApplied ? `✓ ${lastApplied}` : undefined}
+          />
+          <CardBody className="grid grid-cols-1 gap-2.5">
+            {ACTIONS.map((a) => {
+              const isBusy = busy === a.instruction;
+              return (
+                <Button
+                  key={a.instruction}
+                  variant="liquid"
+                  disabled={!active || busy !== null}
+                  onClick={() => regen(a.instruction, a.label)}
+                  aria-busy={isBusy ? "true" : "false"}
+                  style={{ padding: "0.7rem 1rem", fontSize: "0.88rem", justifyContent: "center" }}
+                >
+                  {isBusy ? (
+                    <>
+                      <span className="pq-spinner" aria-hidden /> Working…
+                    </>
+                  ) : (
+                    <>
+                      <span aria-hidden style={{ opacity: 0.85 }}>{a.icon}</span> {a.label}
+                    </>
+                  )}
+                </Button>
+              );
+            })}
           </CardBody>
         </Card>
         {quality && <QualityPanel report={quality} />}

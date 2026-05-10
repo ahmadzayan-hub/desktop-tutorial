@@ -561,7 +561,7 @@ export function Wizard() {
                 ))}
               </ol>
             )}
-            <button onClick={generateBlueprint} disabled={busy || !createdId} className="pq-btn pq-btn-primary">
+            <button onClick={generateBlueprint} disabled={busy || !createdId} className="pq-btn pq-btn-liquid pq-btn-liquid-primary pq-btn-liquid-pill">
               {busy ? t("wiz.generating") : t("wiz.gen.outline")}
             </button>
           </div>
@@ -570,7 +570,7 @@ export function Wizard() {
         {step === 5 && (
           <div className="space-y-4 text-sm" style={{ color: "var(--pq-text-soft)" }}>
             <p>{t("wiz.deck.note")}</p>
-            <button onClick={generateDeck} disabled={busy || !createdId} className="pq-btn pq-btn-primary">
+            <button onClick={generateDeck} disabled={busy || !createdId} className="pq-btn pq-btn-liquid pq-btn-liquid-primary pq-btn-liquid-pill">
               {busy ? t("wiz.generating") : t("wiz.gen.deck")}
             </button>
           </div>
@@ -582,19 +582,19 @@ export function Wizard() {
           <button onClick={prev} disabled={step === 0 || busy} className="pq-btn pq-btn-ghost">
             <span className="pq-flip" aria-hidden>←</span> {t("wiz.back")}
           </button>
-          {step === 0 && <button onClick={next} disabled={busy} className="pq-btn pq-btn-primary">{t("wiz.continue")}</button>}
+          {step === 0 && <button onClick={next} disabled={busy} className="pq-btn pq-btn-liquid pq-btn-liquid-primary pq-btn-liquid-pill">{t("wiz.continue")}</button>}
           {step === 1 && (
-            <button onClick={createProject} disabled={!title || busy} className="pq-btn pq-btn-primary">
+            <button onClick={createProject} disabled={!title || busy} className="pq-btn pq-btn-liquid pq-btn-liquid-primary pq-btn-liquid-pill">
               {busy ? t("wiz.creating") : t("wiz.create")}
             </button>
           )}
           {step === 2 && (
-            <button onClick={uploadFiles} disabled={busy} className="pq-btn pq-btn-primary">
+            <button onClick={uploadFiles} disabled={busy} className="pq-btn pq-btn-liquid pq-btn-liquid-primary pq-btn-liquid-pill">
               {busy ? t("wiz.creating") : files.length ? t("wiz.continue") : t("wiz.skip")}
             </button>
           )}
           {step === 3 && (
-            <button onClick={saveBrandSelection} disabled={busy} className="pq-btn pq-btn-primary">
+            <button onClick={saveBrandSelection} disabled={busy} className="pq-btn pq-btn-liquid pq-btn-liquid-primary pq-btn-liquid-pill">
               {busy ? t("wiz.creating") : t("wiz.continue")}
             </button>
           )}

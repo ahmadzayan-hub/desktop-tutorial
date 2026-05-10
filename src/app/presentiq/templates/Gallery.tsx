@@ -69,7 +69,7 @@ export function TemplatesGallery() {
               </p>
               <Link
                 href={`/presentiq/projects/new?template=${tp.code}`}
-                className="pq-btn pq-btn-secondary mt-4"
+                className="pq-btn pq-btn-liquid pq-btn-liquid-pill mt-4"
                 style={{ width: "100%", justifyContent: "center" }}
               >
                 {t("tpl.use")}

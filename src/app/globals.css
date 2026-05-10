@@ -929,6 +929,20 @@ html.dark {
   pointer-events: none;
 }
 
+/* Inline spinner (used inside liquid action buttons) */
+.pq-spinner {
+  display: inline-block;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,0.25);
+  border-top-color: rgba(255,255,255,0.95);
+  animation: pq-spin 0.8s linear infinite;
+  margin-inline-end: 0.4rem;
+  vertical-align: -0.1rem;
+}
+@keyframes pq-spin { to { transform: rotate(360deg); } }
+
 /* Liquid icon button (round) */
 .pq-liquid-icon-btn {
   display: inline-grid;
