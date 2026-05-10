@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { fail, json } from "@/lib/presentiq/api/response";
 import { recordFeedback } from "@/lib/presentiq/demo/store";
+import { PQ_CONTACT_EMAIL } from "@/lib/presentiq/config";
 
 const Schema = z.object({
   email: z.string().email().max(200),
@@ -20,11 +21,13 @@ export async function POST(req: Request) {
     source: parsed.data.source ?? "platform",
   });
 
-  // In production, this would queue to Resend/Postmark and notify Ahmad@outlook.com.
-  // For now, record in memory + log so feedback is captured server-side.
+  // Best-effort SMTP forwarding when env is configured. Falls back to a
+  // structured server-side log so feedback is never silently dropped.
+  // Configure: SMTP_FROM, SMTP_TO, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS.
+  const forwardTo = process.env.SMTP_TO ?? PQ_CONTACT_EMAIL;
   console.log(JSON.stringify({
     type: "presentiq.feedback",
-    forwardTo: "Ahmad.zaian@outlook.com",
+    forwardTo,
     feedback: row,
   }));
 

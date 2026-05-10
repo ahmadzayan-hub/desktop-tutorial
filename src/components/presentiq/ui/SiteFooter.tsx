@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useI18n } from "@/lib/presentiq/i18n/context";
 import { Logo } from "@/components/presentiq/ui/Logo";
+import { PQ_CONTACT_EMAIL } from "@/lib/presentiq/config";
 
 /**
  * Slim site footer (v0.4.2).
@@ -40,7 +41,7 @@ export function SiteFooter() {
           <div className="pq-footer-slim-social" aria-label="Social links">
             <a href="https://www.linkedin.com/company/tweenz" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="pq-social">in</a>
             <a href="https://x.com/tweenzAI" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" className="pq-social">×</a>
-            <a href="mailto:Ahmad.zaian@outlook.com" aria-label="Email Ahmad" className="pq-social">@</a>
+            <a href={`mailto:${PQ_CONTACT_EMAIL}`} aria-label="Email founder" className="pq-social">@</a>
           </div>
           <div className="pq-footer-slim-copy">{t("foot.copyright")}</div>
         </div>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useI18n } from "@/lib/presentiq/i18n/context";
 import { Frame4D } from "@/components/presentiq/ui/Frame4D";
+import { PQ_CONTACT_EMAIL } from "@/lib/presentiq/config";
 
 type Entry = {
   titleEn: string;
@@ -12,6 +13,37 @@ type Entry = {
 };
 
 const V0_2_DELTAS: Entry[] = [
+  // ── v0.4 release notes ─────────────────────────────────────────
+  {
+    titleEn: "v0.4 — Zaian Sky palette + liquid buttons + motion system",
+    titleAr: "الإصدار 0.4 — هوية «سماء زيان» وأزرار سائلة ونظام حركة",
+    bodyEn: "Indigo + cyan + magenta sky palette over deep navy replaces the v0.3 forest scheme. Liquid frosted-glass buttons (translucent capsule, double inset highlight, top gloss) ship across the wizard, editor actions, and templates. Subtle scroll-aware motion: hero stagger, mesh aurora pan, focus glows.",
+    bodyAr: "تحلّ هوية «سماء زيان» (نيلي + سماوي + فوشي على كحلي عميق) محل خضرة الإصدار 0.3. أزرار سائلة بزجاج معتم (كبسولة شفافة، إضاءة داخلية مزدوجة، انعكاس علوي) عبر المعالج وإجراءات المحرر والقوالب. حركات هادئة: درج البطل، تموّج خلفية الشبكة، حواف تركيز ساطعة.",
+  },
+  {
+    titleEn: "Real templates registry — 9 boardroom outlines, bilingual",
+    titleAr: "سجل قوالب حقيقي — ٩ مخططات مجلس إدارة ثنائية اللغة",
+    bodyEn: "Each template now ships with a real ordered outline (12–18 slides, EN/AR title + purpose), recommended preset, default slide count and duration. Picking a template pre-fills the wizard and projects the template's outline straight onto the Blueprint step.",
+    bodyAr: "يأتي كل قالب الآن بمخطّط مرتّب حقيقي (١٢–١٨ شريحة، عنوان EN/AR + الغرض)، إعداد موصى به، عدد شرائح ومدة افتراضية. اختيار القالب يعبّئ المعالج ويُسقط مخطّطه مباشرة على خطوة المخطّط.",
+  },
+  {
+    titleEn: "Slim footer + ChatlyAI-style composer hero",
+    titleAr: "تذييل مختصر + قسم بطل بأسلوب ChatlyAI",
+    bodyEn: "The 4-column sitemap footer is replaced by a single compact band (brand + trust pills + social + copyright). The landing hero is now a centered prompt composer with a Classic / Studio mode toggle, slide-count picker, and a categorised template grid below.",
+    bodyAr: "استُبدل تذييل القوائم الأربع بشريط مختصر (الهوية + شارات الثقة + الاجتماعي + حقوق النشر). أصبح القسم البطل مُؤلِّفاً نصياً مركزياً بمفتاح كلاسيكي/استوديو ومنتقي عدد شرائح وشبكة قوالب أسفله.",
+  },
+  {
+    titleEn: "Demo flow hardened against serverless lambda boundaries",
+    titleAr: "تدفّق التجربة محصَّن ضد حدود اللامبدا",
+    bodyEn: "Cookie store now base64-encodes (vs URI-encodes), and the wizard pins the just-created project as an x-pq-demo-project header on every step — so 'project not found' on Outline is fixed even when cookies get dropped.",
+    bodyAr: "يستخدم مخزن الكوكي ترميز Base64 بدلاً من URI، ويثبّت المعالج المشروع كرأس x-pq-demo-project في كل خطوة — يعالج خطأ «لم يُعثر على المشروع» في خطوة المخطّط حتى عند سقوط الكوكي.",
+  },
+  {
+    titleEn: "Corrupt PPTX export fixed",
+    titleAr: "إصلاح تلف ملف PPTX المُصدَّر",
+    bodyEn: "The demo export now allocates a private Uint8Array and copies the rendered bytes into it, instead of slicing into Node's pooled Buffer ArrayBuffer (which could include trailing garbage and corrupt the zip).",
+    bodyAr: "يخصّص تصدير التجربة الآن Uint8Array خاصاً وينسخ البايتات الناتجة إليه، بدلاً من اقتطاع ArrayBuffer للحوض المشترك في Node (الذي قد يضيف بايتات زائدة ويُتلف الأرشيف).",
+  },
   {
     titleEn: "v0.3 — dark forest UI, lime accents, integrated PresentIQ logo",
     titleAr: "الإصدار 0.3 — واجهة داكنة بلون الغابة وأخضر ليموني وشعار PresentIQ المدمج",
@@ -57,8 +89,8 @@ const V0_2_DELTAS: Entry[] = [
   {
     titleEn: "Contact + trial-feedback flow",
     titleAr: "تواصل وتجربة وتغذية راجعة",
-    bodyEn: "Floating contact bubble + dedicated /contact page. Feedback routes to Ahmad.zaian@outlook.com.",
-    bodyAr: "زر تواصل عائم وصفحة مخصصة. ترسل الملاحظات إلى Ahmad.zaian@outlook.com.",
+    bodyEn: `Floating contact bubble + dedicated /contact page. Feedback routes to ${PQ_CONTACT_EMAIL}.`,
+    bodyAr: `زر تواصل عائم وصفحة مخصصة. ترسل الملاحظات إلى ${PQ_CONTACT_EMAIL}.`,
   },
   {
     titleEn: "Removed transit-authority-specific copy",
@@ -82,7 +114,7 @@ export function Changelog() {
   return (
     <div className="space-y-8">
       <header>
-        <span className="pq-pill pq-pill-strong">v0.3 · {new Date().toLocaleDateString(lang === "ar" ? "ar-AE" : "en-AE")}</span>
+        <span className="pq-pill pq-pill-strong">v0.4 · {new Date().toLocaleDateString(lang === "ar" ? "ar-AE" : "en-AE")}</span>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight" style={{ color: "var(--pq-text)" }}>
           {t("v2.title")}
         </h1>

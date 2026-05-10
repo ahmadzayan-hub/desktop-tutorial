@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useI18n } from "@/lib/presentiq/i18n/context";
 import { Frame4D } from "@/components/presentiq/ui/Frame4D";
+import { PQ_CONTACT_EMAIL } from "@/lib/presentiq/config";
 
-const CONTACT_EMAIL = "Ahmad.zaian@outlook.com";
+const CONTACT_EMAIL = PQ_CONTACT_EMAIL;
 
 export function ContactForm() {
   const { t } = useI18n();
@@ -94,7 +95,7 @@ export function ContactForm() {
               <button
                 disabled={sending || !email || !subject || !message}
                 onClick={submit}
-                className="pq-btn pq-btn-primary"
+                className="pq-btn pq-btn-liquid pq-btn-liquid-primary pq-btn-liquid-pill"
               >
                 {sending ? t("ctc.sending") : t("ctc.send")}
               </button>

@@ -105,21 +105,6 @@ export function Hero() {
             >
               <span aria-hidden>◆</span>
               {lang === "ar" ? "استوديو" : "Studio"}
-              <span
-                style={{
-                  fontSize: "0.65rem",
-                  fontWeight: 700,
-                  letterSpacing: "0.06em",
-                  textTransform: "uppercase",
-                  padding: "0.12rem 0.4rem",
-                  borderRadius: 999,
-                  background: "rgba(138,108,247,0.20)",
-                  color: "var(--pq-accent-violet)",
-                  border: "1px solid rgba(138,108,247,0.42)",
-                }}
-              >
-                Pro
-              </span>
             </button>
           </div>
 

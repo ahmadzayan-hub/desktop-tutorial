@@ -5,7 +5,6 @@ import { ReactNode, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useI18n } from "@/lib/presentiq/i18n/context";
 import { LangToggle } from "@/components/presentiq/ui/LangToggle";
-import { PromoBanner } from "@/components/presentiq/ui/PromoBanner";
 import { SiteFooter } from "@/components/presentiq/ui/SiteFooter";
 import { Logo } from "@/components/presentiq/ui/Logo";
 
@@ -41,12 +40,10 @@ export function PresentIqShell({ children }: { children: ReactNode }) {
 
   return (
     <div dir={dir} lang={lang} style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      <PromoBanner />
-
       <header
         className="pq-header sticky top-0 z-30"
         style={{
-          background: "rgba(7,16,10,0.85)",
+          background: "rgba(10,14,42,0.78)",
           backdropFilter: "blur(16px) saturate(1.4)",
           borderBottom: "1px solid var(--pq-border-soft)",
         }}
@@ -77,15 +74,8 @@ export function PresentIqShell({ children }: { children: ReactNode }) {
           </nav>
           <div className="flex items-center gap-2 shrink-0">
             <LangToggle />
-            {isMarketing && (
-              <Link
-                href="/presentiq/dashboard"
-                className="pq-btn pq-btn-liquid pq-btn-liquid-pill hidden md:inline-flex"
-                style={{ padding: "0.5rem 1rem", fontSize: "0.82rem" }}
-              >
-                {t("marketing.nav.login")}
-              </Link>
-            )}
+            {/* "Log in" pill removed in v0.4.3 — auth flow isn't shipped yet,
+                so the pill led nowhere meaningful. Re-add when /login is real. */}
             <Link
               href="/presentiq/projects/new"
               className="pq-btn pq-btn-liquid pq-btn-liquid-primary pq-btn-liquid-pill hidden md:inline-flex"
