@@ -810,16 +810,16 @@ html.dark {
 
 .pq-btn-primary {
   background: var(--pq-grad-lime);
-  color: var(--pq-primary-text);
+  color: #FFFFFF;
   box-shadow:
-    0 14px 28px -10px rgba(159,205,99,0.55),
+    0 14px 28px -10px rgba(99,102,241,0.55),
     inset 0 1px 0 rgba(255,255,255,0.30);
-  border-color: rgba(159,205,99,0.80);
+  border-color: rgba(138,108,247,0.55);
 }
 .pq-btn-primary:hover {
-  background: linear-gradient(135deg, #88C04F 0%, #B8E878 60%, #DDF59A 130%);
+  background: linear-gradient(135deg, #4F46E5 0%, #6366F1 50%, #8A6CF7 130%);
   box-shadow:
-    0 18px 36px -12px rgba(159,205,99,0.70),
+    0 18px 36px -12px rgba(99,102,241,0.70),
     inset 0 1px 0 rgba(255,255,255,0.40);
   transform: translateY(-1px);
 }
@@ -910,20 +910,32 @@ html.dark {
     inset 0 -1px 0 rgba(255,255,255,0.16),
     inset 0 0 0 1px rgba(255,255,255,0.10);
 }
-/* Tinted variants — keep the glass body, tint with primary glow */
+/* Tinted variants — keep the glass body, tint with the Zaian Sky indigo/
+   violet gradient (the third reference photo). Magenta rim glow on hover. */
 .pq-btn-liquid-primary {
-  color: var(--pq-primary-text);
+  color: #FFFFFF;
   background:
-    linear-gradient(180deg, rgba(212,240,140,0.85), rgba(159,205,99,0.55) 60%, rgba(123,185,74,0.85)),
-    rgba(159,205,99,0.30);
-  border-color: rgba(212,240,140,0.7);
+    linear-gradient(180deg, rgba(138,108,247,0.95), rgba(99,102,241,0.85) 55%, rgba(79,70,229,0.95)),
+    rgba(99,102,241,0.45);
+  border-color: rgba(199,204,236,0.55);
   box-shadow:
-    0 14px 32px -10px rgba(159,205,99,0.55),
+    0 14px 32px -10px rgba(99,102,241,0.55),
+    0 4px 18px -6px rgba(233,75,159,0.35),
     inset 0 1px 0 rgba(255,255,255,0.55),
-    inset 0 -1px 0 rgba(255,255,255,0.16);
+    inset 0 -1px 0 rgba(255,255,255,0.18);
 }
 .pq-btn-liquid-primary::before {
   background: radial-gradient(120% 60% at 50% -10%, rgba(255,255,255,0.55), transparent 60%);
+}
+.pq-btn-liquid-primary:hover {
+  background:
+    linear-gradient(180deg, rgba(167,139,250,1), rgba(129,140,248,0.95) 55%, rgba(99,102,241,1)),
+    rgba(99,102,241,0.55);
+  box-shadow:
+    0 18px 40px -10px rgba(99,102,241,0.7),
+    0 6px 22px -8px rgba(233,75,159,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.65),
+    inset 0 -1px 0 rgba(255,255,255,0.22);
 }
 .pq-btn-liquid-pill { border-radius: 999px; }
 

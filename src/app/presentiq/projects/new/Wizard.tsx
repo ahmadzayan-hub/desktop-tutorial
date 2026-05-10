@@ -82,6 +82,7 @@ export function Wizard() {
   }, []);
 
   const [createdId, setCreatedId] = useState<string | null>(null);
+  const [createdProject, setCreatedProject] = useState<any>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [filesUploaded, setFilesUploaded] = useState<string[]>([]);
   const [outline, setOutline] = useState<{ slide_number: number; title: string; purpose: string }[] | null>(null);
@@ -92,6 +93,22 @@ export function Wizard() {
   const [companyLogo, setCompanyLogo] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [logoUploaded, setLogoUploaded] = useState(false);
+
+  // Demo-mode reliability shim — Vercel's serverless lambdas can drop the
+  // demo cookie between hops. Pin the just-created project on every wizard
+  // request as `x-pq-demo-project` (base64 JSON); the route handler falls
+  // back to this header when the cookie store comes up empty.
+  function demoHeaders(extra: Record<string, string> = {}): Record<string, string> {
+    if (!createdProject) return extra;
+    try {
+      const json = JSON.stringify(createdProject);
+      const b64 = btoa(unescape(encodeURIComponent(json)))
+        .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+      return { ...extra, "x-pq-demo-project": b64 };
+    } catch {
+      return extra;
+    }
+  }
 
   const STEPS: any[] = [
     "wiz.steps.mode", "wiz.steps.brief", "wiz.steps.sources",
@@ -142,6 +159,7 @@ export function Wizard() {
         throw new Error(friendly || data?.error?.message || "create_failed");
       }
       setCreatedId(data.project.id);
+      setCreatedProject(data.project);
       next();
     } catch (e) {
       setError((e as Error).message);
@@ -191,6 +209,7 @@ export function Wizard() {
           fd.append("locale", lang === "ar" ? "ar" : "en");
           const lr = await fetch(`/api/presentiq/brand-kits/${kitId}/upload-logo`, {
             method: "POST",
+            headers: demoHeaders(),
             body: fd,
           });
           if (lr.ok) setLogoUploaded(true);
@@ -199,13 +218,15 @@ export function Wizard() {
 
       const patchRes = await fetch(`/api/presentiq/projects/${createdId}`, {
         method: "PATCH",
-        headers: { "content-type": "application/json" },
+        headers: demoHeaders({ "content-type": "application/json" }),
         body: JSON.stringify({ brand_kit_id: kitId }),
       });
       if (!patchRes.ok) {
         const d = await patchRes.json().catch(() => ({}));
         throw new Error(d?.error?.message ?? "patch_failed");
       }
+      const patched = await patchRes.json().catch(() => null);
+      if (patched?.project) setCreatedProject(patched.project);
       next();
     } catch (e) {
       setError((e as Error).message);
@@ -234,7 +255,11 @@ export function Wizard() {
     try {
       const fd = new FormData();
       for (const f of files) fd.append("file", f);
-      const res = await fetch(`/api/presentiq/projects/${createdId}/files`, { method: "POST", body: fd });
+      const res = await fetch(`/api/presentiq/projects/${createdId}/files`, {
+        method: "POST",
+        headers: demoHeaders(),
+        body: fd,
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error?.message ?? "upload_failed");
       setFilesUploaded(data.items.map((i: any) => i.filename));
@@ -250,7 +275,10 @@ export function Wizard() {
     if (!createdId) return;
     setBusy(true); setError(null);
     try {
-      const res = await fetch(`/api/presentiq/projects/${createdId}/blueprint`, { method: "POST" });
+      const res = await fetch(`/api/presentiq/projects/${createdId}/blueprint`, {
+        method: "POST",
+        headers: demoHeaders(),
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error?.message ?? "blueprint_failed");
       setOutline(data.blueprint?.recommended_structure ?? []);
@@ -266,7 +294,10 @@ export function Wizard() {
     if (!createdId) return;
     setBusy(true); setError(null);
     try {
-      const res = await fetch(`/api/presentiq/projects/${createdId}/slides`, { method: "POST" });
+      const res = await fetch(`/api/presentiq/projects/${createdId}/slides`, {
+        method: "POST",
+        headers: demoHeaders(),
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error?.message ?? "generation_failed");
       router.push(`/presentiq/projects/${createdId}/editor`);

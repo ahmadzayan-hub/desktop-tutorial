@@ -42,13 +42,19 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
     } catch (e) {
       return fail("render_failed", (e as Error).message, 500);
     }
-    const body = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength) as unknown as BodyInit;
+    // Detach from Node's shared Buffer pool — `buf.buffer` can include
+    // unrelated data because small Buffers share an underlying ArrayBuffer.
+    // Allocate a private Uint8Array that owns its own bytes so the response
+    // body is exactly the rendered PPTX, with no trailing garbage.
+    const body = new Uint8Array(buf.byteLength);
+    body.set(buf);
     return new Response(body, {
       status: 200,
       headers: {
         "content-type":
           "application/vnd.openxmlformats-officedocument.presentationml.presentation",
         "content-disposition": `attachment; filename="${safeFilename(project.title)}.pptx"`,
+        "content-length": String(body.byteLength),
         "cache-control": "no-store",
       },
     });

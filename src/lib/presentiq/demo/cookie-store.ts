@@ -13,14 +13,16 @@
  * cookie comfortably under the ~4KB per-cookie browser limit.
  */
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import type { DemoBrandKit, DemoProject } from "./store";
 
 const COOKIE_PROJECTS = "pq_demo_state";
 const COOKIE_KITS     = "pq_demo_kits";
-const MAX_PROJECTS    = 5;
-const MAX_KITS        = 5;
-const MAX_BYTES       = 3500;
+// Browser cookie cap is ~4096 bytes for the full Set-Cookie line. Leave
+// headroom for name + attributes (~300 bytes) and stay under the cap.
+const MAX_PROJECTS    = 3;
+const MAX_KITS        = 3;
+const MAX_BYTES       = 3700;
 
 type SlimProject = Omit<DemoProject, "blueprint" | "slides">;
 
@@ -29,11 +31,36 @@ function slimProject(p: DemoProject): SlimProject {
   return rest;
 }
 
+// Encode JSON as URL-safe base64. More compact than encodeURIComponent
+// (~33% overhead vs ~50–200% for non-ASCII), and produces a value that's
+// always safe to put in a Set-Cookie header (no `;`, `,`, `=`, spaces).
+function encode(value: unknown): string {
+  const json = JSON.stringify(value);
+  return Buffer.from(json, "utf8")
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+}
+function decode<T = unknown>(raw: string): T | null {
+  try {
+    // First try base64 (current encoding).
+    const padded = raw.replace(/-/g, "+").replace(/_/g, "/");
+    const padLen = (4 - (padded.length % 4)) % 4;
+    const json = Buffer.from(padded + "=".repeat(padLen), "base64").toString("utf8");
+    return JSON.parse(json) as T;
+  } catch {
+    // Backward compat — old cookies stored URI-encoded JSON.
+    try { return JSON.parse(decodeURIComponent(raw)) as T; }
+    catch { return null; }
+  }
+}
+
 function readCookie<T = any>(name: string): Record<string, T> {
   try {
     const raw = cookies().get(name)?.value;
     if (!raw) return {};
-    const parsed = JSON.parse(decodeURIComponent(raw));
+    const parsed = decode<Record<string, T>>(raw);
     return (parsed && typeof parsed === "object") ? parsed : {};
   } catch {
     return {};
@@ -42,8 +69,7 @@ function readCookie<T = any>(name: string): Record<string, T> {
 
 function writeCookie(name: string, value: Record<string, unknown>) {
   try {
-    const json = JSON.stringify(value);
-    cookies().set(name, encodeURIComponent(json), {
+    cookies().set(name, encode(value), {
       path: "/",
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 30,
@@ -51,6 +77,21 @@ function writeCookie(name: string, value: Record<string, unknown>) {
     });
   } catch {
     /* called outside a route-handler / server-action context — ignore */
+  }
+}
+
+// Header fallback — the wizard injects the current project as a base64
+// header on every wizard step so we can reconstruct it even if the cookie
+// got dropped (size cap, third-party-cookie blocked browser, etc.).
+const HEADER_PROJECT = "x-pq-demo-project";
+
+function readHeaderProject(): SlimProject | null {
+  try {
+    const raw = headers().get(HEADER_PROJECT);
+    if (!raw) return null;
+    return decode<SlimProject>(raw);
+  } catch {
+    return null;
   }
 }
 
@@ -85,7 +126,11 @@ export function upsertCookieProject(p: DemoProject) {
 
 export function getCookieProject(id: string): SlimProject | null {
   const all = readCookieProjects();
-  return all[id] ?? null;
+  if (all[id]) return all[id];
+  // Header fallback — wizard pins its project on every request.
+  const header = readHeaderProject();
+  if (header && header.id === id) return header;
+  return null;
 }
 
 export function deleteCookieProject(id: string) {
