@@ -3,9 +3,11 @@ import { loadBrandContext } from "../brand/governance";
 import { bilingualTerminology } from "../brand/presets";
 
 describe("brand/governance", () => {
-  it("loads the UAE Pine boardroom preset", () => {
+  it("loads the official RTA Dubai boardroom preset", () => {
     const ctx = loadBrandContext(null, "rta_boardroom", "bilingual");
-    expect(ctx.palette.primary.toUpperCase()).toBe("#013230");
+    // RTA Dubai imperial blue + signature red.
+    expect(ctx.palette.primary.toUpperCase()).toBe("#1A2E64");
+    expect(ctx.palette.secondary.toUpperCase()).toBe("#D81E05");
     expect(ctx.language.arabic_required).toBe(true);
     expect(ctx.language.rtl_required).toBe(true);
     expect(ctx.language.approved_terminology.length).toBeGreaterThan(15);

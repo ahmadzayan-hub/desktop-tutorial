@@ -47,6 +47,9 @@ export function Wizard() {
   const [paletteId, setPaletteId] = useState<string>(CURATED_PALETTES[0].id);
   const [fontPairId, setFontPairId] = useState<string>(FONT_PAIRS[0].id);
   const [brandKitId, setBrandKitId] = useState<string | null>(null);
+  const [companyLogo, setCompanyLogo] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [logoUploaded, setLogoUploaded] = useState(false);
 
   const STEPS: any[] = [
     "wiz.steps.mode", "wiz.steps.brief", "wiz.steps.sources",
@@ -107,7 +110,9 @@ export function Wizard() {
 
   async function saveBrandSelection() {
     // Materialise the selected palette + font pair as a brand kit, then
-    // attach it to the project so the PPTX renderer picks it up.
+    // attach it to the project so the PPTX renderer picks it up. If the
+    // user uploaded a company logo, attach it to the kit so slide masters
+    // (top-right by default) can render it during PPTX export.
     if (!createdId) { next(); return; }
     setBusy(true); setError(null);
     try {
@@ -136,6 +141,20 @@ export function Wizard() {
       const kitId = kitData.brand_kit.id;
       setBrandKitId(kitId);
 
+      // Upload company logo (optional) — best-effort, non-fatal.
+      if (companyLogo) {
+        try {
+          const fd = new FormData();
+          fd.append("file", companyLogo);
+          fd.append("locale", lang === "ar" ? "ar" : "en");
+          const lr = await fetch(`/api/presentiq/brand-kits/${kitId}/upload-logo`, {
+            method: "POST",
+            body: fd,
+          });
+          if (lr.ok) setLogoUploaded(true);
+        } catch { /* keep going — logo is optional */ }
+      }
+
       const patchRes = await fetch(`/api/presentiq/projects/${createdId}`, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
@@ -151,6 +170,20 @@ export function Wizard() {
     } finally {
       setBusy(false);
     }
+  }
+
+  function onLogoSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) { setCompanyLogo(null); setLogoPreview(null); return; }
+    if (f.size > 5 * 1024 * 1024) {
+      setError(lang === "ar" ? "حجم الشعار يجب أن يكون أقل من 5MB" : "Logo must be smaller than 5 MB");
+      e.target.value = "";
+      return;
+    }
+    setCompanyLogo(f);
+    const reader = new FileReader();
+    reader.onload = () => setLogoPreview(typeof reader.result === "string" ? reader.result : null);
+    reader.readAsDataURL(f);
   }
 
   async function uploadFiles() {
@@ -407,6 +440,57 @@ export function Wizard() {
                   <option key={f.id} value={f.id}>{f.label}</option>
                 ))}
               </select>
+            </div>
+
+            {/* ── Company logo upload (optional) ─────────────────────────── */}
+            <div>
+              <div className="text-xs uppercase tracking-widest mb-2" style={{ color: "var(--pq-text-mute)" }}>
+                {lang === "ar" ? "شعار الشركة (اختياري — يظهر على الشرائح)" : "Company logo (optional — appears on slides)"}
+              </div>
+              <div className="flex items-center gap-3 flex-wrap">
+                <label
+                  className="pq-btn pq-btn-secondary"
+                  style={{ padding: "0.6rem 1rem", fontSize: "0.85rem", cursor: "pointer" }}
+                >
+                  <span aria-hidden>↑</span>{" "}
+                  {lang === "ar" ? "ارفع شعاراً" : "Upload logo"}
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/svg+xml"
+                    onChange={onLogoSelected}
+                    className="sr-only"
+                  />
+                </label>
+                {logoPreview && (
+                  <div
+                    className="flex items-center gap-2 rounded-xl px-3 py-2"
+                    style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(159,205,99,0.32)" }}
+                  >
+                    <img
+                      src={logoPreview}
+                      alt="Logo preview"
+                      style={{ width: 36, height: 36, objectFit: "contain", borderRadius: 6, background: "#fff" }}
+                    />
+                    <span className="text-xs" style={{ color: "var(--pq-text-secondary)" }}>
+                      {companyLogo?.name}
+                    </span>
+                    <button
+                      type="button"
+                      className="pq-btn pq-btn-ghost"
+                      style={{ padding: "0.25rem 0.55rem", fontSize: "0.75rem" }}
+                      onClick={() => { setCompanyLogo(null); setLogoPreview(null); }}
+                      aria-label={lang === "ar" ? "إزالة الشعار" : "Remove logo"}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+              </div>
+              <p className="text-xs mt-2" style={{ color: "var(--pq-text-mute)" }}>
+                {lang === "ar"
+                  ? "PNG / JPG / SVG · حتى 5MB · يُستخدم على الشرائح."
+                  : "PNG / JPG / SVG · up to 5 MB · used as the per-slide masthead."}
+              </p>
             </div>
 
             <span className="pq-pill">{mode.replace(/_/g, " ")}</span>

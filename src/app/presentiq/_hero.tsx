@@ -20,83 +20,73 @@ export function Hero() {
 
   return (
     <div className="space-y-16">
-      {/* ── Hero v0.3 — left column (messaging) + right column (mockup) ── */}
-      <section className="pq-hero">
+      {/* ── Hero v0.4 — centered, single primary CTA, clean Obsidian-style ── */}
+      <section className="pq-hero pq-hero-centered">
         <div className="pq-mesh" aria-hidden />
-        <div className="pq-hero-grid">
-          {/* Left column */}
-          <div>
-            <span className="pq-hero-eyebrow">
-              <span aria-hidden>●</span> {t("land.pill")}
-            </span>
-            <h1 className="mt-5" style={{ color: "var(--pq-text-main)" }}>
-              {t("land.h1.a")} <span className="pq-hl">{t("land.h1.hl")}</span> {t("land.h1.b")}
-            </h1>
-            <p className="mt-5 text-lg max-w-xl" style={{ color: "var(--pq-text-secondary)", lineHeight: 1.55 }}>
-              {t("land.lede")}
-            </p>
+        <div className="pq-hero-centered-inner">
+          <span className="pq-hero-eyebrow">
+            <span aria-hidden>●</span> {t("land.pill")}
+          </span>
+          <h1 className="pq-hero-h1" style={{ color: "var(--pq-text-main)" }}>
+            {t("land.h1.a")} <span className="pq-hl">{t("land.h1.hl")}</span> {t("land.h1.b")}
+          </h1>
+          <p className="pq-hero-lede" style={{ color: "var(--pq-text-secondary)" }}>
+            {t("land.lede")}
+          </p>
 
-            <div className="mt-7 flex flex-wrap items-center gap-3">
-              <Link
-                href="/presentiq/projects/new"
-                className="pq-btn pq-btn-primary"
-                style={{ padding: "0.95rem 1.7rem", fontSize: "0.95rem" }}
-              >
-                {t("land.cta.start")} <span className="pq-flip" aria-hidden>→</span>
-              </Link>
-              <Link
-                href="/presentiq/dashboard"
-                className="pq-btn pq-btn-secondary"
-                style={{ padding: "0.95rem 1.5rem", fontSize: "0.95rem" }}
-              >
-                {t("land.cta.dashboard")}
-              </Link>
-              <Link
-                href="/presentiq/contact"
-                className="pq-btn pq-btn-ghost"
-                style={{ padding: "0.95rem 1rem", fontSize: "0.95rem" }}
-              >
-                {t("land.cta.contact")}
-              </Link>
-            </div>
-
-            {/* Avatar + stars trust row */}
-            <div className="pq-trust-row">
-              <div className="pq-trust-avatars" aria-hidden>
-                <span className="av" />
-                <span className="av" />
-                <span className="av" />
-                <span className="av" />
-              </div>
-              <div className="text-xs" style={{ color: "var(--pq-text-secondary)" }}>
-                <div className="pq-trust-stars" aria-hidden>★ ★ ★ ★ ★</div>
-                <div className="mt-0.5">{t("land.trusted")}</div>
-              </div>
-            </div>
-
-            {/* Stats strip */}
-            <div className="pq-stats" aria-label="Headline stats">
-              <div className="pq-stat">
-                <div className="pq-stat-num">12k+</div>
-                <div className="pq-stat-label">{t("hero.stat.decks")}</div>
-              </div>
-              <div className="pq-stat">
-                <div className="pq-stat-num">EN · AR</div>
-                <div className="pq-stat-label">{t("hero.stat.langs")}</div>
-              </div>
-              <div className="pq-stat">
-                <div className="pq-stat-num">10</div>
-                <div className="pq-stat-label">{t("hero.stat.dims")}</div>
-              </div>
-              <div className="pq-stat">
-                <div className="pq-stat-num">99.9%</div>
-                <div className="pq-stat-label">{t("hero.stat.uptime")}</div>
-              </div>
-            </div>
+          <div className="pq-hero-cta-row">
+            <Link
+              href="/presentiq/projects/new"
+              className="pq-btn pq-btn-primary"
+              style={{ padding: "1rem 1.9rem", fontSize: "0.98rem" }}
+            >
+              {t("land.cta.start")} <span className="pq-flip" aria-hidden>→</span>
+            </Link>
+            <Link
+              href="/presentiq/dashboard"
+              className="pq-btn pq-btn-secondary"
+              style={{ padding: "1rem 1.5rem", fontSize: "0.92rem" }}
+            >
+              {t("land.cta.dashboard")}
+            </Link>
           </div>
 
-          {/* Right column — dashboard mockup */}
+          <div className="pq-trust-row pq-trust-row-centered">
+            <div className="pq-trust-avatars" aria-hidden>
+              <span className="av" />
+              <span className="av" />
+              <span className="av" />
+              <span className="av" />
+            </div>
+            <div className="text-xs" style={{ color: "var(--pq-text-secondary)" }}>
+              <div className="pq-trust-stars" aria-hidden>★ ★ ★ ★ ★</div>
+              <div className="mt-0.5">{t("land.trusted")}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="pq-hero-mockup-wrap">
           <DashboardMockup />
+        </div>
+      </section>
+
+      {/* ── Stats strip — compact, below mockup ──────────────────── */}
+      <section className="pq-stats pq-stats-flat" aria-label="Headline stats">
+        <div className="pq-stat">
+          <div className="pq-stat-num">12k+</div>
+          <div className="pq-stat-label">{t("hero.stat.decks")}</div>
+        </div>
+        <div className="pq-stat">
+          <div className="pq-stat-num">EN · AR</div>
+          <div className="pq-stat-label">{t("hero.stat.langs")}</div>
+        </div>
+        <div className="pq-stat">
+          <div className="pq-stat-num">10</div>
+          <div className="pq-stat-label">{t("hero.stat.dims")}</div>
+        </div>
+        <div className="pq-stat">
+          <div className="pq-stat-num">99.9%</div>
+          <div className="pq-stat-label">{t("hero.stat.uptime")}</div>
         </div>
       </section>
 

@@ -957,10 +957,18 @@ html.dark {
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.75rem;
   padding: 0.55rem 1rem;
   font-size: 0.82rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  min-height: 2.4rem;
+}
+@media (max-width: 720px) {
+  .pq-promo-banner-inner { gap: 0.55rem; padding: 0.5rem 0.75rem; font-size: 0.78rem; }
+  .pq-promo-banner-inner .pq-promo-pips { display: none; }
+}
+@media (max-width: 480px) {
+  .pq-promo-banner-inner .pq-promo-cta { padding: 0.28rem 0.6rem; font-size: 0.72rem; }
 }
 
 .pq-promo-dot {
@@ -1037,6 +1045,13 @@ html.dark {
   opacity: 0.7;
 }
 .pq-promo-close:hover { opacity: 1; background: rgba(244,247,239,0.10); }
+
+/* ── Header layout safety: prevent logo/CTA overlap on small screens ── */
+.pq-header { isolation: isolate; }
+.pq-header-logo { display: block; max-width: 40vw; }
+@media (max-width: 540px) {
+  .pq-header-logo { max-width: 32vw; }
+}
 
 /* ── Nav link active state ── */
 .pq-nav-link {
@@ -1162,6 +1177,57 @@ html.dark {
   line-height: 1.04;
   letter-spacing: -0.018em;
   font-weight: 700;
+}
+
+/* ── Hero v0.4 (centered Obsidian-style) ─────────────────────── */
+.pq-hero-centered {
+  padding: 4rem 1.5rem 3rem;
+  text-align: center;
+}
+@media (max-width: 720px) {
+  .pq-hero-centered { padding: 3rem 1rem 2rem; }
+}
+.pq-hero-centered-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 56rem;
+  margin: 0 auto;
+}
+.pq-hero-h1 {
+  margin-top: 1.25rem;
+  font-size: clamp(2.4rem, 5.6vw, 4.2rem);
+  line-height: 1.04;
+  letter-spacing: -0.022em;
+  font-weight: 700;
+}
+.pq-hero-lede {
+  margin: 1.25rem auto 0;
+  max-width: 42rem;
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+  line-height: 1.6;
+}
+.pq-hero-cta-row {
+  margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.pq-trust-row-centered {
+  margin-top: 1.6rem;
+  justify-content: center;
+}
+.pq-hero-mockup-wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 64rem;
+  margin: 3rem auto 0;
+}
+.pq-stats-flat {
+  margin-top: 0;
+  max-width: 56rem;
+  margin-inline: auto;
 }
 .pq-hero-eyebrow {
   display: inline-flex;

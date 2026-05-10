@@ -44,47 +44,53 @@ export function PresentIqShell({ children }: { children: ReactNode }) {
       <PromoBanner />
 
       <header
-        className="sticky top-0 z-30"
+        className="pq-header sticky top-0 z-30"
         style={{
           background: "rgba(7,16,10,0.85)",
           backdropFilter: "blur(16px) saturate(1.4)",
           borderBottom: "1px solid var(--pq-border-soft)",
         }}
       >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-6 min-w-0">
-            <Link href="/presentiq" className="flex items-center gap-2 shrink-0" aria-label="PresentIQ home">
-              <Logo variant="horizontal" height={26} />
-            </Link>
-            <nav className="hidden lg:flex items-center gap-1" aria-label="Primary">
-              {NAV.map((n) => {
-                const active = isActive(n.href);
-                return (
-                  <Link
-                    key={n.href}
-                    href={n.href}
-                    aria-current={active ? "page" : undefined}
-                    className="pq-nav-link"
-                    data-active={active ? "true" : "false"}
-                  >
-                    {t(n.key)}
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+          <Link
+            href="/presentiq"
+            className="flex items-center gap-2 shrink-0 min-w-0"
+            aria-label="PresentIQ home"
+          >
+            <Logo variant="horizontal" height={24} className="pq-header-logo" />
+          </Link>
+          <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center" aria-label="Primary">
+            {NAV.map((n) => {
+              const active = isActive(n.href);
+              return (
+                <Link
+                  key={n.href}
+                  href={n.href}
+                  aria-current={active ? "page" : undefined}
+                  className="pq-nav-link"
+                  data-active={active ? "true" : "false"}
+                >
+                  {t(n.key)}
+                </Link>
+              );
+            })}
+          </nav>
           <div className="flex items-center gap-2 shrink-0">
             <LangToggle />
             {isMarketing && (
               <Link
                 href="/presentiq/dashboard"
-                className="pq-btn pq-btn-ghost hidden sm:inline-flex"
+                className="pq-btn pq-btn-ghost hidden md:inline-flex"
                 style={{ padding: "0.5rem 0.85rem", fontSize: "0.82rem" }}
               >
                 {t("marketing.nav.login")}
               </Link>
             )}
-            <Link href="/presentiq/projects/new" className="pq-btn pq-btn-primary hidden sm:inline-flex">
+            <Link
+              href="/presentiq/projects/new"
+              className="pq-btn pq-btn-primary hidden md:inline-flex"
+              style={{ padding: "0.55rem 1.05rem", fontSize: "0.85rem" }}
+            >
               <span aria-hidden>＋</span> {t("nav.new")}
             </Link>
             <button

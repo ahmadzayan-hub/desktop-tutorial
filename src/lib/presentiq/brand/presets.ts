@@ -129,6 +129,42 @@ const uaePineBoardroom: BrandRulesContext = {
   },
 };
 
+// RTA Dubai official preset — imperial blue + signature red, Dubai font.
+// Use this when the user explicitly selects the "RTA Dubai" brand kit.
+const rtaDubaiBoardroom: BrandRulesContext = {
+  ...corporateDefault,
+  identity: { org_name: "Roads and Transport Authority — Dubai", logos: {} },
+  palette: {
+    primary: "#1A2E64",     // Imperial blue
+    secondary: "#D81E05",   // Signature red
+    accent: ["#0E1F4A", "#FFFFFF", "#F4F6FB", "#A6B0C9", "#FFC83D", "#11244F"],
+    background: "#FFFFFF",
+    surface: "#F5F7FC",
+    foreground: "#0E1F4A",
+  },
+  typography: {
+    en_primary: "Dubai",
+    en_fallback: ["Inter", "Calibri", "Arial"],
+    ar_primary: "Dubai",
+    ar_fallback: ["IBM Plex Sans Arabic", "Tajawal", "Noto Kufi Arabic", "Cairo"],
+    title_size_pt: [32, 40],
+    body_size_pt: [14, 20],
+    line_height: 1.35,
+  },
+  charts: {
+    palette: ["#1A2E64", "#D81E05", "#0E1F4A", "#A6B0C9", "#FFC83D", "#11244F"],
+    grid: "minimal",
+    label_size_pt: 11,
+  },
+  language: {
+    tone: "government_executive",
+    forbidden_phrases: [...FORBIDDEN_GENERIC, "approved by His Highness"],
+    approved_terminology: bilingualTerminology,
+    arabic_required: true,
+    rtl_required: true,
+  },
+};
+
 const governmentBoardroom: BrandRulesContext = {
   ...corporateDefault,
   identity: { org_name: "Government Entity", logos: {} },
@@ -239,22 +275,145 @@ export const CURATED_PALETTES: CuratedPalette[] = [
     charts: ["#0F172A", "#10B981", "#22D3EE", "#94A3B8", "#34D399", "#1E293B"],
     fonts: { en_primary: "Inter", ar_primary: "Cairo" },
   },
+  // ── RTA Dubai (official: imperial blue + signature red) ────────
+  {
+    id: "rta-dubai",
+    nameEn: "RTA Dubai — Imperial Blue & Red",
+    nameAr: "هيئة طرق ومواصلات دبي — أزرق ملكي وأحمر",
+    colors: {
+      primary: "#1A2E64", secondary: "#D81E05",
+      accent: ["#0E1F4A", "#FFFFFF", "#F4F6FB", "#A6B0C9", "#FFC83D", "#11244F"],
+      background: "#FFFFFF", surface: "#F5F7FC", foreground: "#0E1F4A",
+    },
+    charts: ["#1A2E64", "#D81E05", "#0E1F4A", "#A6B0C9", "#FFC83D", "#11244F"],
+    fonts: { en_primary: "Dubai", ar_primary: "Dubai" },
+  },
+  // ── Obsidian (purple + charcoal — clean dark UI vibe) ──────────
+  {
+    id: "obsidian",
+    nameEn: "Obsidian — Purple & Ink",
+    nameAr: "أوبسيديان — بنفسجي وحبري",
+    colors: {
+      primary: "#7C3AED", secondary: "#1F1A2E",
+      accent: ["#A78BFA", "#C4B5FD", "#0E0B1A", "#F4F1FB", "#9F7AEA", "#251D3A"],
+      background: "#0E0B1A", surface: "#1F1A2E", foreground: "#F4F1FB",
+    },
+    charts: ["#7C3AED", "#A78BFA", "#C4B5FD", "#9F7AEA", "#F4F1FB", "#1F1A2E"],
+    fonts: { en_primary: "Inter", ar_primary: "IBM Plex Sans Arabic" },
+  },
+  // ── UAE Government (federal palette: black, red, green, white) ─
+  {
+    id: "uae-federal",
+    nameEn: "UAE Federal — Black, Red, Green",
+    nameAr: "الإمارات الاتحادي — أسود وأحمر وأخضر",
+    colors: {
+      primary: "#000000", secondary: "#EF3340",
+      accent: ["#00732F", "#FFFFFF", "#F4F4F4", "#1A1A1A", "#C99B2A", "#0E1F4A"],
+      background: "#FFFFFF", surface: "#FAFAFA", foreground: "#0A0A0A",
+    },
+    charts: ["#000000", "#EF3340", "#00732F", "#C99B2A", "#A6A6A6", "#1A1A1A"],
+    fonts: { en_primary: "Dubai", ar_primary: "Dubai" },
+  },
+  // ── Year of Hand-style (calligraphic Arabic, sky/teal) ─────────
+  {
+    id: "year-of-hand",
+    nameEn: "Year of Hand — Sky & Calligraphy",
+    nameAr: "العام — سماوي وخطّ يدوي",
+    colors: {
+      primary: "#1A4D5C", secondary: "#3FA9C4",
+      accent: ["#8DC8DA", "#C9E4EF", "#1E3947", "#FFFFFF", "#F1B24A", "#0F2A33"],
+      background: "#C9E4EF", surface: "#E7F2F7", foreground: "#0F2A33",
+    },
+    charts: ["#1A4D5C", "#3FA9C4", "#8DC8DA", "#F1B24A", "#1E3947", "#0F2A33"],
+    fonts: { en_primary: "Lora", ar_primary: "Amiri" },
+  },
+  // ── Boardroom Light (clean white + emerald) ────────────────────
+  {
+    id: "boardroom-light",
+    nameEn: "Boardroom Light — Emerald",
+    nameAr: "قاعة المجلس — مضيء زمردي",
+    colors: {
+      primary: "#0F766E", secondary: "#115E59",
+      accent: ["#14B8A6", "#5EEAD4", "#CCFBF1", "#0F172A", "#94A3B8", "#0D9488"],
+      background: "#FFFFFF", surface: "#F0FDFA", foreground: "#0F172A",
+    },
+    charts: ["#0F766E", "#14B8A6", "#5EEAD4", "#94A3B8", "#0D9488", "#115E59"],
+    fonts: { en_primary: "Inter", ar_primary: "IBM Plex Sans Arabic" },
+  },
 ];
 
 // Curated EN/AR font pairs — used by the brand-kit picker in the wizard.
 export const FONT_PAIRS: { id: string; en: string; ar: string; label: string }[] = [
-  { id: "inter-plex",    en: "Inter",          ar: "IBM Plex Sans Arabic", label: "Inter · IBM Plex" },
+  { id: "inter-plex",    en: "Inter",          ar: "IBM Plex Sans Arabic", label: "Inter · IBM Plex Sans Arabic" },
   { id: "source-tajawal",en: "Source Sans 3",  ar: "Tajawal",              label: "Source Sans · Tajawal" },
   { id: "inter-cairo",   en: "Inter",          ar: "Cairo",                label: "Inter · Cairo" },
   { id: "lora-amiri",    en: "Lora",           ar: "Amiri",                label: "Lora · Amiri (formal)" },
+  { id: "dubai-dubai",   en: "Dubai",          ar: "Dubai",                label: "Dubai · Dubai (RTA / UAE Gov)" },
+  { id: "inter-noto",    en: "Inter",          ar: "Noto Naskh Arabic",    label: "Inter · Noto Naskh (formal)" },
+  { id: "inter-tajawal", en: "Inter",          ar: "Tajawal",              label: "Inter · Tajawal (modern)" },
+  { id: "playfair-amiri",en: "Playfair Display",ar: "Amiri Quran",         label: "Playfair · Amiri (editorial)" },
+  { id: "manrope-cairo", en: "Manrope",        ar: "Cairo",                label: "Manrope · Cairo (warm sans)" },
   { id: "system",        en: "system-ui",      ar: "system-ui",            label: "System default" },
+];
+
+// Standalone curated colour swatches — used when users want to mix-and-match
+// a single accent into an existing palette. Each swatch ships with both an
+// English and Arabic label so the picker stays bilingual.
+export type CuratedColor = { id: string; nameEn: string; nameAr: string; hex: string };
+
+export const CURATED_COLORS: CuratedColor[] = [
+  { id: "rta-blue",       nameEn: "RTA Imperial Blue", nameAr: "أزرق هيئة الطرق", hex: "#1A2E64" },
+  { id: "rta-red",        nameEn: "RTA Signature Red", nameAr: "أحمر هيئة الطرق", hex: "#D81E05" },
+  { id: "uae-red",        nameEn: "UAE Federal Red",   nameAr: "الأحمر الاتحادي",   hex: "#EF3340" },
+  { id: "uae-green",      nameEn: "UAE Federal Green", nameAr: "الأخضر الاتحادي",   hex: "#00732F" },
+  { id: "uae-black",      nameEn: "UAE Federal Black", nameAr: "الأسود الاتحادي",   hex: "#000000" },
+  { id: "obsidian-purple",nameEn: "Obsidian Purple",   nameAr: "بنفسجي أوبسيديان",  hex: "#7C3AED" },
+  { id: "obsidian-ink",   nameEn: "Obsidian Ink",      nameAr: "حبر أوبسيديان",     hex: "#1F1A2E" },
+  { id: "olive",          nameEn: "Zaytouni Olive",    nameAr: "زيتوني",            hex: "#425722" },
+  { id: "bronze",         nameEn: "Boardroom Bronze",  nameAr: "برونزي",            hex: "#B68B3E" },
+  { id: "emerald",        nameEn: "Boardroom Emerald", nameAr: "زمردي",             hex: "#10B981" },
+  { id: "teal",           nameEn: "Spearmint Teal",    nameAr: "نعناعي مائل للأزرق", hex: "#14B8A6" },
+  { id: "indigo",         nameEn: "Royal Indigo",      nameAr: "نيلي ملكي",          hex: "#1E1B4B" },
+  { id: "amber",          nameEn: "Sand Amber",         nameAr: "كهرماني رملي",      hex: "#F4B63E" },
+  { id: "saffron",        nameEn: "Saffron",            nameAr: "زعفراني",           hex: "#F1B24A" },
+  { id: "year-sky",       nameEn: "Year-of-Hand Sky",  nameAr: "سماوي العام",        hex: "#3FA9C4" },
+  { id: "ink-charcoal",   nameEn: "Ink Charcoal",      nameAr: "فحمي حبري",          hex: "#0F172A" },
+  { id: "cream",          nameEn: "Boardroom Cream",   nameAr: "عاجي",               hex: "#F4F2E9" },
+  { id: "pure-white",     nameEn: "Pure White",        nameAr: "أبيض نقي",           hex: "#FFFFFF" },
+];
+
+// Curated standalone Arabic fonts — discoverable in the brand-kit editor.
+export type CuratedFont = { id: string; family: string; sample: string; nameEn: string; nameAr: string };
+
+export const CURATED_AR_FONTS: CuratedFont[] = [
+  { id: "ibm-plex-arabic", family: "IBM Plex Sans Arabic", sample: "العنوان", nameEn: "IBM Plex Sans Arabic", nameAr: "آي بي إم بلكس" },
+  { id: "tajawal",         family: "Tajawal",              sample: "العنوان", nameEn: "Tajawal",              nameAr: "تجوّل" },
+  { id: "cairo",           family: "Cairo",                sample: "العنوان", nameEn: "Cairo",                nameAr: "القاهرة" },
+  { id: "amiri",           family: "Amiri",                sample: "العنوان", nameEn: "Amiri (Naskh)",        nameAr: "الأميري" },
+  { id: "amiri-quran",     family: "Amiri Quran",          sample: "العنوان", nameEn: "Amiri Quran",          nameAr: "الأميري — مصحف" },
+  { id: "noto-naskh",      family: "Noto Naskh Arabic",    sample: "العنوان", nameEn: "Noto Naskh",           nameAr: "نوتو نسخ" },
+  { id: "noto-kufi",       family: "Noto Kufi Arabic",     sample: "العنوان", nameEn: "Noto Kufi",            nameAr: "نوتو كوفي" },
+  { id: "dubai",           family: "Dubai",                sample: "العنوان", nameEn: "Dubai (RTA / UAE)",    nameAr: "دبي" },
+  { id: "scheherazade",    family: "Scheherazade New",     sample: "العنوان", nameEn: "Scheherazade",         nameAr: "شهرزاد" },
+  { id: "lateef",          family: "Lateef",               sample: "العنوان", nameEn: "Lateef",               nameAr: "لطيف" },
+];
+
+export const CURATED_EN_FONTS: CuratedFont[] = [
+  { id: "inter",            family: "Inter",            sample: "Title", nameEn: "Inter",            nameAr: "إنتر" },
+  { id: "manrope",          family: "Manrope",          sample: "Title", nameEn: "Manrope",          nameAr: "مانروب" },
+  { id: "source-sans",      family: "Source Sans 3",    sample: "Title", nameEn: "Source Sans 3",    nameAr: "سورس سانس" },
+  { id: "lora",             family: "Lora",             sample: "Title", nameEn: "Lora (serif)",     nameAr: "لورا" },
+  { id: "playfair",         family: "Playfair Display", sample: "Title", nameEn: "Playfair Display", nameAr: "بلاي فير" },
+  { id: "merriweather",     family: "Merriweather",     sample: "Title", nameEn: "Merriweather",     nameAr: "ميري ويذر" },
+  { id: "dubai-en",         family: "Dubai",            sample: "Title", nameEn: "Dubai (Latin)",    nameAr: "دبي" },
+  { id: "ibm-plex-sans",    family: "IBM Plex Sans",    sample: "Title", nameEn: "IBM Plex Sans",    nameAr: "آي بي إم بلكس" },
 ];
 
 export const BUILT_IN_PRESETS: Record<PresentationMode | "default", BrandRulesContext> = {
   default: corporateDefault,
   corporate_boardroom: corporateDefault,
   government_boardroom: governmentBoardroom,
-  rta_boardroom: uaePineBoardroom, // Legacy key — now resolves to neutral UAE Pine boardroom preset
+  rta_boardroom: rtaDubaiBoardroom, // Official RTA Dubai colors (Imperial blue + signature red, Dubai font)
   consulting_partner: consultingPartner,
   sales_pitch: corporateDefault,
   project_steering: corporateDefault,

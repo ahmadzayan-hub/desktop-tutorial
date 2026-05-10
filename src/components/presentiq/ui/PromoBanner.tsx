@@ -31,7 +31,7 @@ export function PromoBanner() {
   const messages = [t("banner.0"), t("banner.1"), t("banner.2")];
 
   return (
-    <div className="pq-promo-banner" role="region" aria-label="Announcement">
+    <div className="pq-promo-banner" role="region" aria-label="Announcement" dir={dir}>
       <div className="pq-promo-banner-inner">
         <span className="pq-promo-dot" aria-hidden />
         <div className="pq-promo-track" key={idx}>
