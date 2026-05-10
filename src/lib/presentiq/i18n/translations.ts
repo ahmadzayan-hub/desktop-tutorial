@@ -31,8 +31,8 @@ export const TRANSLATIONS = {
   "marketing.nav.login":     { en: "Log in",       ar: "تسجيل الدخول" },
 
   // ─── Landing ─────────────────────────────────────────────────
-  "land.pill":            { en: "v0.3 · AI Agent Platform · Editable PPTX · Bilingual RTL",
-                            ar: "الإصدار ٠٫٣ · منصة وكلاء ذكاء اصطناعي · PPTX قابلة للتحرير · ثنائية اللغة" },
+  "land.pill":            { en: "v0.4 · Zaian Sky UI · AI Agent Platform · Editable PPTX · Bilingual RTL",
+                            ar: "الإصدار ٠٫٤ · واجهة سماء زيان · منصة وكلاء ذكاء اصطناعي · PPTX قابلة للتحرير · ثنائية اللغة" },
   "land.h1.a":            { en: "Turn raw content into",
                             ar: "حوّل المحتوى الخام إلى" },
   "land.h1.hl":           { en: "boardroom-ready",
@@ -205,8 +205,8 @@ export const TRANSLATIONS = {
   "foot.newsletter.email":{ en: "you@company.ae",                          ar: "you@company.ae" },
 
   // ─── Top promo banner ────────────────────────────────────────
-  "banner.0":             { en: "v0.3 · live now · Editable PPTX · Bilingual RTL · Dark UI",
-                            ar: "v0.3 · متاح الآن · PPTX قابل للتحرير · ثنائية RTL · واجهة داكنة" },
+  "banner.0":             { en: "v0.4 · live now · Zaian Sky UI · Editable PPTX · Bilingual RTL",
+                            ar: "v0.4 · متاح الآن · واجهة سماء زيان · PPTX قابل للتحرير · ثنائية RTL" },
   "banner.1":             { en: "🛡️  Brand governance + 10-dimension quality, enforced automatically",
                             ar: "🛡️  حوكمة العلامة وجودة بـ١٠ أبعاد، تُطبَّق تلقائياً" },
   "banner.2":             { en: "🇦🇪  UAE-built · Boardrooms across GCC trust PresentIQ",

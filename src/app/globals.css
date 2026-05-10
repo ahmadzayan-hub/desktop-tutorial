@@ -601,75 +601,82 @@ html.dark .card .list-item { background: rgba(255,255,255,0.04); }
 html.dark .card .list-item:hover { background: rgba(255,255,255,0.07); }
 
 /* ══════════════════════════════════════════════════════════════════
-   PresentIQ v0.3 — Dark forest + lime palette (boardroom-ready dark)
-   Backed by the brand sheet: PresentIQ by Zaian.
+   PresentIQ v0.4 — Zaian Sky palette
+   Inspired by the "AI with Zaian" sky-gradient cards: deep navy canvas,
+   indigo primary, violet + cyan + magenta accents. Replaces the v0.3
+   forest+lime scheme as the website's default.
    ══════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* New v0.3 brand tokens */
-  --pq-bg-main:        #07100A;
-  --pq-bg-secondary:   #0D1A10;
-  --pq-surface-card:   #122017;
-  --pq-surface-elev:   #18281D;
-  --pq-border-soft:    #30452E;
+  /* v0.4 brand tokens — Zaian Sky */
+  --pq-bg-main:        #0A0E2A;
+  --pq-bg-secondary:   #121838;
+  --pq-surface-card:   #161D44;
+  --pq-surface-elev:   #1E2654;
+  --pq-border-soft:    #2A3470;
 
-  --pq-primary:        #9FCD63;
-  --pq-primary-hover:  #B8E878;
-  --pq-primary-text:   #0A0F0C;
-  --pq-primary-soft:   rgba(159,205,99,0.18);
-  --pq-primary-glow:   rgba(159,205,99,0.30);
+  --pq-primary:        #6366F1;        /* Indigo — main accent */
+  --pq-primary-hover:  #818CF8;
+  --pq-primary-text:   #FFFFFF;
+  --pq-primary-soft:   rgba(99,102,241,0.18);
+  --pq-primary-glow:   rgba(99,102,241,0.32);
 
-  --pq-accent-gold:    #D5A84A;
-  --pq-accent-amber:   #F4B63E;
-  --pq-accent-teal:    #22C7A9;
-  --pq-accent-red:     #F05D6A;
+  --pq-accent-violet:  #8A6CF7;
+  --pq-accent-cyan:    #4DC9E6;
+  --pq-accent-magenta: #E94B9F;
+  --pq-accent-sky:     #C9D5F8;
+  /* Back-compat names for components still wired to gold/amber/teal/red */
+  --pq-accent-gold:    var(--pq-accent-magenta);
+  --pq-accent-amber:   #FFC36B;
+  --pq-accent-teal:    var(--pq-accent-cyan);
+  --pq-accent-red:     #F0556B;
 
-  --pq-text-main:      #F4F7EF;
-  --pq-text-secondary: #C9D0C1;
-  --pq-text-muted:     #9FA895;
+  --pq-text-main:      #F2F4FF;
+  --pq-text-secondary: #C7CCEC;
+  --pq-text-muted:     #95A0CB;
 
-  --pq-light-bg:       #F8FAF5;
+  --pq-light-bg:       #F4F6FF;
   --pq-light-card:     #FFFFFF;
-  --pq-light-text:     #111827;
-  --pq-light-muted:    #4B5563;
+  --pq-light-text:     #0E1430;
+  --pq-light-muted:    #4B5573;
 
   /* Back-compat aliases — any pre-existing components keep these names */
   --pq-cream:     var(--pq-text-main);
-  --pq-sage:      #7BB94A;
+  --pq-sage:      #7C7BFF;
   --pq-olive:     var(--pq-primary);
-  --pq-deep:      #14241A;
+  --pq-deep:      #1A2456;
   --pq-night:     var(--pq-bg-main);
-  --pq-bronze:    var(--pq-accent-gold);
+  --pq-bronze:    var(--pq-accent-magenta);
   --pq-spearmint: var(--pq-text-main);
   --pq-emerald:   var(--pq-primary);
-  --pq-teal:      var(--pq-accent-teal);
+  --pq-teal:      var(--pq-accent-cyan);
   --pq-pine:      var(--pq-bg-secondary);
-  --pq-mint-soft: rgba(159,205,99,0.06);
+  --pq-mint-soft: rgba(99,102,241,0.08);
 
   --pq-text:      var(--pq-text-main);
   --pq-text-soft: var(--pq-text-secondary);
   --pq-text-mute: var(--pq-text-muted);
   --pq-byline:    var(--pq-text-muted);
 
-  /* Hero gradients */
-  --pq-grad-hero: radial-gradient(1300px 700px at 5% -10%, rgba(159,205,99,0.18), transparent 55%),
-                  radial-gradient(900px 600px at 110% 0%, rgba(213,168,74,0.10), transparent 55%),
-                  radial-gradient(700px 500px at 50% 110%, rgba(34,199,169,0.10), transparent 60%),
-                  linear-gradient(180deg, #07100A 0%, #0B1810 100%);
-  --pq-grad-pine: linear-gradient(135deg, #0F1F12 0%, #18281D 60%, #1F3324 130%);
-  --pq-grad-bronze: linear-gradient(140deg, #B8862E 0%, #D5A84A 70%, #F4D27D 130%);
-  --pq-grad-lime: linear-gradient(135deg, #7BB94A 0%, #9FCD63 60%, #D4F08C 130%);
+  /* Hero gradients — soft sky aurora over deep navy */
+  --pq-grad-hero: radial-gradient(1300px 700px at 5% -10%, rgba(99,102,241,0.28), transparent 55%),
+                  radial-gradient(900px 600px at 110% 0%, rgba(233,75,159,0.18), transparent 55%),
+                  radial-gradient(700px 500px at 50% 110%, rgba(77,201,230,0.18), transparent 60%),
+                  linear-gradient(180deg, #0A0E2A 0%, #121838 100%);
+  --pq-grad-pine:   linear-gradient(135deg, #121838 0%, #1E2654 60%, #2A3470 130%);
+  --pq-grad-bronze: linear-gradient(140deg, #B83A8B 0%, #E94B9F 70%, #FF82C0 130%);
+  --pq-grad-lime:   linear-gradient(135deg, #4F46E5 0%, #6366F1 50%, #8A6CF7 130%);
 
   --pq-shadow-frame:
-    0 30px 60px -25px rgba(0,0,0,0.8),
-    0 12px 30px -10px rgba(159,205,99,0.18),
-    inset 0 1px 0 rgba(244,247,239,0.10),
-    inset 0 -1px 0 rgba(0,0,0,0.4);
+    0 30px 60px -25px rgba(0,0,0,0.85),
+    0 12px 30px -10px rgba(99,102,241,0.22),
+    inset 0 1px 0 rgba(242,244,255,0.12),
+    inset 0 -1px 0 rgba(0,0,0,0.45);
   --pq-shadow-frame-hover:
-    0 50px 90px -25px rgba(0,0,0,0.85),
-    0 24px 50px -15px rgba(159,205,99,0.28),
-    inset 0 1px 0 rgba(244,247,239,0.16),
-    inset 0 -1px 0 rgba(0,0,0,0.5);
+    0 50px 90px -25px rgba(0,0,0,0.9),
+    0 24px 50px -15px rgba(138,108,247,0.32),
+    inset 0 1px 0 rgba(242,244,255,0.18),
+    inset 0 -1px 0 rgba(0,0,0,0.55);
 }
 
 html.dark {
@@ -678,13 +685,17 @@ html.dark {
   --pq-text-mute: var(--pq-text-muted);
 }
 
-/* Scope the dark v0.3 theme on PresentIQ surfaces, regardless of the
+/* Scope the dark v0.4 theme on PresentIQ surfaces, regardless of the
    global theme toggle. The platform is dark-first by design. */
 [data-pq] {
   background: var(--pq-bg-main);
   color: var(--pq-text-main);
   color-scheme: dark;
-  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  font-family: "Inter", "Manrope", "Segoe UI", system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11", "calt", "kern";
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   position: relative;
   isolation: isolate;
 }
@@ -702,50 +713,61 @@ html.dark {
 [data-pq] > * { position: relative; z-index: 1; }
 
 [data-pq][dir="rtl"] {
-  font-family: "IBM Plex Sans Arabic","Tajawal","Noto Sans Arabic","Cairo",system-ui,sans-serif;
+  font-family: "IBM Plex Sans Arabic","Tajawal","Cairo","Noto Naskh Arabic","Noto Kufi Arabic",system-ui,sans-serif;
 }
 
 [data-pq] h1, [data-pq] h2, [data-pq] h3, [data-pq] h4 {
-  letter-spacing: -0.012em;
+  letter-spacing: -0.014em;
   color: var(--pq-text-main);
+  font-weight: 700;
+  font-feature-settings: "ss01", "cv11", "kern";
+  text-wrap: balance;
+}
+
+[data-pq] p, [data-pq] li, [data-pq] label {
+  font-feature-settings: "kern", "cv11";
 }
 
 [data-pq] [dir="rtl"] h1, [data-pq] [dir="rtl"] h2, [data-pq] [dir="rtl"] h3 {
   letter-spacing: 0;
+  font-weight: 700;
 }
 
 /* ── 4D Frame card ─ multi-layered depth on the dark surface ── */
 
 .pq-frame {
   position: relative;
-  border-radius: 20px;
+  border-radius: 22px;
   background:
-    linear-gradient(180deg, rgba(24,40,29,0.92), rgba(18,32,23,0.92)),
-    linear-gradient(140deg, rgba(159,205,99,0.10), rgba(213,168,74,0.04));
+    linear-gradient(180deg, rgba(30,38,84,0.92), rgba(22,29,68,0.92)),
+    linear-gradient(140deg, rgba(99,102,241,0.14), rgba(77,201,230,0.06));
   background-blend-mode: normal, screen;
   border: 1px solid var(--pq-border-soft);
   box-shadow: var(--pq-shadow-frame);
   transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, border-color .35s ease;
   will-change: transform;
   color: var(--pq-text-main);
+  transform-style: preserve-3d;
 }
 
 .pq-frame::before {
   content: "";
   position: absolute; inset: 0;
-  border-radius: 20px;
-  background: radial-gradient(800px 220px at 50% -20%, rgba(159,205,99,0.18), transparent 70%);
+  border-radius: 22px;
+  background:
+    radial-gradient(800px 220px at 50% -20%, rgba(138,108,247,0.22), transparent 70%),
+    radial-gradient(420px 200px at 100% 110%, rgba(77,201,230,0.18), transparent 70%);
   pointer-events: none;
-  opacity: .8;
+  opacity: .85;
 }
 
 .pq-frame::after {
   content: "";
   position: absolute; inset: -2px;
-  border-radius: 22px;
-  background: linear-gradient(140deg, rgba(159,205,99,0.30), rgba(213,168,74,0.10) 60%);
+  border-radius: 24px;
+  background: linear-gradient(140deg, rgba(99,102,241,0.42), rgba(233,75,159,0.20) 60%, rgba(77,201,230,0.18));
   z-index: -1;
-  filter: blur(16px);
+  filter: blur(18px);
   opacity: .35;
   transition: opacity .35s ease;
 }
@@ -754,7 +776,7 @@ html.dark {
 .pq-frame:hover {
   transform: translateY(-4px) rotateX(0.4deg);
   box-shadow: var(--pq-shadow-frame-hover);
-  border-color: rgba(159,205,99,0.45);
+  border-color: rgba(138,108,247,0.55);
 }
 
 .pq-frame.is-hover:hover::after,
@@ -766,7 +788,7 @@ html.dark {
 .pq-frame-pine {
   background: var(--pq-grad-pine);
   color: var(--pq-text-main);
-  border-color: rgba(159,205,99,0.32);
+  border-color: rgba(138,108,247,0.36);
 }
 .pq-frame-pine h1, .pq-frame-pine h2, .pq-frame-pine h3, .pq-frame-pine p {
   color: var(--pq-text-main);
@@ -1545,7 +1567,7 @@ html.dark {
 .pq-tpl-card-cover[data-tone="blue"]   { background: linear-gradient(135deg, #0E1F4A, #1A2E64 80%); }
 .pq-tpl-card-cover[data-tone="ink"]    { background: linear-gradient(135deg, #0E0B1A, #1F1A2E 80%); }
 .pq-tpl-card-cover[data-tone="lime"]   { background: linear-gradient(135deg, #1B2E0E, #7BB94A 110%); }
-.pq-tpl-card-cover[data-tone="rta"]    { background: linear-gradient(135deg, #1A2E64, #D81E05 130%); }
+.pq-tpl-card-cover[data-tone="metro"]  { background: linear-gradient(135deg, #1A2E64, #D81E05 130%); }
 .pq-tpl-card-blank {
   background: rgba(255,255,255,0.03);
   border: 1px dashed rgba(255,255,255,0.18) !important;
@@ -1573,8 +1595,10 @@ html.dark {
   text-transform: uppercase;
 }
 
-.pq-hero h1 .pq-hl {
-  background: linear-gradient(135deg, #B8E878 0%, #9FCD63 50%, #D5A84A 100%);
+.pq-hero h1 .pq-hl,
+.pq-hero-h1 .pq-hl,
+.pq-composer-hero-h1 .pq-hl {
+  background: linear-gradient(135deg, #4DC9E6 0%, #6366F1 45%, #E94B9F 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

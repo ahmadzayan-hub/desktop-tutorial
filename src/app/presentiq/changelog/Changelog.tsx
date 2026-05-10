@@ -61,10 +61,10 @@ const V0_2_DELTAS: Entry[] = [
     bodyAr: "زر تواصل عائم وصفحة مخصصة. ترسل الملاحظات إلى Ahmad.zaian@outlook.com.",
   },
   {
-    titleEn: "Removed UAE-RTA-specific copy",
-    titleAr: "إزالة المراجع الخاصة بـ«RTA»",
-    bodyEn: "PresentIQ is org-agnostic. Government Boardroom and UAE Government Committee templates remain available, without naming a specific authority.",
-    bodyAr: "أصبحت PresentIQ محايدة تنظيمياً. تبقى قوالب المجلس الحكومي واللجنة الحكومية الإماراتية متاحة دون تسمية جهة بعينها.",
+    titleEn: "Removed transit-authority-specific copy",
+    titleAr: "إزالة المراجع الخاصة بهيئات النقل",
+    bodyEn: "PresentIQ is org-agnostic. Government Boardroom and Government Committee templates remain available, without naming a specific authority.",
+    bodyAr: "أصبحت PresentIQ محايدة تنظيمياً. تبقى قوالب المجلس الحكومي واللجنة الحكومية متاحة دون تسمية جهة بعينها.",
   },
 ];
 

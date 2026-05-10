@@ -129,11 +129,12 @@ const uaePineBoardroom: BrandRulesContext = {
   },
 };
 
-// RTA Dubai official preset — imperial blue + signature red, Dubai font.
-// Use this when the user explicitly selects the "RTA Dubai" brand kit.
-const rtaDubaiBoardroom: BrandRulesContext = {
+// Metro Authority boardroom preset — imperial blue + signature red on the
+// Dubai font stack. Generic transit-authority palette suitable for any
+// public-sector mobility / infrastructure entity.
+const metroAuthorityBoardroom: BrandRulesContext = {
   ...corporateDefault,
-  identity: { org_name: "Roads and Transport Authority — Dubai", logos: {} },
+  identity: { org_name: "Metro Transit Authority", logos: {} },
   palette: {
     primary: "#1A2E64",     // Imperial blue
     secondary: "#D81E05",   // Signature red
@@ -227,6 +228,19 @@ export type CuratedPalette = {
 };
 
 export const CURATED_PALETTES: CuratedPalette[] = [
+  // ── Zaian Sky (v0.4 default — indigo + cyan + magenta on deep navy) ──
+  {
+    id: "zaian-sky",
+    nameEn: "Zaian Sky — Indigo & Magenta",
+    nameAr: "سماء زيان — نيلي وفوشي",
+    colors: {
+      primary: "#6366F1", secondary: "#1A2456",
+      accent: ["#8A6CF7", "#4DC9E6", "#E94B9F", "#C9D5F8", "#FFFFFF", "#0E1430"],
+      background: "#0A0E2A", surface: "#161D44", foreground: "#F2F4FF",
+    },
+    charts: ["#6366F1", "#8A6CF7", "#4DC9E6", "#E94B9F", "#C9D5F8", "#1A2456"],
+    fonts: { en_primary: "Inter", ar_primary: "IBM Plex Sans Arabic" },
+  },
   {
     id: "zaytouni",
     nameEn: "Zaytouni — Olive",
@@ -275,11 +289,11 @@ export const CURATED_PALETTES: CuratedPalette[] = [
     charts: ["#0F172A", "#10B981", "#22D3EE", "#94A3B8", "#34D399", "#1E293B"],
     fonts: { en_primary: "Inter", ar_primary: "Cairo" },
   },
-  // ── RTA Dubai (official: imperial blue + signature red) ────────
+  // ── Metro Authority (transit-grade imperial blue + signature red) ────
   {
-    id: "rta-dubai",
-    nameEn: "RTA Dubai — Imperial Blue & Red",
-    nameAr: "هيئة طرق ومواصلات دبي — أزرق ملكي وأحمر",
+    id: "metro-authority",
+    nameEn: "Metro Authority — Imperial Blue & Red",
+    nameAr: "هيئة المترو — أزرق ملكي وأحمر",
     colors: {
       primary: "#1A2E64", secondary: "#D81E05",
       accent: ["#0E1F4A", "#FFFFFF", "#F4F6FB", "#A6B0C9", "#FFC83D", "#11244F"],
@@ -348,7 +362,7 @@ export const FONT_PAIRS: { id: string; en: string; ar: string; label: string }[]
   { id: "source-tajawal",en: "Source Sans 3",  ar: "Tajawal",              label: "Source Sans · Tajawal" },
   { id: "inter-cairo",   en: "Inter",          ar: "Cairo",                label: "Inter · Cairo" },
   { id: "lora-amiri",    en: "Lora",           ar: "Amiri",                label: "Lora · Amiri (formal)" },
-  { id: "dubai-dubai",   en: "Dubai",          ar: "Dubai",                label: "Dubai · Dubai (RTA / UAE Gov)" },
+  { id: "dubai-dubai",   en: "Dubai",          ar: "Dubai",                label: "Dubai · Dubai (Metro / Gov)" },
   { id: "inter-noto",    en: "Inter",          ar: "Noto Naskh Arabic",    label: "Inter · Noto Naskh (formal)" },
   { id: "inter-tajawal", en: "Inter",          ar: "Tajawal",              label: "Inter · Tajawal (modern)" },
   { id: "playfair-amiri",en: "Playfair Display",ar: "Amiri Quran",         label: "Playfair · Amiri (editorial)" },
@@ -362,8 +376,14 @@ export const FONT_PAIRS: { id: string; en: string; ar: string; label: string }[]
 export type CuratedColor = { id: string; nameEn: string; nameAr: string; hex: string };
 
 export const CURATED_COLORS: CuratedColor[] = [
-  { id: "rta-blue",       nameEn: "RTA Imperial Blue", nameAr: "أزرق هيئة الطرق", hex: "#1A2E64" },
-  { id: "rta-red",        nameEn: "RTA Signature Red", nameAr: "أحمر هيئة الطرق", hex: "#D81E05" },
+  { id: "imperial-blue",  nameEn: "Imperial Blue",     nameAr: "أزرق ملكي",        hex: "#1A2E64" },
+  { id: "signature-red",  nameEn: "Signature Red",     nameAr: "أحمر مميّز",       hex: "#D81E05" },
+  { id: "zaian-indigo",   nameEn: "Zaian Indigo",      nameAr: "نيلي زيان",          hex: "#6366F1" },
+  { id: "zaian-violet",   nameEn: "Zaian Violet",      nameAr: "بنفسجي زيان",        hex: "#8A6CF7" },
+  { id: "zaian-cyan",     nameEn: "Zaian Cyan",        nameAr: "سماوي زيان",         hex: "#4DC9E6" },
+  { id: "zaian-magenta",  nameEn: "Zaian Magenta",     nameAr: "فوشي زيان",          hex: "#E94B9F" },
+  { id: "zaian-sky",      nameEn: "Zaian Sky",         nameAr: "سماء زيان",          hex: "#C9D5F8" },
+  { id: "zaian-deep",     nameEn: "Zaian Deep Navy",   nameAr: "كحلي زيان",          hex: "#1A2456" },
   { id: "uae-red",        nameEn: "UAE Federal Red",   nameAr: "الأحمر الاتحادي",   hex: "#EF3340" },
   { id: "uae-green",      nameEn: "UAE Federal Green", nameAr: "الأخضر الاتحادي",   hex: "#00732F" },
   { id: "uae-black",      nameEn: "UAE Federal Black", nameAr: "الأسود الاتحادي",   hex: "#000000" },
@@ -393,7 +413,7 @@ export const CURATED_AR_FONTS: CuratedFont[] = [
   { id: "amiri-quran",     family: "Amiri Quran",          sample: "العنوان", nameEn: "Amiri Quran",          nameAr: "الأميري — مصحف" },
   { id: "noto-naskh",      family: "Noto Naskh Arabic",    sample: "العنوان", nameEn: "Noto Naskh",           nameAr: "نوتو نسخ" },
   { id: "noto-kufi",       family: "Noto Kufi Arabic",     sample: "العنوان", nameEn: "Noto Kufi",            nameAr: "نوتو كوفي" },
-  { id: "dubai",           family: "Dubai",                sample: "العنوان", nameEn: "Dubai (RTA / UAE)",    nameAr: "دبي" },
+  { id: "dubai",           family: "Dubai",                sample: "العنوان", nameEn: "Dubai (Metro / Gov)",  nameAr: "دبي" },
   { id: "scheherazade",    family: "Scheherazade New",     sample: "العنوان", nameEn: "Scheherazade",         nameAr: "شهرزاد" },
   { id: "lateef",          family: "Lateef",               sample: "العنوان", nameEn: "Lateef",               nameAr: "لطيف" },
 ];
@@ -413,7 +433,7 @@ export const BUILT_IN_PRESETS: Record<PresentationMode | "default", BrandRulesCo
   default: corporateDefault,
   corporate_boardroom: corporateDefault,
   government_boardroom: governmentBoardroom,
-  rta_boardroom: rtaDubaiBoardroom, // Official RTA Dubai colors (Imperial blue + signature red, Dubai font)
+  rta_boardroom: metroAuthorityBoardroom, // Generic transit-authority preset (imperial blue + signature red, Dubai font)
   consulting_partner: consultingPartner,
   sales_pitch: corporateDefault,
   project_steering: corporateDefault,

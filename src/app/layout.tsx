@@ -54,8 +54,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Curated EN + AR font stack used both on the marketing UI and as
+            preview fonts in the Brand Kit / slide editor. Kept on a single
+            CSS request so we hit one round-trip; subset to the weights the
+            UI actually uses. */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+          href={
+            "https://fonts.googleapis.com/css2" +
+            "?family=Inter:wght@400;500;600;700;800" +
+            "&family=Manrope:wght@400;500;600;700;800" +
+            "&family=Source+Sans+3:wght@400;500;600;700" +
+            "&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400" +
+            "&family=Playfair+Display:wght@400;600;700;800" +
+            "&family=Merriweather:wght@400;700" +
+            "&family=IBM+Plex+Sans:wght@400;500;600;700" +
+            "&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700" +
+            "&family=Tajawal:wght@400;500;700;800" +
+            "&family=Cairo:wght@400;500;600;700;800" +
+            "&family=Amiri:ital,wght@0,400;0,700;1,400" +
+            "&family=Amiri+Quran" +
+            "&family=Noto+Naskh+Arabic:wght@400;500;700" +
+            "&family=Noto+Kufi+Arabic:wght@400;500;700" +
+            "&family=Scheherazade+New:wght@400;700" +
+            "&family=Lateef:wght@400;700" +
+            "&display=swap"
+          }
           rel="stylesheet"
         />
         {/* Prevent flash of wrong theme */}

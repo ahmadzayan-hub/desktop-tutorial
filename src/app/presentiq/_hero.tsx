@@ -24,14 +24,14 @@ type TplCard = {
   title: string;
   badge: string;
   category: Exclude<TplCategory, "all">;
-  tone: "orange" | "green" | "purple" | "blue" | "ink" | "lime" | "rta";
+  tone: "orange" | "green" | "purple" | "blue" | "ink" | "lime" | "metro";
 };
 
 const TPL_CARDS: TplCard[] = [
   { code: "scqa_brief",            title: "Strategy Consulting Proposal", badge: "SCQA · 10",     category: "proposal",  tone: "orange" },
   { code: "boardroom_decision",    title: "Boardroom Decision",           badge: "Pyramid · 12",   category: "boardroom", tone: "green" },
   { code: "investor_business_case",title: "Founders Pitch Deck",          badge: "Pyramid · 14",   category: "pitch",     tone: "purple" },
-  { code: "uae_gov_committee",     title: "UAE Government Committee",     badge: "Bilingual · 12", category: "boardroom", tone: "rta" },
+  { code: "uae_gov_committee",     title: "Government Committee",         badge: "Bilingual · 12", category: "boardroom", tone: "metro" },
   { code: "qbr_steering",          title: "QBR Steering",                 badge: "RACI · 14",      category: "boardroom", tone: "ink" },
   { code: "okr_review",            title: "OKR Review",                   badge: "OKR · 9",        category: "boardroom", tone: "lime" },
   { code: "tender_response",       title: "Tender Response",              badge: "Pyramid · 18",   category: "tender",    tone: "blue" },
