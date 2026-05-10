@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useI18n } from "@/lib/presentiq/i18n/context";
 import { Frame4D } from "@/components/presentiq/ui/Frame4D";
 import { CURATED_PALETTES, FONT_PAIRS } from "@/lib/presentiq/brand/presets";
+import { getTemplate } from "@/lib/presentiq/templates/registry";
 
 type Mode = { code: string; nameEn: string; nameAr: string; descEn: string; descAr: string };
 
@@ -61,21 +62,20 @@ export function Wizard() {
       if (Number.isFinite(n)) setSlideCount(Math.min(60, Math.max(3, Math.round(n))));
     }
     if (templateParam) {
-      // Map a few common template codes to a presentation_mode preset.
-      const map: Record<string, string> = {
-        boardroom_decision:    "corporate_boardroom",
-        scqa_brief:             "consulting_partner",
-        qbr_steering:           "project_steering",
-        investor_business_case: "investor_business_case",
-        okr_review:             "kpi_dashboard",
-        pestel_strategy:        "strategy_deck",
-        uae_gov_committee:      "government_boardroom",
-        training_bilingual:     "training",
-        tender_response:        "tender_proposal",
-      };
-      const m = map[templateParam];
-      if (m) setMode(m);
-      setStep((s) => (s === 0 ? 1 : s));
+      // Resolve the template from the registry — gives us a real outline,
+      // recommended preset, default slide count + duration. The wizard
+      // pre-fills the brief so the user can hit Continue and accept it.
+      const tpl = getTemplate(templateParam);
+      if (tpl) {
+        setTemplateCode(tpl.code);
+        setMode(tpl.presentationMode);
+        setSlideCount(tpl.defaultSlides);
+        setDuration(tpl.defaultDurationMin);
+        const tplName = lang === "ar" ? tpl.nameAr : tpl.nameEn;
+        setTitle((prev) => prev || `${tplName} — ${new Date().toISOString().slice(0, 10)}`);
+        setObjective((prev) => prev || (lang === "ar" ? tpl.taglineAr : tpl.taglineEn));
+        setStep((s) => (s === 0 ? 1 : s));
+      }
     }
     if (stepParam === "sources") setStep(2);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -90,6 +90,7 @@ export function Wizard() {
   const [paletteId, setPaletteId] = useState<string>(CURATED_PALETTES[0].id);
   const [fontPairId, setFontPairId] = useState<string>(FONT_PAIRS[0].id);
   const [brandKitId, setBrandKitId] = useState<string | null>(null);
+  const [templateCode, setTemplateCode] = useState<string | null>(null);
   const [companyLogo, setCompanyLogo] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [logoUploaded, setLogoUploaded] = useState(false);
@@ -277,7 +278,8 @@ export function Wizard() {
     try {
       const res = await fetch(`/api/presentiq/projects/${createdId}/blueprint`, {
         method: "POST",
-        headers: demoHeaders(),
+        headers: demoHeaders({ "content-type": "application/json" }),
+        body: JSON.stringify({ template_code: templateCode ?? undefined }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error?.message ?? "blueprint_failed");

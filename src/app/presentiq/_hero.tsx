@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useI18n } from "@/lib/presentiq/i18n/context";
 import { Frame4D } from "@/components/presentiq/ui/Frame4D";
+import { TEMPLATES } from "@/lib/presentiq/templates/registry";
 
 const FEATURES: { titleKey: any; bodyKey: any; icon: string }[] = [
   { titleKey: "feat.brand.title",    bodyKey: "feat.brand.body",    icon: "🛡" },
@@ -19,24 +20,18 @@ const V2_KEYS: any[] = ["v2.outline", "v2.theme", "v2.share", "v2.compare", "v2.
 
 type TplCategory = "all" | "pitch" | "proposal" | "boardroom" | "training" | "tender";
 
-type TplCard = {
-  code: string;
-  title: string;
-  badge: string;
-  category: Exclude<TplCategory, "all">;
-  tone: "orange" | "green" | "purple" | "blue" | "ink" | "lime" | "metro";
+// Categorise the registry templates so the landing's chip filter works.
+const TPL_CATEGORY: Record<string, Exclude<TplCategory, "all">> = {
+  scqa_brief:             "proposal",
+  boardroom_decision:     "boardroom",
+  investor_business_case: "pitch",
+  uae_gov_committee:      "boardroom",
+  qbr_steering:           "boardroom",
+  okr_review:             "boardroom",
+  tender_response:        "tender",
+  training_bilingual:     "training",
+  pestel_strategy:        "proposal",
 };
-
-const TPL_CARDS: TplCard[] = [
-  { code: "scqa_brief",            title: "Strategy Consulting Proposal", badge: "SCQA · 10",     category: "proposal",  tone: "orange" },
-  { code: "boardroom_decision",    title: "Boardroom Decision",           badge: "Pyramid · 12",   category: "boardroom", tone: "green" },
-  { code: "investor_business_case",title: "Founders Pitch Deck",          badge: "Pyramid · 14",   category: "pitch",     tone: "purple" },
-  { code: "uae_gov_committee",     title: "Government Committee",         badge: "Bilingual · 12", category: "boardroom", tone: "metro" },
-  { code: "qbr_steering",          title: "QBR Steering",                 badge: "RACI · 14",      category: "boardroom", tone: "ink" },
-  { code: "okr_review",            title: "OKR Review",                   badge: "OKR · 9",        category: "boardroom", tone: "lime" },
-  { code: "tender_response",       title: "Tender Response",              badge: "Pyramid · 18",   category: "tender",    tone: "blue" },
-  { code: "training_bilingual",    title: "Training Module",              badge: "SCQA · 16",      category: "training",  tone: "green" },
-];
 
 export function Hero() {
   const { t, lang } = useI18n();
@@ -79,17 +74,19 @@ export function Hero() {
     }
   }
 
-  const filteredCards = tplCat === "all" ? TPL_CARDS : TPL_CARDS.filter((c) => c.category === tplCat);
+  const filteredCards = TEMPLATES.filter((tp) =>
+    tplCat === "all" ? true : TPL_CATEGORY[tp.code] === tplCat,
+  );
 
   return (
     <div className="space-y-16">
       {/* ── Hero v0.5 — Chatly-style composer ─────────────────────── */}
       <section className="pq-composer-hero">
-        <div className="pq-mesh" aria-hidden />
+        <div className="pq-mesh pq-aurora-flow" aria-hidden />
 
         <div className="relative" style={{ zIndex: 1 }}>
           {/* Mode tabs */}
-          <div className="pq-mode-tabs" role="tablist" aria-label="Generation mode">
+          <div className="pq-mode-tabs pq-rise" role="tablist" aria-label="Generation mode">
             <button
               role="tab"
               type="button"
@@ -116,9 +113,9 @@ export function Hero() {
                   textTransform: "uppercase",
                   padding: "0.12rem 0.4rem",
                   borderRadius: 999,
-                  background: "rgba(159,205,99,0.18)",
-                  color: "var(--pq-primary)",
-                  border: "1px solid rgba(159,205,99,0.36)",
+                  background: "rgba(138,108,247,0.20)",
+                  color: "var(--pq-accent-violet)",
+                  border: "1px solid rgba(138,108,247,0.42)",
                 }}
               >
                 Pro
@@ -127,13 +124,13 @@ export function Hero() {
           </div>
 
           {/* Hero question */}
-          <h1 className="pq-composer-hero-h1">
+          <h1 className="pq-composer-hero-h1 pq-rise pq-rise-2">
             <span className="pq-emoji" aria-hidden>▣</span>
             {lang === "ar" ? "من أين نبدأ؟" : "Where should we begin?"}
           </h1>
 
           {/* Composer */}
-          <div className="pq-liquid-card pq-composer-card" dir={lang === "ar" ? "rtl" : "ltr"}>
+          <div className="pq-liquid-card pq-composer-card pq-rise pq-rise-3" dir={lang === "ar" ? "rtl" : "ltr"}>
             <textarea
               className="pq-composer-textarea"
               value={prompt}
@@ -189,7 +186,7 @@ export function Hero() {
           </div>
 
           {/* CTA row underneath the composer (liquid + ghost) */}
-          <div className="pq-hero-cta-row" style={{ marginTop: "1.5rem" }}>
+          <div className="pq-hero-cta-row pq-rise pq-rise-4" style={{ marginTop: "1.5rem" }}>
             <Link
               href="/presentiq/projects/new"
               className="pq-btn pq-btn-liquid pq-btn-liquid-primary pq-btn-liquid-pill"
@@ -255,26 +252,31 @@ export function Hero() {
             </div>
           </Link>
 
-          {filteredCards.map((c) => (
-            <Link key={c.code} href={`/presentiq/projects/new?template=${c.code}`} className="pq-tpl-card">
-              <div className="pq-tpl-card-cover" data-tone={c.tone}>
-                <span>{c.title}</span>
-              </div>
-              <div className="pq-tpl-card-foot">
-                <div className="pq-tpl-card-title">{c.title}</div>
-                <div className="pq-tpl-card-sub">{c.badge}</div>
-              </div>
-            </Link>
-          ))}
+          {filteredCards.map((tp) => {
+            const title = lang === "ar" ? tp.nameAr : tp.nameEn;
+            return (
+              <Link
+                key={tp.code}
+                href={`/presentiq/projects/new?template=${tp.code}`}
+                className="pq-tpl-card"
+              >
+                <div className="pq-tpl-card-cover" data-tone={tp.tone}>
+                  <span>{title}</span>
+                </div>
+                <div className="pq-tpl-card-foot">
+                  <div className="pq-tpl-card-title">{title}</div>
+                  <div className="pq-tpl-card-sub">
+                    {tp.framework} · {tp.defaultSlides} {lang === "ar" ? "شريحة" : "slides"}
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
-      {/* ── Stats strip ───────────────────────────────────────────── */}
-      <section className="pq-stats pq-stats-flat" aria-label="Headline stats">
-        <div className="pq-stat">
-          <div className="pq-stat-num">12k+</div>
-          <div className="pq-stat-label">{t("hero.stat.decks")}</div>
-        </div>
+      {/* ── Capability strip — verifiable platform facts only ───── */}
+      <section className="pq-stats pq-stats-flat" aria-label="Platform capabilities">
         <div className="pq-stat">
           <div className="pq-stat-num">EN · AR</div>
           <div className="pq-stat-label">{t("hero.stat.langs")}</div>
@@ -284,8 +286,12 @@ export function Hero() {
           <div className="pq-stat-label">{t("hero.stat.dims")}</div>
         </div>
         <div className="pq-stat">
-          <div className="pq-stat-num">99.9%</div>
-          <div className="pq-stat-label">{t("hero.stat.uptime")}</div>
+          <div className="pq-stat-num">PPTX</div>
+          <div className="pq-stat-label">{lang === "ar" ? "مخرج قابل للتحرير" : "Editable export"}</div>
+        </div>
+        <div className="pq-stat">
+          <div className="pq-stat-num">RTL</div>
+          <div className="pq-stat-label">{lang === "ar" ? "تخطيطات معكوسة" : "Mirrored layouts"}</div>
         </div>
       </section>
 
@@ -303,15 +309,14 @@ export function Hero() {
         </div>
       </section>
 
-      {/* ── Trust strip ───────────────────────────────────────────── */}
-      <section className="pq-trust-strip" aria-label="Trust">
-        <span className="pq-trust-label">{t("hero.trust")}</span>
-        <span className="pq-trust-logo">EMIRATES&nbsp;GROUP</span>
-        <span className="pq-trust-logo">ETIHAD</span>
-        <span className="pq-trust-logo">ARAMCO</span>
-        <span className="pq-trust-logo">QATAR&nbsp;ENERGY</span>
-        <span className="pq-trust-logo">DP&nbsp;WORLD</span>
-        <span className="pq-trust-logo">MUBADALA</span>
+      {/* ── Built-for strip — neutral sector labels (no fabricated logos) ── */}
+      <section className="pq-trust-strip pq-rise" aria-label="Built for">
+        <span className="pq-trust-label">{lang === "ar" ? "مُصمَّم لـ" : "Built for"}</span>
+        <span className="pq-trust-logo">{lang === "ar" ? "مجالس الإدارة" : "BOARDROOMS"}</span>
+        <span className="pq-trust-logo">{lang === "ar" ? "اللجان الحكومية" : "GOVERNMENT&nbsp;COMMITTEES"}</span>
+        <span className="pq-trust-logo">{lang === "ar" ? "الشركاء الاستشاريون" : "CONSULTING&nbsp;PARTNERS"}</span>
+        <span className="pq-trust-logo">{lang === "ar" ? "لجان التوجيه" : "STEERING&nbsp;COMMITTEES"}</span>
+        <span className="pq-trust-logo">{lang === "ar" ? "حالات العمل" : "BUSINESS&nbsp;CASES"}</span>
       </section>
 
       {/* ── Differentiator features ───────────────────────────────── */}

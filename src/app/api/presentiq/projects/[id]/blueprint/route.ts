@@ -11,18 +11,40 @@ import { BriefSchema } from "@/lib/presentiq/types";
 import { fail, json, notFound } from "@/lib/presentiq/api/response";
 import { getProject as getDemoProject, updateProject as updateDemoProject } from "@/lib/presentiq/demo/store";
 import { buildDemoBlueprint } from "@/lib/presentiq/demo/blueprint";
+import { getTemplate } from "@/lib/presentiq/templates/registry";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
 
-export async function POST(_req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, { params }: { params: { id: string } }) {
   const ctx = await getRequestContext();
+  const body = (await req.json().catch(() => ({}))) as { template_code?: string };
 
   // Demo path — synthesise a deterministic blueprint and store it.
+  // If a template code came in, use that template's curated outline so the
+  // user sees the structure they picked, not the generic 14-slide demo.
   if (isDemoContext(ctx)) {
     const demoProject = getDemoProject(params.id);
     if (!demoProject) return notFound("project");
-    const blueprint = buildDemoBlueprint(demoProject);
+    const tpl = body.template_code ? getTemplate(body.template_code) : undefined;
+    let blueprint;
+    if (tpl) {
+      blueprint = {
+        executive_summary: tpl.taglineEn,
+        recommended_structure: tpl.outline.map((s, i) => ({
+          slide_number: i + 1,
+          title: s.titleEn,
+          purpose: s.purposeEn,
+        })),
+        narrative_arc: `${tpl.framework} narrative — ${tpl.taglineEn}`,
+        key_themes: [tpl.framework, tpl.nameEn, "Boardroom-ready"],
+        estimated_duration_min: tpl.defaultDurationMin,
+        target_slide_count: tpl.outline.length,
+        risks: [],
+      } as any;
+    } else {
+      blueprint = buildDemoBlueprint(demoProject);
+    }
     updateDemoProject(params.id, { status: "blueprint_ready", blueprint });
     return json({ blueprint });
   }

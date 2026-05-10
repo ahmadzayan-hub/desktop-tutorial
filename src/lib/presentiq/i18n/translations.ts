@@ -209,8 +209,8 @@ export const TRANSLATIONS = {
                             ar: "v0.4 · متاح الآن · واجهة سماء زيان · PPTX قابل للتحرير · ثنائية RTL" },
   "banner.1":             { en: "🛡️  Brand governance + 10-dimension quality, enforced automatically",
                             ar: "🛡️  حوكمة العلامة وجودة بـ١٠ أبعاد، تُطبَّق تلقائياً" },
-  "banner.2":             { en: "🇦🇪  UAE-built · Boardrooms across GCC trust PresentIQ",
-                            ar: "🇦🇪  صُمّم في الإمارات · مجالس إدارة الخليج تثق بـPresentIQ" },
+  "banner.2":             { en: "🌐  Bilingual EN ⇄ AR · UAE-built · Built for boardrooms",
+                            ar: "🌐  ثنائية اللغة EN ⇄ AR · صُمّم في الإمارات · لمجالس الإدارة" },
   "banner.cta":           { en: "Try the demo",                            ar: "جرّب التجربة" },
   "banner.close":         { en: "Dismiss banner",                          ar: "إغلاق الشريط" },
 
