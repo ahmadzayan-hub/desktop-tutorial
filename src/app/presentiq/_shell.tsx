@@ -80,15 +80,15 @@ export function PresentIqShell({ children }: { children: ReactNode }) {
             {isMarketing && (
               <Link
                 href="/presentiq/dashboard"
-                className="pq-btn pq-btn-ghost hidden md:inline-flex"
-                style={{ padding: "0.5rem 0.85rem", fontSize: "0.82rem" }}
+                className="pq-btn pq-btn-liquid pq-btn-liquid-pill hidden md:inline-flex"
+                style={{ padding: "0.5rem 1rem", fontSize: "0.82rem" }}
               >
                 {t("marketing.nav.login")}
               </Link>
             )}
             <Link
               href="/presentiq/projects/new"
-              className="pq-btn pq-btn-primary hidden md:inline-flex"
+              className="pq-btn pq-btn-liquid pq-btn-liquid-primary pq-btn-liquid-pill hidden md:inline-flex"
               style={{ padding: "0.55rem 1.05rem", fontSize: "0.85rem" }}
             >
               <span aria-hidden>＋</span> {t("nav.new")}

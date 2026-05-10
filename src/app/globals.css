@@ -839,7 +839,143 @@ html.dark {
 }
 .pq-btn-danger:hover { transform: translateY(-1px); }
 
-/* ── Form fields ── */
+/* ── Liquid (frosted-glass) button & surface ──────────────────────
+   Visual goal: a translucent capsule that looks like a glass pill
+   sitting on the surface. Layered backdrop-blur, double inset
+   highlights, an outer ring and a soft drop shadow give the
+   chatlyai-style "liquid" feel. Works on dark surfaces.            */
+.pq-btn-liquid {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.10) 100%),
+    rgba(255,255,255,0.04);
+  color: var(--pq-text-main);
+  border: 1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(18px) saturate(1.6);
+  -webkit-backdrop-filter: blur(18px) saturate(1.6);
+  box-shadow:
+    0 10px 30px -10px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.45),
+    inset 0 -1px 0 rgba(255,255,255,0.12),
+    inset 0 0 0 1px rgba(255,255,255,0.06);
+  position: relative;
+  overflow: hidden;
+}
+.pq-btn-liquid::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background:
+    radial-gradient(120% 60% at 50% -10%, rgba(255,255,255,0.45), transparent 60%);
+  pointer-events: none;
+  opacity: 0.85;
+}
+.pq-btn-liquid::after {
+  content: "";
+  position: absolute;
+  left: 6%; right: 6%; top: 6%;
+  height: 22%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0));
+  filter: blur(2px);
+  pointer-events: none;
+}
+.pq-btn-liquid:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 16px 40px -10px rgba(0,0,0,0.65),
+    inset 0 1px 0 rgba(255,255,255,0.55),
+    inset 0 -1px 0 rgba(255,255,255,0.16),
+    inset 0 0 0 1px rgba(255,255,255,0.10);
+}
+/* Tinted variants — keep the glass body, tint with primary glow */
+.pq-btn-liquid-primary {
+  color: var(--pq-primary-text);
+  background:
+    linear-gradient(180deg, rgba(212,240,140,0.85), rgba(159,205,99,0.55) 60%, rgba(123,185,74,0.85)),
+    rgba(159,205,99,0.30);
+  border-color: rgba(212,240,140,0.7);
+  box-shadow:
+    0 14px 32px -10px rgba(159,205,99,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.55),
+    inset 0 -1px 0 rgba(255,255,255,0.16);
+}
+.pq-btn-liquid-primary::before {
+  background: radial-gradient(120% 60% at 50% -10%, rgba(255,255,255,0.55), transparent 60%);
+}
+.pq-btn-liquid-pill { border-radius: 999px; }
+
+/* Liquid surface — used for the prompt composer card */
+.pq-liquid-card {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 60%, rgba(255,255,255,0.08) 100%),
+    rgba(7,16,10,0.55);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 28px;
+  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  box-shadow:
+    0 30px 60px -25px rgba(0,0,0,0.7),
+    inset 0 1px 0 rgba(255,255,255,0.20),
+    inset 0 -1px 0 rgba(255,255,255,0.06);
+}
+.pq-liquid-card::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background: radial-gradient(80% 50% at 50% -10%, rgba(255,255,255,0.18), transparent 70%);
+  pointer-events: none;
+}
+
+/* Liquid icon button (round) */
+.pq-liquid-icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  color: var(--pq-text-main);
+  border: 1px solid rgba(255,255,255,0.14);
+  cursor: pointer;
+  transition: background .2s ease, transform .2s ease;
+}
+.pq-liquid-icon-btn:hover { background: rgba(255,255,255,0.12); transform: translateY(-1px); }
+
+/* Mode-tab pill (Classic / Studio Pro) */
+.pq-mode-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  backdrop-filter: blur(14px);
+}
+.pq-mode-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--pq-text-secondary);
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  transition: background .15s ease, color .15s ease;
+}
+.pq-mode-tab[data-active="true"] {
+  background: rgba(255,255,255,0.10);
+  color: var(--pq-text-main);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.30);
+}
+
+/* Form fields */
 
 [data-pq] input, [data-pq] textarea, [data-pq] select {
   border-radius: 14px;
@@ -1229,6 +1365,185 @@ html.dark {
   max-width: 56rem;
   margin-inline: auto;
 }
+
+/* ── Chatly-style composer hero ─────────────────────────────────── */
+.pq-composer-hero {
+  position: relative;
+  padding: 3.5rem 1rem 2rem;
+  text-align: center;
+}
+@media (max-width: 720px) {
+  .pq-composer-hero { padding: 2.25rem 0.5rem 1.5rem; }
+}
+.pq-composer-hero-h1 {
+  margin-top: 1.25rem;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1.05;
+  letter-spacing: -0.022em;
+  font-weight: 700;
+  color: var(--pq-text-main);
+}
+.pq-composer-hero-h1 .pq-emoji {
+  display: inline-grid;
+  place-items: center;
+  width: 1.05em;
+  height: 1.05em;
+  margin-inline-end: 0.4em;
+  vertical-align: -0.12em;
+  border-radius: 0.22em;
+  background: linear-gradient(180deg, #F4B63E 0%, #D5A84A 100%);
+  color: #1A1305;
+  font-size: 0.6em;
+  font-weight: 800;
+}
+.pq-composer-card {
+  margin: 1.75rem auto 0;
+  max-width: 46rem;
+  padding: 0.6rem;
+}
+.pq-composer-textarea {
+  width: 100%;
+  min-height: 3.4rem;
+  max-height: 14rem;
+  resize: none;
+  border: 0;
+  background: transparent;
+  color: var(--pq-text-main);
+  font-size: 1.05rem;
+  line-height: 1.5;
+  padding: 0.95rem 1rem 0.5rem;
+  outline: none;
+  font-family: inherit;
+}
+.pq-composer-textarea::placeholder {
+  color: var(--pq-text-muted);
+}
+.pq-composer-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.45rem 0.45rem 0.55rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+[data-pq][dir="rtl"] .pq-composer-controls { padding-inline: 0.45rem; }
+.pq-composer-controls > .spacer { flex: 1; }
+.pq-composer-slidesel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: var(--pq-text-main);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pq-composer-slidesel:hover { background: rgba(255,255,255,0.10); }
+.pq-composer-slidesel select {
+  appearance: none;
+  background: transparent;
+  color: inherit;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+.pq-composer-send {
+  display: inline-grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffffff 0%, #f3f3f3 100%);
+  color: #0A0F0C;
+  border: 1px solid rgba(255,255,255,0.6);
+  cursor: pointer;
+  font-size: 1.05rem;
+  box-shadow: 0 8px 22px -10px rgba(255,255,255,0.45), inset 0 1px 0 rgba(255,255,255,0.6);
+}
+.pq-composer-send:disabled { opacity: 0.55; cursor: not-allowed; }
+.pq-composer-send:hover:not(:disabled) { transform: translateY(-1px); }
+
+/* Templates strip + category chips */
+.pq-templates {
+  margin-top: 2.5rem;
+}
+.pq-tpl-chips {
+  display: flex; gap: 0.55rem; flex-wrap: wrap;
+  margin-top: 1rem;
+}
+.pq-tpl-chip {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.16);
+  color: var(--pq-text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.pq-tpl-chip:hover { background: rgba(255,255,255,0.06); color: var(--pq-text-main); }
+.pq-tpl-chip[data-active="true"] {
+  background: rgba(255,255,255,0.12);
+  color: var(--pq-text-main);
+  border-color: rgba(255,255,255,0.28);
+}
+.pq-tpl-grid {
+  margin-top: 1.25rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.pq-tpl-card {
+  position: relative;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.03);
+  aspect-ratio: 4 / 5;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.pq-tpl-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255,255,255,0.22);
+  box-shadow: 0 26px 50px -20px rgba(0,0,0,0.6);
+}
+.pq-tpl-card-cover {
+  position: relative;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, rgba(159,205,99,0.18), rgba(213,168,74,0.10));
+  font-size: 1.05rem; font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: -0.01em;
+  padding: 1rem;
+  text-align: center;
+}
+.pq-tpl-card-cover[data-tone="orange"] { background: linear-gradient(135deg, #6E4017, #C97D2C 80%); }
+.pq-tpl-card-cover[data-tone="green"]  { background: linear-gradient(135deg, #08381F, #1F8E5E 80%); }
+.pq-tpl-card-cover[data-tone="purple"] { background: linear-gradient(135deg, #2E1A55, #7C3AED 80%); }
+.pq-tpl-card-cover[data-tone="blue"]   { background: linear-gradient(135deg, #0E1F4A, #1A2E64 80%); }
+.pq-tpl-card-cover[data-tone="ink"]    { background: linear-gradient(135deg, #0E0B1A, #1F1A2E 80%); }
+.pq-tpl-card-cover[data-tone="lime"]   { background: linear-gradient(135deg, #1B2E0E, #7BB94A 110%); }
+.pq-tpl-card-cover[data-tone="rta"]    { background: linear-gradient(135deg, #1A2E64, #D81E05 130%); }
+.pq-tpl-card-blank {
+  background: rgba(255,255,255,0.03);
+  border: 1px dashed rgba(255,255,255,0.18) !important;
+  color: var(--pq-text-secondary);
+}
+.pq-tpl-card-foot {
+  padding: 0.85rem 1rem;
+  background: rgba(7,16,10,0.65);
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.pq-tpl-card-title { font-size: 0.92rem; font-weight: 600; color: var(--pq-text-main); }
+.pq-tpl-card-sub   { font-size: 0.74rem; color: var(--pq-primary); margin-top: 0.15rem; }
 .pq-hero-eyebrow {
   display: inline-flex;
   align-items: center;

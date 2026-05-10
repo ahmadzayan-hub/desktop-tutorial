@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useI18n } from "@/lib/presentiq/i18n/context";
 import { Frame4D } from "@/components/presentiq/ui/Frame4D";
 import { CURATED_PALETTES, FONT_PAIRS } from "@/lib/presentiq/brand/presets";
@@ -24,6 +24,7 @@ const MODES: Mode[] = [
 
 export function Wizard() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { t, lang } = useI18n();
   const [step, setStep] = useState(0);
   const [busy, setBusy] = useState(false);
@@ -38,6 +39,47 @@ export function Wizard() {
   const [confidentiality, setConfidentiality] = useState("internal");
   const [slideCount, setSlideCount] = useState(10);
   const [duration, setDuration] = useState(20);
+
+  // Prefill the brief from the landing-page composer (?prompt=&slides=&template=).
+  // Only runs once, on first mount, so the user's edits aren't clobbered.
+  useEffect(() => {
+    const promptParam = searchParams?.get("prompt");
+    const slidesParam = searchParams?.get("slides");
+    const stepParam = searchParams?.get("step");
+    const templateParam = searchParams?.get("template");
+    if (promptParam) {
+      setObjective((prev) => prev || promptParam);
+      const firstLine = promptParam.split(/[.\n]/)[0]?.trim() ?? "";
+      if (firstLine && firstLine.length >= 2) {
+        setTitle((prev) => prev || firstLine.slice(0, 80));
+      }
+      // Jump straight into the Brief step so the user can confirm.
+      setStep(1);
+    }
+    if (slidesParam) {
+      const n = Number(slidesParam);
+      if (Number.isFinite(n)) setSlideCount(Math.min(60, Math.max(3, Math.round(n))));
+    }
+    if (templateParam) {
+      // Map a few common template codes to a presentation_mode preset.
+      const map: Record<string, string> = {
+        boardroom_decision:    "corporate_boardroom",
+        scqa_brief:             "consulting_partner",
+        qbr_steering:           "project_steering",
+        investor_business_case: "investor_business_case",
+        okr_review:             "kpi_dashboard",
+        pestel_strategy:        "strategy_deck",
+        uae_gov_committee:      "government_boardroom",
+        training_bilingual:     "training",
+        tender_response:        "tender_proposal",
+      };
+      const m = map[templateParam];
+      if (m) setMode(m);
+      setStep((s) => (s === 0 ? 1 : s));
+    }
+    if (stepParam === "sources") setStep(2);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [createdId, setCreatedId] = useState<string | null>(null);
   const [files, setFiles] = useState<File[]>([]);

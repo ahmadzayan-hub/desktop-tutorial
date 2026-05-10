@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 import { useI18n } from "@/lib/presentiq/i18n/context";
 import { Frame4D } from "@/components/presentiq/ui/Frame4D";
 
@@ -15,62 +17,259 @@ const FEATURES: { titleKey: any; bodyKey: any; icon: string }[] = [
 
 const V2_KEYS: any[] = ["v2.outline", "v2.theme", "v2.share", "v2.compare", "v2.assets", "v2.demo"];
 
+type TplCategory = "all" | "pitch" | "proposal" | "boardroom" | "training" | "tender";
+
+type TplCard = {
+  code: string;
+  title: string;
+  badge: string;
+  category: Exclude<TplCategory, "all">;
+  tone: "orange" | "green" | "purple" | "blue" | "ink" | "lime" | "rta";
+};
+
+const TPL_CARDS: TplCard[] = [
+  { code: "scqa_brief",            title: "Strategy Consulting Proposal", badge: "SCQA · 10",     category: "proposal",  tone: "orange" },
+  { code: "boardroom_decision",    title: "Boardroom Decision",           badge: "Pyramid · 12",   category: "boardroom", tone: "green" },
+  { code: "investor_business_case",title: "Founders Pitch Deck",          badge: "Pyramid · 14",   category: "pitch",     tone: "purple" },
+  { code: "uae_gov_committee",     title: "UAE Government Committee",     badge: "Bilingual · 12", category: "boardroom", tone: "rta" },
+  { code: "qbr_steering",          title: "QBR Steering",                 badge: "RACI · 14",      category: "boardroom", tone: "ink" },
+  { code: "okr_review",            title: "OKR Review",                   badge: "OKR · 9",        category: "boardroom", tone: "lime" },
+  { code: "tender_response",       title: "Tender Response",              badge: "Pyramid · 18",   category: "tender",    tone: "blue" },
+  { code: "training_bilingual",    title: "Training Module",              badge: "SCQA · 16",      category: "training",  tone: "green" },
+];
+
 export function Hero() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const router = useRouter();
+
+  const [mode, setMode] = useState<"classic" | "studio">("classic");
+  const [prompt, setPrompt] = useState("");
+  const [slides, setSlides] = useState(5);
+  const [tplCat, setTplCat] = useState<TplCategory>("all");
+
+  const placeholder = useMemo(
+    () => (lang === "ar"
+      ? "مثلاً: ١٠ شرائح عن التحول الرقمي للجنة التوجيه..."
+      : "E.g. 10 slides on climate change for the steering committee…"),
+    [lang],
+  );
+
+  const cats: { id: TplCategory; labelEn: string; labelAr: string }[] = [
+    { id: "all",       labelEn: "All",            labelAr: "الكل" },
+    { id: "pitch",     labelEn: "Pitch Deck",     labelAr: "عرض تأسيسي" },
+    { id: "proposal",  labelEn: "Project Proposal", labelAr: "عرض مشروع" },
+    { id: "boardroom", labelEn: "Boardroom",      labelAr: "مجلس الإدارة" },
+    { id: "training",  labelEn: "Training",       labelAr: "تدريب" },
+    { id: "tender",    labelEn: "Tender",         labelAr: "عطاء" },
+  ];
+
+  function submit() {
+    const v = prompt.trim();
+    const params = new URLSearchParams();
+    if (v) params.set("prompt", v);
+    params.set("slides", String(slides));
+    params.set("mode", mode);
+    router.push(`/presentiq/projects/new?${params.toString()}`);
+  }
+
+  function onTextareaKey(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault();
+      submit();
+    }
+  }
+
+  const filteredCards = tplCat === "all" ? TPL_CARDS : TPL_CARDS.filter((c) => c.category === tplCat);
 
   return (
     <div className="space-y-16">
-      {/* ── Hero v0.4 — centered, single primary CTA, clean Obsidian-style ── */}
-      <section className="pq-hero pq-hero-centered">
+      {/* ── Hero v0.5 — Chatly-style composer ─────────────────────── */}
+      <section className="pq-composer-hero">
         <div className="pq-mesh" aria-hidden />
-        <div className="pq-hero-centered-inner">
-          <span className="pq-hero-eyebrow">
-            <span aria-hidden>●</span> {t("land.pill")}
-          </span>
-          <h1 className="pq-hero-h1" style={{ color: "var(--pq-text-main)" }}>
-            {t("land.h1.a")} <span className="pq-hl">{t("land.h1.hl")}</span> {t("land.h1.b")}
-          </h1>
-          <p className="pq-hero-lede" style={{ color: "var(--pq-text-secondary)" }}>
-            {t("land.lede")}
-          </p>
 
-          <div className="pq-hero-cta-row">
+        <div className="relative" style={{ zIndex: 1 }}>
+          {/* Mode tabs */}
+          <div className="pq-mode-tabs" role="tablist" aria-label="Generation mode">
+            <button
+              role="tab"
+              type="button"
+              data-active={mode === "classic" ? "true" : "false"}
+              onClick={() => setMode("classic")}
+              className="pq-mode-tab"
+            >
+              <span aria-hidden>≡</span> {lang === "ar" ? "كلاسيكي" : "Classic"}
+            </button>
+            <button
+              role="tab"
+              type="button"
+              data-active={mode === "studio" ? "true" : "false"}
+              onClick={() => setMode("studio")}
+              className="pq-mode-tab"
+            >
+              <span aria-hidden>◆</span>
+              {lang === "ar" ? "استوديو" : "Studio"}
+              <span
+                style={{
+                  fontSize: "0.65rem",
+                  fontWeight: 700,
+                  letterSpacing: "0.06em",
+                  textTransform: "uppercase",
+                  padding: "0.12rem 0.4rem",
+                  borderRadius: 999,
+                  background: "rgba(159,205,99,0.18)",
+                  color: "var(--pq-primary)",
+                  border: "1px solid rgba(159,205,99,0.36)",
+                }}
+              >
+                Pro
+              </span>
+            </button>
+          </div>
+
+          {/* Hero question */}
+          <h1 className="pq-composer-hero-h1">
+            <span className="pq-emoji" aria-hidden>▣</span>
+            {lang === "ar" ? "من أين نبدأ؟" : "Where should we begin?"}
+          </h1>
+
+          {/* Composer */}
+          <div className="pq-liquid-card pq-composer-card" dir={lang === "ar" ? "rtl" : "ltr"}>
+            <textarea
+              className="pq-composer-textarea"
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              onKeyDown={onTextareaKey}
+              placeholder={placeholder}
+              aria-label={placeholder}
+              rows={2}
+            />
+            <div className="pq-composer-controls">
+              <button
+                type="button"
+                className="pq-liquid-icon-btn"
+                aria-label={lang === "ar" ? "إضافة مصدر" : "Attach a source"}
+                onClick={() => router.push(`/presentiq/projects/new?step=sources`)}
+                title={lang === "ar" ? "إضافة مصدر" : "Attach"}
+              >
+                <span aria-hidden>＋</span>
+              </button>
+              <span className="spacer" />
+              <label className="pq-composer-slidesel">
+                <select
+                  value={slides}
+                  onChange={(e) => setSlides(Number(e.target.value))}
+                  aria-label={lang === "ar" ? "عدد الشرائح" : "Slide count"}
+                >
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20].map((n) => (
+                    <option key={n} value={n}>
+                      {n} {lang === "ar" ? "شريحة" : (n === 1 ? "slide" : "slides")}
+                    </option>
+                  ))}
+                </select>
+                <span aria-hidden>⌃</span>
+              </label>
+              <button
+                type="button"
+                className="pq-liquid-icon-btn"
+                aria-label={lang === "ar" ? "إدخال صوتي" : "Voice input"}
+                title={lang === "ar" ? "قريباً" : "Coming soon"}
+              >
+                <span aria-hidden>🎙</span>
+              </button>
+              <button
+                type="button"
+                className="pq-composer-send"
+                onClick={submit}
+                aria-label={lang === "ar" ? "ابدأ التوليد" : "Start generation"}
+                title={lang === "ar" ? "ابدأ" : "Start"}
+              >
+                <span aria-hidden>↑</span>
+              </button>
+            </div>
+          </div>
+
+          {/* CTA row underneath the composer (liquid + ghost) */}
+          <div className="pq-hero-cta-row" style={{ marginTop: "1.5rem" }}>
             <Link
               href="/presentiq/projects/new"
-              className="pq-btn pq-btn-primary"
-              style={{ padding: "1rem 1.9rem", fontSize: "0.98rem" }}
+              className="pq-btn pq-btn-liquid pq-btn-liquid-primary pq-btn-liquid-pill"
+              style={{ padding: "0.85rem 1.6rem", fontSize: "0.95rem" }}
             >
               {t("land.cta.start")} <span className="pq-flip" aria-hidden>→</span>
             </Link>
             <Link
               href="/presentiq/dashboard"
-              className="pq-btn pq-btn-secondary"
-              style={{ padding: "1rem 1.5rem", fontSize: "0.92rem" }}
+              className="pq-btn pq-btn-liquid pq-btn-liquid-pill"
+              style={{ padding: "0.85rem 1.4rem", fontSize: "0.9rem" }}
             >
               {t("land.cta.dashboard")}
             </Link>
           </div>
-
-          <div className="pq-trust-row pq-trust-row-centered">
-            <div className="pq-trust-avatars" aria-hidden>
-              <span className="av" />
-              <span className="av" />
-              <span className="av" />
-              <span className="av" />
-            </div>
-            <div className="text-xs" style={{ color: "var(--pq-text-secondary)" }}>
-              <div className="pq-trust-stars" aria-hidden>★ ★ ★ ★ ★</div>
-              <div className="mt-0.5">{t("land.trusted")}</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="pq-hero-mockup-wrap">
-          <DashboardMockup />
         </div>
       </section>
 
-      {/* ── Stats strip — compact, below mockup ──────────────────── */}
+      {/* ── Templates strip ───────────────────────────────────────── */}
+      <section className="pq-templates" aria-label="Templates">
+        <div className="flex items-end justify-between gap-3 flex-wrap">
+          <h2 className="text-2xl md:text-3xl font-semibold" style={{ color: "var(--pq-text-main)" }}>
+            {t("tpl.title")}
+          </h2>
+          <Link
+            href="/presentiq/templates"
+            className="pq-nav-link"
+            style={{ padding: "0.4rem 0.8rem" }}
+          >
+            {lang === "ar" ? "عرض الكل" : "Browse all"} →
+          </Link>
+        </div>
+
+        <div className="pq-tpl-chips" role="tablist" aria-label="Template categories">
+          {cats.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              role="tab"
+              data-active={tplCat === c.id ? "true" : "false"}
+              className="pq-tpl-chip"
+              onClick={() => setTplCat(c.id)}
+            >
+              {lang === "ar" ? c.labelAr : c.labelEn}
+            </button>
+          ))}
+        </div>
+
+        <div className="pq-tpl-grid">
+          {/* Create blank */}
+          <Link href="/presentiq/projects/new" className="pq-tpl-card pq-tpl-card-blank">
+            <div className="pq-tpl-card-cover" style={{ background: "transparent" }}>
+              <div className="text-center">
+                <div style={{ fontSize: "1.6rem", color: "var(--pq-text-secondary)" }} aria-hidden>＋</div>
+                <div style={{ marginTop: "0.5rem", color: "var(--pq-text-secondary)", fontWeight: 600 }}>
+                  {lang === "ar" ? "إنشاء فارغ" : "Create Blank"}
+                </div>
+              </div>
+            </div>
+            <div className="pq-tpl-card-foot">
+              <div className="pq-tpl-card-title">{lang === "ar" ? "ابدأ من الصفر" : "Start from scratch"}</div>
+              <div className="pq-tpl-card-sub">{lang === "ar" ? "أنت تتحكم بالكامل" : "Full control"}</div>
+            </div>
+          </Link>
+
+          {filteredCards.map((c) => (
+            <Link key={c.code} href={`/presentiq/projects/new?template=${c.code}`} className="pq-tpl-card">
+              <div className="pq-tpl-card-cover" data-tone={c.tone}>
+                <span>{c.title}</span>
+              </div>
+              <div className="pq-tpl-card-foot">
+                <div className="pq-tpl-card-title">{c.title}</div>
+                <div className="pq-tpl-card-sub">{c.badge}</div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Stats strip ───────────────────────────────────────────── */}
       <section className="pq-stats pq-stats-flat" aria-label="Headline stats">
         <div className="pq-stat">
           <div className="pq-stat-num">12k+</div>
@@ -90,7 +289,7 @@ export function Hero() {
         </div>
       </section>
 
-      {/* ── How it works ───────────────────────────────────────── */}
+      {/* ── How it works ──────────────────────────────────────────── */}
       <section>
         <div className="pq-howit">
           {[1, 2, 3].map((n) => (
@@ -104,7 +303,7 @@ export function Hero() {
         </div>
       </section>
 
-      {/* ── Trust strip ───────────────────────────────────────── */}
+      {/* ── Trust strip ───────────────────────────────────────────── */}
       <section className="pq-trust-strip" aria-label="Trust">
         <span className="pq-trust-label">{t("hero.trust")}</span>
         <span className="pq-trust-logo">EMIRATES&nbsp;GROUP</span>
@@ -115,7 +314,7 @@ export function Hero() {
         <span className="pq-trust-logo">MUBADALA</span>
       </section>
 
-      {/* ── Differentiator features ────────────────────────────── */}
+      {/* ── Differentiator features ───────────────────────────────── */}
       <section
         id="product"
         className="grid grid-cols-1 md:grid-cols-3 gap-5"
@@ -144,7 +343,7 @@ export function Hero() {
         ))}
       </section>
 
-      {/* ── What's new in v0.3 ───────────────────────────────── */}
+      {/* ── What's new in v0.3 ────────────────────────────────────── */}
       <section id="resources">
         <Frame4D variant="pine" className="p-8 md:p-10" interactive={false}>
           <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
@@ -177,76 +376,6 @@ export function Hero() {
           </ul>
         </Frame4D>
       </section>
-    </div>
-  );
-}
-
-/* ── Dashboard mockup card ────────────────────────────────────── */
-function DashboardMockup() {
-  return (
-    <div className="pq-mockup" aria-label="PresentIQ dashboard preview">
-      <div className="pq-mockup-bar">
-        <span className="dot r" />
-        <span className="dot y" />
-        <span className="dot g" />
-        <span className="label">PresentIQ · Boardroom Workspace</span>
-      </div>
-      <div className="pq-mockup-body">
-        {/* Sidebar */}
-        <div className="pq-mockup-pane pq-mockup-side">
-          <ul>
-            <li className="is-active">Overview</li>
-            <li>Outline</li>
-            <li>Brief</li>
-            <li>Branding</li>
-            <li>Sources</li>
-            <li>Quality</li>
-            <li>Export</li>
-          </ul>
-        </div>
-
-        {/* Main pane: workflow rows */}
-        <div className="pq-mockup-pane">
-          <div className="text-[10px] uppercase tracking-[0.18em] mb-2" style={{ color: "var(--pq-text-muted)" }}>
-            AI Agent Workflow
-          </div>
-          <div className="pq-mockup-workflow">
-            {[
-              { name: "Intake",      pct: 100, pip: "" as any },
-              { name: "Evidence",    pct: 96,  pip: "t" },
-              { name: "Strategy",    pct: 88,  pip: "" as any },
-              { name: "Storytelling",pct: 92,  pip: "y" },
-              { name: "Slide Arch.", pct: 84,  pip: "" as any },
-              { name: "Copywriter",  pct: 78,  pip: "r" },
-              { name: "Visual",      pct: 96,  pip: "" as any },
-              { name: "RTL",         pct: 99,  pip: "t" },
-              { name: "QA",          pct: 95,  pip: "" as any },
-              { name: "Render",      pct: 100, pip: "" as any },
-            ].map((r) => (
-              <div key={r.name} className="row">
-                <span>{r.name}</span>
-                <span className="meter"><i style={{ width: `${r.pct}%` }} /></span>
-                <span className={`pip ${r.pip}`} aria-hidden />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Score column */}
-        <div className="pq-mockup-pane pq-mockup-score">
-          <div className="text-[10px] uppercase tracking-[0.18em]" style={{ color: "var(--pq-text-muted)" }}>
-            10-dimension score
-          </div>
-          <div className="ring" aria-hidden>
-            <div>65</div>
-          </div>
-          <div className="pq-mockup-score-label">Boardroom Readiness</div>
-          <div className="pq-mockup-rec">
-            <strong style={{ color: "var(--pq-primary)" }}>Recommendations</strong>
-            <div>Mark unverifiable claims as [Input Required].</div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
