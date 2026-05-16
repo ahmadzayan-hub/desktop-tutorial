@@ -82,13 +82,13 @@ export function AppHeader({ onMenuClick, title }: AppHeaderProps) {
       courses.filter((c: any) => c.name?.toLowerCase().includes(lower) || c.code?.toLowerCase().includes(lower)).slice(0, 3)
         .forEach((c: any) => found.push({ type: "course", label: c.name, subtitle: c.code, href: `/courses/${c.id}`, icon: TYPE_ICON.course }));
       deadlines.filter((d: any) => d.title?.toLowerCase().includes(lower)).slice(0, 3)
-        .forEach((d: any) => found.push({ type: "deadline", label: d.title, subtitle: d.course_name, href: "/timeline", icon: TYPE_ICON.deadline }));
+        .forEach((d: any) => found.push({ type: "deadline", label: d.title, subtitle: d.course_name, href: "/plan", icon: TYPE_ICON.deadline }));
       grades.filter((g: any) => g.item_name?.toLowerCase().includes(lower)).slice(0, 2)
-        .forEach((g: any) => found.push({ type: "grade", label: g.item_name, subtitle: g.category, href: "/grades", icon: TYPE_ICON.grade }));
-      packs.filter((p: any) => p.title?.toLowerCase().includes(lower)).slice(0, 2)
-        .forEach((p: any) => found.push({ type: "pack", label: p.title, subtitle: "Study Pack", href: "/study-packs", icon: TYPE_ICON.pack }));
-      files.filter((f: any) => f.name?.toLowerCase().includes(lower)).slice(0, 2)
-        .forEach((f: any) => found.push({ type: "file", label: f.name, subtitle: "File", href: "/files", icon: TYPE_ICON.file }));
+        .forEach((g: any) => found.push({ type: "grade", label: g.item_name, subtitle: g.category, href: "/progress", icon: TYPE_ICON.grade }));
+      packs.filter((p: any) => (p.topic||p.title)?.toLowerCase().includes(lower)).slice(0, 2)
+        .forEach((p: any) => found.push({ type: "pack", label: p.topic||p.title, subtitle: "Study Pack", href: "/study#packs", icon: TYPE_ICON.pack }));
+      files.filter((f: any) => (f.file_name||f.name)?.toLowerCase().includes(lower)).slice(0, 2)
+        .forEach((f: any) => found.push({ type: "file", label: f.file_name||f.name, subtitle: "File", href: "/courses", icon: TYPE_ICON.file }));
       setResults(found.slice(0, 8));
     } catch (err: any) {
       if (err?.name !== "AbortError") setResults([]);
@@ -222,13 +222,19 @@ export function AppHeader({ onMenuClick, title }: AppHeaderProps) {
               <div className="px-4 py-3">
                 <p className="text-[10px] text-slate-400 mb-2 uppercase tracking-wider font-semibold">Quick access</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {["Courses", "Deadlines", "Grades", "Files", "Tutor"].map(link => (
+                  {[
+                    { label:"Courses",  href:"/courses"    },
+                    { label:"Deadlines",href:"/plan"       },
+                    { label:"Grades",   href:"/progress"   },
+                    { label:"Study",    href:"/study"      },
+                    { label:"Tutor",    href:"/study#tutor"},
+                  ].map(link => (
                     <button
-                      key={link}
-                      onClick={() => navigate(`/${link.toLowerCase()}`)}
+                      key={link.label}
+                      onClick={() => navigate(link.href)}
                       className="text-xs bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 rounded-xl px-2.5 py-1 hover:bg-brand-100 dark:hover:bg-brand-900/50 transition font-medium"
                     >
-                      {link}
+                      {link.label}
                     </button>
                   ))}
                 </div>

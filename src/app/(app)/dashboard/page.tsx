@@ -39,6 +39,7 @@ export default function DashboardPage() {
   const [courses, setCourses]             = useState<Course[]>([]);
   const [deadlines, setDeadlines]         = useState<Deadline[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [profile, setProfile]             = useState<{ full_name?: string } | null>(null);
   const [loading, setLoading]             = useState(true);
 
   useEffect(() => {
@@ -46,16 +47,19 @@ export default function DashboardPage() {
       fetch("/api/courses"),
       fetch("/api/deadlines?view=week"),
       fetch("/api/announcements?limit=3"),
-    ]).then(async ([cR, dR, aR]) => {
+      fetch("/api/profile"),
+    ]).then(async ([cR, dR, aR, pR]) => {
       if (cR.ok) setCourses(await cR.json());
       if (dR.ok) setDeadlines(await dR.json());
       if (aR.ok) setAnnouncements(await aR.json());
+      if (pR.ok) setProfile(await pR.json());
       setLoading(false);
     });
   }, []);
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const firstName = profile?.full_name?.split(" ")[0] ?? "Student";
   const urgent = deadlines.filter(d => d.risk === "overdue" || d.risk === "at_risk");
 
   if (loading) return (
@@ -76,7 +80,7 @@ export default function DashboardPage() {
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-start gap-5">
           <div className="flex-1">
             <p className="text-white/70 text-sm mb-1">{greeting} 👋</p>
-            <h1 className="text-2xl font-bold mb-1">Sara Al-Mansouri</h1>
+            <h1 className="text-2xl font-bold mb-1">{profile?.full_name ?? "Welcome back!"}</h1>
             <p className="text-white/65 text-sm mb-4">MBA Year 2 · {courses.length} active courses</p>
 
             {/* Urgent alert */}
