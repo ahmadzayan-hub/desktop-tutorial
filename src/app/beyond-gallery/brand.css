@@ -1,0 +1,94 @@
+/* Beyond Gallery — brand tokens scoped to /beyond-gallery */
+
+:root {
+  --beyond-ivory: #FAF8F1;
+  --beyond-white: #FFFFFF;
+  --beyond-gold: #B68A35;
+  --beyond-gold-soft: #C9A45E;
+  --beyond-emerald: #1F6F5B;
+  --beyond-navy: #171C8F;
+  --beyond-charcoal: #1F2933;
+  --beyond-grey: #F3F5F8;
+  --beyond-line: #E7E2D3;
+}
+
+.bg-beyond-ivory { background-color: var(--beyond-ivory); }
+.bg-beyond-white { background-color: var(--beyond-white); }
+.bg-beyond-gold  { background-color: var(--beyond-gold); }
+.bg-beyond-emerald { background-color: var(--beyond-emerald); }
+.bg-beyond-navy  { background-color: var(--beyond-navy); }
+.bg-beyond-grey  { background-color: var(--beyond-grey); }
+
+.text-beyond-ivory   { color: var(--beyond-ivory); }
+.text-beyond-white   { color: var(--beyond-white); }
+.text-beyond-gold    { color: var(--beyond-gold); }
+.text-beyond-emerald { color: var(--beyond-emerald); }
+.text-beyond-navy    { color: var(--beyond-navy); }
+.text-beyond-charcoal{ color: var(--beyond-charcoal); }
+
+.border-beyond-gold    { border-color: var(--beyond-gold); }
+.border-beyond-line    { border-color: var(--beyond-line); }
+.border-beyond-emerald { border-color: var(--beyond-emerald); }
+
+.ring-beyond-gold   { --tw-ring-color: var(--beyond-gold); }
+
+.font-display { font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif; }
+.font-bg-body { font-family: "Inter", "Segoe UI", system-ui, sans-serif; }
+.font-arabic  { font-family: "Noto Kufi Arabic", "Alexandria", "Dubai", sans-serif; }
+
+/* Subtle paper texture for hero background */
+.beyond-paper {
+  background-image:
+    radial-gradient(1200px 600px at 90% -10%, rgba(182,138,53,0.10), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(31,111,91,0.08), transparent 60%),
+    linear-gradient(180deg, #FAF8F1 0%, #F6F1E1 100%);
+}
+
+/* Premium gold gradient text */
+.beyond-gold-gradient {
+  background: linear-gradient(90deg, #B68A35 0%, #E2C079 50%, #B68A35 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.beyond-card-shadow {
+  box-shadow: 0 1px 2px rgba(31,41,51,0.04), 0 8px 32px -12px rgba(31,41,51,0.12);
+}
+.beyond-card-shadow-hover {
+  box-shadow: 0 2px 6px rgba(31,41,51,0.06), 0 18px 48px -16px rgba(182,138,53,0.25);
+}
+
+/* Hairline divider with gold seed */
+.beyond-divider {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--beyond-gold);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 600;
+}
+.beyond-divider::before,
+.beyond-divider::after {
+  content: "";
+  height: 1px;
+  width: 28px;
+  background: var(--beyond-gold);
+  opacity: 0.7;
+}
+
+/* Hide scrollbars on horizontal product rail */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Smooth focus rings */
+.beyond-focus:focus-visible {
+  outline: 2px solid var(--beyond-gold);
+  outline-offset: 3px;
+  border-radius: 14px;
+}
+
+/* RTL helpers */
+[dir="rtl"] .flip-x { transform: scaleX(-1); }
