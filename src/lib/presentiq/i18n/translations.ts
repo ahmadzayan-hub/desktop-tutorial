@@ -1,5 +1,5 @@
 /**
- * PresentIQ — bilingual (EN/AR) translations.
+ * Pitchora — bilingual (EN/AR) translations.
  *
  * Used by the i18n provider; keys are flat for ergonomics.
  * Add new keys at the bottom and translate both columns.
@@ -9,9 +9,11 @@ export type Lang = "en" | "ar";
 
 export const TRANSLATIONS = {
   // ─── Brand / nav ─────────────────────────────────────────────
-  "brand.name":           { en: "PresentIQ",                          ar: "PresentIQ" },
+  "brand.name":           { en: "Pitchora",                            ar: "بِتشورا" },
   "brand.byline":         { en: "by Zaian",                            ar: "بواسطة زيان" },
-  "brand.tagline":        { en: "Boardroom-ready presentations",      ar: "عروض جاهزة لمجلس الإدارة" },
+  "brand.tagline":        { en: "From spark to boardroom-ready deck — in minutes.",
+                            ar: "من الفكرة إلى عرض جاهز للمجلس في دقائق." },
+  "brand.promise":        { en: "The idea-to-deck studio.",            ar: "استوديو الفكرة إلى العرض." },
   "nav.dashboard":        { en: "Dashboard",                           ar: "لوحة التحكم" },
   "nav.projects":         { en: "Projects",                            ar: "المشاريع" },
   "nav.templates":        { en: "Templates",                           ar: "القوالب" },
@@ -31,19 +33,19 @@ export const TRANSLATIONS = {
   "marketing.nav.login":     { en: "Log in",       ar: "تسجيل الدخول" },
 
   // ─── Landing ─────────────────────────────────────────────────
-  "land.pill":            { en: "v0.4 · Zaian Sky UI · AI Agent Platform · Editable PPTX · Bilingual RTL",
-                            ar: "الإصدار ٠٫٤ · واجهة سماء زيان · منصة وكلاء ذكاء اصطناعي · PPTX قابلة للتحرير · ثنائية اللغة" },
-  "land.h1.a":            { en: "Turn raw content into",
-                            ar: "حوّل المحتوى الخام إلى" },
+  "land.pill":            { en: "v0.5 · Pitchora Aurora · AI Agent Platform · Editable PPTX · Bilingual RTL",
+                            ar: "الإصدار ٠٫٥ · واجهة بِتشورا · منصة وكلاء ذكاء اصطناعي · PPTX قابلة للتحرير · ثنائية اللغة" },
+  "land.h1.a":            { en: "Turn a spark into a",
+                            ar: "حوّل الفكرة إلى" },
   "land.h1.hl":           { en: "boardroom-ready",
-                            ar: "عروض جاهزة لمجلس الإدارة" },
-  "land.h1.b":            { en: "presentations in minutes.",
+                            ar: "عرض جاهز للمجلس" },
+  "land.h1.b":            { en: "deck in minutes.",
                             ar: "في دقائق." },
   // Legacy single-line h1, kept for fallbacks.
-  "land.h1":              { en: "Turn raw content into boardroom-ready presentations in minutes.",
-                            ar: "حوّل المحتوى الخام إلى عروض جاهزة لمجلس الإدارة في دقائق." },
-  "land.lede":            { en: "PresentIQ is an AI agent platform that combines brand governance, evidence-controlled generation, editable PPTX output, Arabic RTL support, and a 10-dimension boardroom-readiness score — enforced automatically.",
-                            ar: "منصة PresentIQ هي تدفّق ذكي متعدد الوكلاء يجمع بين حوكمة الهوية، التحقّق من الأدلة، إنتاج PPTX قابلة للتحرير، دعم العربية وRTL، ودرجة جاهزية من ١٠ أبعاد — يُطبَّق تلقائياً." },
+  "land.h1":              { en: "Turn a spark into a boardroom-ready deck in minutes.",
+                            ar: "حوّل الفكرة إلى عرض جاهز للمجلس في دقائق." },
+  "land.lede":            { en: "Pitchora is an AI agent studio that closes the gap between a half-formed idea and a polished deck: brand-governed, evidence-controlled, editable PPTX out, Arabic-RTL native, and scored on 10 boardroom dimensions — automatically.",
+                            ar: "بِتشورا استوديو وكلاء ذكاء اصطناعي يجسر الفجوة بين الفكرة الأولية والعرض المصقول: حوكمة هوية، تحقق من الأدلة، PPTX قابل للتحرير، دعم عربي/RTL أصلي، وتقييم على ١٠ أبعاد للجاهزية — تلقائياً." },
   "land.cta.start":       { en: "Start a presentation",                ar: "ابدأ عرضاً جديداً" },
   "land.cta.dashboard":   { en: "Open dashboard",                      ar: "افتح لوحة التحكم" },
   "land.cta.contact":     { en: "Talk to us",                          ar: "تواصل معنا" },
@@ -115,10 +117,10 @@ export const TRANSLATIONS = {
                             ar: "ارفع المصادر (PDF, DOCX, PPTX, XLSX, CSV, TXT)" },
   "wiz.brand.note":       { en: "The organisation's default brand kit will be used. Manage custom kits under Brand Kits.",
                             ar: "سيُستخدم كيت الهوية الافتراضي للمنظمة. يمكنك إدارة الكيتات من قسم هويات العلامة." },
-  "wiz.outline.note":     { en: "PresentIQ runs Intake → Evidence → Strategy → Storytelling → Slide Architect to produce a blueprint you can review.",
-                            ar: "تنفّذ PresentIQ سلسلة الاستلام ← الأدلة ← الاستراتيجية ← السرد ← مهندس الشرائح لإنتاج مخطّط يمكنك مراجعته." },
-  "wiz.deck.note":        { en: "Now PresentIQ runs Copywriter → Visual → Data Viz → RTL → Translation → QA → Renderer.",
-                            ar: "تنفّذ PresentIQ الآن: المحرّر ← التصميم ← البيانات ← RTL ← الترجمة ← الجودة ← الإخراج." },
+  "wiz.outline.note":     { en: "Pitchora runs Intake → Evidence → Strategy → Storytelling → Slide Architect to produce a blueprint you can review.",
+                            ar: "تنفّذ بِتشورا سلسلة الاستلام ← الأدلة ← الاستراتيجية ← السرد ← مهندس الشرائح لإنتاج مخطّط يمكنك مراجعته." },
+  "wiz.deck.note":        { en: "Now Pitchora runs Copywriter → Visual → Data Viz → RTL → Translation → QA → Renderer.",
+                            ar: "تنفّذ بِتشورا الآن: المحرّر ← التصميم ← البيانات ← RTL ← الترجمة ← الجودة ← الإخراج." },
   "wiz.error":            { en: "Something went wrong",                ar: "حدث خطأ" },
 
   // ─── Dashboard ───────────────────────────────────────────────
@@ -195,7 +197,7 @@ export const TRANSLATIONS = {
   "foot.link.terms":      { en: "Terms",                                  ar: "الشروط" },
   "foot.link.cookies":    { en: "Cookies",                                ar: "ملفات الارتباط" },
   "foot.link.dpa":        { en: "Data processing",                        ar: "معالجة البيانات" },
-  "foot.copyright":       { en: "© 2026 PresentIQ. All rights reserved.", ar: "© 2026 PresentIQ. جميع الحقوق محفوظة." },
+  "foot.copyright":       { en: "© 2026 Pitchora. All rights reserved.", ar: "© 2026 بِتشورا. جميع الحقوق محفوظة." },
   "foot.trust":           { en: "ISO-9001 process · UAE data residency · WCAG-AA accessible",
                             ar: "عمليات ISO-9001 · بيانات داخل الإمارات · إتاحة WCAG-AA" },
   "foot.newsletter.title":{ en: "Boardroom briefings, monthly.",          ar: "نشرة شهرية لمجلس الإدارة." },
@@ -205,8 +207,8 @@ export const TRANSLATIONS = {
   "foot.newsletter.email":{ en: "you@company.ae",                          ar: "you@company.ae" },
 
   // ─── Top promo banner ────────────────────────────────────────
-  "banner.0":             { en: "v0.4 · live now · Zaian Sky UI · Editable PPTX · Bilingual RTL",
-                            ar: "v0.4 · متاح الآن · واجهة سماء زيان · PPTX قابل للتحرير · ثنائية RTL" },
+  "banner.0":             { en: "Pitchora v0.5 · live now · Aurora motion · Editable PPTX · Bilingual RTL",
+                            ar: "بِتشورا الإصدار ٠٫٥ · متاح الآن · حركات Aurora · PPTX قابل للتحرير · ثنائية RTL" },
   "banner.1":             { en: "🛡️  Brand governance + 10-dimension quality, enforced automatically",
                             ar: "🛡️  حوكمة العلامة وجودة بـ١٠ أبعاد، تُطبَّق تلقائياً" },
   "banner.2":             { en: "🌐  Bilingual EN ⇄ AR · UAE-built · Built for boardrooms",

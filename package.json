@@ -1,6 +1,6 @@
 {
-  "name": "prompt-orchestrator",
-  "version": "0.20.0",
+  "name": "pitchora-studio",
+  "version": "0.5.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

@@ -1384,6 +1384,226 @@ html.dark {
       inset 0 1px 0 rgba(255,255,255,0.20),
       inset 0 -1px 0 rgba(255,255,255,0.06);
   }
+
+  /* ────────────────────────────────────────────────────────────────
+     Pitchora Aurora — v0.5 creative motion layer
+     ──────────────────────────────────────────────────────────────── */
+
+  /* Parallax orbs behind the hero composer. Position is set via
+     CSS custom props on the element itself — JS updates them on
+     pointer-move with a damped lerp. */
+  .pq-orb {
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    border-radius: 999px;
+    filter: blur(60px);
+    opacity: 0.55;
+    pointer-events: none;
+    transform: translate3d(
+      calc(var(--pq-orb-x, 0) * 1px),
+      calc(var(--pq-orb-y, 0) * 1px),
+      0
+    );
+    transition: transform 600ms cubic-bezier(.2,.8,.2,1);
+    will-change: transform;
+  }
+  .pq-orb-1 { top: -80px;  left: -60px;  background: radial-gradient(circle, #7BB94A 0%, transparent 70%); }
+  .pq-orb-2 { top: 40%;    right: -80px; background: radial-gradient(circle, #6366F1 0%, transparent 70%); }
+  .pq-orb-3 { bottom: -100px; left: 30%; background: radial-gradient(circle, #F4B63E 0%, transparent 70%); width: 260px; height: 260px; }
+  .pq-orb-4 { top: 20%;    left: 35%;   background: radial-gradient(circle, #22C7A9 0%, transparent 70%); width: 220px; height: 220px; opacity: 0.4; }
+
+  /* Letter-by-letter rise for headline wordmark */
+  .pq-letter {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(0.55em) rotateZ(-3deg);
+    animation: pq-letter-in 0.7s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes pq-letter-in {
+    to { opacity: 1; transform: translateY(0) rotateZ(0); }
+  }
+
+  /* Aurora gradient text for the brand wordmark in the hero */
+  .pq-aurora-text {
+    background: linear-gradient(
+      120deg,
+      #D4F08C 0%,
+      #9FCD63 20%,
+      #6366F1 45%,
+      #C084FC 65%,
+      #F4B63E 85%,
+      #D4F08C 100%
+    );
+    background-size: 220% auto;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: pq-aurora-text 9s ease-in-out infinite;
+  }
+  @keyframes pq-aurora-text {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Magnetic / spotlight CTA — element exposes --mx, --my (0..1) from JS */
+  .pq-magnetic {
+    position: relative;
+    transition: transform 250ms cubic-bezier(.2,.8,.2,1);
+    will-change: transform;
+  }
+  .pq-magnetic::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: radial-gradient(
+      220px circle at calc(var(--mx, 50) * 1%) calc(var(--my, 50) * 1%),
+      rgba(212,240,140,0.25),
+      transparent 55%
+    );
+    opacity: 0;
+    transition: opacity 220ms ease;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .pq-magnetic:hover::before,
+  .pq-magnetic:focus-visible::before { opacity: 1; }
+  .pq-magnetic > * { position: relative; z-index: 1; }
+
+  /* Tilt-on-hover template cards. Element exposes --rx, --ry from JS. */
+  .pq-tilt {
+    transform-style: preserve-3d;
+    transform: perspective(900px)
+               rotateX(calc(var(--ry, 0) * 1deg))
+               rotateY(calc(var(--rx, 0) * 1deg));
+    transition: transform 350ms cubic-bezier(.2,.8,.2,1), box-shadow 350ms ease;
+    will-change: transform;
+  }
+  .pq-tilt:hover {
+    box-shadow: 0 30px 60px -25px rgba(0,0,0,0.65),
+                0 0 0 1px rgba(212,240,140,0.18);
+  }
+
+  /* Scroll-reveal: starts hidden, .is-visible (added by IntersectionObserver) reveals it */
+  .pq-reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 700ms cubic-bezier(.2,.8,.2,1), transform 700ms cubic-bezier(.2,.8,.2,1);
+    will-change: opacity, transform;
+  }
+  .pq-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .pq-reveal-stagger > * {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 600ms cubic-bezier(.2,.8,.2,1), transform 600ms cubic-bezier(.2,.8,.2,1);
+  }
+  .pq-reveal-stagger.is-visible > * {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .pq-reveal-stagger.is-visible > *:nth-child(1) { transition-delay: 0ms;   }
+  .pq-reveal-stagger.is-visible > *:nth-child(2) { transition-delay: 80ms;  }
+  .pq-reveal-stagger.is-visible > *:nth-child(3) { transition-delay: 160ms; }
+  .pq-reveal-stagger.is-visible > *:nth-child(4) { transition-delay: 240ms; }
+  .pq-reveal-stagger.is-visible > *:nth-child(5) { transition-delay: 320ms; }
+  .pq-reveal-stagger.is-visible > *:nth-child(6) { transition-delay: 400ms; }
+  .pq-reveal-stagger.is-visible > *:nth-child(7) { transition-delay: 480ms; }
+  .pq-reveal-stagger.is-visible > *:nth-child(8) { transition-delay: 560ms; }
+  .pq-reveal-stagger.is-visible > *:nth-child(9) { transition-delay: 640ms; }
+
+  /* Marquee trust strip — duplicates content twice and slides */
+  .pq-marquee {
+    display: flex;
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+  }
+  .pq-marquee-track {
+    display: flex;
+    gap: 2.5rem;
+    flex-shrink: 0;
+    align-items: center;
+    animation: pq-marquee-slide 32s linear infinite;
+    padding-right: 2.5rem;
+  }
+  .pq-marquee:hover .pq-marquee-track { animation-play-state: paused; }
+  @keyframes pq-marquee-slide {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-100%); }
+  }
+  [data-pq][dir="rtl"] .pq-marquee-track { animation-direction: reverse; }
+
+  /* Aurora arc beneath the hero h1 — soft animated underline */
+  .pq-aurora-underline {
+    position: relative;
+    display: inline-block;
+  }
+  .pq-aurora-underline::after {
+    content: "";
+    position: absolute;
+    left: 4%;
+    right: 4%;
+    bottom: -8px;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent, #9FCD63, #6366F1, #F4B63E, transparent);
+    background-size: 200% 100%;
+    animation: pq-aurora-text 6s ease-in-out infinite;
+    opacity: 0.85;
+    filter: blur(0.5px);
+  }
+
+  /* Ambient spotlight for the whole hero (mouse-aware) */
+  .pq-hero-spotlight {
+    position: relative;
+  }
+  .pq-hero-spotlight::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      600px circle at calc(var(--sx, 50) * 1%) calc(var(--sy, 30) * 1%),
+      rgba(159,205,99,0.10),
+      transparent 60%
+    );
+    pointer-events: none;
+    transition: background 240ms ease;
+    border-radius: inherit;
+  }
+
+  /* Composer send button — pulses softly */
+  .pq-composer-send {
+    position: relative;
+    overflow: hidden;
+  }
+  .pq-composer-send::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: 0 0 0 0 rgba(159,205,99,0.55);
+    animation: pq-pulse 2.4s ease-out infinite;
+    pointer-events: none;
+  }
+}
+
+/* Honour prefers-reduced-motion — disable every Pitchora motion utility */
+@media (prefers-reduced-motion: reduce) {
+  .pq-orb, .pq-letter, .pq-aurora-text, .pq-aurora-underline::after,
+  .pq-magnetic, .pq-tilt, .pq-reveal, .pq-reveal-stagger,
+  .pq-marquee-track, .pq-composer-send::after {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+  .pq-reveal, .pq-reveal-stagger > * { opacity: 1 !important; }
+  .pq-letter { opacity: 1 !important; }
 }
 
 /* ── Footer ── */

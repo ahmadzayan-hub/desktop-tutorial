@@ -1,10 +1,14 @@
-# PresentIQ
+# Pitchora
 
-**From raw content to boardroom-ready presentation in minutes, with corporate
+> *Previously: PresentIQ*
+
+**From a spark to a boardroom-ready deck, in minutes — with corporate
 standards enforced automatically.**
 
-PresentIQ is an **AI Agent Platform** for corporate presentation generation. It
-is not an LLM prompt wrapper — it is a multi-agent workflow that combines:
+Pitchora is the **idea-to-deck studio**: an AI agent platform that closes the
+gap between a half-formed idea and a polished, brand-governed, evidence-
+controlled, bilingual deck. It is not an LLM prompt wrapper — it is a
+multi-agent workflow that combines:
 
 1. Corporate brand governance
 2. Evidence-controlled content generation
@@ -18,6 +22,12 @@ is not an LLM prompt wrapper — it is a multi-agent workflow that combines:
 10. Export to PPTX and PDF
 
 > **Mission:** behave like an AI-powered corporate presentation office.
+
+## Why "Pitchora"
+
+**Pitch + Aurora.** The act of pitching ideas + the luminous transformation
+from spark to polished narrative. The single word names exactly the problem
+the platform solves.
 
 ## Documentation
 
@@ -40,7 +50,7 @@ The 14 design documents live in [`docs/presentiq/`](./docs/presentiq/README.md):
 
 ## Stack
 
-- **Frontend:** Next.js 14 (App Router) · React 18 · TypeScript · Tailwind · Framer Motion
+- **Frontend:** Next.js 14 (App Router) · React 18 · TypeScript · Tailwind · Framer Motion · custom Pitchora motion primitives
 - **API:** Next.js Route Handlers · Zod validation · Supabase Auth
 - **DB:** Postgres (Supabase) + pgvector + Row-Level Security
 - **AI:** Pluggable model providers (Anthropic, Mock) · 17-agent orchestrator · prompt registry · canonical-input cache
@@ -65,6 +75,9 @@ npm run dev
 # open http://localhost:3000/presentiq
 ```
 
+> The product mounts at `/presentiq` for URL compatibility with v0.1–v0.4.
+> Deep-links and shared URLs from earlier releases continue to work.
+
 If `ANTHROPIC_API_KEY` is not set, the orchestrator falls back to a deterministic
 mock provider so the full pipeline runs end-to-end without any API key.
 
@@ -80,7 +93,8 @@ src/
   app/api/presentiq/    REST: organisations, brand kits, projects, files,
                         blueprint, slides, regenerate, quality, exports,
                         comments, audit, billing webhook
-  components/presentiq/ UI primitives + QualityPanel
+  components/presentiq/ UI primitives + QualityPanel + motion primitives
+                        (Reveal, Magnetic, Tilt, ParallaxMesh, AuroraWord)
 docs/presentiq/         the 14 design documents
 supabase/migrations/    0010_presentiq_init.sql (full DDL + RLS + seed)
 ```

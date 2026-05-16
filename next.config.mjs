@@ -8,6 +8,14 @@ const nextConfig = {
       ? `https://${process.env.VERCEL_URL}`
       : (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
   },
+  // Brand URLs: /pitchora* → /presentiq* (the platform is now Pitchora,
+  // but the file routes stay under /presentiq for v0.1–v0.4 link compatibility).
+  async rewrites() {
+    return [
+      { source: "/pitchora",            destination: "/presentiq" },
+      { source: "/pitchora/:path*",     destination: "/presentiq/:path*" },
+    ];
+  },
   async headers() {
     const security = [
       { key: "X-Content-Type-Options", value: "nosniff" },

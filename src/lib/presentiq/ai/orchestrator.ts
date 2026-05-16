@@ -288,7 +288,7 @@ function stripUndefined(o: any) {
 }
 
 function defaultContentForSlide(i: number, title?: string): Slide["content_json"] {
-  if (i === 0) return { kind: "cover", title: title ?? "PresentIQ" };
+  if (i === 0) return { kind: "cover", title: title ?? "Pitchora" };
   if (/exec|summary/i.test(title ?? "")) return { kind: "exec_summary", bullets: [] };
   if (/decision|recommend/i.test(title ?? "")) return { kind: "decision", recommendation: "", rationale: [] };
   if (/next|step/i.test(title ?? "")) return { kind: "next_steps", actions: [] };

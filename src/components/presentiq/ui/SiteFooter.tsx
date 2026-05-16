@@ -22,7 +22,7 @@ export function SiteFooter() {
     <footer className="pq-footer-slim mt-16" role="contentinfo">
       <div className="pq-footer-slim-inner">
         <div className="pq-footer-slim-brand">
-          <Link href="/presentiq" aria-label="PresentIQ home">
+          <Link href="/presentiq" aria-label="Pitchora home">
             <Logo variant="horizontal" height={22} />
           </Link>
           <p className="pq-footer-slim-tag">{t("foot.tagline")}</p>

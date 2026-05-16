@@ -31,7 +31,7 @@ export async function buildDeck(ctx: BrandRulesContext, title: string): Promise<
   const PptxGen = await loadPptxGen();
   const pptx = new PptxGen();
   pptx.title = title;
-  pptx.author = "PresentIQ";
+  pptx.author = "Pitchora";
   pptx.company = ctx.identity.org_name;
   pptx.layout = "LAYOUT_WIDE";
   pptx.defineLayout({ name: "LAYOUT_WIDE", width: SLIDE_W_IN, height: SLIDE_H_IN });

@@ -13,7 +13,13 @@ type Entry = {
 };
 
 const V0_2_DELTAS: Entry[] = [
-  // ── v0.4 release notes ─────────────────────────────────────────
+  // ── v0.5 release notes — Pitchora rebrand + creative motion ────
+  {
+    titleEn: "v0.5 — Pitchora rebrand · Aurora motion · platform now named for the problem it solves",
+    titleAr: "الإصدار 0.5 — إعادة هوية باسم بِتشورا، حركات Aurora، اسم المنصة يعكس المشكلة التي تحلّها",
+    bodyEn: "PresentIQ becomes Pitchora — 'Pitch + Aurora' — naming the core promise: closing the gap between a half-formed idea and a polished, boardroom-ready deck. New animated wordmark with a soft aurora arc, parallax mesh orbs on hero, magnetic CTAs, scroll-revealed sections, tilt-on-hover template cards, and a refreshed letter-staggered headline. All motion respects prefers-reduced-motion.",
+    bodyAr: "تصبح PresentIQ بِتشورا — Pitch + Aurora — تسمية تعكس الوعد الأساسي: جسر الفجوة بين فكرة أوّلية وعرض مصقول جاهز للمجلس. شعار متحرّك بقوس Aurora ناعم، كرات شبكة منظورية في القسم البطل، أزرار CTA مغناطيسية، أقسام تظهر بالتمرير، بطاقات قوالب تميل عند المرور، وعنوان رئيسي بدخول حرفي متدرّج. الحركات تحترم prefers-reduced-motion.",
+  },
   {
     titleEn: "v0.4 — Zaian Sky palette + liquid buttons + motion system",
     titleAr: "الإصدار 0.4 — هوية «سماء زيان» وأزرار سائلة ونظام حركة",
@@ -45,8 +51,8 @@ const V0_2_DELTAS: Entry[] = [
     bodyAr: "يخصّص تصدير التجربة الآن Uint8Array خاصاً وينسخ البايتات الناتجة إليه، بدلاً من اقتطاع ArrayBuffer للحوض المشترك في Node (الذي قد يضيف بايتات زائدة ويُتلف الأرشيف).",
   },
   {
-    titleEn: "v0.3 — dark forest UI, lime accents, integrated PresentIQ logo",
-    titleAr: "الإصدار 0.3 — واجهة داكنة بلون الغابة وأخضر ليموني وشعار PresentIQ المدمج",
+    titleEn: "v0.3 — dark forest UI, lime accents, integrated Pitchora (then PresentIQ) logo",
+    titleAr: "الإصدار 0.3 — واجهة داكنة بلون الغابة وأخضر ليموني وشعار بِتشورا (الذي عُرف سابقاً بـ PresentIQ) المدمج",
     bodyEn: "Boardroom-grade dark theme based on the new brand sheet. Header, hero, dashboard, footer, editor and quality panel all repainted. New SVG logo (mark + wordmark + favicon) shipped across the platform.",
     bodyAr: "سمة داكنة بمستوى مجالس الإدارة وفق دليل الهوية الجديد. أُعيد طلاء الترويسة والقسم البطل ولوحة التحكم والتذييل والمحرّر ولوحة الجودة. يصاحب ذلك شعار SVG جديد (الرمز + النص + الأيقونة) عبر المنصة.",
   },
@@ -95,8 +101,8 @@ const V0_2_DELTAS: Entry[] = [
   {
     titleEn: "Removed transit-authority-specific copy",
     titleAr: "إزالة المراجع الخاصة بهيئات النقل",
-    bodyEn: "PresentIQ is org-agnostic. Government Boardroom and Government Committee templates remain available, without naming a specific authority.",
-    bodyAr: "أصبحت PresentIQ محايدة تنظيمياً. تبقى قوالب المجلس الحكومي واللجنة الحكومية متاحة دون تسمية جهة بعينها.",
+    bodyEn: "Pitchora is org-agnostic. Government Boardroom and Government Committee templates remain available, without naming a specific authority.",
+    bodyAr: "أصبحت بِتشورا محايدة تنظيمياً. تبقى قوالب المجلس الحكومي واللجنة الحكومية متاحة دون تسمية جهة بعينها.",
   },
 ];
 
@@ -114,7 +120,7 @@ export function Changelog() {
   return (
     <div className="space-y-8">
       <header>
-        <span className="pq-pill pq-pill-strong">v0.4 · {new Date().toLocaleDateString(lang === "ar" ? "ar-AE" : "en-AE")}</span>
+        <span className="pq-pill pq-pill-strong">v0.5 · {new Date().toLocaleDateString(lang === "ar" ? "ar-AE" : "en-AE")}</span>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight" style={{ color: "var(--pq-text)" }}>
           {t("v2.title")}
         </h1>

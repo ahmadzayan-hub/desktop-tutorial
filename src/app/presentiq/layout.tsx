@@ -1,23 +1,24 @@
 import { ReactNode } from "react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { I18nProvider } from "@/lib/presentiq/i18n/context";
 import { ContactBubble } from "@/components/presentiq/ui/ContactBubble";
 import { PresentIqShell } from "./_shell";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.tweenz.ae";
-const PRESENTIQ_URL = `${APP_URL.replace(/\/$/, "")}/presentiq`;
-const TITLE = "PresentIQ v0.3 — Boardroom-ready AI presentations";
+const PITCHORA_URL = `${APP_URL.replace(/\/$/, "")}/presentiq`;
+const TITLE = "Pitchora — From spark to boardroom-ready deck, in minutes";
 const DESCRIPTION =
-  "PresentIQ by Zaian is an AI Agent Platform for corporate presentation generation: brand-governed, evidence-controlled, editable PPTX exports, and full Arabic-RTL bilingual support — from raw content to boardroom-ready deck in minutes.";
+  "Pitchora by Zaian is the idea-to-deck studio: an AI agent platform that closes the gap between a half-formed idea and a polished, brand-governed, evidence-controlled, bilingual (Arabic-RTL) deck. Editable PPTX in minutes.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
-  title: { default: TITLE, template: "%s · PresentIQ" },
+  title: { default: TITLE, template: "%s · Pitchora" },
   description: DESCRIPTION,
-  applicationName: "PresentIQ",
+  applicationName: "Pitchora",
   keywords: [
-    "PresentIQ",
+    "Pitchora",
+    "Pitchora AI",
+    "idea to deck",
     "AI presentations",
     "boardroom presentations",
     "corporate slides",
@@ -30,19 +31,20 @@ export const metadata: Metadata = {
     "executive decks",
     "PowerPoint AI",
     "enterprise AI",
+    "Pitch Aurora",
+    "بِتشورا",
     "عروض تقديمية بالذكاء الاصطناعي",
-    "PresentIQ شرائح",
   ],
   alternates: {
-    canonical: PRESENTIQ_URL,
-    languages: { en: PRESENTIQ_URL, ar: PRESENTIQ_URL },
+    canonical: PITCHORA_URL,
+    languages: { en: PITCHORA_URL, ar: PITCHORA_URL },
   },
   openGraph: {
     type: "website",
     title: TITLE,
     description: DESCRIPTION,
-    url: PRESENTIQ_URL,
-    siteName: "PresentIQ",
+    url: PITCHORA_URL,
+    siteName: "Pitchora",
     locale: "en_US",
     alternateLocale: ["ar_AE"],
     images: [
@@ -50,7 +52,7 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "PresentIQ — Boardroom-ready AI presentations",
+        alt: "Pitchora — From spark to boardroom-ready deck",
       },
     ],
   },
@@ -66,16 +68,17 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "PresentIQ",
-  alternateName: ["PresentIQ AI", "PresentIQ Agent Platform"],
+  name: "Pitchora",
+  alternateName: ["Pitchora AI", "Pitchora Agent Studio", "PresentIQ"],
   description: DESCRIPTION,
-  url: PRESENTIQ_URL,
+  url: PITCHORA_URL,
   applicationCategory: "BusinessApplication",
   applicationSubCategory: "Presentation Software",
   operatingSystem: "Any",
   inLanguage: ["en", "ar"],
   isAccessibleForFree: true,
   featureList: [
+    "Idea-to-deck AI pipeline",
     "Corporate brand governance",
     "Evidence-controlled content generation",
     "Editable PPTX export",
@@ -96,8 +99,8 @@ const jsonLd = {
   },
   publisher: {
     "@type": "Organization",
-    name: "PresentIQ",
-    url: PRESENTIQ_URL,
+    name: "Pitchora",
+    url: PITCHORA_URL,
   },
 };
 

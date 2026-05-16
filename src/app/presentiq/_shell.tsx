@@ -52,7 +52,7 @@ export function PresentIqShell({ children }: { children: ReactNode }) {
           <Link
             href="/presentiq"
             className="flex items-center gap-2 shrink-0 min-w-0"
-            aria-label="PresentIQ home"
+            aria-label="Pitchora home"
           >
             <Logo variant="horizontal" height={24} className="pq-header-logo" />
           </Link>

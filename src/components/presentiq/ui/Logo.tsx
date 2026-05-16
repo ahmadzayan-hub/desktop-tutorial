@@ -35,7 +35,7 @@ export function Logo({
         height={size}
         className={className}
         style={style}
-        aria-label="PresentIQ"
+        aria-label="Pitchora"
         role="img"
       >
         <Defs />
@@ -53,7 +53,7 @@ export function Logo({
         height={height}
         className={className}
         style={style}
-        aria-label="PresentIQ"
+        aria-label="Pitchora"
         role="img"
       >
         <Defs />
@@ -71,7 +71,7 @@ export function Logo({
       height={byline ? (height / 36) * 44 : height}
       className={className}
       style={style}
-      aria-label="PresentIQ"
+      aria-label="Pitchora"
       role="img"
     >
       <Defs />
@@ -207,6 +207,8 @@ function Sparkle({ cx, cy, r }: { cx: number; cy: number; r: number }) {
 }
 
 function Wordmark() {
+  // "Pitch" in cool light, "ora" in the green→lime accent gradient.
+  // Wordmark fits the same 168×36 cell as the prior "PresentIQ".
   return (
     <g>
       <text
@@ -218,10 +220,10 @@ function Wordmark() {
         letterSpacing="-0.02em"
         fill="url(#pq-word-fill)"
       >
-        Present
+        Pitch
       </text>
       <text
-        x="106"
+        x="74"
         y="26"
         fontFamily="Inter, 'Segoe UI', system-ui, sans-serif"
         fontWeight="800"
@@ -229,8 +231,17 @@ function Wordmark() {
         letterSpacing="-0.02em"
         fill="url(#pq-word-iq)"
       >
-        IQ
+        ora
       </text>
+      {/* Aurora arc kissing the "o" of ora — captures the brand */}
+      <path
+        d="M82 5 Q104 -2 126 5"
+        fill="none"
+        stroke="url(#pq-line-stroke)"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        opacity="0.85"
+      />
     </g>
   );
 }

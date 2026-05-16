@@ -5,9 +5,9 @@ import { PQ_CONTACT_EMAIL, PQ_FOUNDER_NAME } from "@/lib/presentiq/config";
 
 export function ContactBubble() {
   const { t, dir } = useI18n();
-  const subject = encodeURIComponent("PresentIQ — trial feedback");
+  const subject = encodeURIComponent("Pitchora — trial feedback");
   const body = encodeURIComponent(
-    `Hi ${PQ_FOUNDER_NAME},\n\nI tried PresentIQ and have a question / suggestion:\n\n— Sent from the in-app contact bubble`,
+    `Hi ${PQ_FOUNDER_NAME},\n\nI tried Pitchora and have a question / suggestion:\n\n— Sent from the in-app contact bubble`,
   );
   return (
     <a

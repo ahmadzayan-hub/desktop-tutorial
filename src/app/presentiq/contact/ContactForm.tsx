@@ -50,7 +50,7 @@ export function ContactForm() {
         <div>
           <div className="text-xs uppercase tracking-widest opacity-80">Direct</div>
           <a
-            href={`mailto:${CONTACT_EMAIL}?subject=PresentIQ%20—%20trial%20feedback`}
+            href={`mailto:${CONTACT_EMAIL}?subject=Pitchora%20—%20trial%20feedback`}
             className="text-xl font-semibold hover:underline"
             style={{ color: "var(--pq-spearmint)" }}
           >

@@ -6,6 +6,13 @@ import { useMemo, useState } from "react";
 import { useI18n } from "@/lib/presentiq/i18n/context";
 import { Frame4D } from "@/components/presentiq/ui/Frame4D";
 import { TEMPLATES } from "@/lib/presentiq/templates/registry";
+import {
+  AuroraWord,
+  Magnetic,
+  ParallaxMesh,
+  Reveal,
+  Tilt,
+} from "@/components/presentiq/ui/motion";
 
 const FEATURES: { titleKey: any; bodyKey: any; icon: string }[] = [
   { titleKey: "feat.brand.title",    bodyKey: "feat.brand.body",    icon: "🛡" },
@@ -78,15 +85,35 @@ export function Hero() {
     tplCat === "all" ? true : TPL_CATEGORY[tp.code] === tplCat,
   );
 
+  const brandName = lang === "ar" ? "بِتشورا" : "Pitchora";
+  // For Arabic, the headline is shorter so we use a smaller letter step.
+  const letterStep = lang === "ar" ? 70 : 55;
+
+  // Trust marquee items, duplicated twice for an unbroken loop.
+  const TRUST = lang === "ar"
+    ? ["مجالس الإدارة", "اللجان الحكومية", "الشركاء الاستشاريون", "لجان التوجيه", "حالات العمل", "فِرَق العلاقات الحكومية", "مديرو المنتجات"]
+    : ["BOARDROOMS", "GOVERNMENT COMMITTEES", "CONSULTING PARTNERS", "STEERING COMMITTEES", "BUSINESS CASES", "GR TEAMS", "PRODUCT LEADERS"];
+
   return (
     <div className="space-y-16">
-      {/* ── Hero v0.5 — Chatly-style composer ─────────────────────── */}
-      <section className="pq-composer-hero">
+      {/* ── Hero v0.5 — Pitchora composer + parallax aurora ───────── */}
+      <section className="pq-composer-hero" style={{ position: "relative", isolation: "isolate" }}>
         <div className="pq-mesh pq-aurora-flow" aria-hidden />
+        <ParallaxMesh intensity={28} />
 
         <div className="relative" style={{ zIndex: 1 }}>
+          {/* Animated Pitchora wordmark — letter-by-letter aurora */}
+          <div className="pq-rise" style={{ textAlign: "center", marginBottom: "0.5rem" }}>
+            <AuroraWord
+              text={brandName}
+              className="block"
+              start={120}
+              step={letterStep}
+            />
+          </div>
+
           {/* Mode tabs */}
-          <div className="pq-mode-tabs pq-rise" role="tablist" aria-label="Generation mode">
+          <div className="pq-mode-tabs pq-rise pq-rise-2" role="tablist" aria-label="Generation mode">
             <button
               role="tab"
               type="button"
@@ -109,13 +136,30 @@ export function Hero() {
           </div>
 
           {/* Hero question */}
-          <h1 className="pq-composer-hero-h1 pq-rise pq-rise-2">
+          <h1 className="pq-composer-hero-h1 pq-rise pq-rise-3">
             <span className="pq-emoji" aria-hidden>▣</span>
-            {lang === "ar" ? "من أين نبدأ؟" : "Where should we begin?"}
+            <span className="pq-aurora-underline">
+              {lang === "ar" ? "من أين نبدأ؟" : "Where should we begin?"}
+            </span>
           </h1>
 
+          {/* Tagline */}
+          <p
+            className="pq-rise pq-rise-3"
+            style={{
+              textAlign: "center",
+              marginTop: "0.5rem",
+              marginBottom: "1.5rem",
+              color: "var(--pq-text-secondary)",
+              fontSize: "0.95rem",
+              lineHeight: 1.5,
+            }}
+          >
+            {t("brand.tagline")}
+          </p>
+
           {/* Composer */}
-          <div className="pq-liquid-card pq-composer-card pq-rise pq-rise-3" dir={lang === "ar" ? "rtl" : "ltr"}>
+          <div className="pq-liquid-card pq-composer-card pq-rise pq-rise-4" dir={lang === "ar" ? "rtl" : "ltr"}>
             <textarea
               className="pq-composer-textarea"
               value={prompt}
@@ -170,28 +214,20 @@ export function Hero() {
             </div>
           </div>
 
-          {/* CTA row underneath the composer (liquid + ghost) */}
-          <div className="pq-hero-cta-row pq-rise pq-rise-4" style={{ marginTop: "1.5rem" }}>
-            <Link
-              href="/presentiq/projects/new"
-              className="pq-btn pq-btn-liquid pq-btn-liquid-primary pq-btn-liquid-pill"
-              style={{ padding: "0.85rem 1.6rem", fontSize: "0.95rem" }}
-            >
+          {/* CTA row underneath the composer (magnetic + ghost) */}
+          <div className="pq-hero-cta-row pq-rise pq-rise-5" style={{ marginTop: "1.5rem" }}>
+            <Magnetic as="a" href="/presentiq/projects/new" className="pq-btn pq-btn-liquid pq-btn-liquid-primary pq-btn-liquid-pill" style={{ padding: "0.85rem 1.6rem", fontSize: "0.95rem" }}>
               {t("land.cta.start")} <span className="pq-flip" aria-hidden>→</span>
-            </Link>
-            <Link
-              href="/presentiq/dashboard"
-              className="pq-btn pq-btn-liquid pq-btn-liquid-pill"
-              style={{ padding: "0.85rem 1.4rem", fontSize: "0.9rem" }}
-            >
+            </Magnetic>
+            <Magnetic as="a" href="/presentiq/dashboard" className="pq-btn pq-btn-liquid pq-btn-liquid-pill" style={{ padding: "0.85rem 1.4rem", fontSize: "0.9rem" }}>
               {t("land.cta.dashboard")}
-            </Link>
+            </Magnetic>
           </div>
         </div>
       </section>
 
       {/* ── Templates strip ───────────────────────────────────────── */}
-      <section className="pq-templates" aria-label="Templates">
+      <Reveal as="section" className="pq-templates" variant="single">
         <div className="flex items-end justify-between gap-3 flex-wrap">
           <h2 className="text-2xl md:text-3xl font-semibold" style={{ color: "var(--pq-text-main)" }}>
             {t("tpl.title")}
@@ -220,9 +256,9 @@ export function Hero() {
           ))}
         </div>
 
-        <div className="pq-tpl-grid">
+        <Reveal variant="stagger" className="pq-tpl-grid">
           {/* Create blank */}
-          <Link href="/presentiq/projects/new" className="pq-tpl-card pq-tpl-card-blank">
+          <Tilt as="a" href="/presentiq/projects/new" className="pq-tpl-card pq-tpl-card-blank" max={4}>
             <div className="pq-tpl-card-cover" style={{ background: "transparent" }}>
               <div className="text-center">
                 <div style={{ fontSize: "1.6rem", color: "var(--pq-text-secondary)" }} aria-hidden>＋</div>
@@ -235,15 +271,17 @@ export function Hero() {
               <div className="pq-tpl-card-title">{lang === "ar" ? "ابدأ من الصفر" : "Start from scratch"}</div>
               <div className="pq-tpl-card-sub">{lang === "ar" ? "أنت تتحكم بالكامل" : "Full control"}</div>
             </div>
-          </Link>
+          </Tilt>
 
           {filteredCards.map((tp) => {
             const title = lang === "ar" ? tp.nameAr : tp.nameEn;
             return (
-              <Link
+              <Tilt
                 key={tp.code}
+                as="a"
                 href={`/presentiq/projects/new?template=${tp.code}`}
                 className="pq-tpl-card"
+                max={5}
               >
                 <div className="pq-tpl-card-cover" data-tone={tp.tone}>
                   <span>{title}</span>
@@ -254,14 +292,14 @@ export function Hero() {
                     {tp.framework} · {tp.defaultSlides} {lang === "ar" ? "شريحة" : "slides"}
                   </div>
                 </div>
-              </Link>
+              </Tilt>
             );
           })}
-        </div>
-      </section>
+        </Reveal>
+      </Reveal>
 
       {/* ── Capability strip — verifiable platform facts only ───── */}
-      <section className="pq-stats pq-stats-flat" aria-label="Platform capabilities">
+      <Reveal as="section" className="pq-stats pq-stats-flat" variant="stagger">
         <div className="pq-stat">
           <div className="pq-stat-num">EN · AR</div>
           <div className="pq-stat-label">{t("hero.stat.langs")}</div>
@@ -278,10 +316,10 @@ export function Hero() {
           <div className="pq-stat-num">RTL</div>
           <div className="pq-stat-label">{lang === "ar" ? "تخطيطات معكوسة" : "Mirrored layouts"}</div>
         </div>
-      </section>
+      </Reveal>
 
       {/* ── How it works ──────────────────────────────────────────── */}
-      <section>
+      <Reveal as="section" variant="stagger">
         <div className="pq-howit">
           {[1, 2, 3].map((n) => (
             <div key={n} className="pq-howit-step">
@@ -292,49 +330,55 @@ export function Hero() {
             </div>
           ))}
         </div>
-      </section>
+      </Reveal>
 
-      {/* ── Built-for strip — neutral sector labels (no fabricated logos) ── */}
-      <section className="pq-trust-strip pq-rise" aria-label="Built for">
-        <span className="pq-trust-label">{lang === "ar" ? "مُصمَّم لـ" : "Built for"}</span>
-        <span className="pq-trust-logo">{lang === "ar" ? "مجالس الإدارة" : "BOARDROOMS"}</span>
-        <span className="pq-trust-logo">{lang === "ar" ? "اللجان الحكومية" : "GOVERNMENT&nbsp;COMMITTEES"}</span>
-        <span className="pq-trust-logo">{lang === "ar" ? "الشركاء الاستشاريون" : "CONSULTING&nbsp;PARTNERS"}</span>
-        <span className="pq-trust-logo">{lang === "ar" ? "لجان التوجيه" : "STEERING&nbsp;COMMITTEES"}</span>
-        <span className="pq-trust-logo">{lang === "ar" ? "حالات العمل" : "BUSINESS&nbsp;CASES"}</span>
-      </section>
+      {/* ── Built-for marquee — animated trust strip ─────────────── */}
+      <Reveal as="section" className="pq-trust-strip pq-marquee" variant="single">
+        <span className="pq-trust-label" style={{ flexShrink: 0, paddingInlineEnd: "1.5rem" }}>
+          {lang === "ar" ? "مُصمَّم لـ" : "Built for"}
+        </span>
+        <div className="pq-marquee-track">
+          {TRUST.concat(TRUST).map((label, i) => (
+            <span key={i} className="pq-trust-logo" style={{ whiteSpace: "nowrap" }}>
+              {label}
+            </span>
+          ))}
+        </div>
+      </Reveal>
 
       {/* ── Differentiator features ───────────────────────────────── */}
-      <section
-        id="product"
+      <Reveal
+        as="section"
+        variant="stagger"
         className="grid grid-cols-1 md:grid-cols-3 gap-5"
-        aria-label="Product features"
       >
         {FEATURES.map((f) => (
-          <Frame4D key={String(f.titleKey)} className="p-6">
-            <div
-              className="grid place-items-center w-10 h-10 rounded-xl text-base font-bold mb-3"
-              style={{
-                background: "rgba(159,205,99,0.14)",
-                color: "var(--pq-primary)",
-                border: "1px solid rgba(159,205,99,0.32)",
-              }}
-              aria-hidden
-            >
-              {f.icon}
-            </div>
-            <h3 className="text-base font-semibold" style={{ color: "var(--pq-text-main)" }}>
-              {t(f.titleKey)}
-            </h3>
-            <p className="text-sm mt-2" style={{ color: "var(--pq-text-secondary)", lineHeight: 1.55 }}>
-              {t(f.bodyKey)}
-            </p>
-          </Frame4D>
+          <Tilt key={String(f.titleKey)} max={4}>
+            <Frame4D className="p-6">
+              <div
+                className="grid place-items-center w-10 h-10 rounded-xl text-base font-bold mb-3"
+                style={{
+                  background: "rgba(159,205,99,0.14)",
+                  color: "var(--pq-primary)",
+                  border: "1px solid rgba(159,205,99,0.32)",
+                }}
+                aria-hidden
+              >
+                {f.icon}
+              </div>
+              <h3 className="text-base font-semibold" style={{ color: "var(--pq-text-main)" }}>
+                {t(f.titleKey)}
+              </h3>
+              <p className="text-sm mt-2" style={{ color: "var(--pq-text-secondary)", lineHeight: 1.55 }}>
+                {t(f.bodyKey)}
+              </p>
+            </Frame4D>
+          </Tilt>
         ))}
-      </section>
+      </Reveal>
 
-      {/* ── What's new in v0.3 ────────────────────────────────────── */}
-      <section id="resources">
+      {/* ── What's new in v0.5 ────────────────────────────────────── */}
+      <Reveal as="section" variant="single">
         <Frame4D variant="pine" className="p-8 md:p-10" interactive={false}>
           <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
             <h2 className="text-2xl md:text-3xl font-semibold" style={{ color: "var(--pq-text-main)" }}>
@@ -365,7 +409,7 @@ export function Hero() {
             ))}
           </ul>
         </Frame4D>
-      </section>
+      </Reveal>
     </div>
   );
 }
