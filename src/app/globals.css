@@ -1593,6 +1593,148 @@ html.dark {
   }
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   Pitchora — Theme toggle + Billing toggle (v0.5)
+   ══════════════════════════════════════════════════════════════════ */
+
+.pq-theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: var(--pq-text-main);
+  cursor: pointer;
+  transition: background 200ms ease, transform 200ms ease, border-color 200ms ease;
+}
+.pq-theme-toggle:hover {
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(159,205,99,0.55);
+  transform: rotate(20deg);
+}
+
+.pq-billing-toggle {
+  position: relative;
+  width: 3rem;
+  height: 1.6rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  cursor: pointer;
+  transition: background 220ms ease, border-color 220ms ease;
+}
+.pq-billing-toggle[data-on="true"] {
+  background: linear-gradient(90deg, #6366F1, #9FCD63);
+  border-color: rgba(159,205,99,0.55);
+}
+.pq-billing-toggle-knob {
+  position: absolute;
+  top: 50%;
+  inset-inline-start: 0.2rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  background: #F4F7EF;
+  border-radius: 999px;
+  transform: translateY(-50%);
+  transition: inset-inline-start 220ms cubic-bezier(.2,.8,.2,1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+.pq-billing-toggle[data-on="true"] .pq-billing-toggle-knob {
+  inset-inline-start: calc(100% - 1.35rem);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   Pitchora — Light theme (v0.5)
+   Activated by `data-pq-theme="light"` on the [data-pq] wrapper.
+   Variables here override the dark defaults; component styles read
+   them via var() so most surfaces flip automatically.
+   ══════════════════════════════════════════════════════════════════ */
+
+[data-pq][data-pq-theme="light"] {
+  --pq-bg:            #F7FBF2;
+  --pq-surface:       #FFFFFF;
+  --pq-surface-alt:   #EEF4E6;
+  --pq-text-main:     #0F1F12;
+  --pq-text:          #0F1F12;
+  --pq-text-secondary:#3C5A3B;
+  --pq-text-soft:     #4A6F4A;
+  --pq-text-muted:    #6B8770;
+  --pq-border:        rgba(15,31,18,0.14);
+  --pq-border-soft:   rgba(15,31,18,0.10);
+  --pq-primary:       #2E7D32;
+  --pq-byline:        #3C5A3B;
+  background: var(--pq-bg);
+}
+[data-pq][data-pq-theme="light"] body { color-scheme: light; }
+[data-pq][data-pq-theme="light"] .pq-header {
+  background: rgba(247,251,242,0.88) !important;
+  border-bottom-color: rgba(15,31,18,0.10) !important;
+}
+[data-pq][data-pq-theme="light"] .pq-liquid-card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(247,251,242,0.85) 100%),
+    rgba(255,255,255,0.85);
+  border-color: rgba(15,31,18,0.14);
+  box-shadow:
+    0 24px 50px -20px rgba(15,31,18,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.85);
+}
+[data-pq][data-pq-theme="light"] .pq-composer-textarea {
+  color: #0F1F12;
+}
+[data-pq][data-pq-theme="light"] .pq-composer-textarea::placeholder {
+  color: rgba(15,31,18,0.45);
+}
+[data-pq][data-pq-theme="light"] .pq-btn-liquid {
+  color: #0F1F12;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.92), rgba(238,244,230,0.85));
+  border-color: rgba(15,31,18,0.18);
+  box-shadow:
+    0 6px 16px -6px rgba(15,31,18,0.18),
+    inset 0 1px 0 rgba(255,255,255,1);
+}
+[data-pq][data-pq-theme="light"] .pq-btn-liquid-primary {
+  color: #FFFFFF;
+  background: linear-gradient(180deg, #6366F1, #4F46E5);
+  border-color: rgba(99,102,241,0.55);
+}
+[data-pq][data-pq-theme="light"] .pq-promo-banner {
+  background: linear-gradient(90deg, #EEF4E6 0%, #DDE9CB 100%);
+  color: #0F1F12;
+  border-bottom-color: rgba(15,31,18,0.12);
+}
+[data-pq][data-pq-theme="light"] .pq-footer-slim {
+  background: linear-gradient(180deg, transparent, rgba(15,31,18,0.05));
+  border-top-color: rgba(15,31,18,0.10);
+}
+[data-pq][data-pq-theme="light"] .pq-mesh {
+  opacity: 0.32;
+}
+[data-pq][data-pq-theme="light"] .pq-theme-toggle {
+  background: rgba(15,31,18,0.06);
+  border-color: rgba(15,31,18,0.18);
+  color: #0F1F12;
+}
+[data-pq][data-pq-theme="light"] .pq-orb {
+  opacity: 0.32;
+}
+[data-pq][data-pq-theme="light"] .pq-tpl-card {
+  background: rgba(255,255,255,0.92);
+  border-color: rgba(15,31,18,0.14);
+}
+[data-pq][data-pq-theme="light"] .pq-tpl-card-foot {
+  background: rgba(247,251,242,0.92);
+  border-top-color: rgba(15,31,18,0.10);
+}
+[data-pq][data-pq-theme="light"] .pq-trust-strip,
+[data-pq][data-pq-theme="light"] .pq-trust-logo,
+[data-pq][data-pq-theme="light"] .pq-trust-label {
+  color: #3C5A3B;
+}
+
 /* Honour prefers-reduced-motion — disable every Pitchora motion utility */
 @media (prefers-reduced-motion: reduce) {
   .pq-orb, .pq-letter, .pq-aurora-text, .pq-aurora-underline::after,

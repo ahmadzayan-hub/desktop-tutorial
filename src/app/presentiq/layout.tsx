@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import type { Metadata } from "next";
 import { I18nProvider } from "@/lib/presentiq/i18n/context";
 import { ContactBubble } from "@/components/presentiq/ui/ContactBubble";
+import { Stardust } from "@/components/presentiq/ui/Stardust";
 import { PresentIqShell } from "./_shell";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.tweenz.ae";
@@ -111,9 +112,21 @@ export default function PresentIqLayout({ children }: { children: ReactNode }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div data-pq className="min-h-screen">
+      <div data-pq data-pq-theme="dark" className="min-h-screen">
+        {/* Pre-mount theme bootstrap — runs before React hydrates so the
+            initial paint matches the persisted preference. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var v=localStorage.getItem('pq-theme');" +
+              "if(v==='light'||v==='dark'){" +
+              "document.querySelector('[data-pq]')?.setAttribute('data-pq-theme',v);" +
+              "}}catch(e){}})();",
+          }}
+        />
         <PresentIqShell>{children}</PresentIqShell>
         <ContactBubble />
+        <Stardust />
       </div>
     </I18nProvider>
   );

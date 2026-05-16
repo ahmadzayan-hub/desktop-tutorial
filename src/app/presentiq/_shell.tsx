@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/presentiq/i18n/context";
 import { LangToggle } from "@/components/presentiq/ui/LangToggle";
 import { SiteFooter } from "@/components/presentiq/ui/SiteFooter";
 import { Logo } from "@/components/presentiq/ui/Logo";
+import { ThemeToggle } from "@/components/presentiq/ui/ThemeToggle";
 
 export function PresentIqShell({ children }: { children: ReactNode }) {
   const { t, dir, lang } = useI18n();
@@ -14,10 +15,14 @@ export function PresentIqShell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   // Two parallel nav sets:
-  //  - The "marketing" header (Product / Solutions / Resources / Pricing /
-  //    Company), shown on the public landing & marketing-style pages.
+  //  - The "marketing" header (Product / Pricing / About / etc.), shown on the
+  //    public landing & marketing-style pages.
   //  - The "app" header (Dashboard / Projects / …), shown inside the app.
-  const isMarketing = pathname === "/presentiq" || pathname === "/presentiq/";
+  const isMarketing =
+    pathname === "/presentiq" ||
+    pathname === "/presentiq/" ||
+    pathname === "/presentiq/about" ||
+    pathname === "/presentiq/pricing";
   const APP_NAV: { href: string; key: any }[] = [
     { href: "/presentiq/dashboard",  key: "nav.dashboard" },
     { href: "/presentiq/projects",   key: "nav.projects" },
@@ -27,11 +32,12 @@ export function PresentIqShell({ children }: { children: ReactNode }) {
     { href: "/presentiq/contact",    key: "nav.contact" },
   ];
   const MARKETING_NAV: { href: string; key: any }[] = [
-    { href: "/presentiq#product",   key: "marketing.nav.product" },
-    { href: "/presentiq#solutions", key: "marketing.nav.solutions" },
-    { href: "/presentiq#resources", key: "marketing.nav.resources" },
-    { href: "/presentiq#pricing",   key: "marketing.nav.pricing" },
-    { href: "/presentiq#company",   key: "marketing.nav.company" },
+    { href: "/presentiq#product",    key: "marketing.nav.product" },
+    { href: "/presentiq/templates",  key: "nav.templates" },
+    { href: "/presentiq/pricing",    key: "marketing.nav.pricing" },
+    { href: "/presentiq/about",      key: "marketing.nav.about" },
+    { href: "/presentiq/changelog",  key: "nav.changelog" },
+    { href: "/presentiq/contact",    key: "nav.contact" },
   ];
   const NAV = isMarketing ? MARKETING_NAV : APP_NAV;
 
@@ -73,6 +79,7 @@ export function PresentIqShell({ children }: { children: ReactNode }) {
             })}
           </nav>
           <div className="flex items-center gap-2 shrink-0">
+            <ThemeToggle />
             <LangToggle />
             {/* "Log in" pill removed in v0.4.3 — auth flow isn't shipped yet,
                 so the pill led nowhere meaningful. Re-add when /login is real. */}

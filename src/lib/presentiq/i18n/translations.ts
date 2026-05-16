@@ -30,6 +30,7 @@ export const TRANSLATIONS = {
   "marketing.nav.resources": { en: "Resources",   ar: "المصادر" },
   "marketing.nav.pricing":   { en: "Pricing",     ar: "الأسعار" },
   "marketing.nav.company":   { en: "Company",     ar: "الشركة" },
+  "marketing.nav.about":     { en: "About",       ar: "من نحن" },
   "marketing.nav.login":     { en: "Log in",       ar: "تسجيل الدخول" },
 
   // ─── Landing ─────────────────────────────────────────────────

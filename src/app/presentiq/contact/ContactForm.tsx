@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/presentiq/i18n/context";
 import { Frame4D } from "@/components/presentiq/ui/Frame4D";
 import { PQ_CONTACT_EMAIL } from "@/lib/presentiq/config";
+import { burstConfetti } from "@/components/presentiq/ui/Confetti";
 
 const CONTACT_EMAIL = PQ_CONTACT_EMAIL;
 
@@ -15,6 +16,12 @@ export function ContactForm() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const sendBtnRef = useRef<HTMLButtonElement | null>(null);
+
+  // Fire a confetti burst from the Send button when the message lands.
+  useEffect(() => {
+    if (sent) burstConfetti(sendBtnRef.current);
+  }, [sent]);
 
   async function submit() {
     setSending(true); setError(null);
@@ -93,6 +100,7 @@ export function ContactForm() {
             )}
             <div className="sm:col-span-2 flex justify-end">
               <button
+                ref={sendBtnRef}
                 disabled={sending || !email || !subject || !message}
                 onClick={submit}
                 className="pq-btn pq-btn-liquid pq-btn-liquid-primary pq-btn-liquid-pill"
