@@ -70,7 +70,13 @@ export default function BeyondGalleryLayout({ children }: { children: ReactNode 
             description:
               "Curated UAE lifestyle and gift brand offering accessories, personalised gifts, drawing boards, decorative items, corporate gifts and selected supply products. Operated on the GiftMajlis platform.",
             url: SITE,
-            telephone: "+971-00-000-0000",
+            telephone: "+971551556991",
+            email: "info@beyondconnect.ae",
+            sameAs: [
+              "https://www.instagram.com/beyond.style.uae",
+              "https://www.tiktok.com/@beyondstyleuae",
+              "https://www.noon.com/uae-ar/seller/p-443679/",
+            ],
             address: {
               "@type": "PostalAddress",
               addressLocality: "Dubai",
@@ -83,6 +89,8 @@ export default function BeyondGalleryLayout({ children }: { children: ReactNode 
             },
             areaServed: "United Arab Emirates",
             currenciesAccepted: "AED",
+            paymentAccepted:
+              "Visa, Mastercard, Apple Pay, Google Pay, Tabby, Tamara, Bank Transfer, Cash on Delivery",
             makesOffer: {
               "@type": "Offer",
               category: [
@@ -96,7 +104,7 @@ export default function BeyondGalleryLayout({ children }: { children: ReactNode 
             },
             potentialAction: {
               "@type": "OrderAction",
-              target: "https://wa.me/971500000000",
+              target: "https://wa.me/971551556991",
               name: "Order on WhatsApp",
             },
             isPartOf: {

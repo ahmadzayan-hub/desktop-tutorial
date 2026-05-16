@@ -2,45 +2,76 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { BackToTop, FloatingWhatsApp, ScrollProgress, StatCounter } from "./_components/Bits";
 import HeroArt from "./_components/HeroArt";
 import Marquee from "./_components/Marquee";
 import ProductTile, { type Variant } from "./_components/ProductTile";
+import QuickView, { type QuickViewProduct } from "./_components/QuickView";
 import { Reveal, Stagger, StaggerItem } from "./_components/Reveal";
 import Spotlight from "./_components/Spotlight";
 import {
+  ApplePayMark,
   ArrowRight,
+  BankMark,
   BoardIcon,
   BoxIcon,
   BriefcaseIcon,
   CartIcon,
+  CashMark,
   ChevronDown,
   CloseIcon,
   FileTextIcon,
   GiftIcon,
+  GooglePayMark,
   Grid2x2,
   HeartIcon,
   HomeDecorIcon,
   InstagramIcon,
   MailIcon,
+  MasterMark,
   MenuIcon,
+  PhoneIcon,
   PinIcon,
   SearchIcon,
   ShieldIcon,
   SparkleIcon,
   StarSpark,
+  TabbyMark,
   TagIcon,
+  TamaraMark,
+  TikTokIcon,
   UploadIcon,
+  VisaMark,
   WhatsAppIcon,
 } from "./_components/icons";
 
 // ---------- Brand-wide constants ----------
 
-const WA_NUMBER = "971500000000"; // placeholder — replace with real number
+const WA_NUMBER = "971551556991";
+const WA_DISPLAY = "+971 55 155 6991";
 const WA_BASE = `https://wa.me/${WA_NUMBER}`;
+const EMAIL = "info@beyondconnect.ae";
+const INSTAGRAM_URL =
+  "https://www.instagram.com/beyond.style.uae?igsh=NDhxN2xyYXNkNjVi";
+const INSTAGRAM_HANDLE = "@beyond.style.uae";
+const TIKTOK_URL =
+  "https://www.tiktok.com/@beyondstyleuae?_r=1&_t=ZS-96PyMbe5TE2";
+const TIKTOK_HANDLE = "@beyondstyleuae";
+const NOON_URL =
+  "https://www.noon.com/uae-ar/seller/p-443679/?link_source=share_btn&utm_source=ig&utm_medium=social&utm_content=link_in_bio";
 
 const buildWALink = (message: string) =>
   `${WA_BASE}?text=${encodeURIComponent(message)}`;
+
+// Convert any form record into a clean WhatsApp message body.
+const formToWA = (title: string, data: Record<string, string>) => {
+  const lines = [`Hello Beyond Gallery, ${title}`];
+  for (const [k, v] of Object.entries(data)) {
+    if (v && v.trim()) lines.push(`${k}: ${v.trim()}`);
+  }
+  return lines.join("\n");
+};
 
 const NAV_LINKS = [
   { en: "Home", ar: "الرئيسية", href: "#home" },
@@ -57,10 +88,18 @@ const NAV_LINKS = [
 
 export default function BeyondGalleryLanding() {
   const [lang, setLang] = useState<"en" | "ar">("en");
+  const [quick, setQuick] = useState<QuickViewProduct | null>(null);
   const isRTL = lang === "ar";
+
+  const waHref = quick
+    ? buildWALink(
+        `Hello Beyond Gallery, I am interested in this product:\nProduct Name: ${quick.name}\nQuantity: \nDelivery Emirate: \nCustomisation required: \nPlease confirm price and availability.`
+      )
+    : WA_BASE;
 
   return (
     <div dir={isRTL ? "rtl" : "ltr"} lang={isRTL ? "ar" : "en"} className={isRTL ? "font-arabic" : "font-bg-body"}>
+      <ScrollProgress />
       <AnnouncementBar lang={lang} />
       <Header lang={lang} setLang={setLang} />
 
@@ -68,15 +107,17 @@ export default function BeyondGalleryLanding() {
         <Hero lang={lang} />
         <KeywordMarquee lang={lang} />
         <TrustStrip lang={lang} />
+        <StatsStrip lang={lang} />
         <PlatformStrip lang={lang} />
         <Collections lang={lang} />
-        <FeaturedProducts lang={lang} />
+        <FeaturedProducts lang={lang} onQuickView={setQuick} />
         <GiftFinder lang={lang} />
         <ShopWithConfidence lang={lang} />
         <Marketplace lang={lang} />
         <CorporateOrders lang={lang} />
         <SupplyDesk lang={lang} />
         <AboutBrand lang={lang} />
+        <PaymentMethods lang={lang} />
         <CatalogueCapture lang={lang} />
         <FAQ lang={lang} />
         <Contact lang={lang} />
@@ -84,6 +125,10 @@ export default function BeyondGalleryLanding() {
 
       <Footer lang={lang} />
       <MobileStickyBar lang={lang} />
+      <BackToTop lang={lang} />
+      <FloatingWhatsApp href={WA_BASE} lang={lang} />
+      <CookieConsent lang={lang} />
+      <QuickView product={quick} onClose={() => setQuick(null)} lang={lang} waHref={waHref} />
     </div>
   );
 }
@@ -406,6 +451,38 @@ function Hero({ lang }: { lang: "en" | "ar" }) {
       </div>
     </section>
     </Spotlight>
+  );
+}
+
+// ====================================================================================
+// Stats Strip — honest, fact-based counters
+// ====================================================================================
+
+function StatsStrip({ lang }: { lang: "en" | "ar" }) {
+  const stats = lang === "en"
+    ? [
+        { value: 200, suffix: "+", label: "Products curated" },
+        { value: 7,   suffix: "/7", label: "Emirates served" },
+        { value: 100, suffix: "%",  label: "AED transparent pricing" },
+        { value: 24,  suffix: "h",  label: "Typical WhatsApp response" },
+      ]
+    : [
+        { value: 200, suffix: "+", label: "منتج مختار" },
+        { value: 7,   suffix: "/7", label: "إمارات مخدومة" },
+        { value: 100, suffix: "%",  label: "أسعار شفافة بالدرهم" },
+        { value: 24,  suffix: "س",  label: "ردّ متوسط عبر واتساب" },
+      ];
+
+  return (
+    <section className="bg-beyond-ivory border-b border-beyond-line">
+      <div className="max-w-7xl mx-auto px-4 py-10 sm:py-14">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+          {stats.map((s) => (
+            <StatCounter key={s.label} value={s.value} suffix={s.suffix} label={s.label} />
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -941,6 +1018,8 @@ function Collections({ lang }: { lang: "en" | "ar" }) {
 // 6. Featured Products
 // ====================================================================================
 
+type Category = "accessories" | "gifts" | "boards" | "corporate" | "lifestyle";
+
 type Product = {
   name: string;
   nameAr: string;
@@ -948,24 +1027,58 @@ type Product = {
   benefitAr: string;
   price: string;
   variant: Variant;
+  category: Category;
 };
 
 const FEATURED: Product[] = [
-  { name: "Arabic Charm Bracelet", nameAr: "إسوارة عربية", benefit: "Personalise with Arabic letters or name", benefitAr: "خصصها بأحرف أو اسم عربي", price: "AED 65", variant: "arabic-bracelet" },
-  { name: "Personalised Name Bracelet", nameAr: "إسوارة الاسم", benefit: "Custom name in English or Arabic", benefitAr: "اسم مخصص بالعربية أو الإنجليزية", price: "AED 75", variant: "name-bracelet" },
-  { name: "Hamsa and Evil Eye Bracelet", nameAr: "إسوارة الحمسة والعين", benefit: "Symbolic everyday wear", benefitAr: "رمزية للارتداء اليومي", price: "AED 55", variant: "hamsa" },
-  { name: "Premium Necklace Set", nameAr: "طقم قلائد فاخر", benefit: "Elegant pendant + chain set", benefitAr: "طقم قلادة بسلسلة أنيقة", price: "AED 145", variant: "necklace" },
-  { name: "Elegant Gift Box Set", nameAr: "طقم صندوق هدية أنيق", benefit: "Ready to gift packaging", benefitAr: "تغليف جاهز للإهداء", price: "AED 120", variant: "gift-box" },
-  { name: "Creative Drawing Board", nameAr: "لوحة رسم إبداعية", benefit: "Reusable, ideal for kids and students", benefitAr: "قابلة لإعادة الاستخدام للأطفال والطلاب", price: "AED 89", variant: "drawing-board" },
-  { name: "A5 Branded Notebook", nameAr: "دفتر A5 مع الشعار", benefit: "Hardcover with brand printing option", benefitAr: "غلاف فاخر مع خيار طباعة الشعار", price: "AED 35", variant: "notebook" },
-  { name: "Metal Gift Pen", nameAr: "قلم معدني للهدايا", benefit: "Smooth writing, gift-ready", benefitAr: "كتابة سلسة وجاهز للإهداء", price: "AED 25", variant: "pen" },
-  { name: "Canvas Gift Tote Bag", nameAr: "حقيبة قماشية", benefit: "Reusable canvas tote with logo option", benefitAr: "حقيبة قابلة لإعادة الاستخدام مع خيار الشعار", price: "AED 30", variant: "tote" },
-  { name: "Ceramic Gift Mug", nameAr: "كوب سيراميك", benefit: "Ideal for offices and giveaways", benefitAr: "مناسب للمكاتب والفعاليات", price: "AED 28", variant: "mug" },
-  { name: "Corporate VIP Gift Pack", nameAr: "طقم هدايا VIP", benefit: "Curated executive presentation", benefitAr: "تشكيلة تنفيذية مختارة", price: "AED 250", variant: "vip-box" },
-  { name: "Lifestyle Desk Decor", nameAr: "ديكور مكتب", benefit: "Charming desk accents", benefitAr: "لمسات أنيقة للمكتب", price: "AED 95", variant: "desk-decor" },
+  { name: "Arabic Charm Bracelet", nameAr: "إسوارة عربية", benefit: "Personalise with Arabic letters or name", benefitAr: "خصصها بأحرف أو اسم عربي", price: "AED 65", variant: "arabic-bracelet", category: "accessories" },
+  { name: "Personalised Name Bracelet", nameAr: "إسوارة الاسم", benefit: "Custom name in English or Arabic", benefitAr: "اسم مخصص بالعربية أو الإنجليزية", price: "AED 75", variant: "name-bracelet", category: "gifts" },
+  { name: "Hamsa and Evil Eye Bracelet", nameAr: "إسوارة الحمسة والعين", benefit: "Symbolic everyday wear", benefitAr: "رمزية للارتداء اليومي", price: "AED 55", variant: "hamsa", category: "accessories" },
+  { name: "Premium Necklace Set", nameAr: "طقم قلائد فاخر", benefit: "Elegant pendant + chain set", benefitAr: "طقم قلادة بسلسلة أنيقة", price: "AED 145", variant: "necklace", category: "accessories" },
+  { name: "Elegant Gift Box Set", nameAr: "طقم صندوق هدية أنيق", benefit: "Ready to gift packaging", benefitAr: "تغليف جاهز للإهداء", price: "AED 120", variant: "gift-box", category: "gifts" },
+  { name: "Creative Drawing Board", nameAr: "لوحة رسم إبداعية", benefit: "Reusable, ideal for kids and students", benefitAr: "قابلة لإعادة الاستخدام للأطفال والطلاب", price: "AED 89", variant: "drawing-board", category: "boards" },
+  { name: "A5 Branded Notebook", nameAr: "دفتر A5 مع الشعار", benefit: "Hardcover with brand printing option", benefitAr: "غلاف فاخر مع خيار طباعة الشعار", price: "AED 35", variant: "notebook", category: "corporate" },
+  { name: "Metal Gift Pen", nameAr: "قلم معدني للهدايا", benefit: "Smooth writing, gift-ready", benefitAr: "كتابة سلسة وجاهز للإهداء", price: "AED 25", variant: "pen", category: "corporate" },
+  { name: "Canvas Gift Tote Bag", nameAr: "حقيبة قماشية", benefit: "Reusable canvas tote with logo option", benefitAr: "حقيبة قابلة لإعادة الاستخدام مع خيار الشعار", price: "AED 30", variant: "tote", category: "corporate" },
+  { name: "Ceramic Gift Mug", nameAr: "كوب سيراميك", benefit: "Ideal for offices and giveaways", benefitAr: "مناسب للمكاتب والفعاليات", price: "AED 28", variant: "mug", category: "corporate" },
+  { name: "Corporate VIP Gift Pack", nameAr: "طقم هدايا VIP", benefit: "Curated executive presentation", benefitAr: "تشكيلة تنفيذية مختارة", price: "AED 250", variant: "vip-box", category: "corporate" },
+  { name: "Lifestyle Desk Decor", nameAr: "ديكور مكتب", benefit: "Charming desk accents", benefitAr: "لمسات أنيقة للمكتب", price: "AED 95", variant: "desk-decor", category: "lifestyle" },
 ];
 
-function FeaturedProducts({ lang }: { lang: "en" | "ar" }) {
+const FILTER_TABS: { key: Category | "all"; en: string; ar: string }[] = [
+  { key: "all", en: "All", ar: "الكل" },
+  { key: "accessories", en: "Accessories", ar: "إكسسوارات" },
+  { key: "gifts", en: "Gifts", ar: "هدايا" },
+  { key: "boards", en: "Boards", ar: "لوحات" },
+  { key: "corporate", en: "Corporate", ar: "شركات" },
+  { key: "lifestyle", en: "Lifestyle", ar: "أسلوب حياة" },
+];
+
+function FeaturedProducts({
+  lang,
+  onQuickView,
+}: {
+  lang: "en" | "ar";
+  onQuickView: (p: QuickViewProduct) => void;
+}) {
+  const [filter, setFilter] = useState<Category | "all">("all");
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return FEATURED.filter((p) => {
+      const okCat = filter === "all" || p.category === filter;
+      if (!okCat) return false;
+      if (!q) return true;
+      return (
+        p.name.toLowerCase().includes(q) ||
+        p.nameAr.includes(q) ||
+        p.benefit.toLowerCase().includes(q) ||
+        p.category.includes(q)
+      );
+    });
+  }, [filter, query]);
+
   return (
     <section id="featured" className="bg-beyond-white border-y border-beyond-line">
       <div className="max-w-7xl mx-auto px-4 py-16 sm:py-20">
@@ -993,31 +1106,61 @@ function FeaturedProducts({ lang }: { lang: "en" | "ar" }) {
           <div className="flex-1 flex items-center gap-2 bg-beyond-ivory border border-beyond-line rounded-full px-4 py-2.5">
             <SearchIcon className="w-4 h-4 text-beyond-charcoal/60" />
             <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
               placeholder={lang === "en" ? "Search by product or category…" : "ابحث عن منتج أو تصنيف…"}
               className="bg-transparent outline-none text-[13px] w-full text-beyond-charcoal placeholder:text-beyond-charcoal/50"
             />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="Clear search"
+                className="text-beyond-charcoal/50 hover:text-beyond-charcoal"
+              >
+                <CloseIcon className="w-4 h-4" />
+              </button>
+            )}
           </div>
           <div className="flex gap-2 overflow-x-auto no-scrollbar">
-            {(lang === "en"
-              ? ["All", "Accessories", "Gifts", "Boards", "Corporate", "Lifestyle"]
-              : ["الكل", "إكسسوارات", "هدايا", "لوحات", "شركات", "أسلوب حياة"]
-            ).map((t, i) => (
-              <button
-                key={i}
-                className={`shrink-0 px-3.5 py-1.5 rounded-full text-[12.5px] border ${
-                  i === 0
-                    ? "bg-beyond-charcoal text-beyond-ivory border-beyond-charcoal"
-                    : "bg-beyond-ivory border-beyond-line text-beyond-charcoal/80 hover:border-beyond-gold"
-                }`}
-              >
-                {t}
-              </button>
-            ))}
+            {FILTER_TABS.map((tab) => {
+              const active = filter === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setFilter(tab.key)}
+                  className={`shrink-0 px-3.5 py-1.5 rounded-full text-[12.5px] border transition-colors ${
+                    active
+                      ? "bg-beyond-charcoal text-beyond-ivory border-beyond-charcoal"
+                      : "bg-beyond-ivory border-beyond-line text-beyond-charcoal/80 hover:border-beyond-gold"
+                  }`}
+                >
+                  {lang === "en" ? tab.en : tab.ar}
+                </button>
+              );
+            })}
           </div>
         </div>
 
+        {filtered.length === 0 && (
+          <div className="text-center py-12 text-beyond-charcoal/60 text-[14px]">
+            {lang === "en"
+              ? "No products match your search."
+              : "لا توجد منتجات مطابقة."}
+            <div className="mt-3">
+              <a
+                href={buildWALink(`Hello Beyond Gallery, I'm looking for: ${query || (lang === "en" ? filter : filter)}`)}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-beyond-emerald text-white text-[12.5px] font-semibold"
+              >
+                <WhatsAppIcon className="w-3.5 h-3.5" />
+                {lang === "en" ? "Ask us on WhatsApp" : "اسألنا عبر واتساب"}
+              </a>
+            </div>
+          </div>
+        )}
+
         <Stagger className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-          {FEATURED.map((p, i) => {
+          {filtered.map((p, i) => {
             const message = `Hello Beyond Gallery, I am interested in this product:\nProduct Name: ${p.name}\nQuantity: \nDelivery Emirate: \nCustomisation required: \nPlease confirm price and availability.`;
             return (
               <StaggerItem key={i}>
@@ -1039,8 +1182,11 @@ function FeaturedProducts({ lang }: { lang: "en" | "ar" }) {
                     <HeartIcon className="w-4 h-4 text-beyond-charcoal/40 hover:text-beyond-gold cursor-pointer" />
                   </div>
                   <div className="mt-3 grid grid-cols-2 gap-1.5">
-                    <button className="text-[11.5px] font-semibold px-2.5 py-2 rounded-full bg-beyond-charcoal text-beyond-ivory hover:opacity-95">
-                      {lang === "en" ? "View Details" : "التفاصيل"}
+                    <button
+                      onClick={() => onQuickView(p)}
+                      className="text-[11.5px] font-semibold px-2.5 py-2 rounded-full bg-beyond-charcoal text-beyond-ivory hover:opacity-95"
+                    >
+                      {lang === "en" ? "Quick View" : "نظرة سريعة"}
                     </button>
                     <a
                       href={buildWALink(message)}
@@ -1244,18 +1390,31 @@ function Marketplace({ lang }: { lang: "en" | "ar" }) {
 
           <div className="flex flex-col gap-2.5 w-full md:w-auto">
             <a
-              href={buildWALink("Hello Beyond Gallery, please share the Noon UAE link for this product.")}
+              href={NOON_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-beyond-ivory border border-beyond-line text-beyond-charcoal text-[13px] font-semibold hover:border-beyond-gold beyond-focus"
             >
               <TagIcon className="w-4 h-4 text-beyond-gold" />
-              {lang === "en" ? "Ask for Noon Link" : "اطلب رابط نون"}
+              {lang === "en" ? "Visit Noon UAE Store" : "زر متجر نون"}
             </a>
             <a
-              href={buildWALink("Hello Beyond Gallery, please share the Amazon UAE link for this product.")}
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-beyond-ivory border border-beyond-line text-beyond-charcoal text-[13px] font-semibold hover:border-beyond-gold beyond-focus"
             >
-              <TagIcon className="w-4 h-4 text-beyond-gold" />
-              {lang === "en" ? "Ask for Amazon UAE Link" : "اطلب رابط أمازون"}
+              <InstagramIcon className="w-4 h-4 text-beyond-gold" />
+              {lang === "en" ? "Browse on Instagram" : "تابعنا على إنستغرام"}
+            </a>
+            <a
+              href={TIKTOK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-beyond-ivory border border-beyond-line text-beyond-charcoal text-[13px] font-semibold hover:border-beyond-gold beyond-focus"
+            >
+              <TikTokIcon className="w-4 h-4 text-beyond-gold" />
+              {lang === "en" ? "Watch on TikTok" : "شاهدنا على تيك توك"}
             </a>
             <a
               href={buildWALink("Hello Beyond Gallery, I would like to order directly on WhatsApp.")}
@@ -1357,12 +1516,10 @@ function CorporateOrders({ lang }: { lang: "en" | "ar" }) {
 }
 
 function CorporateForm({ lang }: { lang: "en" | "ar" }) {
-  const [submitted, setSubmitted] = useState(false);
-
   const fields = lang === "en"
     ? {
         title: "Request Formal Quotation",
-        subtitle: "Our team will respond with availability, pricing and delivery options.",
+        subtitle: "Submit and we will continue on WhatsApp with availability, pricing and delivery options.",
         fullName: "Full Name",
         company: "Company Name",
         mobile: "Mobile Number",
@@ -1374,12 +1531,11 @@ function CorporateForm({ lang }: { lang: "en" | "ar" }) {
         date: "Required Date",
         upload: "Upload BOQ or Reference Image",
         message: "Message",
-        submit: "Request Formal Quotation",
-        thanks: "Thank you. We will respond shortly with formal pricing.",
+        submit: "Send via WhatsApp",
       }
     : {
         title: "اطلب عرض سعر رسمي",
-        subtitle: "سيرد فريقنا بالتوفر والأسعار وخيارات التوصيل.",
+        subtitle: "أرسل الطلب وسنكمل عبر واتساب بالأسعار والتوفر والتوصيل.",
         fullName: "الاسم الكامل",
         company: "اسم الشركة",
         mobile: "رقم الجوال",
@@ -1391,15 +1547,18 @@ function CorporateForm({ lang }: { lang: "en" | "ar" }) {
         date: "التاريخ المطلوب",
         upload: "ارفع جدول الكميات أو صورة مرجعية",
         message: "الرسالة",
-        submit: "اطلب عرض سعر رسمي",
-        thanks: "شكراً لك. سنرد قريباً بعرض السعر الرسمي.",
+        submit: "أرسل عبر واتساب",
       };
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        setSubmitted(true);
+        const fd = new FormData(e.currentTarget);
+        const data: Record<string, string> = {};
+        fd.forEach((v, k) => { if (typeof v === "string") data[k] = v; });
+        const url = buildWALink(formToWA("I would like to request a formal corporate quotation.", data));
+        window.open(url, "_blank", "noopener,noreferrer");
       }}
       className="bg-white text-beyond-charcoal rounded-3xl p-5 sm:p-7 beyond-card-shadow"
     >
@@ -1409,11 +1568,12 @@ function CorporateForm({ lang }: { lang: "en" | "ar" }) {
       <p className="text-[12.5px] text-beyond-charcoal/65 mt-1">{fields.subtitle}</p>
 
       <div className="mt-5 grid sm:grid-cols-2 gap-3">
-        <Input label={fields.fullName} />
-        <Input label={fields.company} />
-        <Input label={fields.mobile} type="tel" />
-        <Input label={fields.email} type="email" />
+        <Input name="Full Name" label={fields.fullName} required />
+        <Input name="Company" label={fields.company} required />
+        <Input name="Mobile" label={fields.mobile} type="tel" required />
+        <Input name="Email" label={fields.email} type="email" />
         <Select
+          name="Category"
           label={fields.category}
           options={
             lang === "en"
@@ -1437,57 +1597,82 @@ function CorporateForm({ lang }: { lang: "en" | "ar" }) {
                 ]
           }
         />
-        <Input label={fields.quantity} type="number" />
+        <Input name="Quantity" label={fields.quantity} type="number" />
         <Select
+          name="Branding"
           label={fields.branding}
           options={lang === "en" ? ["Yes", "No", "To be confirmed"] : ["نعم", "لا", "سيتم التأكيد"]}
         />
-        <Input label={fields.location} />
-        <Input label={fields.date} type="date" />
+        <Input name="Delivery Location" label={fields.location} />
+        <Input name="Required Date" label={fields.date} type="date" />
         <FileField label={fields.upload} />
       </div>
 
-      <Textarea label={fields.message} />
+      <Textarea name="Message" label={fields.message} />
 
       <button
         type="submit"
-        className="mt-5 w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-beyond-charcoal text-beyond-ivory font-semibold text-[14px] hover:bg-beyond-navy beyond-focus"
+        className="mt-5 w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-beyond-emerald text-white font-semibold text-[14px] hover:opacity-95 beyond-focus beyond-wa-pulse"
       >
-        <FileTextIcon className="w-4 h-4 text-beyond-gold" />
+        <WhatsAppIcon className="w-4 h-4" />
         {fields.submit}
       </button>
-
-      {submitted && (
-        <div className="mt-3 text-[12.5px] text-beyond-emerald font-semibold">
-          {fields.thanks}
-        </div>
-      )}
+      <p className="mt-2 text-[11px] text-beyond-charcoal/55 text-center">
+        {lang === "en"
+          ? "Your form details will open WhatsApp pre-filled to " + WA_DISPLAY + "."
+          : "ستفتح بياناتك واتساب بالرسالة جاهزة إلى " + WA_DISPLAY + "."}
+      </p>
     </form>
   );
 }
 
-function Input({ label, type = "text" }: { label: string; type?: string }) {
+function Input({
+  label,
+  type = "text",
+  name,
+  required,
+}: {
+  label: string;
+  type?: string;
+  name?: string;
+  required?: boolean;
+}) {
   return (
     <label className="block">
       <span className="text-[11.5px] uppercase tracking-wider font-semibold text-beyond-charcoal/65">
         {label}
+        {required && <span className="text-beyond-gold"> *</span>}
       </span>
       <input
         type={type}
+        name={name ?? label}
+        required={required}
         className="mt-1 w-full rounded-xl border border-beyond-line bg-beyond-ivory px-3.5 py-2.5 text-[14px] outline-none focus:border-beyond-gold beyond-focus"
       />
     </label>
   );
 }
 
-function Select({ label, options }: { label: string; options: string[] }) {
+function Select({
+  label,
+  options,
+  name,
+}: {
+  label: string;
+  options: string[];
+  name?: string;
+}) {
   return (
     <label className="block">
       <span className="text-[11.5px] uppercase tracking-wider font-semibold text-beyond-charcoal/65">
         {label}
       </span>
       <div className="relative">
-        <select className="mt-1 w-full rounded-xl border border-beyond-line bg-beyond-ivory px-3.5 py-2.5 text-[14px] outline-none focus:border-beyond-gold appearance-none">
+        <select
+          name={name ?? label}
+          defaultValue=""
+          className="mt-1 w-full rounded-xl border border-beyond-line bg-beyond-ivory px-3.5 py-2.5 text-[14px] outline-none focus:border-beyond-gold appearance-none"
+        >
           <option value="">—</option>
           {options.map((o) => (
             <option key={o}>{o}</option>
@@ -1499,7 +1684,7 @@ function Select({ label, options }: { label: string; options: string[] }) {
   );
 }
 
-function Textarea({ label }: { label: string }) {
+function Textarea({ label, name }: { label: string; name?: string }) {
   return (
     <label className="block mt-3">
       <span className="text-[11.5px] uppercase tracking-wider font-semibold text-beyond-charcoal/65">
@@ -1507,6 +1692,7 @@ function Textarea({ label }: { label: string }) {
       </span>
       <textarea
         rows={4}
+        name={name ?? label}
         className="mt-1 w-full rounded-xl border border-beyond-line bg-beyond-ivory px-3.5 py-2.5 text-[14px] outline-none focus:border-beyond-gold resize-none"
       />
     </label>
@@ -1521,7 +1707,7 @@ function FileField({ label }: { label: string }) {
       </span>
       <div className="mt-1 flex items-center gap-3 rounded-xl border border-dashed border-beyond-line bg-beyond-ivory px-3.5 py-3 text-[13px] text-beyond-charcoal/65">
         <UploadIcon className="w-4 h-4 text-beyond-gold" />
-        <span>Tap to upload PDF or image</span>
+        <span>Tap to share on WhatsApp after submitting</span>
         <input type="file" className="hidden" />
       </div>
     </label>
@@ -1593,11 +1779,10 @@ function SupplyDesk({ lang }: { lang: "en" | "ar" }) {
 }
 
 function SupplyRFQ({ lang }: { lang: "en" | "ar" }) {
-  const [submitted, setSubmitted] = useState(false);
   const t = lang === "en"
     ? {
         title: "Submit RFQ",
-        sub: "Quotation requests are processed within 1–2 business days.",
+        sub: "Submit and continue on WhatsApp. Quotation requests are processed within 1–2 business days.",
         company: "Company / Institution",
         contact: "Contact Person",
         phone: "Mobile",
@@ -1607,13 +1792,12 @@ function SupplyRFQ({ lang }: { lang: "en" | "ar" }) {
         qty: "Quantity",
         deliver: "Delivery Emirate",
         when: "Required by",
-        boq: "Upload BOQ (optional)",
-        cta: "Submit Supply Request",
-        thanks: "RFQ received. We will reply with feasibility and pricing.",
+        boq: "Share BOQ on WhatsApp (after submit)",
+        cta: "Send RFQ via WhatsApp",
       }
     : {
         title: "أرسل طلب عرض سعر",
-        sub: "تتم معالجة طلبات الأسعار خلال 1-2 يوم عمل.",
+        sub: "أرسل وأكمل عبر واتساب. تتم معالجة طلبات الأسعار خلال 1-2 يوم عمل.",
         company: "الشركة / المؤسسة",
         contact: "جهة الاتصال",
         phone: "الجوال",
@@ -1623,25 +1807,32 @@ function SupplyRFQ({ lang }: { lang: "en" | "ar" }) {
         qty: "الكمية",
         deliver: "إمارة التوصيل",
         when: "التاريخ المطلوب",
-        boq: "ارفع جدول الكميات (اختياري)",
-        cta: "أرسل طلب التوريد",
-        thanks: "تم استلام طلبك. سنرد بالتفاصيل والأسعار قريباً.",
+        boq: "شارك جدول الكميات عبر واتساب بعد الإرسال",
+        cta: "أرسل عبر واتساب",
       };
 
   return (
     <form
-      onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }}
+      onSubmit={(e) => {
+        e.preventDefault();
+        const fd = new FormData(e.currentTarget);
+        const data: Record<string, string> = {};
+        fd.forEach((v, k) => { if (typeof v === "string") data[k] = v; });
+        const url = buildWALink(formToWA("I would like to submit an RFQ for the Supply Desk.", data));
+        window.open(url, "_blank", "noopener,noreferrer");
+      }}
       className="bg-white rounded-3xl p-5 sm:p-7 beyond-card-shadow border border-beyond-line"
     >
       <h3 className="font-display text-2xl font-semibold">{t.title}</h3>
       <p className="text-[12.5px] text-beyond-charcoal/65 mt-1">{t.sub}</p>
 
       <div className="mt-5 grid sm:grid-cols-2 gap-3">
-        <Input label={t.company} />
-        <Input label={t.contact} />
-        <Input label={t.phone} type="tel" />
-        <Input label={t.email} type="email" />
+        <Input name="Company" label={t.company} required />
+        <Input name="Contact Person" label={t.contact} required />
+        <Input name="Mobile" label={t.phone} type="tel" required />
+        <Input name="Email" label={t.email} type="email" />
         <Select
+          name="Category"
           label={t.category}
           options={
             lang === "en"
@@ -1663,24 +1854,20 @@ function SupplyRFQ({ lang }: { lang: "en" | "ar" }) {
                 ]
           }
         />
-        <Input label={t.qty} type="number" />
-        <Input label={t.deliver} />
-        <Input label={t.when} type="date" />
+        <Input name="Quantity" label={t.qty} type="number" />
+        <Input name="Delivery Emirate" label={t.deliver} />
+        <Input name="Required Date" label={t.when} type="date" />
         <FileField label={t.boq} />
       </div>
-      <Textarea label={t.spec} />
+      <Textarea name="Specifications" label={t.spec} />
 
       <button
         type="submit"
-        className="mt-5 w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-beyond-emerald text-white font-semibold text-[14px] hover:opacity-95 beyond-focus"
+        className="mt-5 w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-beyond-emerald text-white font-semibold text-[14px] hover:opacity-95 beyond-focus beyond-wa-pulse"
       >
-        <FileTextIcon className="w-4 h-4" />
+        <WhatsAppIcon className="w-4 h-4" />
         {t.cta}
       </button>
-
-      {submitted && (
-        <div className="mt-3 text-[12.5px] text-beyond-emerald font-semibold">{t.thanks}</div>
-      )}
     </form>
   );
 }
@@ -1727,7 +1914,6 @@ function AboutBrand({ lang }: { lang: "en" | "ar" }) {
 // ====================================================================================
 
 function CatalogueCapture({ lang }: { lang: "en" | "ar" }) {
-  const [submitted, setSubmitted] = useState(false);
   const cats = lang === "en"
     ? [
         "Jewellery Accessories",
@@ -1778,13 +1964,21 @@ function CatalogueCapture({ lang }: { lang: "en" | "ar" }) {
         </div>
 
         <form
-          onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }}
+          onSubmit={(e) => {
+            e.preventDefault();
+            const fd = new FormData(e.currentTarget);
+            const data: Record<string, string> = {};
+            fd.forEach((v, k) => { if (typeof v === "string") data[k] = v; });
+            const url = buildWALink(formToWA("Please send me the latest product catalogue.", data));
+            window.open(url, "_blank", "noopener,noreferrer");
+          }}
           className="bg-white rounded-3xl border border-beyond-line p-5 sm:p-7 beyond-card-shadow"
         >
           <div className="grid sm:grid-cols-2 gap-3">
-            <Input label={lang === "en" ? "Name" : "الاسم"} />
-            <Input label={lang === "en" ? "Mobile Number" : "رقم الجوال"} type="tel" />
+            <Input name="Name" label={lang === "en" ? "Name" : "الاسم"} required />
+            <Input name="Mobile" label={lang === "en" ? "Mobile Number" : "رقم الجوال"} type="tel" required />
             <Select
+              name="Emirate"
               label={lang === "en" ? "Emirate" : "الإمارة"}
               options={
                 lang === "en"
@@ -1792,26 +1986,20 @@ function CatalogueCapture({ lang }: { lang: "en" | "ar" }) {
                   : ["دبي", "أبوظبي", "الشارقة", "عجمان", "رأس الخيمة", "الفجيرة", "أم القيوين"]
               }
             />
-            <Select label={lang === "en" ? "Interested Category" : "التصنيف المطلوب"} options={cats} />
+            <Select name="Interested Category" label={lang === "en" ? "Interested Category" : "التصنيف المطلوب"} options={cats} />
             <Select
+              name="Order Type"
               label={lang === "en" ? "Retail or Bulk Order" : "تجزئة أم جملة"}
               options={lang === "en" ? ["Retail", "Bulk"] : ["تجزئة", "جملة"]}
             />
           </div>
           <button
             type="submit"
-            className="mt-5 w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-beyond-charcoal text-beyond-ivory font-semibold text-[14px] hover:bg-beyond-navy beyond-focus"
+            className="mt-5 w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-beyond-emerald text-white font-semibold text-[14px] hover:opacity-95 beyond-focus beyond-wa-pulse"
           >
-            <WhatsAppIcon className="w-4 h-4 text-beyond-gold" />
-            {lang === "en" ? "Send Me the Catalogue" : "أرسلوا لي الكتالوج"}
+            <WhatsAppIcon className="w-4 h-4" />
+            {lang === "en" ? "Send Me the Catalogue on WhatsApp" : "أرسلوا لي الكتالوج عبر واتساب"}
           </button>
-          {submitted && (
-            <div className="mt-3 text-[12.5px] text-beyond-emerald font-semibold">
-              {lang === "en"
-                ? "Thanks! We will WhatsApp you the latest catalogue shortly."
-                : "شكراً! سنرسل لك الكتالوج عبر واتساب قريباً."}
-            </div>
-          )}
         </form>
       </div>
     </section>
@@ -1957,58 +2145,63 @@ function Contact({ lang }: { lang: "en" | "ar" }) {
             {
               icon: WhatsAppIcon,
               title: lang === "en" ? "WhatsApp" : "واتساب",
-              body: lang === "en" ? "Fastest way to order and ask." : "أسرع طريقة للسؤال والطلب.",
+              body: WA_DISPLAY,
               cta: lang === "en" ? "Chat on WhatsApp" : "تواصل عبر واتساب",
               href: WA_BASE,
               accent: "bg-beyond-emerald text-white",
+              external: true,
             },
             {
               icon: MailIcon,
-              title: "Email",
-              body: "hello@beyondgallery.ae",
+              title: lang === "en" ? "Email" : "بريد إلكتروني",
+              body: EMAIL,
               cta: lang === "en" ? "Send Email" : "أرسل بريداً",
-              href: "mailto:hello@beyondgallery.ae",
+              href: `mailto:${EMAIL}`,
               accent: "bg-beyond-charcoal text-beyond-ivory",
+              external: false,
+            },
+            {
+              icon: PhoneIcon,
+              title: lang === "en" ? "Call / SMS" : "اتصال / رسالة",
+              body: WA_DISPLAY,
+              cta: lang === "en" ? "Tap to Call" : "اتصل بنا",
+              href: `tel:+${WA_NUMBER}`,
+              accent: "bg-beyond-navy text-beyond-ivory",
+              external: false,
             },
             {
               icon: InstagramIcon,
               title: "Instagram",
-              body: "@beyondgallery.ae",
+              body: INSTAGRAM_HANDLE,
               cta: lang === "en" ? "Follow on Instagram" : "تابعنا على إنستغرام",
-              href: "https://instagram.com/",
-              accent: "bg-beyond-navy text-beyond-ivory",
+              href: INSTAGRAM_URL,
+              accent: "bg-gradient-to-br from-[#f58529] via-[#dd2a7b] to-[#515BD4] text-white",
+              external: true,
+            },
+            {
+              icon: TikTokIcon,
+              title: "TikTok",
+              body: TIKTOK_HANDLE,
+              cta: lang === "en" ? "Watch on TikTok" : "شاهدنا على تيك توك",
+              href: TIKTOK_URL,
+              accent: "bg-beyond-charcoal text-beyond-ivory",
+              external: true,
             },
             {
               icon: TagIcon,
               title: "Noon UAE",
-              body: lang === "en" ? "Selected listings — ask for link." : "منتجات مختارة - اطلب الرابط.",
+              body: lang === "en" ? "Browse our seller storefront." : "تصفح متجرنا على نون.",
               cta: lang === "en" ? "Open Noon Store" : "افتح متجر نون",
-              href: "#",
+              href: NOON_URL,
               accent: "bg-white text-beyond-charcoal border border-beyond-line",
-            },
-            {
-              icon: TagIcon,
-              title: "Amazon UAE",
-              body: lang === "en" ? "Selected listings — ask for link." : "منتجات مختارة - اطلب الرابط.",
-              cta: lang === "en" ? "Open Amazon Store" : "افتح متجر أمازون",
-              href: "#",
-              accent: "bg-white text-beyond-charcoal border border-beyond-line",
-            },
-            {
-              icon: PinIcon,
-              title: "Dubai, UAE",
-              body:
-                lang === "en"
-                  ? "Operated by BEYOND CONNECT GENERAL TRADING L.L.C — Trade License No. 1498624."
-                  : "تُدار بواسطة شركة بيوند كونكت للتجارة العامة ذ.م.م - رخصة رقم 1498624.",
-              cta: lang === "en" ? "About the Business" : "عن الشركة",
-              href: "#",
-              accent: "bg-beyond-ivory text-beyond-charcoal border border-beyond-line",
+              external: true,
             },
           ].map((c, i) => (
             <StaggerItem key={i}>
             <a
               href={c.href}
+              target={c.external ? "_blank" : undefined}
+              rel={c.external ? "noopener noreferrer" : undefined}
               className="block beyond-lift rounded-3xl bg-white border border-beyond-line p-5 beyond-card-shadow hover:beyond-card-shadow-hover hover:border-beyond-gold transition-all"
             >
               <div className={`w-11 h-11 rounded-full flex items-center justify-center ${c.accent}`}>
@@ -2026,6 +2219,31 @@ function Contact({ lang }: { lang: "en" | "ar" }) {
             </StaggerItem>
           ))}
         </Stagger>
+
+        <Reveal className="mt-8 rounded-3xl bg-beyond-charcoal text-beyond-ivory p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4 beyond-card-shadow">
+          <div className="flex items-start gap-4">
+            <div className="w-11 h-11 rounded-full bg-beyond-gold/15 flex items-center justify-center text-beyond-gold">
+              <PinIcon className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="font-display text-[17px] font-semibold">
+                {lang === "en" ? "Dubai, United Arab Emirates" : "دبي، الإمارات العربية المتحدة"}
+              </div>
+              <div className="text-[12.5px] text-beyond-ivory/75 mt-1 leading-relaxed">
+                {lang === "en"
+                  ? "Operated by BEYOND CONNECT GENERAL TRADING L.L.C — Trade License No. 1498624 — General Trading."
+                  : "تُدار بواسطة شركة بيوند كونكت للتجارة العامة ذ.م.م - رخصة تجارية رقم 1498624 - تجارة عامة."}
+              </div>
+            </div>
+          </div>
+          <a
+            href={WA_BASE}
+            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-beyond-emerald text-white text-[13px] font-semibold beyond-wa-pulse"
+          >
+            <WhatsAppIcon className="w-4 h-4" />
+            {lang === "en" ? `Message ${WA_DISPLAY}` : `راسلنا ${WA_DISPLAY}`}
+          </a>
+        </Reveal>
       </div>
     </section>
   );
@@ -2121,13 +2339,22 @@ function Footer({ lang }: { lang: "en" | "ar" }) {
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-beyond-emerald text-white text-[13px] font-semibold"
           >
             <WhatsAppIcon className="w-4 h-4" />
-            {lang === "en" ? "WhatsApp Us" : "تواصل عبر واتساب"}
+            {WA_DISPLAY}
           </a>
+          <div className="mt-3 text-[12px] text-beyond-ivory/65">
+            <a href={`mailto:${EMAIL}`} className="hover:text-beyond-gold">{EMAIL}</a>
+          </div>
           <div className="mt-4 flex items-center gap-2">
-            <a href="https://instagram.com/" aria-label="Instagram" className="w-9 h-9 rounded-full border border-beyond-ivory/20 flex items-center justify-center hover:border-beyond-gold">
+            <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-9 h-9 rounded-full border border-beyond-ivory/20 flex items-center justify-center hover:border-beyond-gold">
               <InstagramIcon className="w-4 h-4" />
             </a>
-            <a href="mailto:hello@beyondgallery.ae" aria-label="Email" className="w-9 h-9 rounded-full border border-beyond-ivory/20 flex items-center justify-center hover:border-beyond-gold">
+            <a href={TIKTOK_URL} target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="w-9 h-9 rounded-full border border-beyond-ivory/20 flex items-center justify-center hover:border-beyond-gold">
+              <TikTokIcon className="w-4 h-4" />
+            </a>
+            <a href={NOON_URL} target="_blank" rel="noopener noreferrer" aria-label="Noon UAE" className="w-9 h-9 rounded-full border border-beyond-ivory/20 flex items-center justify-center hover:border-beyond-gold">
+              <TagIcon className="w-4 h-4" />
+            </a>
+            <a href={`mailto:${EMAIL}`} aria-label="Email" className="w-9 h-9 rounded-full border border-beyond-ivory/20 flex items-center justify-center hover:border-beyond-gold">
               <MailIcon className="w-4 h-4" />
             </a>
           </div>
@@ -2152,6 +2379,135 @@ function Footer({ lang }: { lang: "en" | "ar" }) {
 
 // ====================================================================================
 // Mobile Sticky Bar
+// ====================================================================================
+
+// ====================================================================================
+// Payment Methods strip — "We accept all"
+// ====================================================================================
+
+function PaymentMethods({ lang }: { lang: "en" | "ar" }) {
+  const methods = [
+    { label: "Visa", Mark: VisaMark },
+    { label: "Mastercard", Mark: MasterMark },
+    { label: "Apple Pay", Mark: ApplePayMark },
+    { label: "Google Pay", Mark: GooglePayMark },
+    { label: "Tabby (BNPL)", Mark: TabbyMark },
+    { label: "Tamara (BNPL)", Mark: TamaraMark },
+    { label: "Bank Transfer", Mark: BankMark },
+    { label: "Cash on Delivery", Mark: CashMark },
+  ];
+  return (
+    <section className="bg-beyond-ivory border-y border-beyond-line">
+      <div className="max-w-7xl mx-auto px-4 py-12 sm:py-14">
+        <Reveal className="text-center mb-6">
+          <div className="beyond-divider mb-3">
+            {lang === "en" ? "Payments" : "الدفع"}
+          </div>
+          <h2 className="font-display text-2xl sm:text-3xl font-semibold text-beyond-charcoal">
+            {lang === "en" ? "We Accept All Major UAE Payment Methods" : "نقبل جميع وسائل الدفع في الإمارات"}
+          </h2>
+          <p className="mt-2 text-[13px] text-beyond-charcoal/70 max-w-xl mx-auto">
+            {lang === "en"
+              ? "Cards, wallets, Buy Now Pay Later, bank transfer or cash on delivery — confirm your preferred method on WhatsApp before order completion."
+              : "بطاقات، محافظ رقمية، اشترِ الآن وادفع لاحقاً، تحويل بنكي أو الدفع عند الاستلام — أكّد طريقتك المفضّلة عبر واتساب قبل إتمام الطلب."}
+          </p>
+        </Reveal>
+
+        <Stagger className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+          {methods.map((m) => (
+            <StaggerItem key={m.label}>
+              <div className="beyond-lift inline-flex items-center gap-2.5 bg-white border border-beyond-line rounded-2xl px-3.5 py-2.5 beyond-card-shadow hover:border-beyond-gold">
+                <m.Mark className="h-5 w-auto" />
+                <span className="text-[12px] font-semibold text-beyond-charcoal/85">{m.label}</span>
+              </div>
+            </StaggerItem>
+          ))}
+        </Stagger>
+
+        <div className="mt-6 text-center text-[11.5px] text-beyond-charcoal/55">
+          {lang === "en"
+            ? "Logos shown are for indicative purposes. Actual availability depends on order channel."
+            : "الشعارات للإشارة فقط، ويعتمد التوفر على قناة الطلب."}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ====================================================================================
+// Cookie consent banner
+// ====================================================================================
+
+function CookieConsent({ lang }: { lang: "en" | "ar" }) {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    try {
+      if (typeof window === "undefined") return;
+      if (!window.localStorage.getItem("bg_cookie_ack")) {
+        const t = setTimeout(() => setVisible(true), 600);
+        return () => clearTimeout(t);
+      }
+    } catch {}
+  }, []);
+  const dismiss = () => {
+    try { window.localStorage.setItem("bg_cookie_ack", "1"); } catch {}
+    setVisible(false);
+  };
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 30 }}
+          transition={{ duration: 0.35 }}
+          className="fixed bottom-20 md:bottom-4 inset-x-3 md:inset-x-auto md:end-4 md:max-w-md z-40 bg-beyond-charcoal text-beyond-ivory rounded-3xl p-4 sm:p-5 beyond-card-shadow border border-white/10"
+          role="dialog"
+          aria-live="polite"
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-full bg-beyond-gold/15 flex items-center justify-center text-beyond-gold shrink-0">
+              <ShieldIcon className="w-4 h-4" />
+            </div>
+            <div className="flex-1">
+              <div className="font-display text-[15px] font-semibold">
+                {lang === "en" ? "We respect your privacy" : "نحترم خصوصيتك"}
+              </div>
+              <p className="text-[12px] text-beyond-ivory/75 mt-1 leading-relaxed">
+                {lang === "en"
+                  ? "We use essential cookies to make this site work and optional analytics to improve it. You can change this anytime."
+                  : "نستخدم ملفات تعريف ارتباط ضرورية لتشغيل الموقع وأخرى تحليلية اختيارية لتحسينه. يمكنك تغيير ذلك في أي وقت."}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  onClick={dismiss}
+                  className="px-3.5 py-2 rounded-full bg-beyond-emerald text-white text-[12.5px] font-semibold"
+                >
+                  {lang === "en" ? "Accept All" : "أوافق على الكل"}
+                </button>
+                <button
+                  onClick={dismiss}
+                  className="px-3.5 py-2 rounded-full bg-white/10 text-beyond-ivory text-[12.5px] font-semibold border border-white/15 hover:border-beyond-gold"
+                >
+                  {lang === "en" ? "Essential Only" : "ضرورية فقط"}
+                </button>
+                <Link
+                  href="/beyond-gallery/policies#privacy"
+                  className="px-3.5 py-2 rounded-full text-beyond-gold text-[12.5px] font-semibold hover:underline"
+                >
+                  {lang === "en" ? "Learn more" : "المزيد"}
+                </Link>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+// ====================================================================================
+// Mobile sticky bottom bar
 // ====================================================================================
 
 function MobileStickyBar({ lang }: { lang: "en" | "ar" }) {

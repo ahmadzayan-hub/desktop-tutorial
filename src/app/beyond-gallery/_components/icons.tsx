@@ -169,3 +169,79 @@ export const StarSpark = (p: P) => (
     <path d="M12 2.5 13.6 9 20 10.5 13.6 12 12 18.5 10.4 12 4 10.5 10.4 9 12 2.5Z" />
   </svg>
 );
+
+export const TikTokIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
+    <path d="M21 8.6a8.4 8.4 0 0 1-5-1.6v8.4a6.5 6.5 0 1 1-6.5-6.5c.34 0 .67.03 1 .08v3.3a3.2 3.2 0 1 0 2.2 3.05V2h3.1A5.3 5.3 0 0 0 21 5.5v3.1Z"/>
+  </svg>
+);
+
+export const PhoneIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden {...p}>
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92Z" />
+  </svg>
+);
+
+// --- Payment method marks (intentionally text-driven, not the real trademarked logos) ---
+
+export const VisaMark = (p: P) => (
+  <svg viewBox="0 0 48 16" aria-hidden {...p}>
+    <text x="24" y="13" textAnchor="middle" fontFamily="Inter, Arial, sans-serif" fontWeight="800" fontSize="14" letterSpacing="0.5" fill="#1A1F71">VISA</text>
+  </svg>
+);
+
+export const MasterMark = (p: P) => (
+  <svg viewBox="0 0 48 16" aria-hidden {...p}>
+    <circle cx="19" cy="8" r="6" fill="#EB001B" />
+    <circle cx="29" cy="8" r="6" fill="#F79E1B" />
+    <path d="M24 3.7a6 6 0 0 0 0 8.6 6 6 0 0 0 0-8.6Z" fill="#FF5F00" />
+  </svg>
+);
+
+export const ApplePayMark = (p: P) => (
+  <svg viewBox="0 0 64 16" aria-hidden {...p}>
+    <text x="32" y="13" textAnchor="middle" fontFamily="-apple-system, Inter, Arial, sans-serif" fontWeight="700" fontSize="13" fill="#111"> Pay</text>
+    <text x="14" y="13" textAnchor="end" fontFamily="-apple-system, Inter, Arial, sans-serif" fontWeight="700" fontSize="13" fill="#111"></text>
+    <path d="M11 5.5c.5-.5 1.3-.9 1.9-.9.1.7-.2 1.4-.6 1.9-.5.5-1.2.9-1.9.9-.1-.7.2-1.4.6-1.9Zm-.5 2.4c.9 0 1.4.5 2.1.5.7 0 1.1-.5 2.1-.5.8 0 1.7.4 2.3 1.2-.6.3-1.4 1-1.4 2.4 0 1.5 1.3 2.1 1.3 2.1-.1.2-.5 1.5-1.7 1.5-.5 0-.9-.3-1.5-.3-.6 0-1 .3-1.5.3-1.2 0-2-1.2-2.6-2.2-1.2-2.1-1-4.9.9-5Z" fill="#111"/>
+  </svg>
+);
+
+export const GooglePayMark = (p: P) => (
+  <svg viewBox="0 0 80 16" aria-hidden {...p}>
+    <text x="2" y="13" fontFamily="Inter, Arial, sans-serif" fontWeight="700" fontSize="12.5" fill="#4285F4">G</text>
+    <text x="10" y="13" fontFamily="Inter, Arial, sans-serif" fontWeight="700" fontSize="12.5" fill="#EA4335">o</text>
+    <text x="18" y="13" fontFamily="Inter, Arial, sans-serif" fontWeight="700" fontSize="12.5" fill="#FBBC04">o</text>
+    <text x="26" y="13" fontFamily="Inter, Arial, sans-serif" fontWeight="700" fontSize="12.5" fill="#4285F4">g</text>
+    <text x="34" y="13" fontFamily="Inter, Arial, sans-serif" fontWeight="700" fontSize="12.5" fill="#34A853">l</text>
+    <text x="40" y="13" fontFamily="Inter, Arial, sans-serif" fontWeight="700" fontSize="12.5" fill="#EA4335">e</text>
+    <text x="50" y="13" fontFamily="Inter, Arial, sans-serif" fontWeight="700" fontSize="12.5" fill="#111">Pay</text>
+  </svg>
+);
+
+export const TabbyMark = (p: P) => (
+  <svg viewBox="0 0 64 16" aria-hidden {...p}>
+    <rect width="64" height="16" rx="4" fill="#3BFFC1" />
+    <text x="32" y="11.5" textAnchor="middle" fontFamily="Inter, Arial, sans-serif" fontWeight="800" fontSize="10" fill="#0A1F2C">tabby</text>
+  </svg>
+);
+
+export const TamaraMark = (p: P) => (
+  <svg viewBox="0 0 64 16" aria-hidden {...p}>
+    <rect width="64" height="16" rx="4" fill="#1F1B3A" />
+    <text x="32" y="11.5" textAnchor="middle" fontFamily="Inter, Arial, sans-serif" fontWeight="800" fontSize="10" fill="#FFC9D4">tamara</text>
+  </svg>
+);
+
+export const CashMark = (p: P) => (
+  <svg viewBox="0 0 64 16" aria-hidden {...p}>
+    <rect width="64" height="16" rx="4" fill="#1F6F5B" />
+    <text x="32" y="11.5" textAnchor="middle" fontFamily="Inter, Arial, sans-serif" fontWeight="700" fontSize="9" fill="#FAF8F1">COD · AED</text>
+  </svg>
+);
+
+export const BankMark = (p: P) => (
+  <svg viewBox="0 0 64 16" aria-hidden {...p}>
+    <rect width="64" height="16" rx="4" fill="#171C8F" />
+    <text x="32" y="11.5" textAnchor="middle" fontFamily="Inter, Arial, sans-serif" fontWeight="700" fontSize="9" fill="#E2C079">Bank Transfer</text>
+  </svg>
+);
