@@ -1,13 +1,13 @@
 import { format, parseISO } from "date-fns";
 
 export function formatDate(value: string | Date | null | undefined): string {
-  if (!value) return "—";
+  if (!value) return "-";
   const d = typeof value === "string" ? parseISO(value) : value;
   return format(d, "dd MMM yyyy");
 }
 
 export function formatDateLong(value: string | Date | null | undefined): string {
-  if (!value) return "—";
+  if (!value) return "-";
   const d = typeof value === "string" ? parseISO(value) : value;
   return format(d, "dd MMMM yyyy");
 }

@@ -22,9 +22,9 @@ describe("dates", () => {
     expect(formatDate("2026-05-13")).toBe("13 May 2026");
   });
 
-  it("returns em-dash for null", () => {
-    expect(formatDate(null)).toBe("—");
-    expect(formatDate(undefined)).toBe("—");
+  it("returns hyphen placeholder for null (R3 forbids em-dashes)", () => {
+    expect(formatDate(null)).toBe("-");
+    expect(formatDate(undefined)).toBe("-");
   });
 
   it("countdownColor follows R6 thresholds", () => {
@@ -47,8 +47,8 @@ describe("format", () => {
     expect(out).toContain("AED");
   });
 
-  it("returns em-dash for null currency", () => {
-    expect(formatCurrency(null)).toBe("—");
+  it("returns hyphen for null currency (R3 forbids em-dashes)", () => {
+    expect(formatCurrency(null)).toBe("-");
   });
 
   it("formats numbers with locale separators", () => {
