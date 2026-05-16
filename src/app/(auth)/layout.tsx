@@ -1,33 +1,21 @@
 import Link from "next/link";
-import { GraduationCap } from "lucide-react";
-import type { ReactNode } from "react";
 
-export default function AuthLayout({ children }: { children: ReactNode }) {
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-950 via-brand-900 to-teal-900 flex flex-col">
-      {/* Header */}
-      <div className="p-6">
-        <Link href="/" className="inline-flex items-center gap-2.5 text-white font-bold text-lg">
-          <GraduationCap size={24} />
-          Tweenz AI
-        </Link>
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-md">
-          {children}
+    <div className="flex min-h-screen flex-col bg-slate-50">
+      <header className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-md bg-rta-navy" aria-hidden />
+            <span className="display-tight text-lg font-semibold text-rta-navy">
+              Mutabasir
+            </span>
+          </Link>
         </div>
-      </div>
-
-      {/* Footer */}
-      <div className="p-6 text-center text-xs text-white/40">
-        © {new Date().getFullYear()} Tweenz AI. Operated from UAE.
-        {" · "}
-        <Link href="/privacy" className="hover:text-white/70 transition">Privacy</Link>
-        {" · "}
-        <Link href="/terms" className="hover:text-white/70 transition">Terms</Link>
-      </div>
+      </header>
+      <main className="flex flex-1 items-center justify-center px-6 py-12">
+        <div className="w-full max-w-md">{children}</div>
+      </main>
     </div>
   );
 }

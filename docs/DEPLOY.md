@@ -1,73 +1,61 @@
-# Deployment (Free Stack)
+# Mutabasir · Deploy
 
-Total cost target: **$0/month** for the MVP.
+## Prerequisites
 
-## 1. Supabase (free tier)
+- Node 22+, npm 10+
+- A Supabase project (free tier is fine for early development)
+- An Anthropic API key with at least $20 of credits
+- A Vercel account (Pro recommended for Edge Function memory)
+- A domain on Cloudflare (e.g. `mutabasir.ae`, Proxy off)
 
-1. Create a new project at https://supabase.com.
-2. In the SQL editor, paste `supabase/migrations/0001_init.sql` and run.
-3. (Optional) Run `supabase/seed.sql` once you have at least one org.
-4. Copy your project URL, anon key, and service-role key.
-5. In **Authentication → Providers**, enable **Email** with magic link.
-
-## 2. Ollama (free LLM engine)
-
-Choose one:
-
-- **Local development**: install [Ollama](https://ollama.com), then
-  ```bash
-  ollama pull llama3
-  ollama pull mistral
-  ollama pull phi3
-  ollama serve              # exposes http://localhost:11434
-  ```
-- **Free VPS** (Oracle Always Free, Fly.io free, etc.): install Ollama and
-  expose port `11434` over a private tunnel (e.g. Cloudflare Tunnel — also free).
-- **Self-hosted at home**: forward `11434` via Tailscale Funnel (free).
-
-Set `OLLAMA_BASE_URL` accordingly.
-
-## 3. Vercel (free hosting)
-
-1. Push this repo to GitHub.
-2. Import the repo in Vercel.
-3. Add the environment variables from `.env.example`:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `SUPABASE_SERVICE_ROLE_KEY`
-   - `OLLAMA_BASE_URL` (must be reachable from Vercel — use a tunnel)
-   - `OLLAMA_MODEL_REASONING` / `_FAST` / `_REWRITE`
-   - `EXTENSION_API_KEY` (any random string for dev; rotate per-user later)
-4. Deploy.
-
-> **Tip**: Vercel functions can't reach `localhost`. Use a free tunnel
-> (Cloudflare Tunnel, Tailscale Funnel, ngrok free) to expose your Ollama
-> endpoint to the public internet for the deployed app.
-
-## 4. Chrome extension
-
-1. Open `chrome://extensions`, enable **Developer mode**.
-2. **Load unpacked** → select the `extension/` folder.
-3. Open the extension's **Options** page:
-   - API base URL = `https://your-app.vercel.app`
-   - API key      = the `EXTENSION_API_KEY` value from `.env.local`
-4. Visit ChatGPT/Claude/Copilot/Gemini — the **✨ Enhance** button appears
-   next to the prompt box.
-
-## 5. Sanity checks
+## Local development
 
 ```bash
-curl http://localhost:3000/api/health
-# → { "status": "ok", "service": "prompt-orchestrator" }
-
-curl -X POST http://localhost:3000/api/extension/enhance \
-  -H "Authorization: Bearer dev-extension-key" \
-  -H "Content-Type: application/json" \
-  -d '{"raw_prompt":"write a tweet about coffee","target_model":"chatgpt"}'
+npm install
+cp .env.example .env.local   # fill in real keys
+npm run dev
 ```
 
-## Upgrade paths (still mostly free)
+Visit http://localhost:3000.
 
-- Swap Ollama for **Groq free tier** by replacing `src/lib/llm/ollama.ts`.
-- Move from Vercel free to Cloudflare Pages (also free) without code changes.
-- Replace Supabase with self-hosted Postgres on Fly.io free tier.
+## Supabase wiring (Phase 2 unlock)
+
+```bash
+# from project root with supabase CLI installed
+supabase link --project-ref <YOUR_REF>
+supabase db push   # applies supabase/migrations/0001_initial_schema.sql
+# Then in the Supabase SQL editor, run supabase/storage/buckets.sql
+```
+
+Verify in Supabase Studio:
+- All six tables exist
+- RLS is enabled on all six (the toggle is on)
+- `project-documents` and `dashboard-pdfs` buckets exist
+
+## Environment variables (production)
+
+In Vercel project settings, add:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` (server-only)
+- `ANTHROPIC_API_KEY` (server-only)
+- `ANTHROPIC_MODEL_HEAVY=claude-sonnet-4-6`
+- `ANTHROPIC_MODEL_FAST=claude-haiku-4-5-20251001`
+- `NEXT_PUBLIC_APP_URL=https://mutabasir.ae`
+
+Never commit `.env.local` (rule R5).
+
+## DNS
+
+Cloudflare DNS record:
+- `mutabasir.ae` → CNAME → `cname.vercel-dns.com` (Proxy OFF — Vercel handles TLS)
+
+## Verification checklist before going live
+
+- [ ] All RLS policies tested with two distinct test users
+- [ ] Anthropic key has spend cap configured
+- [ ] Sentry DSN connected
+- [ ] First test project ingested 16 SENER PDFs successfully
+- [ ] Quality gate blocks publish when one gate fails
+- [ ] PDF export renders identically to v8 SENER reference

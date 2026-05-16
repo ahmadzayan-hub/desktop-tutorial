@@ -1,41 +1,55 @@
-"use client";
-import { useState, useEffect } from "react";
-import { Sidebar } from "@/components/layout/Sidebar";
-import { AppHeader } from "@/components/layout/AppHeader";
-import { ToastProvider } from "@/components/ui/Toast";
-import type { ReactNode } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { mockSession } from "@/lib/store/mock-store";
 
-export default function AppLayout({ children }: { children: ReactNode }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => { setMounted(true); }, []);
-
+export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ToastProvider>
-      {/* Animated background mesh */}
-      <div className="bg-mesh" aria-hidden>
-        <div className="orb orb-1" />
-        <div className="orb orb-2" />
-        <div className="orb orb-3" />
-        <div className="orb orb-4" />
-      </div>
+    <div className="flex min-h-screen flex-col bg-slate-50">
+      <header className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+          <Link href="/projects" className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-md bg-rta-navy" aria-hidden />
+            <span className="display-tight text-lg font-semibold text-rta-navy">
+              Mutabasir
+            </span>
+          </Link>
 
-      <div className="app-layout relative z-10">
-        <Sidebar mobileOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-        <div className="app-main">
-          <AppHeader onMenuClick={() => setSidebarOpen(true)} />
-          <main
-            id="main"
-            className={`flex-1 px-4 sm:px-6 py-6 max-w-7xl w-full mx-auto transition-opacity duration-500 ${mounted ? "opacity-100" : "opacity-0"}`}
-          >
-            <div className="animate-fade-up">
-              {children}
+          <nav className="flex items-center gap-1">
+            <Link href="/projects">
+              <Button variant="ghost" size="sm">
+                Projects
+              </Button>
+            </Link>
+            <Link href="/new">
+              <Button variant="ghost" size="sm">
+                New project
+              </Button>
+            </Link>
+            <Link href="/settings">
+              <Button variant="ghost" size="sm">
+                Settings
+              </Button>
+            </Link>
+            <div className="ml-3 flex items-center gap-2 border-l border-slate-200 pl-3 text-sm text-slate-600">
+              <span className="hidden sm:inline">{mockSession.user.email}</span>
+              <Link href="/">
+                <Button variant="secondary" size="sm">
+                  Sign out
+                </Button>
+              </Link>
             </div>
-          </main>
+          </nav>
         </div>
-      </div>
-    </ToastProvider>
+      </header>
+
+      <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-8">{children}</main>
+
+      <footer className="border-t border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 text-xs text-slate-500">
+          <p>Mutabasir · Phase 1 scaffold</p>
+          <p>mutabasir.ae</p>
+        </div>
+      </footer>
+    </div>
   );
 }

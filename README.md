@@ -1,96 +1,39 @@
-# Prompt Orchestrator
+# Mutabasir
 
-A 100% free, multi-tenant SaaS that turns rough user ideas into polished,
-model-aware prompts. Built on **Next.js + Supabase + Ollama + Vercel** —
-zero hosting, database, and AI fees.
+**Government Executive Intelligence Platform**
 
-## Features
+Converts unstructured project documents into board-grade bilingual executive dashboards in under 90 seconds. Built for UAE government PMO offices.
 
-- Raw prompt intake with intent detection
-- Rule + LLM gap analysis → clarification questions
-- Multi-step Q&A session state
-- Final prompt reconstruction with rationale
-- Model-specific formatting for ChatGPT, Claude, Copilot, generic
-- Prompt history + versioning
-- Multi-tenant orgs with Postgres Row-Level Security
-- Chrome (Manifest V3) browser extension that injects into ChatGPT, Claude,
-  Copilot, and Gemini
+## Stack
 
-## Folder structure
+- Next.js 15 (App Router, RSC) · TypeScript strict
+- Tailwind CSS 4 · Dubai Font · IBM Plex Sans Arabic · JetBrains Mono
+- Supabase (Postgres + Auth + Storage + Edge Functions)
+- Anthropic Claude (Sonnet 4.6 + Haiku 4.5)
+- Playwright for A4 PDF rendering
+- Vercel hosting
 
-```
-.
-├── extension/                  Chrome MV3 extension
-│   ├── manifest.json
-│   ├── background.js           service worker
-│   ├── content.js / content.css inject Enhance button
-│   ├── popup.html / popup.js / popup.css
-│   └── options.html / options.js
-├── supabase/
-│   ├── migrations/0001_init.sql full schema + RLS
-│   └── seed.sql                public templates
-├── src/
-│   ├── app/                    Next.js App Router
-│   │   ├── layout.tsx, page.tsx, globals.css
-│   │   ├── login/page.tsx
-│   │   ├── workspace/page.tsx
-│   │   ├── templates/page.tsx
-│   │   ├── history/page.tsx
-│   │   └── api/
-│   │       ├── health/
-│   │       ├── orgs/
-│   │       ├── templates/[id]/
-│   │       ├── sessions/[id]/answers/
-│   │       ├── sessions/[id]/finalize/
-│   │       └── extension/enhance/
-│   ├── components/
-│   │   └── Workspace.tsx
-│   └── lib/
-│       ├── env.ts, types.ts
-│       ├── supabase/{server,browser}.ts
-│       ├── llm/{ollama,prompts}.ts
-│       └── services/{orchestration,clarification,template,formatter,auth}.ts
-├── package.json, tsconfig.json, next.config.mjs
-├── tailwind.config.ts, postcss.config.mjs
-└── docs/
-    ├── API.md
-    └── DEPLOY.md
-```
+## Subjects (v1)
 
-## Quick start
+- Contract Management
+- Tender Evaluation
+
+## Development
 
 ```bash
-# 1. Install
 npm install
-
-# 2. Configure
-cp .env.example .env.local
-# Fill in NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY,
-# SUPABASE_SERVICE_ROLE_KEY, and OLLAMA_BASE_URL.
-
-# 3. Run Ollama (in another terminal)
-ollama pull llama3
-ollama pull mistral
-ollama pull phi3
-ollama serve
-
-# 4. Apply Supabase schema
-#   psql "$SUPABASE_DB_URL" -f supabase/migrations/0001_init.sql
-# (or paste it into the Supabase SQL editor)
-
-# 5. Start the app
+cp .env.example .env.local   # fill in real keys
 npm run dev
-# open http://localhost:3000
 ```
 
-## Browser extension
+Visit http://localhost:3000.
 
-```bash
-# Chrome → chrome://extensions → Developer mode → "Load unpacked"
-# select the ./extension folder.
-# Then open the extension Options page and set:
-#   API base URL = your Vercel/localhost URL
-#   API key      = the EXTENSION_API_KEY value from .env.local
-```
+## Status
 
-See [docs/API.md](docs/API.md) and [docs/DEPLOY.md](docs/DEPLOY.md).
+Phase 1 · Foundation. Auth UI and project CRUD wired to an in-memory mock store. Supabase migration SQL is ready in `supabase/migrations/0001_initial_schema.sql` to be applied once keys are provisioned.
+
+See `docs/ARCHITECTURE.md` for the full system design.
+
+---
+
+Built by Eng. Ahmed Zaian · Beyond Connect General Trading L.L.C · Dubai
