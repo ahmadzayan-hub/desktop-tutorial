@@ -92,3 +92,93 @@
 
 /* RTL helpers */
 [dir="rtl"] .flip-x { transform: scaleX(-1); }
+
+/* ---- Interactive motion ---- */
+
+/* gentle float for hero pieces */
+@keyframes bgFloat {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50%      { transform: translateY(-10px) rotate(-1deg); }
+}
+.beyond-float { animation: bgFloat 7s ease-in-out infinite; }
+
+/* sparkle pulse */
+@keyframes bgSparkle {
+  0%, 100% { opacity: .35; transform: scale(.9); }
+  50%      { opacity: 1;   transform: scale(1.2); }
+}
+.beyond-sparkle { animation: bgSparkle 2.6s ease-in-out infinite; }
+
+/* gold halo behind primary CTA */
+@keyframes bgHalo {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(182,138,53,0.45); }
+  50%      { box-shadow: 0 0 0 14px rgba(182,138,53,0); }
+}
+.beyond-halo { animation: bgHalo 2.6s ease-out infinite; }
+
+/* shimmer sweep on premium chips */
+@keyframes bgShimmer {
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
+}
+.beyond-shimmer {
+  background-image: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.55) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: bgShimmer 3.2s linear infinite;
+}
+
+/* lift on hover (cards) */
+.beyond-lift { transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s ease, border-color .35s ease; }
+.beyond-lift:hover { transform: translateY(-4px); }
+
+/* underline on hover (nav) */
+.beyond-link { position: relative; }
+.beyond-link::after {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: -6px;
+  height: 1.5px; background: var(--beyond-gold);
+  transform: scaleX(0); transform-origin: right;
+  transition: transform .35s cubic-bezier(.22,1,.36,1);
+}
+.beyond-link:hover::after { transform: scaleX(1); transform-origin: left; }
+[dir="rtl"] .beyond-link::after { transform-origin: left; }
+[dir="rtl"] .beyond-link:hover::after { transform-origin: right; }
+
+/* gold chip with glow on selection */
+.beyond-chip-selected {
+  box-shadow: 0 8px 24px -10px rgba(182,138,53,0.55);
+}
+
+/* tilt for product cards */
+.beyond-tilt { transition: transform .4s cubic-bezier(.22,1,.36,1); }
+.beyond-tilt:hover { transform: translateY(-4px) rotate(-0.4deg); }
+
+/* gradient border for collection cards on hover */
+.beyond-grad-border { position: relative; }
+.beyond-grad-border::before {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(182,138,53,0) 0%, rgba(182,138,53,0.5) 40%, rgba(31,111,91,0.5) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0; transition: opacity .4s ease;
+  pointer-events: none;
+}
+.beyond-grad-border:hover::before { opacity: 1; }
+
+/* whatsapp pulse — subtle accent ring */
+@keyframes bgWaPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(31,111,91,0.4); }
+  60%      { box-shadow: 0 0 0 12px rgba(31,111,91,0); }
+}
+.beyond-wa-pulse { animation: bgWaPulse 2.6s ease-out infinite; }
+
+/* respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .beyond-float, .beyond-sparkle, .beyond-halo, .beyond-shimmer, .beyond-wa-pulse {
+    animation: none !important;
+  }
+}

@@ -1,8 +1,13 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import HeroArt from "./_components/HeroArt";
+import Marquee from "./_components/Marquee";
 import ProductTile, { type Variant } from "./_components/ProductTile";
+import { Reveal, Stagger, StaggerItem } from "./_components/Reveal";
+import Spotlight from "./_components/Spotlight";
 import {
   ArrowRight,
   BoardIcon,
@@ -61,7 +66,9 @@ export default function BeyondGalleryLanding() {
 
       <main id="home">
         <Hero lang={lang} />
+        <KeywordMarquee lang={lang} />
         <TrustStrip lang={lang} />
+        <PlatformStrip lang={lang} />
         <Collections lang={lang} />
         <FeaturedProducts lang={lang} />
         <GiftFinder lang={lang} />
@@ -139,7 +146,7 @@ function Header({
               <a
                 key={l.en}
                 href={l.href}
-                className="text-[14px] text-beyond-charcoal/80 hover:text-beyond-gold transition-colors"
+                className="beyond-link text-[14px] text-beyond-charcoal/80 hover:text-beyond-gold transition-colors"
               >
                 {lang === "en" ? l.en : l.ar}
               </a>
@@ -260,11 +267,22 @@ function Header({
 
 function Hero({ lang }: { lang: "en" | "ar" }) {
   return (
+    <Spotlight>
     <section className="beyond-paper relative overflow-hidden">
+      {/* decorative animated sparkles */}
+      <span aria-hidden className="absolute top-10 start-[8%] w-2 h-2 rounded-full bg-beyond-gold beyond-sparkle" />
+      <span aria-hidden className="absolute top-24 end-[18%] w-1.5 h-1.5 rounded-full bg-beyond-emerald beyond-sparkle" style={{ animationDelay: ".6s" }} />
+      <span aria-hidden className="absolute bottom-12 start-[14%] w-1.5 h-1.5 rounded-full bg-beyond-gold beyond-sparkle" style={{ animationDelay: "1.2s" }} />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-12 pb-16 sm:pt-20 sm:pb-24 grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-        <div className="order-2 lg:order-1">
+        <motion.div
+          className="order-2 lg:order-1"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
           <div className="beyond-divider mb-6">
-            {lang === "en" ? "Curated in Dubai" : "اختيار من دبي"}
+            {lang === "en" ? "Curated in Dubai · GiftMajlis Platform" : "اختيار من دبي · منصة GiftMajlis"}
           </div>
 
           <h1 className="font-display text-[34px] leading-[1.1] sm:text-[44px] lg:text-[56px] font-semibold text-beyond-charcoal">
@@ -298,29 +316,35 @@ function Hero({ lang }: { lang: "en" | "ar" }) {
           </p>
 
           <div className="mt-7 flex flex-col sm:flex-row gap-3">
-            <a
+            <motion.a
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               href="#collections"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-beyond-navy text-beyond-ivory font-semibold text-[14px] hover:opacity-95 beyond-focus"
+              className="beyond-halo inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-beyond-navy text-beyond-ivory font-semibold text-[14px] hover:opacity-95 beyond-focus"
             >
               <CartIcon className="w-4 h-4 text-beyond-gold" />
               {lang === "en" ? "Shop Lifestyle Collection" : "تسوقي المجموعة"}
-            </a>
-            <a
+            </motion.a>
+            <motion.a
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               href={buildWALink(
                 "Hello Beyond Gallery, I would like to order on WhatsApp."
               )}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-beyond-emerald text-white font-semibold text-[14px] hover:opacity-95 beyond-focus"
+              className="beyond-wa-pulse inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-beyond-emerald text-white font-semibold text-[14px] hover:opacity-95 beyond-focus"
             >
               <WhatsAppIcon className="w-4 h-4" />
               {lang === "en" ? "Order on WhatsApp" : "اطلب عبر واتساب"}
-            </a>
-            <a
+            </motion.a>
+            <motion.a
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               href="#corporate"
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full border border-beyond-gold text-beyond-gold font-semibold text-[14px] hover:bg-beyond-gold hover:text-white beyond-focus transition-colors"
             >
               <BriefcaseIcon className="w-4 h-4" />
               {lang === "en" ? "Request Corporate Quote" : "اطلب عرض سعر"}
-            </a>
+            </motion.a>
           </div>
 
           <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-[12px] text-beyond-charcoal/70">
@@ -346,24 +370,164 @@ function Hero({ lang }: { lang: "en" | "ar" }) {
               </span>
             ))}
           </div>
-        </div>
+        </motion.div>
 
-        <div className="order-1 lg:order-2">
+        <motion.div
+          className="order-1 lg:order-2"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+        >
           <div className="relative">
             <div className="absolute -inset-6 bg-white/40 rounded-[40px] blur-2xl" />
-            <div className="relative bg-white/60 backdrop-blur rounded-[28px] p-4 sm:p-6 beyond-card-shadow border border-white/70">
+            <div className="relative bg-white/60 backdrop-blur rounded-[28px] p-4 sm:p-6 beyond-card-shadow border border-white/70 beyond-float">
               <HeroArt />
             </div>
-            <div className="absolute -bottom-4 -end-2 bg-white rounded-2xl px-3 py-2 beyond-card-shadow border border-beyond-line flex items-center gap-2 text-[12px]">
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+              className="absolute -bottom-4 -end-2 bg-white rounded-2xl px-3 py-2 beyond-card-shadow border border-beyond-line flex items-center gap-2 text-[12px]"
+            >
               <PinIcon className="w-4 h-4 text-beyond-emerald" />
               <span className="font-semibold text-beyond-charcoal">Dubai, UAE</span>
-            </div>
-            <div className="absolute -top-3 -start-2 bg-beyond-charcoal text-beyond-ivory rounded-2xl px-3 py-2 text-[12px] font-semibold flex items-center gap-2 beyond-card-shadow">
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="absolute -top-3 -start-2 bg-beyond-charcoal text-beyond-ivory rounded-2xl px-3 py-2 text-[12px] font-semibold flex items-center gap-2 beyond-card-shadow"
+            >
               <SparkleIcon className="w-4 h-4 text-beyond-gold" />
               {lang === "en" ? "Curated weekly" : "تشكيلة أسبوعية"}
+            </motion.div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+    </Spotlight>
+  );
+}
+
+// ====================================================================================
+// Keyword Marquee (premium signal strip)
+// ====================================================================================
+
+function KeywordMarquee({ lang }: { lang: "en" | "ar" }) {
+  const items =
+    lang === "en"
+      ? [
+          "Curated in Dubai",
+          "WhatsApp Ready",
+          "AED Pricing",
+          "Retail + Bulk",
+          "Corporate Gifting",
+          "B2B Sourcing",
+          "Personalised in Arabic & English",
+          "Powered by GiftMajlis",
+          "Delivery Across UAE",
+          "Invoice on Request",
+        ]
+      : [
+          "اختيار من دبي",
+          "جاهز عبر واتساب",
+          "أسعار بالدرهم",
+          "تجزئة وجملة",
+          "هدايا الشركات",
+          "توريد B2B",
+          "تخصيص بالعربية والإنجليزية",
+          "بدعم منصة GiftMajlis",
+          "توصيل لكل الإمارات",
+          "فاتورة عند الطلب",
+        ];
+  return <Marquee items={items} />;
+}
+
+// ====================================================================================
+// Platform Strip — introduces GiftMajlis (the project / platform name)
+// ====================================================================================
+
+function PlatformStrip({ lang }: { lang: "en" | "ar" }) {
+  const points =
+    lang === "en"
+      ? [
+          { k: "1", t: "Discover", d: "Curated retail and corporate catalogues in one majlis." },
+          { k: "2", t: "Ask", d: "One WhatsApp thread for photos, sizes, AED prices and delivery." },
+          { k: "3", t: "Order", d: "Retail in seconds. Bulk and supply via formal quotation." },
+        ]
+      : [
+          { k: "١", t: "اكتشف", d: "تشكيلات تجزئة وشركات مختارة في مكان واحد." },
+          { k: "٢", t: "اسأل", d: "محادثة واتساب واحدة للصور والمقاسات والأسعار والتوصيل." },
+          { k: "٣", t: "اطلب", d: "بالتجزئة بثوانٍ، وللجملة عبر عرض رسمي." },
+        ];
+
+  return (
+    <section className="bg-beyond-ivory">
+      <div className="max-w-7xl mx-auto px-4 py-12 sm:py-16">
+        <Reveal>
+          <div className="rounded-3xl bg-white border border-beyond-line p-6 sm:p-10 beyond-card-shadow relative overflow-hidden">
+            <div
+              aria-hidden
+              className="absolute -top-20 -end-20 w-72 h-72 rounded-full"
+              style={{ background: "radial-gradient(closest-side, rgba(182,138,53,0.12), transparent)" }}
+            />
+            <div className="grid lg:grid-cols-[1.1fr_1fr] gap-8 items-center relative">
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-beyond-charcoal text-beyond-ivory text-[11px] tracking-[0.22em] uppercase font-semibold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-beyond-gold" />
+                  {lang === "en" ? "The Platform" : "المنصّة"}
+                </div>
+                <h2 className="mt-4 font-display text-3xl sm:text-4xl font-semibold text-beyond-charcoal leading-tight">
+                  {lang === "en" ? (
+                    <>
+                      Built on{" "}
+                      <span className="beyond-gold-gradient">GiftMajlis</span>
+                      <span className="block text-[18px] sm:text-[22px] text-beyond-charcoal/65 font-normal mt-2">
+                        The UAE&apos;s WhatsApp-first gathering point for curated
+                        gifting and B2B sourcing.
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      مبنيّة على{" "}
+                      <span className="beyond-gold-gradient">GiftMajlis</span>
+                      <span className="block text-[18px] sm:text-[22px] text-beyond-charcoal/65 font-normal mt-2">
+                        نقطة التجمّع الإماراتية الأولى عبر واتساب للهدايا
+                        المختارة والتوريد للشركات.
+                      </span>
+                    </>
+                  )}
+                </h2>
+                <p className="mt-4 text-[14.5px] leading-relaxed text-beyond-charcoal/75 max-w-xl">
+                  {lang === "en"
+                    ? "Hunting for trustworthy gifts and supplies in the UAE means jumping between WhatsApp, Noon, Amazon and Instagram. GiftMajlis brings it into one majlis — Beyond Gallery is the flagship storefront, with retail, corporate and supply requests handled in a single curated thread."
+                    : "البحث عن هدايا وتوريد موثوق في الإمارات يعني التنقل بين واتساب ونون وأمازون وإنستغرام. GiftMajlis يجمعها في مكان واحد — بيوند جاليري هي الواجهة الرئيسية، مع تجزئة وشركات وتوريد بمحادثة واحدة مختارة."}
+                </p>
+              </div>
+
+              <div className="grid sm:grid-cols-3 gap-3">
+                {points.map((p) => (
+                  <motion.div
+                    key={p.t}
+                    whileHover={{ y: -4 }}
+                    transition={{ type: "spring", stiffness: 220, damping: 18 }}
+                    className="rounded-2xl bg-beyond-ivory border border-beyond-line p-4"
+                  >
+                    <div className="w-9 h-9 rounded-full bg-beyond-charcoal text-beyond-gold flex items-center justify-center font-display font-semibold">
+                      {p.k}
+                    </div>
+                    <div className="mt-3 font-display text-[16px] font-semibold text-beyond-charcoal">
+                      {p.t}
+                    </div>
+                    <div className="mt-1 text-[12.5px] text-beyond-charcoal/70 leading-snug">
+                      {p.d}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -412,11 +576,11 @@ function TrustStrip({ lang }: { lang: "en" | "ar" }) {
 
   return (
     <section className="bg-beyond-white border-y border-beyond-line">
-      <div className="max-w-7xl mx-auto px-4 py-8 sm:py-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+      <Stagger className="max-w-7xl mx-auto px-4 py-8 sm:py-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         {items.map((it, i) => (
-          <div
+          <StaggerItem
             key={i}
-            className="rounded-2xl bg-beyond-ivory border border-beyond-line p-4 sm:p-5 flex flex-col gap-2 hover:border-beyond-gold transition-colors"
+            className="beyond-lift rounded-2xl bg-beyond-ivory border border-beyond-line p-4 sm:p-5 flex flex-col gap-2 hover:border-beyond-gold hover:beyond-card-shadow"
           >
             <div className="w-9 h-9 rounded-full bg-white border border-beyond-line flex items-center justify-center text-beyond-gold">
               <it.icon className="w-4 h-4" />
@@ -427,9 +591,9 @@ function TrustStrip({ lang }: { lang: "en" | "ar" }) {
             <div className="text-[12.5px] text-beyond-charcoal/70 leading-relaxed">
               {it.body}
             </div>
-          </div>
+          </StaggerItem>
         ))}
-      </div>
+      </Stagger>
     </section>
   );
 }
@@ -672,7 +836,7 @@ function Collections({ lang }: { lang: "en" | "ar" }) {
   return (
     <section id="collections" className="bg-beyond-ivory">
       <div className="max-w-7xl mx-auto px-4 py-16 sm:py-20">
-        <div className="text-center mb-10 sm:mb-14">
+        <Reveal className="text-center mb-10 sm:mb-14">
           <div className="beyond-divider mb-3">
             {lang === "en" ? "Collections" : "التصنيفات"}
           </div>
@@ -682,16 +846,16 @@ function Collections({ lang }: { lang: "en" | "ar" }) {
           <p className="font-arabic text-beyond-charcoal/70 mt-2 text-[15px]">
             تسوق حسب التصنيف
           </p>
-        </div>
+        </Reveal>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <Stagger className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {COLLECTIONS.map((c) => {
             const isDark = c.key === "corporate" || c.key === "supply";
             return (
+              <StaggerItem key={c.key}>
               <a
-                key={c.key}
                 href={c.href}
-                className={`group rounded-3xl overflow-hidden border ${
+                className={`group beyond-grad-border beyond-lift block rounded-3xl overflow-hidden border ${
                   isDark ? "border-transparent" : "border-beyond-line"
                 } beyond-card-shadow hover:beyond-card-shadow-hover transition-shadow bg-white`}
               >
@@ -764,9 +928,10 @@ function Collections({ lang }: { lang: "en" | "ar" }) {
                   </div>
                 </div>
               </a>
+              </StaggerItem>
             );
           })}
-        </div>
+        </Stagger>
       </div>
     </section>
   );
@@ -804,7 +969,7 @@ function FeaturedProducts({ lang }: { lang: "en" | "ar" }) {
   return (
     <section id="featured" className="bg-beyond-white border-y border-beyond-line">
       <div className="max-w-7xl mx-auto px-4 py-16 sm:py-20">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+        <Reveal className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
           <div>
             <div className="beyond-divider mb-3">
               {lang === "en" ? "Featured" : "مميز"}
@@ -821,7 +986,7 @@ function FeaturedProducts({ lang }: { lang: "en" | "ar" }) {
               ? "Prices and availability are confirmed before order completion. Bulk prices depend on quantity, branding, stock and delivery location."
               : "يتم تأكيد الأسعار والتوفر قبل إتمام الطلب. تعتمد أسعار الجملة على الكمية والطباعة والمخزون والتوصيل."}
           </div>
-        </div>
+        </Reveal>
 
         {/* Search + filter row */}
         <div className="mb-6 flex flex-col sm:flex-row gap-3">
@@ -851,13 +1016,13 @@ function FeaturedProducts({ lang }: { lang: "en" | "ar" }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+        <Stagger className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
           {FEATURED.map((p, i) => {
             const message = `Hello Beyond Gallery, I am interested in this product:\nProduct Name: ${p.name}\nQuantity: \nDelivery Emirate: \nCustomisation required: \nPlease confirm price and availability.`;
             return (
+              <StaggerItem key={i}>
               <article
-                key={i}
-                className="rounded-2xl bg-white border border-beyond-line overflow-hidden beyond-card-shadow hover:beyond-card-shadow-hover transition-shadow group"
+                className="beyond-tilt rounded-2xl bg-white border border-beyond-line overflow-hidden beyond-card-shadow hover:beyond-card-shadow-hover transition-shadow group h-full flex flex-col"
               >
                 <ProductTile variant={p.variant} />
                 <div className="p-3.5 sm:p-4">
@@ -887,9 +1052,10 @@ function FeaturedProducts({ lang }: { lang: "en" | "ar" }) {
                   </div>
                 </div>
               </article>
+              </StaggerItem>
             );
           })}
-        </div>
+        </Stagger>
       </div>
     </section>
   );
@@ -924,7 +1090,7 @@ function GiftFinder({ lang }: { lang: "en" | "ar" }) {
   return (
     <section id="gift-finder" className="bg-beyond-ivory">
       <div className="max-w-5xl mx-auto px-4 py-16 sm:py-20">
-        <div className="text-center">
+        <Reveal className="text-center">
           <div className="beyond-divider mb-3">
             {lang === "en" ? "Gift Finder" : "اختر هديتك"}
           </div>
@@ -934,40 +1100,45 @@ function GiftFinder({ lang }: { lang: "en" | "ar" }) {
           <p className="font-arabic text-beyond-charcoal/70 mt-2 text-[15px]">
             خلينا نساعدك تختار الهدية المناسبة
           </p>
-        </div>
+        </Reveal>
 
-        <div className="mt-8 bg-white rounded-3xl beyond-card-shadow border border-beyond-line p-5 sm:p-8">
+        <Reveal className="mt-8 bg-white rounded-3xl beyond-card-shadow border border-beyond-line p-5 sm:p-8">
           <div className="flex flex-wrap gap-2 justify-center">
             {options.map((o) => (
-              <button
+              <motion.button
                 key={o}
                 onClick={() => toggle(o)}
+                whileTap={{ scale: 0.94 }}
+                animate={selected[o] ? { scale: [1, 1.07, 1] } : { scale: 1 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                 className={`px-4 py-2.5 rounded-full text-[13px] font-medium border transition-colors ${
                   selected[o]
-                    ? "bg-beyond-charcoal text-beyond-ivory border-beyond-charcoal"
+                    ? "bg-beyond-charcoal text-beyond-ivory border-beyond-charcoal beyond-chip-selected"
                     : "bg-beyond-ivory text-beyond-charcoal border-beyond-line hover:border-beyond-gold"
                 }`}
               >
                 {o}
-              </button>
+              </motion.button>
             ))}
           </div>
 
           <div className="mt-7 flex justify-center">
-            <a
+            <motion.a
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               href={buildWALink(message)}
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-beyond-emerald text-white font-semibold text-[14px] hover:opacity-95 beyond-focus"
+              className="beyond-wa-pulse inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-beyond-emerald text-white font-semibold text-[14px] hover:opacity-95 beyond-focus"
             >
               <WhatsAppIcon className="w-4 h-4" />
               {lang === "en" ? "Help Me Choose on WhatsApp" : "ساعدوني عبر واتساب"}
-            </a>
+            </motion.a>
           </div>
           <p className="mt-3 text-center text-[12px] text-beyond-charcoal/60">
             {lang === "en"
               ? "We will pre-fill your message with occasion, budget, recipient and delivery emirate so you can confirm in seconds."
               : "نُجهّز لك رسالة جاهزة فيها المناسبة والميزانية والمستفيد وإمارة التوصيل."}
           </p>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -1521,7 +1692,7 @@ function SupplyRFQ({ lang }: { lang: "en" | "ar" }) {
 function AboutBrand({ lang }: { lang: "en" | "ar" }) {
   return (
     <section className="bg-beyond-white">
-      <div className="max-w-5xl mx-auto px-4 py-16 sm:py-24 text-center">
+      <Reveal className="max-w-5xl mx-auto px-4 py-16 sm:py-24 text-center">
         <div className="beyond-divider mb-3">
           {lang === "en" ? "Our Story" : "قصتنا"}
         </div>
@@ -1546,7 +1717,7 @@ function AboutBrand({ lang }: { lang: "en" | "ar" }) {
             ? "Operated by BEYOND CONNECT GENERAL TRADING L.L.C, Dubai, United Arab Emirates."
             : "تُدار بواسطة شركة بيوند كونكت للتجارة العامة ذ.م.م، دبي، الإمارات العربية المتحدة."}
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }
@@ -1714,12 +1885,12 @@ function FAQ({ lang }: { lang: "en" | "ar" }) {
   return (
     <section className="bg-beyond-white">
       <div className="max-w-4xl mx-auto px-4 py-16 sm:py-20">
-        <div className="text-center mb-8">
+        <Reveal className="text-center mb-8">
           <div className="beyond-divider mb-3">FAQ</div>
           <h2 className="font-display text-3xl sm:text-4xl font-semibold text-beyond-charcoal">
             {lang === "en" ? "Frequently Asked Questions" : "أسئلة شائعة"}
           </h2>
-        </div>
+        </Reveal>
 
         <div className="space-y-2.5">
           {data.map((item, i) => {
@@ -1727,22 +1898,34 @@ function FAQ({ lang }: { lang: "en" | "ar" }) {
             return (
               <div
                 key={i}
-                className={`rounded-2xl border ${isOpen ? "border-beyond-gold bg-beyond-ivory" : "border-beyond-line bg-white"} transition-colors`}
+                className={`rounded-2xl border overflow-hidden ${isOpen ? "border-beyond-gold bg-beyond-ivory" : "border-beyond-line bg-white"} transition-colors`}
               >
                 <button
                   onClick={() => setOpen(isOpen ? null : i)}
                   className="w-full flex items-center justify-between gap-3 text-start p-4 sm:p-5"
+                  aria-expanded={isOpen}
                 >
                   <span className="font-display text-[15px] sm:text-[16.5px] font-semibold text-beyond-charcoal">
                     {item.q}
                   </span>
                   <ChevronDown className={`w-5 h-5 text-beyond-gold transition-transform ${isOpen ? "rotate-180" : ""}`} />
                 </button>
-                {isOpen && (
-                  <div className="px-4 sm:px-5 pb-5 text-[14px] text-beyond-charcoal/80 leading-relaxed">
-                    {item.a}
-                  </div>
-                )}
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      key="content"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-4 sm:px-5 pb-5 text-[14px] text-beyond-charcoal/80 leading-relaxed">
+                        {item.a}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             );
           })}
@@ -1760,16 +1943,16 @@ function Contact({ lang }: { lang: "en" | "ar" }) {
   return (
     <section id="contact" className="bg-beyond-ivory border-t border-beyond-line">
       <div className="max-w-7xl mx-auto px-4 py-16 sm:py-20">
-        <div className="text-center mb-10">
+        <Reveal className="text-center mb-10">
           <div className="beyond-divider mb-3">
             {lang === "en" ? "Get in Touch" : "تواصل معنا"}
           </div>
           <h2 className="font-display text-3xl sm:text-4xl font-semibold text-beyond-charcoal">
             {lang === "en" ? "Contact and Order" : "التواصل والطلب"}
           </h2>
-        </div>
+        </Reveal>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+        <Stagger className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {[
             {
               icon: WhatsAppIcon,
@@ -1823,10 +2006,10 @@ function Contact({ lang }: { lang: "en" | "ar" }) {
               accent: "bg-beyond-ivory text-beyond-charcoal border border-beyond-line",
             },
           ].map((c, i) => (
+            <StaggerItem key={i}>
             <a
-              key={i}
               href={c.href}
-              className="rounded-3xl bg-white border border-beyond-line p-5 beyond-card-shadow hover:beyond-card-shadow-hover transition-shadow"
+              className="block beyond-lift rounded-3xl bg-white border border-beyond-line p-5 beyond-card-shadow hover:beyond-card-shadow-hover hover:border-beyond-gold transition-all"
             >
               <div className={`w-11 h-11 rounded-full flex items-center justify-center ${c.accent}`}>
                 <c.icon className="w-5 h-5" />
@@ -1840,8 +2023,9 @@ function Contact({ lang }: { lang: "en" | "ar" }) {
                 <ArrowRight className="w-4 h-4 rtl:flip-x" />
               </div>
             </a>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       </div>
     </section>
   );
@@ -1852,53 +2036,77 @@ function Contact({ lang }: { lang: "en" | "ar" }) {
 // ====================================================================================
 
 function Footer({ lang }: { lang: "en" | "ar" }) {
-  const links = lang === "en"
+  const links: Array<{ label: string; href: string }> = lang === "en"
     ? [
-        "Privacy Policy",
-        "Terms and Conditions",
-        "Return and Exchange Policy",
-        "Shipping Policy",
-        "Corporate Orders",
-        "Supply Desk",
-        "Contact",
+        { label: "Privacy Policy", href: "/beyond-gallery/policies#privacy" },
+        { label: "Terms and Conditions", href: "/beyond-gallery/policies#terms" },
+        { label: "Return and Exchange Policy", href: "/beyond-gallery/policies#returns" },
+        { label: "Shipping Policy", href: "/beyond-gallery/policies#shipping" },
+        { label: "Corporate Orders", href: "#corporate" },
+        { label: "Supply Desk", href: "#supply" },
+        { label: "Contact", href: "#contact" },
       ]
     : [
-        "سياسة الخصوصية",
-        "الشروط والأحكام",
-        "سياسة الاسترجاع والاستبدال",
-        "سياسة الشحن",
-        "طلبات الشركات",
-        "قسم التوريد",
-        "تواصل",
+        { label: "سياسة الخصوصية", href: "/beyond-gallery/policies#privacy" },
+        { label: "الشروط والأحكام", href: "/beyond-gallery/policies#terms" },
+        { label: "سياسة الاسترجاع والاستبدال", href: "/beyond-gallery/policies#returns" },
+        { label: "سياسة الشحن", href: "/beyond-gallery/policies#shipping" },
+        { label: "طلبات الشركات", href: "#corporate" },
+        { label: "قسم التوريد", href: "#supply" },
+        { label: "تواصل", href: "#contact" },
       ];
 
   return (
-    <footer className="bg-beyond-charcoal text-beyond-ivory">
-      <div className="max-w-7xl mx-auto px-4 py-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        <div>
+    <footer className="bg-beyond-charcoal text-beyond-ivory pb-20 md:pb-0">
+      <div className="max-w-7xl mx-auto px-4 py-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="lg:col-span-2">
           <div className="font-display text-2xl">
             Beyond <span className="beyond-gold-gradient">Gallery</span>
           </div>
           <div className="text-[12px] uppercase tracking-[0.22em] text-beyond-ivory/60 mt-1">
             by Beyond Jewellery
           </div>
-          <p className="mt-4 text-[13px] text-beyond-ivory/75 leading-relaxed max-w-sm">
+          <p className="mt-4 text-[13px] text-beyond-ivory/75 leading-relaxed max-w-md">
             {lang === "en"
               ? "Operated by BEYOND CONNECT GENERAL TRADING L.L.C, Dubai, United Arab Emirates. Trade License No. 1498624 — General Trading."
               : "تُدار بواسطة شركة بيوند كونكت للتجارة العامة ذ.م.م، دبي، الإمارات. رخصة تجارية رقم 1498624 - تجارة عامة."}
           </p>
+
+          {/* Platform badge */}
+          <Link
+            href="/beyond-gallery#home"
+            className="mt-5 inline-flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-white/[0.04] border border-white/10 hover:border-beyond-gold transition-colors group"
+          >
+            <span className="w-9 h-9 rounded-xl bg-beyond-gold/15 flex items-center justify-center text-beyond-gold font-display text-lg font-bold">
+              G
+            </span>
+            <span className="text-start">
+              <span className="block text-[11px] uppercase tracking-[0.22em] text-beyond-ivory/55">
+                {lang === "en" ? "Powered by" : "بدعم"}
+              </span>
+              <span className="block font-display text-[15px] font-semibold text-beyond-ivory">
+                GiftMajlis{" "}
+                <span className="text-beyond-gold">·</span>{" "}
+                <span className="text-beyond-ivory/70 font-normal text-[12.5px]">
+                  {lang === "en"
+                    ? "UAE's WhatsApp-first gifting & sourcing platform"
+                    : "منصّة الإمارات للهدايا والتوريد عبر واتساب"}
+                </span>
+              </span>
+            </span>
+          </Link>
         </div>
 
         <div>
           <div className="text-[12px] uppercase tracking-[0.22em] text-beyond-gold mb-3">
             {lang === "en" ? "Quick Links" : "روابط سريعة"}
           </div>
-          <ul className="grid grid-cols-2 gap-2 text-[13.5px]">
+          <ul className="space-y-2 text-[13.5px]">
             {links.map((l) => (
-              <li key={l}>
-                <a href="#" className="text-beyond-ivory/80 hover:text-beyond-gold">
-                  {l}
-                </a>
+              <li key={l.label}>
+                <Link href={l.href} className="text-beyond-ivory/80 hover:text-beyond-gold">
+                  {l.label}
+                </Link>
               </li>
             ))}
           </ul>
@@ -1916,10 +2124,10 @@ function Footer({ lang }: { lang: "en" | "ar" }) {
             {lang === "en" ? "WhatsApp Us" : "تواصل عبر واتساب"}
           </a>
           <div className="mt-4 flex items-center gap-2">
-            <a href="#" className="w-9 h-9 rounded-full border border-beyond-ivory/20 flex items-center justify-center hover:border-beyond-gold">
+            <a href="https://instagram.com/" aria-label="Instagram" className="w-9 h-9 rounded-full border border-beyond-ivory/20 flex items-center justify-center hover:border-beyond-gold">
               <InstagramIcon className="w-4 h-4" />
             </a>
-            <a href="mailto:hello@beyondgallery.ae" className="w-9 h-9 rounded-full border border-beyond-ivory/20 flex items-center justify-center hover:border-beyond-gold">
+            <a href="mailto:hello@beyondgallery.ae" aria-label="Email" className="w-9 h-9 rounded-full border border-beyond-ivory/20 flex items-center justify-center hover:border-beyond-gold">
               <MailIcon className="w-4 h-4" />
             </a>
           </div>
