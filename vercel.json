@@ -8,10 +8,5 @@
   "regions": ["iad1"],
   "env": {
     "NEXT_PUBLIC_DEMO_MODE": "true"
-  },
-  "git": {
-    "deploymentEnabled": {
-      "claude/create-dashboard-platform-R85xr": false
-    }
   }
 }
