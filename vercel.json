@@ -11,8 +11,6 @@
   },
   "git": {
     "deploymentEnabled": {
-      "main": true,
-      "claude/build-presentiq-saas-dMH9C": true,
       "claude/create-dashboard-platform-R85xr": false
     }
   }
