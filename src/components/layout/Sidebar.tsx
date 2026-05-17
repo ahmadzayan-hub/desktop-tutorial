@@ -118,7 +118,6 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
             <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">Sara Al-Mansouri</p>
             <p className="text-[10px] text-slate-400 truncate">MBA Year 2 · Free Access</p>
           </div>
-          <Sparkles className="w-3.5 h-3.5 text-brand-400 flex-shrink-0 animate-pulse-soft" />
         </div>
       </div>
 
@@ -169,7 +168,7 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
           <div className="relative px-3.5 py-3 border border-brand-200/60 dark:border-brand-700/30 rounded-2xl">
             <div className="flex items-center gap-2 mb-1">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse-soft" />
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Free — All Features</span>
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Free · All Features</span>
             </div>
             <div className="w-full h-1.5 rounded-full bg-slate-200/60 dark:bg-slate-700/60 overflow-hidden">
               <div className="h-full rounded-full w-full bg-gradient-to-r from-brand-500 to-purple-500 animate-shimmer" style={{ backgroundSize: "200% 100%" }} />

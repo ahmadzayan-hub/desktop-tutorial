@@ -14,7 +14,7 @@ import type { MethodId } from "@/lib/prompt-methods";
  * - Generates an improved version
  * - Recommends the best method
  *
- * Pure local engine — no LLM round-trip required for speed.
+ * Pure local engine · no LLM round-trip required for speed.
  */
 
 const Body = z.object({
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     strengths.push(L("Well-structured sentences with good length", "جمل منظّمة بطول جيد"));
   } else if (score.clarity < 5) {
     weaknesses.push(L("Prompt is too vague or too short", "الموجِّه غامض أو قصير جدًا"));
-    improvements.push(L("Add at least 2–3 sentences to provide context", "أضف جملتين إلى ثلاث جمل لتوفير السياق"));
+    improvements.push(L("Add at least 2·3 sentences to provide context", "أضف جملتين إلى ثلاث جمل لتوفير السياق"));
   }
 
   // Specificity (0-10 scale)
@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
   // Tone check
   const hasTone = /\b(tone:|professional|formal|casual|friendly|concise|detailed|academic|أسلوب:|رسمي|ودي|موجز|أكاديمي)\b/i.test(prompt);
   if (!hasTone && words > 20) {
-    improvements.push(L("Add a tone directive: 'Use a [tone] tone — professional, concise, friendly...'", "أضف توجيهًا للأسلوب: 'استخدم أسلوبًا [وصف الأسلوب] — رسميًا، موجزًا، وديًا...'"));
+    improvements.push(L("Add a tone directive: 'Use a [tone] tone · professional, concise, friendly...'", "أضف توجيهًا للأسلوب: 'استخدم أسلوبًا [وصف الأسلوب] · رسميًا، موجزًا، وديًا...'"));
   }
 
   // --- Generate improved prompt ---
@@ -173,13 +173,13 @@ function generateImprovedPrompt(
   if (score.audience < 8) {
     lines.push(ar
       ? "\n## الجمهور المستهدف\nاذكر من هو الجمهور المستهدف (مثل: مدير تنفيذي، مطوّر، طالب دراسات عليا)."
-      : "\n## Target Audience\n[Specify who will read this output — e.g., CFO, developer, MBA student]");
+      : "\n## Target Audience\n[Specify who will read this output · e.g., CFO, developer, MBA student]");
   }
 
   if (score.format < 8) {
     lines.push(ar
-      ? "\n## صيغة المخرج\nقائمة نقطية / جدول / فقرة نثرية / JSON — اختر الأنسب."
-      : "\n## Output Format\nBullet list / table / prose paragraph / JSON — choose the most appropriate.");
+      ? "\n## صيغة المخرج\nقائمة نقطية / جدول / فقرة نثرية / JSON · اختر الأنسب."
+      : "\n## Output Format\nBullet list / table / prose paragraph / JSON · choose the most appropriate.");
   }
 
   if (!hasConstraints) {
@@ -190,8 +190,8 @@ function generateImprovedPrompt(
 
   if (!hasTone) {
     lines.push(ar
-      ? "\n## الأسلوب\nرسمي ومهني — موجز ومبني على البيانات."
-      : "\n## Tone\nProfessional and formal — concise and data-driven.");
+      ? "\n## الأسلوب\nرسمي ومهني · موجز ومبني على البيانات."
+      : "\n## Tone\nProfessional and formal · concise and data-driven.");
   }
 
   lines.push(ar

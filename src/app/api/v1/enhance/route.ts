@@ -16,7 +16,7 @@ import type { TargetModel } from "@/lib/types";
  * Body (zod-validated):
  *   { raw_prompt, target_model?, qa?, ask_first? }
  *
- * Same logic as /api/extension/enhance — this `/v1/` URL is the stable
+ * Same logic as /api/extension/enhance · this `/v1/` URL is the stable
  * contract for third-party integrations. The extension keeps its existing
  * URL for backward compatibility; new integrations should target /v1/.
  */

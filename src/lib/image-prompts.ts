@@ -12,7 +12,7 @@
  *                 produce a NEW piece in the same tone and structure.
  *
  * If the image is small enough we embed its data URL inline (markdown image
- * syntax — vision models render it). If too large, we just describe the
+ * syntax · vision models render it). If too large, we just describe the
  * attachment so the user knows to drag it into their model's chat box.
  *
  * Pure functions, no I/O.
@@ -25,7 +25,7 @@ export interface ImagePromptInput {
   fileName: string;
   /** Optional MIME type for clarity. */
   mimeType?: string;
-  /** File size in bytes — surfaced so the user knows what they're sending. */
+  /** File size in bytes · surfaced so the user knows what they're sending. */
   size: number;
   /** Inlined data URL for small images; empty string for large attachments. */
   dataUrl: string;
@@ -114,7 +114,7 @@ Recreate the design shown in the attached image. Match its layout, colour palett
 ${block}
 
 # Deliverables
-1. **Visual breakdown** (one paragraph): what type of artefact is this — landing page, email, dashboard, slide, poster — and what's its intent?
+1. **Visual breakdown** (one paragraph): what type of artefact is this · landing page, email, dashboard, slide, poster · and what's its intent?
 2. **Component tree**: nested list of the major regions and their child elements.
 3. **Design tokens** extracted from the image:
    - Colours (hex), at minimum: background, primary text, accent, borders.
@@ -128,7 +128,7 @@ ${block}
 
 # Constraints
 - Reproduce, don't reinterpret. Match the original.
-- No placeholder text — copy the visible text verbatim.${maybeHint(input, "Style notes", "ملاحظات الأسلوب")}`
+- No placeholder text · copy the visible text verbatim.${maybeHint(input, "Style notes", "ملاحظات الأسلوب")}`
   : `# الدور
 أنت مصمّم منتجات ومطوّر واجهات أمامية أوّل.
 
@@ -139,10 +139,10 @@ ${block}
 ${block}
 
 # المخرجات
-1. **تحليل بصري** (فقرة واحدة): ما نوع هذا التصميم — صفحة هبوط، بريد، لوحة تحكّم، شريحة، ملصق — وما الغرض منه؟
+1. **تحليل بصري** (فقرة واحدة): ما نوع هذا التصميم · صفحة هبوط، بريد، لوحة تحكّم، شريحة، ملصق · وما الغرض منه؟
 2. **شجرة المكوّنات**: قائمة متداخلة بالمناطق الرئيسية وعناصرها الفرعية.
 3. **رموز التصميم** المستخلصة من الصورة:
-   - الألوان (hex): الخلفية، النصّ الأساسي، اللون المميِّز، الحدود — كحدّ أدنى.
+   - الألوان (hex): الخلفية، النصّ الأساسي، اللون المميِّز، الحدود · كحدّ أدنى.
    - الخطوط: عائلة الخط المقدَّرة، الأوزان، الأحجام لكل عنصر.
    - مقياس التباعد ونصف الأقطار.
 4. **التنفيذ**: كود نظيف وحديث ينتج التصميم.
@@ -153,7 +153,7 @@ ${block}
 
 # القيود
 - أعد الإنتاج، لا تعيد التفسير. طابق الأصل.
-- لا نصّ نائب — انسخ النصوص الظاهرة حرفيًا.${maybeHint(input, "Style notes", "ملاحظات الأسلوب")}`;
+- لا نصّ نائب · انسخ النصوص الظاهرة حرفيًا.${maybeHint(input, "Style notes", "ملاحظات الأسلوب")}`;
 }
 
 function build_rewrite(input: ImagePromptInput): string {

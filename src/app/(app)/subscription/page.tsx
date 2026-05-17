@@ -17,7 +17,7 @@ const ALL_FEATURES = [
   { icon: <Mic className="w-4 h-4 text-red-500" />, label: "Live Lecture Transcription + AI summary + email" },
   { icon: <Users className="w-4 h-4 text-indigo-500" />, label: "Group Project Workspace (responsibility matrix)" },
   { icon: <Trophy className="w-4 h-4 text-amber-500" />, label: "Achievements & badges system" },
-  { icon: <Globe className="w-4 h-4 text-emerald-500" />, label: "Bilingual UI — English & Arabic (RTL)" },
+  { icon: <Globe className="w-4 h-4 text-emerald-500" />, label: "Bilingual UI · English & Arabic (RTL)" },
   { icon: <Shield className="w-4 h-4 text-slate-500" />, label: "Admin dashboard & platform analytics" },
   { icon: <Star className="w-4 h-4 text-yellow-500" />, label: "Grade analytics with visual charts" },
 ];
@@ -69,7 +69,7 @@ function SubscriptionContent() {
               <span className="w-2.5 h-2.5 rounded-full bg-green-400" />
               <Badge color="green" className="bg-green-400/20 text-green-100 border-green-300/30">Active</Badge>
             </div>
-            <h2 className="text-3xl font-black">Free — All Features</h2>
+            <h2 className="text-3xl font-black">Free · All Features</h2>
             <p className="text-white/80 mt-1 text-sm">No subscription required. All premium features unlocked.</p>
           </div>
           <Star className="w-12 h-12 text-white/30" />
@@ -127,8 +127,8 @@ function SubscriptionContent() {
           <div>
             <p className="font-semibold text-amber-900 dark:text-amber-300 text-sm mb-1">About the Free Phase</p>
             <p className="text-sm text-amber-800 dark:text-amber-400 leading-relaxed">
-              Maktab is currently in its launch phase. All features — including AI Tutor, Study Packs,
-              Lecture Transcription, Group Workspace, and Achievements — are available at no cost.
+              Maktab is currently in its launch phase. All features · including AI Tutor, Study Packs,
+              Lecture Transcription, Group Workspace, and Achievements · are available at no cost.
               Subscription tiers may be introduced in a future phase to support ongoing development.
             </p>
           </div>

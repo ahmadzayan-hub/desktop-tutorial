@@ -6,8 +6,8 @@
  * prompt for any of: chatgpt | claude | copilot | gemini | generic.
  *
  * Intents include the original "knowledge work" set (coding, writing, …)
- * plus specialised creative/production intents — image, video, audio,
- * software, website, report — each with its own clarification questions
+ * plus specialised creative/production intents · image, video, audio,
+ * software, website, report · each with its own clarification questions
  * and scaffolded output sections so the platform produces *operational*
  * prompts ready to paste into Midjourney/Runway/Suno/Cursor/etc.
  */
@@ -57,7 +57,7 @@ const INTENT_RULES: IntentRule[] = [
     intent: "video",
     patterns: [
       /\b(video|reel|short|tiktok|youtube short|trailer|cinematic|storyboard|sora|runway|pika|veo|aspect ratio|fps|cgi|motion graphics|animation)\b/i,
-      // "إعلان" / ad is ambiguous between video / audio / image — leave it out.
+      // "إعلان" / ad is ambiguous between video / audio / image · leave it out.
       /(فيديو|ريل|مقطع|تيك ?توك|سيناريو|مشهد|انيميشن|رسوم متحرّكة)/
     ]
   },
@@ -328,7 +328,7 @@ function domainSections(intent: Intent, locale: "en" | "ar"): string {
   const en = locale === "en";
   switch (intent) {
     case "research":
-      // Research prompts often produce confidently-wrong citations — inject
+      // Research prompts often produce confidently-wrong citations · inject
       // the same trust guardrails as reports.
       return en ? `\n\n${ANTI_HALLUCINATION_EN}` : `\n\n${ANTI_HALLUCINATION_AR}`;
     case "image":
@@ -365,7 +365,7 @@ function domainSections(intent: Intent, locale: "en" | "ar"): string {
  *
  * These five guardrails materially reduce fabricated citations and
  * confidently-wrong claims across every frontier LLM we tested. They are
- * appended to the prompt body — not hidden — so the user can audit them
+ * appended to the prompt body · not hidden · so the user can audit them
  * and the model sees them as part of its instructions.
  */
 const ANTI_HALLUCINATION_EN = `# Trust & accuracy guardrails

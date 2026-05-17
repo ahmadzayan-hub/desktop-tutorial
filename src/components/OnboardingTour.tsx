@@ -8,7 +8,7 @@ const KEY = "po_onboarding_v1";
 /**
  * Three-step onboarding overlay shown once on the first visit to /workspace.
  *
- * Plays well with first-time users without hijacking returning ones — once
+ * Plays well with first-time users without hijacking returning ones · once
  * dismissed (or completed), it never appears again unless the user clears
  * site data. The skip and finish buttons both record completion.
  */
@@ -37,7 +37,7 @@ export default function OnboardingTour() {
   const steps: Array<{ titleKey: import("@/lib/i18n/dictionaries").DictKey; bodyKey: import("@/lib/i18n/dictionaries").DictKey; emoji: string }> = [
     { titleKey: "tour.s1.title", bodyKey: "tour.s1.body", emoji: "✍️" },
     { titleKey: "tour.s2.title", bodyKey: "tour.s2.body", emoji: "❓" },
-    { titleKey: "tour.s3.title", bodyKey: "tour.s3.body", emoji: "✨" }
+    { titleKey: "tour.s3.title", bodyKey: "tour.s3.body", emoji: "" }
   ];
   const last = step === steps.length - 1;
   const cur = steps[step];

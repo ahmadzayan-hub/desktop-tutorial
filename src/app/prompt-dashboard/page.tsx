@@ -72,7 +72,7 @@ function computeStats(history: LocalHistoryEntry[]): Stats {
 const INTENT_EMOJI: Record<string, string> = {
   coding: "💻", writing: "✍️", research: "🔍", analysis: "📊",
   planning: "📋", creative: "🎨", design: "🖌️", report: "📄",
-  software: "🖥️", website: "🌐", image: "🖼️", video: "🎬", other: "✨",
+  software: "🖥️", website: "🌐", image: "🖼️", video: "🎬", other: "",
 };
 const MODEL_EMOJI: Record<string, string> = {
   chatgpt: "🟢", claude: "🟠", gemini: "🔵", copilot: "🟣", generic: "⚪",
@@ -109,7 +109,7 @@ export default function DashboardPage() {
             </h1>
           </div>
           <p className="text-slate-500 dark:text-slate-400 text-sm">
-            {ar ? "نشاطك في كتابة الموجّهات — كل شيء محلي وخاص" : "Your prompt engineering activity — fully local and private"}
+            {ar ? "نشاطك في كتابة الموجّهات · كل شيء محلي وخاص" : "Your prompt engineering activity · fully local and private"}
           </p>
         </div>
 
@@ -176,7 +176,7 @@ export default function DashboardPage() {
                       <div key={intent}>
                         <div className="flex items-center justify-between text-xs mb-1">
                           <span className="flex items-center gap-1.5 text-slate-700 dark:text-slate-200 font-medium">
-                            <span>{INTENT_EMOJI[intent] ?? "✨"}</span>
+                            <span>{INTENT_EMOJI[intent] ?? ""}</span>
                             <span className="capitalize">{intent}</span>
                           </span>
                           <span className="text-slate-400">{count} ({pct}%)</span>
@@ -237,7 +237,7 @@ export default function DashboardPage() {
                 <div className="space-y-2">
                   {stats.recentActivity.map((e) => (
                     <div key={e.id} className="flex items-start gap-2.5 py-2 border-b border-slate-50 dark:border-slate-800 last:border-0">
-                      <span className="text-base mt-0.5">{INTENT_EMOJI[e.intent ?? "other"] ?? "✨"}</span>
+                      <span className="text-base mt-0.5">{INTENT_EMOJI[e.intent ?? "other"] ?? ""}</span>
                       <div className="min-w-0">
                         <p className="text-xs text-slate-700 dark:text-slate-200 truncate font-medium">
                           {e.raw.slice(0, 60)}{e.raw.length > 60 ? "…" : ""}

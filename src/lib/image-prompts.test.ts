@@ -17,7 +17,7 @@ const huge: ImagePromptInput = {
   locale: "en"
 };
 
-describe("buildImagePrompt — extract", () => {
+describe("buildImagePrompt · extract", () => {
   it("inlines a small image as markdown", () => {
     const out = buildImagePrompt("extract", small);
     expect(out).toContain(`![${small.fileName}](${small.dataUrl})`);
@@ -33,7 +33,7 @@ describe("buildImagePrompt — extract", () => {
   });
 });
 
-describe("buildImagePrompt — recreate", () => {
+describe("buildImagePrompt · recreate", () => {
   it("asks for component tree + design tokens", () => {
     const out = buildImagePrompt("recreate", small);
     expect(out).toContain("Component tree");
@@ -47,7 +47,7 @@ describe("buildImagePrompt — recreate", () => {
   });
 });
 
-describe("buildImagePrompt — rewrite", () => {
+describe("buildImagePrompt · rewrite", () => {
   it("identifies content type and asks for a new version in same shape", () => {
     const out = buildImagePrompt("rewrite", small);
     expect(out.toLowerCase()).toContain("identify");

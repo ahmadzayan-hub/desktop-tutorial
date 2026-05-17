@@ -39,8 +39,8 @@ export function handleError(e: unknown): NextResponse {
 }
 
 /**
- * Wrap a route handler so any thrown error — including the "Supabase env not
- * configured" case from importing the server client — surfaces as a graceful
+ * Wrap a route handler so any thrown error · including the "Supabase env not
+ * configured" case from importing the server client · surfaces as a graceful
  * 200 with `{ unavailable: true }` instead of a Vercel 5xx.
  */
 export function safeRoute<Args extends unknown[]>(
@@ -52,7 +52,7 @@ export function safeRoute<Args extends unknown[]>(
         {
           unavailable: true,
           reason: "backend_not_configured",
-          message: "Backend not configured — running in local mode."
+          message: "Backend not configured · running in local mode."
         },
         { status: 200 }
       );

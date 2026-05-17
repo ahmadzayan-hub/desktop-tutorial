@@ -37,7 +37,7 @@ const RULE_BASED_GAPS: Array<{ slot: string; missing: (p: string) => boolean; wh
   }
 ];
 
-/** Pure helper exposed for testing — returns rule-based gaps without calling the LLM. */
+/** Pure helper exposed for testing · returns rule-based gaps without calling the LLM. */
 export function ruleBasedGaps(rawPrompt: string): Gap[] {
   return RULE_BASED_GAPS.filter((r) => r.missing(rawPrompt)).map((r) => ({
     slot: r.slot,

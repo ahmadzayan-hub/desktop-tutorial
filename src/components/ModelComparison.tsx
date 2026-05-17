@@ -27,7 +27,7 @@ const MODEL_LABEL: Record<TargetModel, string> = {
  *
  * Renders the same raw + answers reconstructed for each of three popular
  * models, so the user can pick the format that suits their workflow. All
- * generation happens in the local engine — fast, deterministic, free.
+ * generation happens in the local engine · fast, deterministic, free.
  */
 export default function ModelComparison({ raw, intent, qa }: Props) {
   const t = useT();

@@ -1,5 +1,5 @@
 /**
- * Prompt Quality Scorer — 10 dimensions, 0-100 total.
+ * Prompt Quality Scorer · 10 dimensions, 0-100 total.
  *
  * Extended from 5 to 10 dimensions:
  *   clarity, specificity, structure, audience, format (existing)

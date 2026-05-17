@@ -21,7 +21,7 @@ export default function TemplatesPage() {
   const [category, setCategory] = useState<string>("all");
   const [query, setQuery] = useState("");
 
-  // Best-effort: pull additional templates from the API. Failure is silent —
+  // Best-effort: pull additional templates from the API. Failure is silent ·
   // the built-in catalog always renders, so the page never errors.
   useEffect(() => {
     let cancelled = false;
@@ -62,8 +62,8 @@ export default function TemplatesPage() {
           <h1 className="text-2xl font-semibold">{t("templates.title")}</h1>
           <p className="text-sm text-slate-500 mt-1">
             {locale === "ar"
-              ? "ابدأ من قالب جاهز ثم خصّصه — جرّبها بدون تسجيل دخول."
-              : "Start from a curated template, then tailor it — no sign-in needed."}
+              ? "ابدأ من قالب جاهز ثم خصّصه · جرّبها بدون تسجيل دخول."
+              : "Start from a curated template, then tailor it · no sign-in needed."}
           </p>
         </div>
         <a href="/workspace" className="btn-ghost border border-slate-300">

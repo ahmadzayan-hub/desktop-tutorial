@@ -5,9 +5,9 @@ import { FadeUp, Stagger, StaggerItem } from "@/components/motion/Motion";
 
 const features = [
   { icon: Clock,    title: "Always know what's due",            desc: "The Timeline Agent tracks every deadline with risk scoring. Never miss a submission again. Get a daily focus recommendation every morning." },
-  { icon: Target,   title: "Focus on what matters",             desc: "The weekly AI brief answers 'What should I focus on today?' — synthesizing grades, deadlines, announcements, and professor signals." },
+  { icon: Target,   title: "Focus on what matters",             desc: "The weekly AI brief answers 'What should I focus on today?' · synthesizing grades, deadlines, announcements, and professor signals." },
   { icon: BookOpen, title: "Study materials that talk back",    desc: "Upload your slides and the AI tutor can answer questions about them with citations. Generate flashcards and quizzes automatically." },
-  { icon: Globe,    title: "Fully bilingual — English & Arabic", desc: "Switch between English and Arabic at any time. The interface adapts to RTL layout automatically for Arabic. IBM Plex Sans Arabic font included." },
+  { icon: Globe,    title: "Fully bilingual · English & Arabic", desc: "Switch between English and Arabic at any time. The interface adapts to RTL layout automatically for Arabic. IBM Plex Sans Arabic font included." },
 ];
 
 export default function ForStudentsPage() {
@@ -23,12 +23,12 @@ export default function ForStudentsPage() {
           </FadeUp>
           <FadeUp delay={0.16}>
             <p className="text-xl text-white/70 mb-10 max-w-2xl mx-auto">
-              Stop drowning in Moodle, spreadsheets, and scattered notes. Maktab brings every part of your MBA onto one bilingual desk — مكتب واحد.
+              Stop drowning in Moodle, spreadsheets, and scattered notes. Maktab brings every part of your MBA onto one bilingual desk · مكتب واحد.
             </p>
           </FadeUp>
           <FadeUp delay={0.24}>
             <Link href="/signup" className="btn bg-white text-brand-700 hover:bg-slate-50 px-8 py-4 text-base font-semibold inline-flex">
-              Start Free — No Card Required
+              Start Free · No Card Required
             </Link>
           </FadeUp>
         </div>

@@ -96,7 +96,7 @@ export default function HistoryPage() {
             <div className="flex items-center justify-between text-xs text-slate-500">
               <span>{new Date(s.created_at).toLocaleString()}</span>
               <span>
-                {s.intent ?? "—"} · {s.target_model ?? "generic"} · {s.status}
+                {s.intent ?? "·"} · {s.target_model ?? "generic"} · {s.status}
               </span>
             </div>
             <p className="mt-2 text-sm line-clamp-3">{s.raw_prompt}</p>

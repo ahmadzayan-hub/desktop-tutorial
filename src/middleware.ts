@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { updateSession } from "../utils/supabase/middleware";
 
 /**
- * Runs on every request to keep the Supabase session fresh — refreshes the
+ * Runs on every request to keep the Supabase session fresh · refreshes the
  * auth cookie before it expires so server components and API routes see a
  * valid user.
  */

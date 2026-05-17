@@ -71,7 +71,7 @@ export default function PromptMethodSelector({ value, onChange, rawText = "", in
                 : "bg-white dark:bg-slate-900 text-fuchsia-600 dark:text-fuchsia-400 border-fuchsia-200 dark:border-fuchsia-800 hover:bg-fuchsia-50"
             ].join(" ")}
           >
-            ✨ {ar ? "اختيار ذكي" : "Auto-Pick"}
+            {ar ? "اختيار ذكي" : "Auto-Pick"}
           </button>
         </div>
       </div>
@@ -99,7 +99,7 @@ export default function PromptMethodSelector({ value, onChange, rawText = "", in
               : "text-fuchsia-700 dark:text-fuchsia-300 border-fuchsia-200 dark:border-fuchsia-800 hover:bg-fuchsia-50 dark:hover:bg-fuchsia-900/20"
           ].join(" ")}
         >
-          <span>✨</span>
+          <span></span>
           <span>{ar ? "اقتراح ذكي" : "Auto-Recommend"}</span>
         </button>
       </div>
@@ -111,7 +111,7 @@ export default function PromptMethodSelector({ value, onChange, rawText = "", in
           <span className="text-fuchsia-800 dark:text-fuchsia-300">
             {ar ? "يُنصح بـ" : "Recommended:"}{" "}
             <strong>{ar ? getMethod(recommended).name_ar : getMethod(recommended).name_en}</strong>
-            {" — "}{ar ? getMethod(recommended).tagline_ar : getMethod(recommended).tagline_en}
+            {" · "}{ar ? getMethod(recommended).tagline_ar : getMethod(recommended).tagline_en}
           </span>
         </div>
       )}

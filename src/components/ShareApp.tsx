@@ -22,17 +22,17 @@ interface Props {
 /**
  * Two buttons rolled into one widget:
  *
- *   [Install app]  — appears on Chromium/Edge/Android once the browser fires
+ *   [Install app]  · appears on Chromium/Edge/Android once the browser fires
  *                    `beforeinstallprompt`. Tapping shows the native install
  *                    sheet. iOS Safari doesn't support that event; we omit
  *                    the button there (PWA install on iOS = "Add to Home
  *                    Screen" from the share sheet, which the user already
  *                    knows).
  *
- *   [Share the app] — uses navigator.share when available (mobile + Safari),
+ *   [Share the app] · uses navigator.share when available (mobile + Safari),
  *                     falls back to copying the URL on desktop. This is the
  *                     "share on every available platform" feature: WhatsApp,
- *                     Telegram, Twitter, Mail, Messages — whatever the OS
+ *                     Telegram, Twitter, Mail, Messages · whatever the OS
  *                     share sheet exposes.
  */
 export default function ShareApp({ className }: Props) {
@@ -83,7 +83,7 @@ export default function ShareApp({ className }: Props) {
         await navigator.share(data);
         return;
       } catch {
-        // User cancelled or share failed — fall through to clipboard
+        // User cancelled or share failed · fall through to clipboard
       }
     }
     // Desktop fallback: copy the URL

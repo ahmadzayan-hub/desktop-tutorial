@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* ══════════════════════════════════════════════════════════════════
-   Maktab · مكتب — Interactive Design System
+   Maktab · مكتب · Interactive Design System
    "Your MBA, on one desk." Bilingual EN/AR · UAE-rooted.
    ══════════════════════════════════════════════════════════════════ */
 
@@ -40,6 +40,8 @@ html, body {
   @apply h-full antialiased;
   background: var(--bg);
   color: #0f172a;
+  font-family: "Space Grotesk", "Inter", "Segoe UI", system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";
   -webkit-tap-highlight-color: transparent;
   scroll-behavior: smooth;
 }
@@ -47,7 +49,20 @@ html, body {
 html.dark body { color: #e2e8f0; }
 
 html[dir="rtl"] body {
-  font-family: "IBM Plex Sans Arabic", "Noto Sans Arabic", "Segoe UI", system-ui, sans-serif;
+  font-family: "Tajawal", "IBM Plex Sans Arabic", "Noto Sans Arabic", "Segoe UI", system-ui, sans-serif;
+}
+
+h1, h2, .display {
+  font-family: "Fraunces", "Space Grotesk", Georgia, serif;
+  font-optical-sizing: auto;
+  letter-spacing: -0.02em;
+}
+
+html[dir="rtl"] h1,
+html[dir="rtl"] h2,
+html[dir="rtl"] .display {
+  font-family: "Tajawal", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  letter-spacing: 0;
 }
 
 /* ── Scrollbar ──────────────────────────────────────────────────── */
@@ -279,7 +294,7 @@ html.dark .card-hover:hover {
 
 .progress-fill {
   @apply h-full rounded-full transition-all duration-700;
-  /* background driven by inline style from Progress component — color prop works */
+  /* background driven by inline style from Progress component · color prop works */
   background: linear-gradient(90deg, #3b82f6, #6366f1);
   position: relative;
   overflow: hidden;
@@ -545,7 +560,7 @@ html.dark .notif-dot::after { border-color: #0b1120; }
   animation: gradientX 8s ease infinite;
 }
 
-/* gradientX keyframe lives in tailwind.config — no duplicate needed here */
+/* gradientX keyframe lives in tailwind.config · no duplicate needed here */
 
 /* ── Floating label animation ────────────────────────────────────── */
 

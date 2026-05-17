@@ -58,7 +58,7 @@ const INIT_MEETINGS: MeetingNote[] = [
   },
   {
     id: "mn-002", date: "2026-05-05T14:00:00.000Z", title: "Week 2 Progress Check",
-    notes: "Khalid presented competitive analysis — 6 incumbent players identified. Layla confirmed free zone incorporation recommended (DIFC/DMCC). Break-even at 18 months with conservative assumptions.",
+    notes: "Khalid presented competitive analysis · 6 incumbent players identified. Layla confirmed free zone incorporation recommended (DIFC/DMCC). Break-even at 18 months with conservative assumptions.",
     action_items: ["Layla: Add TDRA compliance to Section 3", "Sara: Draft Porter's Five Forces by May 8", "Mohammed: Start risk register"],
   },
 ];

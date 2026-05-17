@@ -62,7 +62,7 @@ export interface AIModel {
   /** Short note about strengths, shown as a tooltip in the picker. */
   notes_en: string;
   notes_ar: string;
-  /** True when this is the family's current flagship — the picker promotes it. */
+  /** True when this is the family's current flagship · the picker promotes it. */
   flagship?: boolean;
   /** True if this model accepts images / files as input. */
   multimodal?: boolean;
@@ -167,7 +167,7 @@ export const AI_MODELS: ReadonlyArray<AIModel> = [
     notes_ar: "استدلال متعدّد الوسائط عبر الصورة والفيديو والنصّ."
   },
   {
-    id: "generic", name: "Generic", vendor: "—", category: "text",
+    id: "generic", name: "Generic", vendor: "·", category: "text",
     context: 8_000, promptStyle: "generic",
     notes_en: "Plain markdown scaffold. Use when copying to a model not in this list.",
     notes_ar: "هيكل ماركداون عام. استخدمه عند النسخ إلى نموذج خارج القائمة."

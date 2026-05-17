@@ -147,9 +147,9 @@ export default function AdminFeedbackPage() {
                 <tr key={i} className="border-t border-slate-200 dark:border-slate-800">
                   <td className="py-1.5 pe-2 text-slate-500 tabular-nums">{new Date(r.created_at).toLocaleString()}</td>
                   <td className="py-1.5 pe-2">{r.rating > 0 ? "👍" : r.rating < 0 ? "👎" : "·"}</td>
-                  <td className="py-1.5 pe-2">{r.intent ?? "—"}</td>
-                  <td className="py-1.5 pe-2">{r.target_model ?? "—"}</td>
-                  <td className="py-1.5 pe-2">{r.locale ?? "—"}</td>
+                  <td className="py-1.5 pe-2">{r.intent ?? "·"}</td>
+                  <td className="py-1.5 pe-2">{r.target_model ?? "·"}</td>
+                  <td className="py-1.5 pe-2">{r.locale ?? "·"}</td>
                   <td className="py-1.5 pe-2 text-slate-700 dark:text-slate-300 max-w-md truncate">{r.comment ?? ""}</td>
                 </tr>
               ))}
@@ -194,7 +194,7 @@ function Bars({ title, rows }: {
     <div className="card">
       <h2 className="text-sm font-semibold mb-3">{title}</h2>
       {entries.length === 0 ? (
-        <p className="text-xs text-slate-500">—</p>
+        <p className="text-xs text-slate-500">·</p>
       ) : (
         <ul className="space-y-2">
           {entries.map(([k, v]) => {

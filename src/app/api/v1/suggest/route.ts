@@ -9,7 +9,7 @@ import { suggestForDraft, localizedSuggestion } from "@/lib/live-suggestions";
  *   { draft, intent?, target_model?, locale?, limit? }
  *   → { api_version, suggestions: [{ id, kind, label, preview, append }] }
  *
- * Pure local engine — no LLM round-trip, no auth required, no PII stored.
+ * Pure local engine · no LLM round-trip, no auth required, no PII stored.
  * Designed to be called on every keystroke from the browser extension's
  * floating button or the in-app live-suggestions chip strip.
  *

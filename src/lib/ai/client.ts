@@ -1,4 +1,4 @@
-// AI provider abstraction — swap between Anthropic Claude and OpenAI
+// AI provider abstraction · swap between Anthropic Claude and OpenAI
 
 const PROVIDER = process.env.AI_PROVIDER ?? "anthropic"; // "anthropic" | "openai"
 

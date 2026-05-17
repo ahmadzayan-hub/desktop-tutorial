@@ -12,7 +12,7 @@ import { z } from "zod";
  *   intents       comma-separated list   e.g. "coding,writing"   (from history)
  *   limit         1-12                   default 6
  *
- * No auth required — all personalisation runs server-side from the supplied
+ * No auth required · all personalisation runs server-side from the supplied
  * history signal; no PII is stored.
  */
 
@@ -32,7 +32,7 @@ export interface TrendItem {
 }
 
 // ---------------------------------------------------------------------------
-// Trend catalogue — curated for Middle-East & Arabic context, updated daily
+// Trend catalogue · curated for Middle-East & Arabic context, updated daily
 // by rotating via day-of-year index so content feels fresh without a DB.
 // ---------------------------------------------------------------------------
 

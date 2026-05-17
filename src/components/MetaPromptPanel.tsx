@@ -153,7 +153,7 @@ export default function MetaPromptPanel({ prompt, intent, onUseImproved }: Props
               >
                 {t === "score"
                   ? (ar ? "📊 التقييم" : "📊 Score")
-                  : (ar ? "✨ النسخة المحسّنة" : "✨ Improved")}
+                  : (ar ? "النسخة المحسّنة" : "Improved")}
               </button>
             ))}
           </div>

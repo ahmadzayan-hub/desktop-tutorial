@@ -203,7 +203,7 @@ export default function Workspace() {
       });
       setFinalPrompt(result.final_prompt);
       setRationale(result.rationale);
-      setInfo(locale === "ar" ? "وضع محلي — لا يحتاج إلى اتصال." : "Running locally — no backend needed.");
+      setInfo(locale === "ar" ? "وضع محلي · لا يحتاج إلى اتصال." : "Running locally · no backend needed.");
       rememberHistory(raw, effective.intent, model, result.final_prompt);
       setLoading(false);
       return;
@@ -217,7 +217,7 @@ export default function Workspace() {
       source: "local"
     });
     setAnswers({});
-    setInfo(locale === "ar" ? "وضع محلي — لا يحتاج إلى اتصال." : "Running locally — no backend needed.");
+    setInfo(locale === "ar" ? "وضع محلي · لا يحتاج إلى اتصال." : "Running locally · no backend needed.");
     setLoading(false);
   }
 
@@ -476,7 +476,7 @@ export default function Workspace() {
             <path d="M50 5 L58 42 L95 50 L58 58 L50 95 L42 58 L5 50 L42 42 Z" fill="url(#sp)"/>
           </svg>
 
-          {/* Domain picker — surfaces every supported prompt type so the
+          {/* Domain picker · surfaces every supported prompt type so the
               platform feels general-purpose, not image-only. */}
           <DomainPicker
             active={previewIntent}
@@ -546,7 +546,7 @@ export default function Workspace() {
           )}
 
           {/* Style packs only appear when the user has *explicitly* picked
-              the Image domain — auto-detection alone shouldn't make the
+              the Image domain · auto-detection alone shouldn't make the
               platform look image-focused. */}
           {forcedIntent === "image" && (
             <StylePackPicker
@@ -594,7 +594,7 @@ export default function Workspace() {
             </div>
           )}
 
-          {/* Local history + saved library — privacy-friendly, browser-only */}
+          {/* Local history + saved library · privacy-friendly, browser-only */}
           {!hasOutput && history.length > 0 && (
             <RecentList
               history={history}
@@ -669,7 +669,7 @@ export default function Workspace() {
                         title={t("ws.btn.push_hint")}
                         className="btn-primary text-xs"
                       >
-                        ✨ {t("ws.btn.push_further")}
+                        {t("ws.btn.push_further")}
                       </button>
                       <button onClick={regenerate} disabled={loading} className="btn-ghost border border-slate-300 dark:border-slate-700 text-xs">
                         <RefreshIcon /> {t("ws.btn.regenerate")}

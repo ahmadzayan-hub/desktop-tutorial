@@ -11,7 +11,7 @@
 
 export interface LearnCourse {
   id: string;
-  /** Author / channel — used for the byline */
+  /** Author / channel · used for the byline */
   author: string;
   duration: string;          // e.g. "1h 30m"
   level: "beginner" | "intermediate" | "advanced";
@@ -35,7 +35,7 @@ export const LEARN_COURSES: ReadonlyArray<LearnCourse> = [
     url: "https://www.youtube.com/playlist?list=PLf2m23nhTg1NaMm2cw9VFJP_tojp_28x_",
     title_en: "Prompt Engineering Interactive Tutorial",
     title_ar: "تعلّم هندسة الموجِّهات بشكل تفاعلي (Anthropic)",
-    blurb_en: "Anthropic's official 9-chapter tutorial — best starting point for serious prompt engineering. Free, hands-on.",
+    blurb_en: "Anthropic's official 9-chapter tutorial · best starting point for serious prompt engineering. Free, hands-on.",
     blurb_ar: "الدرس الرسمي لشركة Anthropic في 9 فصول. أفضل نقطة انطلاق لهندسة الموجِّهات بشكل جدّي. مجاني وتطبيقي."
   },
   {
@@ -57,7 +57,7 @@ export const LEARN_COURSES: ReadonlyArray<LearnCourse> = [
     level: "intermediate",
     topics: ["fundamentals", "patterns", "production"],
     url: "https://www.youtube.com/watch?v=_ZvnD73m40o",
-    title_en: "Prompt Engineering Tutorial — Master ChatGPT and LLM Responses",
+    title_en: "Prompt Engineering Tutorial · Master ChatGPT and LLM Responses",
     title_ar: "دورة هندسة الموجِّهات الكاملة (freeCodeCamp)",
     blurb_en: "Five-hour open course covering everything from zero-shot to chain-of-thought, ReAct, and production tactics.",
     blurb_ar: "دورة مفتوحة بطول خمس ساعات تغطّي كل شيء من Zero-shot إلى Chain-of-Thought و ReAct وتكتيكات الإنتاج."
@@ -105,7 +105,7 @@ export const LEARN_COURSES: ReadonlyArray<LearnCourse> = [
     level: "beginner",
     topics: ["fundamentals", "patterns"],
     url: "https://www.youtube.com/watch?v=jC4v5AS4RIM",
-    title_en: "What is Prompt Engineering? — Microsoft Reactor",
+    title_en: "What is Prompt Engineering? · Microsoft Reactor",
     title_ar: "ما هي هندسة الموجِّهات؟ (Microsoft)",
     blurb_en: "Half-hour Microsoft Reactor session covering the basics with concrete examples for non-developers.",
     blurb_ar: "جلسة من Microsoft Reactor بطول نصف ساعة تغطّي الأساسيات بأمثلة ملموسة لغير المطوّرين."

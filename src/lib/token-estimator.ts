@@ -3,7 +3,7 @@
  *
  * Real tokenisers ship as multi-MB WASM blobs (tiktoken, sentencepiece).
  * For a free public-trial UI we want a *fast, dependency-free* estimate that
- * is good enough to flag "is this prompt going to fit?" — typically within
+ * is good enough to flag "is this prompt going to fit?" · typically within
  * ±15% of the true count for normal text.
  *
  * Approach:
@@ -67,15 +67,15 @@ export function estimateTokenRange(text: string): TokenEstimate {
 }
 
 /** Per-model context-window guidance for the UI. Values are conservative
- *  documented limits as of late 2025 — used to colour-code the estimate
+ *  documented limits as of late 2025 · used to colour-code the estimate
  *  ("fits comfortably / borderline / over"). */
 export interface ModelLimits {
   label: string;
   /** Total input + output context window (tokens). */
   context: number;
-  /** Soft warning threshold (% of context) — UI turns amber above this. */
+  /** Soft warning threshold (% of context) · UI turns amber above this. */
   warnPct: number;
-  /** Hard cap (% of context) — UI turns rose above this. */
+  /** Hard cap (% of context) · UI turns rose above this. */
   hardPct: number;
 }
 

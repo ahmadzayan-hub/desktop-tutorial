@@ -13,7 +13,7 @@ const STEPS = [
     step: "02",
     icon: Brain,
     title: "AI Processes Your Materials",
-    description: "Maktab extracts and chunks your documents, generates embeddings, and builds a personalised knowledge base — all private to you.",
+    description: "Maktab extracts and chunks your documents, generates embeddings, and builds a personalised knowledge base · all private to you.",
     color: "text-teal-600 bg-teal-100 dark:bg-teal-900/50",
   },
   {
@@ -38,7 +38,7 @@ export default function HowItWorksPage() {
       <section className="bg-gradient-to-br from-brand-950 to-teal-900 text-white py-20 px-4 text-center">
         <h1 className="text-4xl md:text-5xl font-bold mb-4">How Maktab works</h1>
         <p className="text-xl text-white/70 max-w-2xl mx-auto">
-          From document upload to AI-powered insights — here's your path to MBA excellence.
+          From document upload to AI-powered insights · here's your path to MBA excellence.
         </p>
       </section>
 

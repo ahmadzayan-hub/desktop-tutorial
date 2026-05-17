@@ -82,7 +82,7 @@ export default function TokenMeter({ text, model, className }: Props) {
           </span>
         </div>
         <span className="text-xs text-slate-500 dark:text-slate-400">
-          ({formatTokens(range.low)}–{formatTokens(range.high)} {t("tokens.tokens")})
+          ({formatTokens(range.low)}·{formatTokens(range.high)} {t("tokens.tokens")})
         </span>
       </div>
 

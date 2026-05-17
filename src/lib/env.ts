@@ -1,4 +1,4 @@
-// Read env without throwing — modules import this at build time on Vercel
+// Read env without throwing · modules import this at build time on Vercel
 // before runtime env vars are bound. Missing values surface as clear 500s
 // from the API routes that actually need them, not as build failures.
 //

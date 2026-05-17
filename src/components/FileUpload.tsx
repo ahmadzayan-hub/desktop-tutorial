@@ -263,8 +263,8 @@ export function formatAttachedAsContext(files: AttachedFile[], locale: "en" | "a
   const blocks = files.map((f) => {
     if (f.kind === "image") {
       const note = locale === "ar"
-        ? `صورة مرفقة — اسم الملف: ${f.name} · النوع: ${f.type} · الحجم: ${humanSize(f.size, locale)}.`
-        : `Attached image — filename: ${f.name} · type: ${f.type} · size: ${humanSize(f.size, locale)}.`;
+        ? `صورة مرفقة · اسم الملف: ${f.name} · النوع: ${f.type} · الحجم: ${humanSize(f.size, locale)}.`
+        : `Attached image · filename: ${f.name} · type: ${f.type} · size: ${humanSize(f.size, locale)}.`;
       // Inline the data URL when small enough; vision-capable models can read
       // it, others at least see the filename and size.
       return f.dataUrl
@@ -273,8 +273,8 @@ export function formatAttachedAsContext(files: AttachedFile[], locale: "en" | "a
     }
     if (f.kind === "binary") {
       const note = locale === "ar"
-        ? `ملف ثنائي مرفق (لم يُستخرَج محتواه نصّيًا) — اسم الملف: ${f.name} · النوع: ${f.type} · الحجم: ${humanSize(f.size, locale)}.`
-        : `Attached binary file (text not extracted) — filename: ${f.name} · type: ${f.type} · size: ${humanSize(f.size, locale)}.`;
+        ? `ملف ثنائي مرفق (لم يُستخرَج محتواه نصّيًا) · اسم الملف: ${f.name} · النوع: ${f.type} · الحجم: ${humanSize(f.size, locale)}.`
+        : `Attached binary file (text not extracted) · filename: ${f.name} · type: ${f.type} · size: ${humanSize(f.size, locale)}.`;
       return `### ${f.name}\n${note}`;
     }
     const tag = f.kind === "structured"

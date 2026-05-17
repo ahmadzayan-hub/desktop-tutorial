@@ -3,7 +3,7 @@ interface LogoProps {
 }
 
 /**
- * Maktab brand mark: a stylised desk with a book and a focus dot —
+ * Maktab brand mark: a stylised desk with a book and a focus dot ·
  * the "one desk where every piece of your MBA lives". Single SVG, no deps.
  */
 export default function Logo({ className }: LogoProps) {
@@ -29,7 +29,7 @@ export default function Logo({ className }: LogoProps) {
       {/* Rounded tile background */}
       <rect width="512" height="512" rx="112" fill="url(#mk-bg)" />
 
-      {/* The "desk" — a horizontal surface with two legs */}
+      {/* The "desk" · a horizontal surface with two legs */}
       <rect x="96"  y="316" width="320" height="20" rx="10" fill="#ffffff" opacity="0.95" />
       <rect x="124" y="336" width="18"  height="64" rx="6"  fill="#ffffff" opacity="0.7" />
       <rect x="370" y="336" width="18"  height="64" rx="6"  fill="#ffffff" opacity="0.7" />
@@ -52,7 +52,7 @@ export default function Logo({ className }: LogoProps) {
       <line x1="272" y1="232" x2="334" y2="232" stroke="#1e3a8a" strokeWidth="3" opacity="0.25" />
       <line x1="272" y1="252" x2="334" y2="252" stroke="#1e3a8a" strokeWidth="3" opacity="0.20" />
 
-      {/* Focus spark — the "AI" of the desk */}
+      {/* Focus spark · the "AI" of the desk */}
       <circle cx="384" cy="140" r="20" fill="#fde68a" />
       <circle cx="384" cy="140" r="38" fill="#fde68a" opacity="0.25" />
     </svg>

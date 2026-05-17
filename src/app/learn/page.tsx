@@ -8,7 +8,7 @@ import { LEARN_COURSES, LEARN_LEVELS, type LearnCourse } from "@/lib/learn-cours
 export const dynamic = "force-dynamic";
 
 /**
- * Master AI — free, open YouTube courses curated by topic and level.
+ * Master AI · free, open YouTube courses curated by topic and level.
  *
  * Inspired by the "Master AI" pattern in similar platforms but with a hard
  * rule: only links to free, reputable content (DeepLearning.AI, Anthropic,

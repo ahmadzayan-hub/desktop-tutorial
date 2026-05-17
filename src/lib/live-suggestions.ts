@@ -4,7 +4,7 @@
  * Given a draft prompt + light context (which target model, optional intent,
  * UI locale), return up to N short suggestions the user can apply with a
  * single tap. Suggestions are *additions* (markdown blocks) the editor can
- * append, never replacements — that's what makes the UX feel like
+ * append, never replacements · that's what makes the UX feel like
  * Grammarly's "accept this fix" without ever clobbering the user's text.
  *
  * Suggestions are derived from the same five-dimension quality score so
@@ -43,7 +43,7 @@ export interface LiveSuggestion {
   append_ar: string;
 }
 
-/** Context the parent provides — none of these fields are required. */
+/** Context the parent provides · none of these fields are required. */
 export interface SuggestionContext {
   intent?: Intent;
   targetModel?: "chatgpt" | "claude" | "copilot" | "gemini" | "generic";

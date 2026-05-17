@@ -12,7 +12,7 @@ const schema = z.object({
 
 export async function POST(req: NextRequest) {
   if (isDemoMode) {
-    // In demo mode, any registration instantly succeeds — redirect to dashboard
+    // In demo mode, any registration instantly succeeds · redirect to dashboard
     return NextResponse.json({ user: { id: DEMO_USER.id, email: DEMO_USER.email }, demo: true }, { status: 201 });
   }
 

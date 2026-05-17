@@ -5,7 +5,7 @@ import { isDemoMode, DEMO_USER } from "@/lib/demo";
 
 export async function POST(req: NextRequest) {
   if (isDemoMode) {
-    // In demo mode, any credentials succeed — return the demo user
+    // In demo mode, any credentials succeed · return the demo user
     return NextResponse.json({ user: { id: DEMO_USER.id, email: DEMO_USER.email }, demo: true });
   }
 

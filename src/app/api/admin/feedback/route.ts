@@ -16,7 +16,7 @@ interface FeedbackRow {
  * Aggregated feedback dashboard endpoint.
  *
  * RLS already restricts SELECT on `feedback` to org owners/admins, so we
- * just authenticate the user and run the query — Postgres enforces the
+ * just authenticate the user and run the query · Postgres enforces the
  * permission boundary. Anonymous-org rows (org_id = null) are returned to
  * any authenticated user; that's intentional, since they have no owning
  * org and the platform admins want to see them.

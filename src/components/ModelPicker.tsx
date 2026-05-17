@@ -47,7 +47,7 @@ export default function ModelPicker({ value, onChange, className }: Props) {
             {groups[cat].map((m) => (
               <option key={m.id} value={m.id}>
                 {m.flagship ? "★ " : ""}{m.name}
-                {m.vendor === "—" ? "" : ` · ${m.vendor}`}
+                {m.vendor === "·" ? "" : ` · ${m.vendor}`}
               </option>
             ))}
           </optgroup>

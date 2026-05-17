@@ -72,7 +72,7 @@ type Status = "idle" | "requesting" | "listening" | "denied" | "error" | "unsupp
 /**
  * Professional voice input.
  *
- * Why this rewrite — the previous version had three concrete bugs:
+ * Why this rewrite · the previous version had three concrete bugs:
  *   1. It never explicitly requested microphone permission via getUserMedia,
  *      so on some browsers `recognition.start()` silently failed before any
  *      prompt appeared.
@@ -102,7 +102,7 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, onTypeInstead, 
   const [voiceLocale, setVoiceLocale] = useState<VoiceLocale | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [smartSubmit, setSmartSubmit] = useState(false);
-  // What the recogniser is hearing *right now* — shown so the user has
+  // What the recogniser is hearing *right now* · shown so the user has
   // immediate proof that speech is being captured. Cleared on stop / on the
   // next interim chunk.
   const [liveText, setLiveText] = useState<string>("");
@@ -254,7 +254,7 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, onTypeInstead, 
           const now = Date.now();
           if (rms > SILENCE_THRESHOLD) {
             lastVoiceAtRef.current = now;
-            // Mark that we've seen the user actually speak — this rules out
+            // Mark that we've seen the user actually speak · this rules out
             // "user is silent" as the cause when no transcript arrives.
             audioSeenRef.current = true;
           }
@@ -330,7 +330,7 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, onTypeInstead, 
         if (r.isFinal) finalText += txt;
         else interim += txt;
       }
-      // Always show the live transcript pill — this is the user's confirmation
+      // Always show the live transcript pill · this is the user's confirmation
       // that the recogniser is hearing them, even before a final arrives.
       setLiveText(finalText || interim);
       if (finalText) {
@@ -353,7 +353,7 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, onTypeInstead, 
     };
 
     rec.onerror = (e: any) => {
-      // Recoverable on mobile during pauses — keep going unless the user stopped
+      // Recoverable on mobile during pauses · keep going unless the user stopped
       if (
         !userStoppedRef.current &&
         (e.error === "no-speech" || e.error === "audio-capture" || e.error === "aborted")
@@ -436,7 +436,7 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, onTypeInstead, 
   if (status === "unsupported") {
     return (
       <span className={`text-xs text-slate-500 ${className ?? ""}`} title={t("voice.unsupported")}>
-        🎤 —
+        🎤 ·
       </span>
     );
   }
@@ -480,7 +480,7 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, onTypeInstead, 
               <p className="text-xs text-amber-700 dark:text-amber-300">
                 {stuck
                   ? t("voice.fallback_tried")
-                  : t("voice.no_speech_hint", { dialect: voiceLocale ? labelFor(voiceLocale, locale) : "—" })}
+                  : t("voice.no_speech_hint", { dialect: voiceLocale ? labelFor(voiceLocale, locale) : "·" })}
               </p>
               {onTypeInstead && (
                 <button
@@ -583,7 +583,7 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, onTypeInstead, 
         {listening && (
           <>
             <span className="absolute inset-0 rounded-full animate-ping bg-rose-400/40" />
-            {/* Live audio-level ring — scales with RMS */}
+            {/* Live audio-level ring · scales with RMS */}
             <span
               className="absolute inset-0 rounded-full bg-rose-300/30"
               style={{ transform: `scale(${1 + level * 0.45})`, transition: "transform 80ms linear" }}

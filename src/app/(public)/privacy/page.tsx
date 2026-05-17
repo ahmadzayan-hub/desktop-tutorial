@@ -12,7 +12,7 @@ export default function PrivacyPage() {
           },
           {
             title: "2. Data We Collect",
-            body: "We collect: (a) Account data — name, email, password hash, role; (b) Academic profile — university, program, semester, GPA target; (c) Course data — courses you create manually; (d) Uploaded files — lecture PDFs, PowerPoints, audio, video, notes; (e) Usage data — AI queries, study pack views, quiz attempts; (f) Payment data — subscription status, billing information managed by Stripe (we do not store full card numbers); (g) Communication data — messages, email logs; (h) Consent logs — records of your explicit consents."
+            body: "We collect: (a) Account data · name, email, password hash, role; (b) Academic profile · university, program, semester, GPA target; (c) Course data · courses you create manually; (d) Uploaded files · lecture PDFs, PowerPoints, audio, video, notes; (e) Usage data · AI queries, study pack views, quiz attempts; (f) Payment data · subscription status, billing information managed by Stripe (we do not store full card numbers); (g) Communication data · messages, email logs; (h) Consent logs · records of your explicit consents."
           },
           {
             title: "3. How We Use Your Data",
@@ -63,7 +63,7 @@ export default function PrivacyPage() {
       </div>
 
       <div className="mt-12 p-5 bg-slate-50 dark:bg-slate-800 rounded-2xl">
-        <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-2">سياسة الخصوصية — ملاحظة باللغة العربية</h3>
+        <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-2">سياسة الخصوصية · ملاحظة باللغة العربية</h3>
         <p className="text-sm text-slate-600 dark:text-slate-400">
           سياسة الخصوصية الكاملة متاحة باللغة العربية. نحن نلتزم بحماية بياناتك الشخصية وفقاً للأنظمة المعمول بها. للاستفسار: privacy@tweenz.ae
         </p>

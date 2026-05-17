@@ -3,9 +3,9 @@ import "./globals.css";
 import { I18nProvider } from "@/lib/i18n/I18nProvider";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.tweenz.ae";
-const TITLE = "Maktab · مكتب — Your MBA on one desk | منصة طلاب الماجستير";
+const TITLE = "Maktab · مكتب · Your MBA on one desk | منصة طلاب الماجستير";
 const DESCRIPTION =
-  "Maktab brings every part of your MBA — courses, lectures, study packs, grades, deadlines, and an AI tutor that cites your own materials — onto one bilingual desk. Built in the UAE, for students worldwide. | مكتب يجمع كل ما تحتاجه في دراسة الماجستير: المقررات، المحاضرات، حزم الدراسة، الدرجات، والمواعيد، مع معلّم ذكي يستشهد من مواد مقرّرك — في مكتب واحد بلغتين.";
+  "Maktab brings every part of your MBA · courses, lectures, study packs, grades, deadlines, and an AI tutor that cites your own materials · onto one bilingual desk. Built in the UAE, for students worldwide. | مكتب يجمع كل ما تحتاجه في دراسة الماجستير: المقررات، المحاضرات، حزم الدراسة، الدرجات، والمواعيد، مع معلّم ذكي يستشهد من مواد مقرّرك · في مكتب واحد بلغتين.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     url: APP_URL,
     siteName: "Maktab",
     locale: "en_US",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Maktab — Your MBA on one desk" }]
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Maktab · Your MBA on one desk" }]
   },
   twitter: {
     card: "summary_large_image",
@@ -56,13 +56,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Tajawal:wght@400;500;700;900&display=swap"
           rel="stylesheet"
         />
-        {/* Prevent flash of wrong theme */}
+        {/* Prevent flash of wrong theme + locale direction */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var k='mk_theme',v=localStorage.getItem(k);var d=v==='dark'||((v===null||v==='system')&&window.matchMedia('(prefers-color-scheme:dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();`
+            __html: `(function(){try{var k='mk_theme',v=localStorage.getItem(k);var d=v==='dark'||((v===null||v==='system')&&window.matchMedia('(prefers-color-scheme:dark)').matches);if(d)document.documentElement.classList.add('dark');var lk='po_locale',lv=(document.cookie.split('; ').find(function(p){return p.indexOf(lk+'=')===0;})||'').split('=')[1]||localStorage.getItem(lk);if(lv==='ar'){document.documentElement.setAttribute('dir','rtl');document.documentElement.setAttribute('lang','ar');}}catch(e){}})();`
           }}
         />
       </head>
@@ -80,7 +80,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               "@context": "https://schema.org",
               "@type": "WebApplication",
               name: "Maktab",
-              alternateName: ["مكتب", "Maktab — MBA Learning OS"],
+              alternateName: ["مكتب", "Maktab · MBA Learning OS"],
               description: DESCRIPTION,
               url: APP_URL,
               applicationCategory: "EducationApplication",

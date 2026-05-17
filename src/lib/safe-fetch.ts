@@ -31,7 +31,7 @@ export async function safeFetch<T = unknown>(
     try {
       parsed = JSON.parse(text);
     } catch {
-      // body present but not JSON — surface a sliced preview, no crash
+      // body present but not JSON · surface a sliced preview, no crash
       return {
         ok: false,
         status: res.status,

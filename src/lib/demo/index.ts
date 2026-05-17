@@ -56,8 +56,8 @@ export const DEMO_DEADLINES = [
   { id: "dl-003", user_id: DEMO_USER.id, title: "Marketing Campaign Proposal", type: "project", course_id: "course-004", course_name: "Digital Marketing", due_date: d(3, "T23:59:00.000Z"), risk: "at_risk", is_done: false, priority: "high", notes: "Social media strategy for Noon.com", created_at: d(-10) },
   { id: "dl-004", user_id: DEMO_USER.id, title: "Financial Modeling Assignment", type: "assignment", course_id: "course-002", course_name: "Financial Analysis", due_date: d(5, "T23:59:00.000Z"), risk: "due_soon", is_done: false, priority: "medium", notes: "DCF valuation model for a UAE retail company", created_at: d(-12) },
   { id: "dl-005", user_id: DEMO_USER.id, title: "HRM Leadership Essay", type: "essay", course_id: "course-005", course_name: "Leadership & Org Behavior", due_date: d(7, "T23:59:00.000Z"), risk: "due_soon", is_done: false, priority: "medium", notes: "Transformational vs. Transactional leadership (1500 words)", created_at: d(-8) },
-  { id: "dl-006", user_id: DEMO_USER.id, title: "Group Project Presentation", type: "presentation", course_id: "course-003", course_name: "Operations & Supply Chain", due_date: d(10, "T14:00:00.000Z"), risk: "safe", is_done: false, priority: "medium", notes: "Supply chain disruption analysis — 15-min slot", created_at: d(-5) },
-  { id: "dl-007", user_id: DEMO_USER.id, title: "Mid-term Exam: Financial Analysis", type: "exam", course_id: "course-002", course_name: "Financial Analysis", due_date: d(14, "T10:00:00.000Z"), risk: "safe", is_done: false, priority: "high", notes: "Chapters 1–6, open book, 2 hours", created_at: d(-3) },
+  { id: "dl-006", user_id: DEMO_USER.id, title: "Group Project Presentation", type: "presentation", course_id: "course-003", course_name: "Operations & Supply Chain", due_date: d(10, "T14:00:00.000Z"), risk: "safe", is_done: false, priority: "medium", notes: "Supply chain disruption analysis · 15-min slot", created_at: d(-5) },
+  { id: "dl-007", user_id: DEMO_USER.id, title: "Mid-term Exam: Financial Analysis", type: "exam", course_id: "course-002", course_name: "Financial Analysis", due_date: d(14, "T10:00:00.000Z"), risk: "safe", is_done: false, priority: "high", notes: "Chapters 1·6, open book, 2 hours", created_at: d(-3) },
   { id: "dl-008", user_id: DEMO_USER.id, title: "Operations Research Paper", type: "paper", course_id: "course-003", course_name: "Operations & Supply Chain", due_date: d(19, "T23:59:00.000Z"), risk: "safe", is_done: false, priority: "low", notes: "10 pages minimum, APA format", created_at: d(-2) },
 ];
 
@@ -72,7 +72,7 @@ export const DEMO_ANNOUNCEMENTS = [
     id: "ann-002", user_id: DEMO_USER.id, course_id: "course-002", course_name: "Financial Analysis",
     title: "Mid-term Exam Format Change",
     body: "Based on feedback, the mid-term will now include 2 case study questions instead of 5 short-answer questions. The total marks remain at 100. The exam will focus on DCF, ratio analysis, and capital structure. Past exams are on Moodle.",
-    source: "email", summary: "Exam format updated: 2 case studies (not 5 short answers). Focus: DCF, ratios, capital structure.", required_action: "Review DCF models and ratio analysis from Weeks 1–5. Practice with past exam papers.", risk_level: "high", is_archived: false, created_at: d(-2),
+    source: "email", summary: "Exam format updated: 2 case studies (not 5 short answers). Focus: DCF, ratios, capital structure.", required_action: "Review DCF models and ratio analysis from Weeks 1·5. Practice with past exam papers.", risk_level: "high", is_archived: false, created_at: d(-2),
   },
   {
     id: "ann-003", user_id: DEMO_USER.id, course_id: "course-003", course_name: "Operations & Supply Chain",
@@ -90,19 +90,19 @@ export const DEMO_ANNOUNCEMENTS = [
 
 export const DEMO_TASKS = [
   { id: "task-001", user_id: DEMO_USER.id, title: "Review Porter's 5 Forces lecture notes", status: "todo", priority: "high", course_id: "course-001", course_name: "Strategic Management", due_date: d(1), created_at: d(-2) },
-  { id: "task-002", user_id: DEMO_USER.id, title: "Read Chapter 8 — Financial Statement Analysis", status: "todo", priority: "high", course_id: "course-002", course_name: "Financial Analysis", due_date: d(3), created_at: d(-2) },
+  { id: "task-002", user_id: DEMO_USER.id, title: "Read Chapter 8 · Financial Statement Analysis", status: "todo", priority: "high", course_id: "course-002", course_name: "Financial Analysis", due_date: d(3), created_at: d(-2) },
   { id: "task-003", user_id: DEMO_USER.id, title: "Schedule group meeting for Operations project", status: "todo", priority: "medium", course_id: "course-003", course_name: "Operations & Supply Chain", due_date: d(2), created_at: d(-1) },
   { id: "task-004", user_id: DEMO_USER.id, title: "Prepare Case Study slides (Tesla / GCC)", status: "in_progress", priority: "high", course_id: "course-001", course_name: "Strategic Management", due_date: d(2), created_at: d(-3) },
   { id: "task-005", user_id: DEMO_USER.id, title: "Draft marketing campaign creative brief", status: "in_progress", priority: "high", course_id: "course-004", course_name: "Digital Marketing", due_date: d(3), created_at: d(-2) },
   { id: "task-006", user_id: DEMO_USER.id, title: "Outline DCF model structure", status: "in_progress", priority: "medium", course_id: "course-002", course_name: "Financial Analysis", due_date: d(5), created_at: d(-1) },
   { id: "task-007", user_id: DEMO_USER.id, title: "Submit MGMT 601 reading summary", status: "completed", priority: "low", course_id: "course-001", course_name: "Strategic Management", due_date: d(-7), created_at: d(-10) },
-  { id: "task-008", user_id: DEMO_USER.id, title: "Read HRM Chapter 3 — Motivation Theories", status: "completed", priority: "low", course_id: "course-005", course_name: "Leadership & Org Behavior", due_date: d(-5), created_at: d(-8) },
+  { id: "task-008", user_id: DEMO_USER.id, title: "Read HRM Chapter 3 · Motivation Theories", status: "completed", priority: "low", course_id: "course-005", course_name: "Leadership & Org Behavior", due_date: d(-5), created_at: d(-8) },
   { id: "task-009", user_id: DEMO_USER.id, title: "Complete Operations Lab Report", status: "completed", priority: "medium", course_id: "course-003", course_name: "Operations & Supply Chain", due_date: d(-4), created_at: d(-9) },
 ];
 
 export const DEMO_GRADES = [
   { id: "gr-001", user_id: DEMO_USER.id, course_id: "course-001", course_name: "Strategic Management", category: "Assignment", item_name: "Industry Analysis Report", score: 82, max_score: 100, weight: 15, created_at: d(-30) },
-  { id: "gr-002", user_id: DEMO_USER.id, course_id: "course-001", course_name: "Strategic Management", category: "Participation", item_name: "Week 1–4 Class Participation", score: 18, max_score: 20, weight: 10, created_at: d(-20) },
+  { id: "gr-002", user_id: DEMO_USER.id, course_id: "course-001", course_name: "Strategic Management", category: "Participation", item_name: "Week 1·4 Class Participation", score: 18, max_score: 20, weight: 10, created_at: d(-20) },
   { id: "gr-003", user_id: DEMO_USER.id, course_id: "course-002", course_name: "Financial Analysis", category: "Quiz", item_name: "Financial Ratios Quiz", score: 74, max_score: 100, weight: 10, created_at: d(-25) },
   { id: "gr-004", user_id: DEMO_USER.id, course_id: "course-003", course_name: "Operations & Supply Chain", category: "Lab Report", item_name: "Lean Manufacturing Case", score: 91, max_score: 100, weight: 20, created_at: d(-18) },
   { id: "gr-005", user_id: DEMO_USER.id, course_id: "course-004", course_name: "Digital Marketing", category: "Project", item_name: "Campaign Concept Pitch", score: 88, max_score: 100, weight: 25, created_at: d(-15) },
@@ -120,11 +120,11 @@ export const DEMO_FILES = [
 export const DEMO_STUDY_PACKS = [
   {
     id: "pack-001", user_id: DEMO_USER.id, file_id: "file-001", course_id: "course-001", course_name: "Strategic Management",
-    title: "Porter's Five Forces — Complete Guide", topic: "Porter's Five Forces", status: "ready",
+    title: "Porter's Five Forces · Complete Guide", topic: "Porter's Five Forces", status: "ready",
     overview: "Porter's Five Forces is a strategic analysis framework developed by Michael Porter (Harvard, 1979) that evaluates competitive intensity and market attractiveness across five dimensions: competitive rivalry, threat of new entrants, bargaining power of buyers, bargaining power of suppliers, and threat of substitutes.",
     summary: "This pack covers the complete Porter's Five Forces framework applied to real-world MBA case studies. You'll understand how to evaluate industry attractiveness, identify strategic positioning, and apply the model to UAE and GCC market contexts. The framework remains the gold standard for external environmental analysis in MBA programs worldwide.",
-    detailed_notes: "## Porter's Five Forces Framework\n\n### 1. Competitive Rivalry\n- Number of competitors, their size, and diversity\n- Industry growth rate — slow growth = higher rivalry\n- Fixed costs — high fixed costs pressure firms to compete on price\n- **UAE Context**: Telecoms (Etisalat vs. du) shows duopoly rivalry\n\n### 2. Threat of New Entrants\n- Barriers to entry: capital requirements, economies of scale, brand loyalty, regulatory\n- **Key insight**: High barriers = low threat = more attractive industry\n- Saudi Vision 2030 is reducing barriers in many sectors\n\n### 3. Bargaining Power of Buyers\n- Buyer concentration, price sensitivity, switching costs\n- When buyers are powerful, they squeeze margins\n- **Example**: Large UAE government procurement contracts\n\n### 4. Bargaining Power of Suppliers\n- Supplier concentration, uniqueness of input, switching cost\n- OPEC as the ultimate supplier power example\n\n### 5. Threat of Substitutes\n- Price-performance ratio of substitutes\n- **Digital disruption** = biggest source of substitution today\n\n## Applying the Framework\n1. Identify all relevant factors for each force\n2. Rate each force: Low / Medium / High\n3. Aggregate to determine overall industry attractiveness\n4. Link analysis to strategic recommendations",
-    key_takeaways: ["Porter's Five Forces provides a systematic way to assess industry attractiveness and competitive dynamics", "The most attractive industries have low rivalry, high entry barriers, weak buyers and suppliers, and few substitutes", "In the GCC context, government regulation and Vision programs significantly alter traditional force assessments", "Always pair Five Forces with internal analysis (VRIO/SWOT) for a complete strategic picture", "The framework is static — use Dynamic Capabilities theory to account for rapid change"],
+    detailed_notes: "## Porter's Five Forces Framework\n\n### 1. Competitive Rivalry\n- Number of competitors, their size, and diversity\n- Industry growth rate · slow growth = higher rivalry\n- Fixed costs · high fixed costs pressure firms to compete on price\n- **UAE Context**: Telecoms (Etisalat vs. du) shows duopoly rivalry\n\n### 2. Threat of New Entrants\n- Barriers to entry: capital requirements, economies of scale, brand loyalty, regulatory\n- **Key insight**: High barriers = low threat = more attractive industry\n- Saudi Vision 2030 is reducing barriers in many sectors\n\n### 3. Bargaining Power of Buyers\n- Buyer concentration, price sensitivity, switching costs\n- When buyers are powerful, they squeeze margins\n- **Example**: Large UAE government procurement contracts\n\n### 4. Bargaining Power of Suppliers\n- Supplier concentration, uniqueness of input, switching cost\n- OPEC as the ultimate supplier power example\n\n### 5. Threat of Substitutes\n- Price-performance ratio of substitutes\n- **Digital disruption** = biggest source of substitution today\n\n## Applying the Framework\n1. Identify all relevant factors for each force\n2. Rate each force: Low / Medium / High\n3. Aggregate to determine overall industry attractiveness\n4. Link analysis to strategic recommendations",
+    key_takeaways: ["Porter's Five Forces provides a systematic way to assess industry attractiveness and competitive dynamics", "The most attractive industries have low rivalry, high entry barriers, weak buyers and suppliers, and few substitutes", "In the GCC context, government regulation and Vision programs significantly alter traditional force assessments", "Always pair Five Forces with internal analysis (VRIO/SWOT) for a complete strategic picture", "The framework is static · use Dynamic Capabilities theory to account for rapid change"],
     glossary: [
       { term: "Competitive Rivalry", definition: "The intensity of competition between existing players in an industry" },
       { term: "Entry Barriers", definition: "Obstacles that prevent new competitors from easily entering a market" },
@@ -133,26 +133,26 @@ export const DEMO_STUDY_PACKS = [
       { term: "Industry Attractiveness", definition: "The profit potential of an industry based on its competitive structure" },
     ],
     mba_frameworks: [
-      { name: "SWOT Analysis", application: "Use alongside Five Forces — Five Forces covers external threats/opportunities, SWOT adds internal strengths/weaknesses" },
+      { name: "SWOT Analysis", application: "Use alongside Five Forces · Five Forces covers external threats/opportunities, SWOT adds internal strengths/weaknesses" },
       { name: "PESTLE Analysis", application: "Provides macro-environmental context that shapes the intensity of each force (e.g., political barriers to entry)" },
       { name: "Value Chain Analysis", application: "Identifies where supplier/buyer power is concentrated along the production process" },
     ],
-    exam_prep_notes: "Focus on: (1) Applying all 5 forces to a given case with evidence, not just listing them. (2) UAE/GCC-specific examples — professor emphasizes regional context. (3) Be able to argue which force is most important in a specific industry. Likely exam question: 'Apply Porter's Five Forces to the UAE aviation industry and recommend a strategic response.'",
+    exam_prep_notes: "Focus on: (1) Applying all 5 forces to a given case with evidence, not just listing them. (2) UAE/GCC-specific examples · professor emphasizes regional context. (3) Be able to argue which force is most important in a specific industry. Likely exam question: 'Apply Porter's Five Forces to the UAE aviation industry and recommend a strategic response.'",
     created_at: d(-13),
   },
   {
     id: "pack-002", user_id: DEMO_USER.id, file_id: "file-002", course_id: "course-002", course_name: "Financial Analysis",
-    title: "DCF Valuation — Master Reference", topic: "Discounted Cash Flow (DCF) Valuation", status: "ready",
+    title: "DCF Valuation · Master Reference", topic: "Discounted Cash Flow (DCF) Valuation", status: "ready",
     overview: "Discounted Cash Flow (DCF) analysis is the foundational valuation method in corporate finance, calculating the present value of expected future free cash flows by discounting them at the Weighted Average Cost of Capital (WACC).",
-    summary: "DCF valuation translates a company's future earning potential into a present-day value. It is the primary tool used in investment banking, M&A, and corporate strategy. This pack covers free cash flow projection, WACC calculation, terminal value estimation, and sensitivity analysis — all critical for the mid-term exam and your future career.",
-    detailed_notes: "## DCF Valuation Step-by-Step\n\n### Step 1: Project Free Cash Flows (FCF)\n- FCF = EBIT(1-t) + D&A − ΔWorking Capital − CapEx\n- Typically project 5–10 years explicitly\n- Use revenue growth rates, margin assumptions\n\n### Step 2: Calculate WACC\n- WACC = (E/V × Re) + (D/V × Rd × (1-t))\n- Re = Cost of equity (CAPM: Rf + β × ERP)\n- Rd = Pre-tax cost of debt × (1 - tax rate)\n- UAE context: Rf ≈ 4.5% (US 10yr), ERP ≈ 6.5%\n\n### Step 3: Terminal Value\n- Gordon Growth Model: TV = FCF_n+1 / (WACC − g)\n- Exit Multiple Method: TV = EBITDA × EV/EBITDA multiple\n- Terminal value often = 60–80% of total DCF value!\n\n### Step 4: Discount Back & Calculate Equity Value\n- PV of FCFs + PV of Terminal Value = Enterprise Value\n- EV − Net Debt = Equity Value\n- Equity Value / Shares Outstanding = Intrinsic Share Price\n\n### Step 5: Sensitivity Analysis\n- Key variables: WACC ± 1%, g ± 0.5%\n- Build a 2-variable sensitivity table in Excel",
-    key_takeaways: ["Terminal value dominates DCF — small changes in WACC or growth rate create large valuation swings", "FCF = EBIT(1-t) + D&A − CapEx − ΔNWC — memorize this formula", "WACC combines the cost of all capital sources weighted by their proportion in the capital structure", "Always run sensitivity analysis — a single-point DCF is misleading", "Cross-check DCF with comparable company analysis (EV/EBITDA multiples)"],
+    summary: "DCF valuation translates a company's future earning potential into a present-day value. It is the primary tool used in investment banking, M&A, and corporate strategy. This pack covers free cash flow projection, WACC calculation, terminal value estimation, and sensitivity analysis · all critical for the mid-term exam and your future career.",
+    detailed_notes: "## DCF Valuation Step-by-Step\n\n### Step 1: Project Free Cash Flows (FCF)\n- FCF = EBIT(1-t) + D&A − ΔWorking Capital − CapEx\n- Typically project 5·10 years explicitly\n- Use revenue growth rates, margin assumptions\n\n### Step 2: Calculate WACC\n- WACC = (E/V × Re) + (D/V × Rd × (1-t))\n- Re = Cost of equity (CAPM: Rf + β × ERP)\n- Rd = Pre-tax cost of debt × (1 - tax rate)\n- UAE context: Rf ≈ 4.5% (US 10yr), ERP ≈ 6.5%\n\n### Step 3: Terminal Value\n- Gordon Growth Model: TV = FCF_n+1 / (WACC − g)\n- Exit Multiple Method: TV = EBITDA × EV/EBITDA multiple\n- Terminal value often = 60·80% of total DCF value!\n\n### Step 4: Discount Back & Calculate Equity Value\n- PV of FCFs + PV of Terminal Value = Enterprise Value\n- EV − Net Debt = Equity Value\n- Equity Value / Shares Outstanding = Intrinsic Share Price\n\n### Step 5: Sensitivity Analysis\n- Key variables: WACC ± 1%, g ± 0.5%\n- Build a 2-variable sensitivity table in Excel",
+    key_takeaways: ["Terminal value dominates DCF · small changes in WACC or growth rate create large valuation swings", "FCF = EBIT(1-t) + D&A − CapEx − ΔNWC · memorize this formula", "WACC combines the cost of all capital sources weighted by their proportion in the capital structure", "Always run sensitivity analysis · a single-point DCF is misleading", "Cross-check DCF with comparable company analysis (EV/EBITDA multiples)"],
     glossary: [
-      { term: "Free Cash Flow (FCF)", definition: "Cash generated by a business after accounting for capital expenditures — available to all capital providers" },
-      { term: "WACC", definition: "Weighted Average Cost of Capital — the blended rate of return required by equity and debt holders" },
+      { term: "Free Cash Flow (FCF)", definition: "Cash generated by a business after accounting for capital expenditures · available to all capital providers" },
+      { term: "WACC", definition: "Weighted Average Cost of Capital · the blended rate of return required by equity and debt holders" },
       { term: "Terminal Value", definition: "The value of all future cash flows beyond the explicit forecast period, often 60-80% of total DCF" },
-      { term: "EBITDA", definition: "Earnings Before Interest, Taxes, Depreciation & Amortization — a proxy for operating cash flow" },
-      { term: "Beta (β)", definition: "A measure of a stock's volatility relative to the market — used in CAPM to estimate cost of equity" },
+      { term: "EBITDA", definition: "Earnings Before Interest, Taxes, Depreciation & Amortization · a proxy for operating cash flow" },
+      { term: "Beta (β)", definition: "A measure of a stock's volatility relative to the market · used in CAPM to estimate cost of equity" },
     ],
     mba_frameworks: [
       { name: "CAPM", application: "Used to estimate the cost of equity component of WACC" },
@@ -166,17 +166,17 @@ export const DEMO_STUDY_PACKS = [
     title: "Digital Marketing Strategy Framework", topic: "Digital Marketing & Campaign Strategy", status: "ready",
     overview: "Modern digital marketing integrates paid, owned, and earned media across search, social, email, and content channels to reach target audiences with measurable precision, guided by data analytics and customer journey mapping.",
     summary: "This pack covers the full digital marketing strategy lifecycle: audience segmentation, channel selection, content strategy, campaign execution, and ROI measurement. Special focus on social media marketing (Instagram, TikTok, LinkedIn) and performance marketing channels relevant to the UAE/GCC market.",
-    detailed_notes: "## Digital Marketing Strategy\n\n### The RACE Framework\n- **Reach**: Build awareness (SEO, paid ads, social)\n- **Act**: Drive interaction (content, landing pages)\n- **Convert**: Turn leads to customers (email, retargeting)\n- **Engage**: Build loyalty (CRM, community)\n\n### UAE Digital Landscape\n- 99% internet penetration\n- Highest Instagram and Twitter usage per capita globally\n- WhatsApp Business critical for B2C\n- TikTok fastest growing in 18–35 demographic\n\n### Campaign Planning\n1. Define SMART objectives\n2. Audience segmentation (demographic, psychographic, behavioral)\n3. Channel mix strategy\n4. Content calendar\n5. KPI dashboard setup\n6. A/B testing plan",
-    key_takeaways: ["UAE has one of the world's highest social media penetration rates — digital-first is mandatory", "RACE framework provides a customer journey structure for campaign planning", "Data-driven decisions: set KPIs before launching any campaign", "Influencer marketing is particularly powerful in UAE — 40% of consumers trust influencer recommendations"],
+    detailed_notes: "## Digital Marketing Strategy\n\n### The RACE Framework\n- **Reach**: Build awareness (SEO, paid ads, social)\n- **Act**: Drive interaction (content, landing pages)\n- **Convert**: Turn leads to customers (email, retargeting)\n- **Engage**: Build loyalty (CRM, community)\n\n### UAE Digital Landscape\n- 99% internet penetration\n- Highest Instagram and Twitter usage per capita globally\n- WhatsApp Business critical for B2C\n- TikTok fastest growing in 18·35 demographic\n\n### Campaign Planning\n1. Define SMART objectives\n2. Audience segmentation (demographic, psychographic, behavioral)\n3. Channel mix strategy\n4. Content calendar\n5. KPI dashboard setup\n6. A/B testing plan",
+    key_takeaways: ["UAE has one of the world's highest social media penetration rates · digital-first is mandatory", "RACE framework provides a customer journey structure for campaign planning", "Data-driven decisions: set KPIs before launching any campaign", "Influencer marketing is particularly powerful in UAE · 40% of consumers trust influencer recommendations"],
     glossary: [
-      { term: "CTR", definition: "Click-Through Rate — percentage of impressions that result in a click" },
-      { term: "ROAS", definition: "Return on Ad Spend — revenue generated per dirham spent on advertising" },
+      { term: "CTR", definition: "Click-Through Rate · percentage of impressions that result in a click" },
+      { term: "ROAS", definition: "Return on Ad Spend · revenue generated per dirham spent on advertising" },
       { term: "Conversion Rate", definition: "Percentage of visitors/leads that complete a desired action" },
-      { term: "CAC", definition: "Customer Acquisition Cost — total marketing spend divided by new customers acquired" },
+      { term: "CAC", definition: "Customer Acquisition Cost · total marketing spend divided by new customers acquired" },
     ],
     mba_frameworks: [
-      { name: "STP (Segmentation, Targeting, Positioning)", application: "Foundation of digital campaign strategy — define who you're targeting before choosing channels" },
-      { name: "4Ps of Marketing", application: "Evolved to 7Ps for digital — add People, Process, Physical Evidence" },
+      { name: "STP (Segmentation, Targeting, Positioning)", application: "Foundation of digital campaign strategy · define who you're targeting before choosing channels" },
+      { name: "4Ps of Marketing", application: "Evolved to 7Ps for digital · add People, Process, Physical Evidence" },
     ],
     exam_prep_notes: "Proposal grading heavily weights strategic alignment (35%) and creativity (25%). Your proposal must: (1) clearly define the target segment, (2) justify channel selection with data, (3) include realistic KPIs, (4) show creative differentiation.",
     created_at: d(-8),
@@ -188,7 +188,7 @@ export const DEMO_FLASHCARDS = [
   { id: "fc-002", user_id: DEMO_USER.id, study_pack_id: "pack-001", pack_topic: "Porter's Five Forces", course_name: "Strategic Management", front: "What factors increase the Threat of New Entrants?", back: "Low barriers to entry: weak brand loyalty, low capital requirements, no economies of scale, easy access to distribution channels, minimal regulatory hurdles, low switching costs.", created_at: d(-13) },
   { id: "fc-003", user_id: DEMO_USER.id, study_pack_id: "pack-001", pack_topic: "Porter's Five Forces", course_name: "Strategic Management", front: "When is Buyer Power HIGH?", back: "When buyers are few and large, products are standardized/commodity, switching costs are low, buyers can integrate backward, price sensitivity is high, or buyers have full market information.", created_at: d(-13) },
   { id: "fc-004", user_id: DEMO_USER.id, study_pack_id: "pack-001", pack_topic: "Porter's Five Forces", course_name: "Strategic Management", front: "What makes an industry highly attractive according to Five Forces?", back: "Low competitive rivalry, high barriers to entry, weak buyer power, weak supplier power, few or no substitutes. All five forces are 'weak' from a competitive threat perspective.", created_at: d(-13) },
-  { id: "fc-005", user_id: DEMO_USER.id, study_pack_id: "pack-001", pack_topic: "Porter's Five Forces", course_name: "Strategic Management", front: "Name a UAE industry example for high competitive rivalry.", back: "UAE Telecoms (Etisalat/e& vs. du) — duopoly with fierce competition on price, data bundles, and customer service. Both compete aggressively for market share in a mature market.", created_at: d(-13) },
+  { id: "fc-005", user_id: DEMO_USER.id, study_pack_id: "pack-001", pack_topic: "Porter's Five Forces", course_name: "Strategic Management", front: "Name a UAE industry example for high competitive rivalry.", back: "UAE Telecoms (Etisalat/e& vs. du) · duopoly with fierce competition on price, data bundles, and customer service. Both compete aggressively for market share in a mature market.", created_at: d(-13) },
   { id: "fc-006", user_id: DEMO_USER.id, study_pack_id: "pack-002", pack_topic: "DCF Valuation", course_name: "Financial Analysis", front: "What is the formula for Free Cash Flow (FCF)?", back: "FCF = EBIT × (1 − Tax Rate) + Depreciation & Amortization − Capital Expenditures − Change in Net Working Capital\n\nOr simply: Net Operating Profit After Tax + Non-cash charges − Reinvestment", created_at: d(-11) },
   { id: "fc-007", user_id: DEMO_USER.id, study_pack_id: "pack-002", pack_topic: "DCF Valuation", course_name: "Financial Analysis", front: "What is WACC and its formula?", back: "WACC = (E/V × Re) + (D/V × Rd × (1−t))\nWhere: E = equity value, D = debt value, V = E+D, Re = cost of equity, Rd = cost of debt, t = tax rate.\nIt represents the minimum required return on invested capital.", created_at: d(-11) },
   { id: "fc-008", user_id: DEMO_USER.id, study_pack_id: "pack-002", pack_topic: "DCF Valuation", course_name: "Financial Analysis", front: "How do you calculate Terminal Value using the Gordon Growth Model?", back: "TV = FCF(n+1) / (WACC − g)\nWhere: FCF(n+1) = next year's free cash flow after the forecast period, g = perpetual growth rate (typically 2-3% for mature companies). Terminal value often represents 60-80% of total enterprise value.", created_at: d(-11) },
@@ -204,7 +204,7 @@ export const DEMO_QUIZZES = [
     title: "Porter's Five Forces Quiz", num_questions: 5, status: "ready",
     questions: [
       { q: "Which of Porter's Five Forces directly examines competition from companies outside the current industry?", options: ["Competitive Rivalry", "Threat of New Entrants", "Threat of Substitutes", "Bargaining Power of Buyers"], answer: 2, explanation: "Threat of Substitutes examines products/services from OTHER industries that can fulfill the same customer need, unlike Competitive Rivalry which looks at current industry players." },
-      { q: "A market with high fixed costs and slow industry growth will typically exhibit:", options: ["Low competitive rivalry", "High competitive rivalry", "Weak supplier power", "Low threat of substitutes"], answer: 1, explanation: "High fixed costs pressure firms to maximize volume to cover costs, while slow growth means firms must fight for each other's market share — both increase competitive rivalry." },
+      { q: "A market with high fixed costs and slow industry growth will typically exhibit:", options: ["Low competitive rivalry", "High competitive rivalry", "Weak supplier power", "Low threat of substitutes"], answer: 1, explanation: "High fixed costs pressure firms to maximize volume to cover costs, while slow growth means firms must fight for each other's market share · both increase competitive rivalry." },
       { q: "Which factor would DECREASE Bargaining Power of Buyers?", options: ["Low switching costs", "Standardized products", "High buyer concentration", "High switching costs"], answer: 3, explanation: "High switching costs make it expensive for buyers to change suppliers, reducing their leverage and bargaining power." },
       { q: "In the UAE telecom industry, the duopoly of Etisalat (e&) and du represents:", options: ["Low competitive rivalry due to only 2 players", "High competitive rivalry due to mature market and regulatory constraints", "Threat of substitutes from internet calling apps", "High threat of new entrants"], answer: 1, explanation: "Even with only 2 players, a mature market with limited growth means both firms compete intensely for market share, creating high rivalry. Regulatory barriers also prevent price-based competition." },
       { q: "Porter's Five Forces is primarily used to:", options: ["Analyze a company's internal capabilities", "Evaluate industry attractiveness and competitive intensity", "Assess macroeconomic factors", "Determine optimal capital structure"], answer: 1, explanation: "Five Forces is an EXTERNAL analysis tool (industry-level), not internal. For internal analysis, use VRIO or Value Chain. For macro factors, use PESTLE." },
@@ -215,11 +215,11 @@ export const DEMO_QUIZZES = [
     id: "quiz-002", user_id: DEMO_USER.id, pack_id: "pack-002", pack_topic: "DCF Valuation", course_name: "Financial Analysis",
     title: "DCF Valuation Fundamentals Quiz", num_questions: 5, status: "ready",
     questions: [
-      { q: "In the FCF formula FCF = EBIT(1-t) + D&A − CapEx − ΔNWC, why is D&A added back?", options: ["Because it increases revenue", "Because it is a non-cash expense that reduces taxable income but not actual cash flow", "Because it represents future investment", "Because it reduces WACC"], answer: 1, explanation: "D&A is a non-cash accounting charge — it reduces EBIT but doesn't actually consume cash. So we add it back to get true cash flow." },
+      { q: "In the FCF formula FCF = EBIT(1-t) + D&A − CapEx − ΔNWC, why is D&A added back?", options: ["Because it increases revenue", "Because it is a non-cash expense that reduces taxable income but not actual cash flow", "Because it represents future investment", "Because it reduces WACC"], answer: 1, explanation: "D&A is a non-cash accounting charge · it reduces EBIT but doesn't actually consume cash. So we add it back to get true cash flow." },
       { q: "If WACC = 10% and terminal growth rate = 2%, and next year's FCF = AED 100M, what is the Terminal Value?", options: ["AED 800M", "AED 1,000M", "AED 1,250M", "AED 500M"], answer: 2, explanation: "TV = FCF / (WACC − g) = 100 / (0.10 − 0.02) = 100 / 0.08 = AED 1,250M" },
       { q: "The terminal value in a typical DCF model represents approximately what percentage of total enterprise value?", options: ["10-20%", "30-40%", "60-80%", "90-100%"], answer: 2, explanation: "Terminal value typically represents 60-80% of total DCF enterprise value for mature companies, which is why small changes in WACC and growth rate assumptions are so impactful." },
       { q: "WACC should be used as the discount rate when:", options: ["Discounting equity cash flows", "Discounting free cash flows to the firm (FCFF)", "Calculating the risk-free rate", "Discounting dividends"], answer: 1, explanation: "WACC represents the return required by ALL capital providers (equity + debt). Use it to discount FCFF (firm-level cash flows). Use Cost of Equity to discount FCFE (equity-level cash flows)." },
-      { q: "A company's beta (β) of 1.5 indicates:", options: ["The stock is 50% less volatile than the market", "The stock moves exactly with the market", "The stock is 50% more volatile than the market", "The company has 1.5x the industry average earnings"], answer: 2, explanation: "Beta measures systematic (market) risk. β > 1 means the stock amplifies market moves — a 10% market move implies a 15% stock move. Higher beta = higher required return in CAPM." },
+      { q: "A company's beta (β) of 1.5 indicates:", options: ["The stock is 50% less volatile than the market", "The stock moves exactly with the market", "The stock is 50% more volatile than the market", "The company has 1.5x the industry average earnings"], answer: 2, explanation: "Beta measures systematic (market) risk. β > 1 means the stock amplifies market moves · a 10% market move implies a 15% stock move. Higher beta = higher required return in CAPM." },
     ],
     created_at: d(-10),
   },
@@ -232,23 +232,23 @@ export const DEMO_WEEKLY_BRIEF = {
   week_end: d(6 - BASE.getDay()),
   // Flat fields used by weekly-brief page UI
   focus_question_answer: "Porter's Five Forces Case Study (due May 8) must be your #1 focus today. Then Marketing Campaign Proposal (due May 9). Block 4 hours now for the Porter's case using Study Pack 1.",
-  summary: "Critical week ahead with two at-risk deadlines. Digital Marketing (90%) and Operations (82%) are strong. Strategic Management needs urgent attention — overdue SWOT report must be submitted. Financial Analysis mid-term in 14 days with a format change requires early preparation.",
+  summary: "Critical week ahead with two at-risk deadlines. Digital Marketing (90%) and Operations (82%) are strong. Strategic Management needs urgent attention · overdue SWOT report must be submitted. Financial Analysis mid-term in 14 days with a format change requires early preparation.",
   readiness_score: 68,
   study_hours_target: 22,
   top_priorities: [
     "Submit overdue SWOT Analysis Report to Strategic Management TODAY",
-    "Complete Porter's Five Forces Case Study (due May 8) — use Study Pack 1",
-    "Finalize Marketing Campaign Proposal (due May 9) — Noon.com social strategy",
-    "Begin Financial Modeling Assignment (due May 11) — DCF model skeleton",
+    "Complete Porter's Five Forces Case Study (due May 8) · use Study Pack 1",
+    "Finalize Marketing Campaign Proposal (due May 9) · Noon.com social strategy",
+    "Begin Financial Modeling Assignment (due May 11) · DCF model skeleton",
   ],
   at_risk_items: [
-    "Financial Analysis mid-term (May 20) — format changed to 2 case studies, 14 days to prepare",
-    "Leadership & Org Behavior at 55% progress — below class average, essay due May 13",
+    "Financial Analysis mid-term (May 20) · format changed to 2 case studies, 14 days to prepare",
+    "Leadership & Org Behavior at 55% progress · below class average, essay due May 13",
     "Strategic Management: overdue SWOT report may affect participation grade",
   ],
   wins: [
-    "Operations Lab Report — 91/100, strongest performance this semester",
-    "Digital Marketing Campaign Concept — 88/100, excellent creative strategy",
+    "Operations Lab Report · 91/100, strongest performance this semester",
+    "Digital Marketing Campaign Concept · 88/100, excellent creative strategy",
     "4 of 9 kanban tasks completed on time this week",
   ],
   ai_recommendations: [
@@ -263,7 +263,7 @@ export const DEMO_WEEKLY_BRIEF = {
     recommended_study_plan: "Today (Wed): 4h Porter's Case Study\nThu: Finalize + submit Porter's Case Study, start Marketing Proposal\nFri: Marketing Proposal final draft + submit\nSat: Begin DCF model for Financial Modeling\nSun: HRM Leadership Essay outline + FIN 502 Chapter 1-4 review\nMon-Tue: HRM Essay writing + exam prep",
     weekend_plan: "Sat: Submit Marketing Proposal by EOD. Begin DCF model skeleton.\nSun: Complete first draft of Financial Modeling Assignment. 2 hours Leadership & OB readings.",
     instructor_questions: [
-      "Prof. Layla Hassan (FIN 502): Which DCF methods are tested — Exit Multiple or Gordon Growth Model?",
+      "Prof. Layla Hassan (FIN 502): Which DCF methods are tested · Exit Multiple or Gordon Growth Model?",
       "Dr. Khalid Al-Rashidi (MGMT 601): Is the overdue SWOT Analysis still accepted for partial credit?",
       "Dr. Rania Mostafa (MKT 604): Should the campaign proposal use a real UAE brand or fictional one?",
     ],
@@ -279,8 +279,8 @@ export const DEMO_MESSAGES = [
     from_name: "Dr. Khalid Al-Rashidi",
     from_role: "instructor",
     to_id: DEMO_USER.id,
-    subject: "Re: SWOT Analysis Submission — Late Penalty Waiver",
-    body: "Dear Sara,\n\nThank you for reaching out about your SWOT Analysis. I understand this has been a challenging week. Given your strong performance in the other assignments (78% overall), I am willing to waive 50% of the late penalty if you submit by tomorrow (Thursday, May 7) before 11:59 PM.\n\nPlease make sure the analysis covers:\n1. At least 4 points per quadrant\n2. UAE market context for the chosen company\n3. Strategic recommendations section (minimum 300 words)\n\nBest regards,\nDr. Khalid Al-Rashidi\nStrategic Management — MGMT 601",
+    subject: "Re: SWOT Analysis Submission · Late Penalty Waiver",
+    body: "Dear Sara,\n\nThank you for reaching out about your SWOT Analysis. I understand this has been a challenging week. Given your strong performance in the other assignments (78% overall), I am willing to waive 50% of the late penalty if you submit by tomorrow (Thursday, May 7) before 11:59 PM.\n\nPlease make sure the analysis covers:\n1. At least 4 points per quadrant\n2. UAE market context for the chosen company\n3. Strategic recommendations section (minimum 300 words)\n\nBest regards,\nDr. Khalid Al-Rashidi\nStrategic Management · MGMT 601",
     read: false,
     course_id: "course-001",
     course_name: "Strategic Management",
@@ -296,8 +296,8 @@ export const DEMO_MESSAGES = [
     from_name: "Prof. Layla Hassan",
     from_role: "instructor",
     to_id: DEMO_USER.id,
-    subject: "Financial Analysis Mid-Term — Format Change Notice",
-    body: "Dear Students,\n\nPlease note an important update regarding the upcoming Financial Analysis mid-term exam (May 20).\n\nThe format has been changed from multiple-choice questions to two comprehensive case studies:\n\nCase Study 1 (50 pts): DCF Valuation — you will be given a company's financials and asked to build a complete valuation model.\nCase Study 2 (50 pts): Ratio Analysis — comparative analysis of two UAE-listed companies.\n\nSample case studies are now available on the course portal. Please review the WACC and DCF chapters thoroughly.\n\nBest,\nProf. Layla Hassan\nFinancial Analysis — FIN 502",
+    subject: "Financial Analysis Mid-Term · Format Change Notice",
+    body: "Dear Students,\n\nPlease note an important update regarding the upcoming Financial Analysis mid-term exam (May 20).\n\nThe format has been changed from multiple-choice questions to two comprehensive case studies:\n\nCase Study 1 (50 pts): DCF Valuation · you will be given a company's financials and asked to build a complete valuation model.\nCase Study 2 (50 pts): Ratio Analysis · comparative analysis of two UAE-listed companies.\n\nSample case studies are now available on the course portal. Please review the WACC and DCF chapters thoroughly.\n\nBest,\nProf. Layla Hassan\nFinancial Analysis · FIN 502",
     read: false,
     course_id: "course-002",
     course_name: "Financial Analysis",
@@ -313,8 +313,8 @@ export const DEMO_MESSAGES = [
     from_name: "Platform Admin",
     from_role: "admin",
     to_id: DEMO_USER.id,
-    subject: "Your Pro Subscription is Active — Welcome to Maktab",
-    body: "Dear Sara,\n\nWelcome to Maktab Learning OS — your Pro subscription is now active.\n\nYour plan includes:\n✓ 2,000 AI queries per month\n✓ Unlimited study pack generation\n✓ AI Tutor with RAG-powered answers\n✓ Smart deadline risk analysis\n✓ Priority support\n\nYou have used 47 of your 2,000 AI queries this month. Your subscription renews on May 31, 2026.\n\nIf you have any questions, reply to this message or visit the Help Center.\n\nBest,\nMaktab Team",
+    subject: "Your Pro Subscription is Active · Welcome to Maktab",
+    body: "Dear Sara,\n\nWelcome to Maktab Learning OS · your Pro subscription is now active.\n\nYour plan includes:\n✓ 2,000 AI queries per month\n✓ Unlimited study pack generation\n✓ AI Tutor with RAG-powered answers\n✓ Smart deadline risk analysis\n✓ Priority support\n\nYou have used 47 of your 2,000 AI queries this month. Your subscription renews on May 31, 2026.\n\nIf you have any questions, reply to this message or visit the Help Center.\n\nBest,\nMaktab Team",
     read: true,
     course_id: null,
     course_name: null,
@@ -330,8 +330,8 @@ export const DEMO_MESSAGES = [
     from_name: "Prof. Omar Shaikh",
     from_role: "instructor",
     to_id: DEMO_USER.id,
-    subject: "Leadership Essay — Feedback on Outline",
-    body: "Dear Sara,\n\nI reviewed the outline you submitted for the Leadership Essay. Overall it is a good start, but I have some suggestions:\n\n1. Strengthen your theoretical framework — consider applying Transformational vs. Transactional Leadership theory to the UAE context\n2. Your case selection is strong (Emirates Group is an excellent example), but add a contrasting company for comparative depth\n3. The conclusion should link back to your personal leadership philosophy\n\nThe essay is due May 13. You are currently at 55% progress in this course — this essay represents 20% of your final grade, so please give it the attention it deserves.\n\nFeel free to visit office hours (Sunday 2-4 PM) if you need further guidance.\n\nBest,\nProf. Omar Shaikh\nLeadership & Org Behavior — HRM 501",
+    subject: "Leadership Essay · Feedback on Outline",
+    body: "Dear Sara,\n\nI reviewed the outline you submitted for the Leadership Essay. Overall it is a good start, but I have some suggestions:\n\n1. Strengthen your theoretical framework · consider applying Transformational vs. Transactional Leadership theory to the UAE context\n2. Your case selection is strong (Emirates Group is an excellent example), but add a contrasting company for comparative depth\n3. The conclusion should link back to your personal leadership philosophy\n\nThe essay is due May 13. You are currently at 55% progress in this course · this essay represents 20% of your final grade, so please give it the attention it deserves.\n\nFeel free to visit office hours (Sunday 2-4 PM) if you need further guidance.\n\nBest,\nProf. Omar Shaikh\nLeadership & Org Behavior · HRM 501",
     read: true,
     course_id: "course-005",
     course_name: "Leadership & Org Behavior",
@@ -389,7 +389,7 @@ export function demoDeadlines(view: string | null): NextResponse | null {
   } else if (view === "month") {
     result = DEMO_DEADLINES.filter(d => new Date(d.due_date) <= new Date(now.getTime() + 30 * 86_400_000));
   }
-  // "all" or "at_risk" — return relevant subsets
+  // "all" or "at_risk" · return relevant subsets
   if (view === "at_risk") {
     result = DEMO_DEADLINES.filter(d => d.risk === "at_risk" || d.risk === "overdue");
   }

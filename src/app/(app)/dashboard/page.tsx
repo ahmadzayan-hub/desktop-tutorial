@@ -105,7 +105,7 @@ export default function DashboardPage() {
     {
       icon: <BookOpen size={22} />,
       label: "Active Courses",
-      value: loading ? "—" : courses.length,
+      value: loading ? "·" : courses.length,
       suffix: "",
       href: "/courses",
       color: "from-brand-500 to-blue-600",
@@ -116,7 +116,7 @@ export default function DashboardPage() {
     {
       icon: <Clock size={22} />,
       label: "Upcoming Deadlines",
-      value: loading ? "—" : deadlines.length,
+      value: loading ? "·" : deadlines.length,
       suffix: "",
       href: "/timeline",
       color: "from-amber-500 to-orange-500",
@@ -127,7 +127,7 @@ export default function DashboardPage() {
     {
       icon: <Megaphone size={22} />,
       label: "Announcements",
-      value: loading ? "—" : announcements.length,
+      value: loading ? "·" : announcements.length,
       suffix: "",
       href: "/announcements",
       color: "from-purple-500 to-violet-600",

@@ -44,7 +44,7 @@ export async function generate(prompt: string, opts: OllamaOptions = {}): Promis
       signal: opts.signal
     });
   } catch (e) {
-    // Network-level failure (refused, DNS, timeout) — surface a clean error
+    // Network-level failure (refused, DNS, timeout) · surface a clean error
     throw new LlmUnreachableError(env.ollamaBaseUrl, e);
   }
 

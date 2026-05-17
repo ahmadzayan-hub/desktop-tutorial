@@ -1,5 +1,5 @@
 /**
- * Reverse mode — paste a polished prompt and learn what makes it good.
+ * Reverse mode · paste a polished prompt and learn what makes it good.
  *
  * Pure-function analyser, no I/O. Reuses scorePrompt for the dimensional
  * breakdown and adds a structural skeleton so the user sees:

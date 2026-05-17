@@ -21,19 +21,19 @@ declare global {
   var SpeechRecognition: any;
 }
 
-const DEMO_SUMMARY = `## Lecture Summary — Porter's Five Forces Analysis
+const DEMO_SUMMARY = `## Lecture Summary · Porter's Five Forces Analysis
 
 **Key Concepts Covered:**
-1. **Competitive Rivalry** — Intensity of competition among existing firms. In UAE telecoms (Etisalat vs. du), rivalry is high due to market saturation and price sensitivity.
-2. **Threat of New Entrants** — Barriers to entry in UAE aviation are very high (capital requirements, regulatory approvals, slot availability at DXB).
-3. **Bargaining Power of Suppliers** — Boeing and Airbus duopoly gives suppliers strong leverage over airlines. Emirates manages this via long-term contracts and fleet diversity.
-4. **Bargaining Power of Buyers** — In B2C markets, individual buyers have low power; corporate clients (B2B) can negotiate volume discounts.
-5. **Threat of Substitutes** — UAE rail (Etihad Rail) is a moderate substitute for short-haul flights; videoconferencing reduced business travel demand post-COVID.
+1. **Competitive Rivalry** · Intensity of competition among existing firms. In UAE telecoms (Etisalat vs. du), rivalry is high due to market saturation and price sensitivity.
+2. **Threat of New Entrants** · Barriers to entry in UAE aviation are very high (capital requirements, regulatory approvals, slot availability at DXB).
+3. **Bargaining Power of Suppliers** · Boeing and Airbus duopoly gives suppliers strong leverage over airlines. Emirates manages this via long-term contracts and fleet diversity.
+4. **Bargaining Power of Buyers** · In B2C markets, individual buyers have low power; corporate clients (B2B) can negotiate volume discounts.
+5. **Threat of Substitutes** · UAE rail (Etihad Rail) is a moderate substitute for short-haul flights; videoconferencing reduced business travel demand post-COVID.
 
 **Action Items:**
 - Apply the framework to your SWOT Analysis case company
 - Compare UAE telecoms vs. aviation sector forces
-- Review Chapter 3 pages 87–102 before next session
+- Review Chapter 3 pages 87·102 before next session
 - Complete the Porter's Five Forces worksheet by Friday
 
 **Instructor Notes:**
@@ -43,11 +43,11 @@ const DEMO_SUMMARY = `## Lecture Summary — Porter's Five Forces Analysis
 const DEMO_TRANSCRIPT: TranscriptLine[] = [
   { timestamp: "00:00:12", text: "Welcome everyone. Today we're covering Porter's Five Forces framework, which is one of the most widely used strategic analysis tools in business.", isFinal: true },
   { timestamp: "00:01:05", text: "The framework was developed by Michael Porter at Harvard Business School in 1979. Let me start with the first force: competitive rivalry.", isFinal: true },
-  { timestamp: "00:03:22", text: "In the UAE telecoms market, we have essentially a duopoly — Etisalat and du. High rivalry means thin margins, which forces both companies into service differentiation.", isFinal: true },
+  { timestamp: "00:03:22", text: "In the UAE telecoms market, we have essentially a duopoly · Etisalat and du. High rivalry means thin margins, which forces both companies into service differentiation.", isFinal: true },
   { timestamp: "00:06:14", text: "Now let's look at threat of new entrants. Think about what it takes to enter the aviation industry. You need aircraft, which cost hundreds of millions. You need landing slots, regulatory approvals, trained pilots.", isFinal: true },
-  { timestamp: "00:09:33", text: "Supplier power — this is interesting for aviation. Boeing and Airbus together control roughly 99% of large commercial aircraft production. That's extraordinary supplier leverage.", isFinal: true },
+  { timestamp: "00:09:33", text: "Supplier power · this is interesting for aviation. Boeing and Airbus together control roughly 99% of large commercial aircraft production. That's extraordinary supplier leverage.", isFinal: true },
   { timestamp: "00:13:45", text: "Buyer power varies dramatically by segment. Individual consumers booking flights have very little power. But a large corporate travel account buying 10,000 flights per year? They can negotiate significantly.", isFinal: true },
-  { timestamp: "00:17:28", text: "Finally, substitutes. Videoconferencing — Zoom, Teams — has genuinely reduced demand for short-haul business travel. That's a real substitute that emerged and changed the industry.", isFinal: true },
+  { timestamp: "00:17:28", text: "Finally, substitutes. Videoconferencing · Zoom, Teams · has genuinely reduced demand for short-haul business travel. That's a real substitute that emerged and changed the industry.", isFinal: true },
   { timestamp: "00:21:00", text: "For your SWOT Analysis assignment, I want you to apply all five forces to your chosen company. The mid-term will definitely include a case requiring this full analysis.", isFinal: true },
 ];
 
@@ -266,7 +266,7 @@ export default function LecturePage() {
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Lecture Title</label>
               <input
                 className="input w-full"
-                placeholder="e.g. Porter's Five Forces — Session 7"
+                placeholder="e.g. Porter's Five Forces · Session 7"
                 value={lectureTitle}
                 onChange={e => setLectureTitle(e.target.value)}
               />
@@ -276,9 +276,9 @@ export default function LecturePage() {
               <div className="text-sm text-blue-800 dark:text-blue-300">
                 <p className="font-semibold mb-1">How it works</p>
                 <ol className="list-decimal list-inside space-y-0.5 text-blue-700 dark:text-blue-400">
-                  <li>Click <strong>Start Recording</strong> — your microphone will activate</li>
-                  <li>Speak naturally — transcript appears in real-time</li>
-                  <li>Stop when done — AI generates a structured summary</li>
+                  <li>Click <strong>Start Recording</strong> · your microphone will activate</li>
+                  <li>Speak naturally · transcript appears in real-time</li>
+                  <li>Stop when done · AI generates a structured summary</li>
                   <li>Review and send transcript + summary to classmates by email</li>
                 </ol>
                 <p className="mt-2 text-xs text-blue-600 dark:text-blue-500">Demo mode: uses simulated transcript if mic is unavailable</p>
@@ -375,7 +375,7 @@ export default function LecturePage() {
               </div>
               <div className="h-80 overflow-y-auto space-y-3 pr-1">
                 {transcript.length === 0 && !currentLine && (
-                  <p className="text-slate-400 text-sm text-center py-12">Start speaking — your words will appear here</p>
+                  <p className="text-slate-400 text-sm text-center py-12">Start speaking · your words will appear here</p>
                 )}
                 {transcript.map((line, i) => (
                   <div key={i} className="flex gap-3 group">

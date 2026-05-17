@@ -28,7 +28,7 @@ const CATEGORY_ICONS: Record<string, string> = {
   design: "🖌️",
   planning: "📋",
   analysis: "📊",
-  other: "✨",
+  other: "",
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -53,7 +53,7 @@ function useTrends(locale: string) {
     setLoading(true);
     setError(false);
     try {
-      // Derive personalisation from local history — no PII leaves the browser
+      // Derive personalisation from local history · no PII leaves the browser
       const history = loadHistory();
       const intentCounts: Record<string, number> = {};
       for (const entry of history) {
@@ -157,7 +157,7 @@ export default function PromptTrends({ locale = "en" }: PromptTrendsProps) {
         {trends.map((trend) => {
           const isExpanded = expanded === trend.id;
           const colorClass = CATEGORY_COLORS[trend.category] ?? CATEGORY_COLORS.other;
-          const icon = CATEGORY_ICONS[trend.category] ?? "✨";
+          const icon = CATEGORY_ICONS[trend.category] ?? "";
 
           return (
             <div

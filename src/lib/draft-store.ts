@@ -63,7 +63,7 @@ export function saveDraft(draft: Omit<Draft, "ts">): void {
     }
     s.setItem(KEY, JSON.stringify({ ...draft, ts: Date.now() }));
   } catch {
-    /* quota / private mode — ignore */
+    /* quota / private mode · ignore */
   }
 }
 

@@ -6,7 +6,7 @@ export const dict = {
   en: {
     "app.name": "Maktab",
     "app.tagline": "Your MBA, on one desk.",
-    "app.description": "Maktab — your MBA on one bilingual desk. Courses, lectures, study packs, grades, deadlines, and an AI tutor that cites your own materials.",
+    "app.description": "Maktab · your MBA on one bilingual desk. Courses, lectures, study packs, grades, deadlines, and an AI tutor that cites your own materials.",
     "app.domain": "www.tweenz.ae",
 
     "nav.home": "Home",
@@ -51,7 +51,7 @@ export const dict = {
 
     "home.pill": "From UAE to the world · Bilingual AI",
     "home.hero.title": "Your MBA, on one desk.",
-    "home.hero.subtitle": "Maktab combines Moodle-style academic management with an AI tutor that cites your own lectures — in English and Arabic.",
+    "home.hero.subtitle": "Maktab combines Moodle-style academic management with an AI tutor that cites your own lectures · in English and Arabic.",
     "home.hero.cta_primary": "Start Free Trial",
     "home.hero.cta_secondary": "Upload Your First Lecture",
     "home.hero.badge": "7-day free trial · No credit card required",
@@ -60,13 +60,13 @@ export const dict = {
     "home.how.step1.title": "Add your courses",
     "home.how.step1.body": "Set up your MBA semester with course details, instructors, and targets.",
     "home.how.step2.title": "Upload lectures, slides, and files",
-    "home.how.step2.body": "PDFs, PowerPoints, audio, video, and notes — all processed by AI.",
+    "home.how.step2.body": "PDFs, PowerPoints, audio, video, and notes · all processed by AI.",
     "home.how.step3.title": "Import announcements and grades",
     "home.how.step3.body": "Paste from Moodle or enter manually. Track grades and deadlines automatically.",
     "home.how.step4.title": "Generate summaries, flashcards, and quizzes",
     "home.how.step4.body": "Your AI study pack is ready in seconds, grounded in your course material.",
     "home.how.step5.title": "Ask your AI tutor",
-    "home.how.step5.body": "Get cited answers from your own uploaded course material — not generic web content.",
+    "home.how.step5.body": "Get cited answers from your own uploaded course material · not generic web content.",
     "home.how.step6.title": "Know exactly what to study next",
     "home.how.step6.body": "Daily recommendations, exam readiness score, and your weekly MBA brief.",
 
@@ -74,7 +74,7 @@ export const dict = {
     "home.features.dashboard.title": "Academic Dashboard",
     "home.features.dashboard.body": "Moodle-style overview: courses, deadlines, announcements, grades, and AI recommendations in one place.",
     "home.features.ai_tutor.title": "AI Tutor Chat",
-    "home.features.ai_tutor.body": "Ask questions about your lectures and get cited answers from your uploaded materials — never hallucinated.",
+    "home.features.ai_tutor.body": "Ask questions about your lectures and get cited answers from your uploaded materials · never hallucinated.",
     "home.features.study_packs.title": "AI Study Packs",
     "home.features.study_packs.body": "Auto-generated summaries, key takeaways, MBA frameworks, flashcards, quizzes, and exam prep from every lecture.",
     "home.features.grades.title": "Grade and GPA Planner",
@@ -86,7 +86,7 @@ export const dict = {
     "home.features.weekly_brief.title": "Weekly MBA Brief",
     "home.features.weekly_brief.body": "Your personal academic digest: what happened, what's due, what to study, and where the risks are.",
     "home.features.ask_mba.title": "Ask My MBA Agent",
-    "home.features.ask_mba.body": "One conversational agent that knows your courses, deadlines, grades, and materials — answers everything about your MBA.",
+    "home.features.ask_mba.body": "One conversational agent that knows your courses, deadlines, grades, and materials · answers everything about your MBA.",
 
     "home.social_proof.title": "Built for serious students",
     "home.social_proof.subtitle": "Designed for MBA learners who depend on Moodle, attend online lectures, and need AI help that actually cites sources.",
@@ -339,7 +339,7 @@ export const dict = {
     "studyPacks.form.course": "Course",
     "studyPacks.form.selectCourse": "Select course",
     "studyPacks.form.topic": "Topic",
-    "studyPacks.form.topicPlaceholder": "e.g. Week 3 — Corporate Strategy",
+    "studyPacks.form.topicPlaceholder": "e.g. Week 3 · Corporate Strategy",
 
     "tutor.title": "AI Tutor Chat",
     "tutor.placeholder": "Ask your tutor about your course material...",
@@ -414,7 +414,7 @@ export const dict = {
     "brief.weekend_plan": "Suggested weekend plan",
 
     "ask_mba.title": "Ask My MBA",
-    "ask_mba.placeholder": "Ask anything about your MBA — courses, grades, deadlines, lectures, study plans...",
+    "ask_mba.placeholder": "Ask anything about your MBA · courses, grades, deadlines, lectures, study plans...",
     "ask_mba.examples.1": "What do I have this week?",
     "ask_mba.examples.2": "Which course needs the most attention?",
     "ask_mba.examples.3": "What should I study tonight?",
@@ -585,7 +585,7 @@ export const dict = {
 
     "home.pill": "من الإمارات إلى العالم · ذكاء اصطناعي ثنائي اللغة",
     "home.hero.title": "ماجستيرك كله على مكتب واحد.",
-    "home.hero.subtitle": "مكتب يجمع إدارة مقرراتك بأسلوب Moodle مع معلّم ذكي يستشهد من محاضراتك أنت — بالعربية والإنجليزية.",
+    "home.hero.subtitle": "مكتب يجمع إدارة مقرراتك بأسلوب Moodle مع معلّم ذكي يستشهد من محاضراتك أنت · بالعربية والإنجليزية.",
     "home.hero.cta_primary": "جرّب مجاناً الآن",
     "home.hero.cta_secondary": "ارفع أوّل محاضرة",
     "home.hero.badge": "7 أيام مجاناً · بدون بطاقة ائتمان",
@@ -594,7 +594,7 @@ export const dict = {
     "home.how.step1.title": "أضف مقرراتك",
     "home.how.step1.body": "أنشئ فصلك الدراسي بتفاصيل المقررات والمدرسين والأهداف.",
     "home.how.step2.title": "ارفع المحاضرات والشرائح والملفات",
-    "home.how.step2.body": "PDF وPowerPoint والصوت والفيديو والملاحظات — يعالجها الذكاء الاصطناعي تلقائياً.",
+    "home.how.step2.body": "PDF وPowerPoint والصوت والفيديو والملاحظات · يعالجها الذكاء الاصطناعي تلقائياً.",
     "home.how.step3.title": "استورد الإعلانات والدرجات",
     "home.how.step3.body": "الصقها من Moodle أو أدخلها يدوياً. تتبع الدرجات والمواعيد تلقائياً.",
     "home.how.step4.title": "أنشئ ملخصات وبطاقات واختبارات",
@@ -873,7 +873,7 @@ export const dict = {
     "studyPacks.form.course": "المقرر",
     "studyPacks.form.selectCourse": "اختر مقررًا",
     "studyPacks.form.topic": "الموضوع",
-    "studyPacks.form.topicPlaceholder": "مثال: الأسبوع 3 — الاستراتيجية المؤسسية",
+    "studyPacks.form.topicPlaceholder": "مثال: الأسبوع 3 · الاستراتيجية المؤسسية",
 
     "tutor.title": "المعلّم الذكي",
     "tutor.placeholder": "اسأل معلّمك عن أيّ موضوع في مقررك...",
@@ -948,7 +948,7 @@ export const dict = {
     "brief.weekend_plan": "خطة عطلة نهاية الأسبوع المقترحة",
 
     "ask_mba.title": "اسأل ماجستيرك",
-    "ask_mba.placeholder": "اسأل أيّ شيء عن ماجستيرك — مقرراتك، درجاتك، مواعيدك، محاضراتك، خططك...",
+    "ask_mba.placeholder": "اسأل أيّ شيء عن ماجستيرك · مقرراتك، درجاتك، مواعيدك، محاضراتك، خططك...",
     "ask_mba.examples.1": "ما الذي يستحقّ تركيزي هذا الأسبوع؟",
     "ask_mba.examples.2": "أيّ مقرر يحتاج اهتماماً أكبر؟",
     "ask_mba.examples.3": "ماذا أدرس الليلة؟",

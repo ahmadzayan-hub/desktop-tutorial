@@ -98,8 +98,8 @@ export default function LibraryPage() {
           </div>
           <p className="text-slate-500 dark:text-slate-400 text-sm">
             {ar
-              ? "موجّهاتك المحفوظة مرتّبة حسب النوع — ابحث، نجّم، أو جرّب مباشرةً في مساحة العمل"
-              : "Your saved prompts organised by category — search, star, or try directly in the workspace"}
+              ? "موجّهاتك المحفوظة مرتّبة حسب النوع · ابحث، نجّم، أو جرّب مباشرةً في مساحة العمل"
+              : "Your saved prompts organised by category · search, star, or try directly in the workspace"}
           </p>
           <div className="mt-2 text-xs text-slate-400">
             {ar ? `${entries.length} موجِّه في التاريخ` : `${entries.length} prompts in history`}

@@ -5,7 +5,7 @@
  * Strategy: line-level LCS (longest common subsequence) over the trimmed
  * input vs trimmed output. Lines present in the output but not the input are
  * "added"; lines present in both are "context". We don't bother emitting
- * "removed" lines — the orchestrator never removes user content meaningfully,
+ * "removed" lines · the orchestrator never removes user content meaningfully,
  * so showing additions is the educational signal.
  *
  * Pure function, no DOM. The renderer is in components/PromptDiff.tsx.
@@ -23,7 +23,7 @@ function splitLines(s: string): string[] {
 }
 
 /** Compute an LCS between two arrays of strings, returning the indices into
- *  the second array that are NOT in the LCS — those are the "added" lines. */
+ *  the second array that are NOT in the LCS · those are the "added" lines. */
 function lcsAddedSet(a: string[], b: string[]): Set<number> {
   const n = a.length, m = b.length;
   // Bound the cost: if either side is huge, fall back to "everything new"

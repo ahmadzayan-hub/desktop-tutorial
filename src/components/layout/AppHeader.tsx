@@ -115,7 +115,7 @@ export function AppHeader({ onMenuClick, title }: AppHeaderProps) {
   };
 
   const NOTIFS = [
-    { id: 1, title: "Assignment due in 2 days", body: "Strategic Management — Case Study 3", time: "2h ago", dot: "bg-amber-400" },
+    { id: 1, title: "Assignment due in 2 days", body: "Strategic Management · Case Study 3", time: "2h ago", dot: "bg-amber-400" },
     { id: 2, title: "New AI study pack ready", body: "Finance Module 4 summary generated", time: "4h ago", dot: "bg-brand-400" },
     { id: 3, title: "Grade posted", body: "Operations Management midterm: 88/100", time: "1d ago", dot: "bg-emerald-400" },
   ];

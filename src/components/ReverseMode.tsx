@@ -22,7 +22,7 @@ const INTENT_KEY: Record<string, DictKey> = {
   other: "intent.other"
 };
 
-// Inline images smaller than this — bigger ones are referenced by metadata
+// Inline images smaller than this · bigger ones are referenced by metadata
 // only so the generated prompt doesn't exceed any model's context window.
 const MAX_INLINE_BYTES = 5 * 1024 * 1024;
 
@@ -35,7 +35,7 @@ type ReverseTab = "text" | "image";
  *             prompts: extract verbatim text / recreate the design /
  *             rewrite the same kind of content for a new scenario.
  *
- * Everything is local — text analysis is pure-function; image prompts embed
+ * Everything is local · text analysis is pure-function; image prompts embed
  * a data URL so any vision model (ChatGPT, Claude, Gemini) can read it.
  */
 export default function ReverseMode() {
@@ -183,7 +183,7 @@ function TextReverse() {
             {topSuggestion && (
               <div className="mt-3 flex items-center gap-2 flex-wrap">
                 <button type="button" onClick={pushItFurther} className="btn-primary text-xs">
-                  ✨ {t("ws.btn.push_further")}
+                  {t("ws.btn.push_further")}
                 </button>
                 {pushed && (
                   <span

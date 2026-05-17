@@ -2,8 +2,8 @@
  * BCP-47 voice locales with country flags and labels.
  *
  * The Web Speech API accepts a BCP-47 tag (e.g. "ar-EG", "en-GB"); browsers
- * pick the matching recognition model. We expose a curated list — flag-first
- * so it scans visually — and remember the user's last choice in localStorage.
+ * pick the matching recognition model. We expose a curated list · flag-first
+ * so it scans visually · and remember the user's last choice in localStorage.
  *
  * Default for Arabic is **🇪🇬 ar-EG** because it has the broadest media
  * exposure in Arab speech datasets and recognises well across most dialects.

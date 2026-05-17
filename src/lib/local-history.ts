@@ -1,7 +1,7 @@
 /**
  * Browser-side history of recent prompts (no backend required).
  *
- * Phase-1 trial: every user — even anonymous, even offline — gets a record
+ * Phase-1 trial: every user · even anonymous, even offline · gets a record
  * of their last few prompts so they can pick up where they left off. Stored
  * in `localStorage` with a hard cap so it can't grow unboundedly.
  */
@@ -62,7 +62,7 @@ export function saveHistoryEntry(entry: Omit<LocalHistoryEntry, "id" | "ts">): L
   try {
     s.setItem(KEY, JSON.stringify(next));
   } catch {
-    /* quota or private mode — ignore */
+    /* quota or private mode · ignore */
   }
   return stamped;
 }
@@ -85,7 +85,7 @@ export function removeHistoryEntry(id: string) {
 
 /**
  * Flip a single entry's bookmarked flag and persist. Bookmarked items are
- * the user's "saved library" — surfaced separately on the workspace and
+ * the user's "saved library" · surfaced separately on the workspace and
  * survive a "Clear" of un-starred history.
  */
 export function toggleBookmark(id: string): boolean {

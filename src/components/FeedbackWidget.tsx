@@ -24,12 +24,12 @@ const REASONS: Array<{ id: string; key: DictKey }> = [
 /**
  * Two-step feedback widget.
  *
- *   Step 1 — thumbs up/down (immediate signal)
- *   Step 2 — only on thumbs-down: tag chips ("too long", "off topic", …)
+ *   Step 1 · thumbs up/down (immediate signal)
+ *   Step 2 · only on thumbs-down: tag chips ("too long", "off topic", …)
  *            plus an optional free-text note. The chip selection makes the
  *            learning signal sharper than a binary rating alone.
  *
- * All failures are silent — the user always sees a "Thanks!" so the loop
+ * All failures are silent · the user always sees a "Thanks!" so the loop
  * never feels broken.
  */
 export default function FeedbackWidget({
@@ -141,7 +141,7 @@ export default function FeedbackWidget({
         </button>
       </div>
 
-      {/* Step 2 — only on thumbs-down */}
+      {/* Step 2 · only on thumbs-down */}
       {rating === -1 && (
         <div className="mt-3 rounded-lg bg-rose-50/60 border border-rose-100 p-3">
           <div className="text-xs font-medium text-rose-800">{t("feedback.reason.title")}</div>

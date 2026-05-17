@@ -6,7 +6,7 @@ import { isDemoMode } from "@/lib/demo";
 export async function GET() {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
-  // In demo mode, Google OAuth is simulated — go straight to dashboard
+  // In demo mode, Google OAuth is simulated · go straight to dashboard
   if (isDemoMode) {
     return NextResponse.redirect(`${appUrl}/dashboard`);
   }

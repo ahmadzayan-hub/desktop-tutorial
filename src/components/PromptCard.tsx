@@ -15,7 +15,7 @@ const H = 1500;
 /**
  * Render the final prompt as a shareable 1200×1500 PNG with subtle branding.
  *
- * Drawn entirely on a hidden <canvas> when the user clicks "Save image" — no
+ * Drawn entirely on a hidden <canvas> when the user clicks "Save image" · no
  * external libraries, no server round-trip. The result downloads as a file
  * the user can drop straight into Twitter/Instagram/LinkedIn.
  *
@@ -86,7 +86,7 @@ export default function PromptCard({ text, intent, className }: Props) {
     roundRect(ctx, cardX, cardY, cardW, cardH, 32);
     ctx.fill();
 
-    // Top — brand wordmark
+    // Top · brand wordmark
     ctx.fillStyle = "#ffffff";
     ctx.font = "700 56px system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
     ctx.fillText("Maktab", pad + 32, pad + 88);
@@ -120,7 +120,7 @@ export default function PromptCard({ text, intent, className }: Props) {
       24    // up to ~24 lines, then ellipsis
     );
 
-    // Footer — site URL
+    // Footer · site URL
     ctx.fillStyle = "rgba(255,255,255,0.6)";
     ctx.font = "500 24px system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
     const url =

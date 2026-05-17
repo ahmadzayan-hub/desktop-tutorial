@@ -95,8 +95,8 @@ const STEPS: Step[] = [
     label_ar: "ما الأسلوب الذي يجب استخدامه؟",
     placeholder_en: "e.g. Professional and concise, Academic and rigorous, Friendly and conversational",
     placeholder_ar: "مثال: مهني وموجز، أكاديمي ودقيق، ودي وحواري",
-    hint_en: "Tone affects every word the AI chooses — be specific",
-    hint_ar: "الأسلوب يؤثر على كل كلمة يختارها الذكاء الاصطناعي — كن محددًا",
+    hint_en: "Tone affects every word the AI chooses · be specific",
+    hint_ar: "الأسلوب يؤثر على كل كلمة يختارها الذكاء الاصطناعي · كن محددًا",
     required: false,
   },
   {
@@ -117,8 +117,8 @@ const STEPS: Step[] = [
     label_ar: "ماذا يجب أن يتجنب الذكاء الاصطناعي؟",
     placeholder_en: "e.g. No jargon. Max 400 words. Don't include pricing. Avoid speculation.",
     placeholder_ar: "مثال: لا مصطلحات تقنية. الحد الأقصى 400 كلمة. لا تدرج الأسعار. تجنّب التخمين.",
-    hint_en: "Constraints are just as important as instructions — they prevent common mistakes",
-    hint_ar: "القيود مهمة بقدر التعليمات — فهي تمنع الأخطاء الشائعة",
+    hint_en: "Constraints are just as important as instructions · they prevent common mistakes",
+    hint_ar: "القيود مهمة بقدر التعليمات · فهي تمنع الأخطاء الشائعة",
     required: false,
   },
   {
@@ -281,7 +281,7 @@ export default function PromptBuilderWizard({ onComplete, onClose }: Props) {
           className="btn-primary text-xs px-5 py-2.5 disabled:opacity-40"
         >
           {step === STEPS.length - 1
-            ? (ar ? "✨ أنشئ الموجِّه" : "✨ Build Prompt")
+            ? (ar ? "أنشئ الموجِّه" : "Build Prompt")
             : (ar ? "التالي →" : "Next →")}
         </button>
       </div>

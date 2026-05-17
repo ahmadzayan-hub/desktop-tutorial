@@ -1,5 +1,5 @@
 /**
- * Prompt Engineering Intelligence — method catalogue.
+ * Prompt Engineering Intelligence · method catalogue.
  *
  * Each method has bilingual metadata, use-case hints, an example, and
  * a builder function that scaffolds a prompt given basic inputs.
@@ -60,7 +60,7 @@ export const PROMPT_METHODS: PromptMethod[] = [
     name_ar: "قائم على المهمة",
     tagline_en: "Start directly with the action verb",
     tagline_ar: "ابدأ مباشرةً بفعل الإجراء",
-    desc_en: "Lead with a clear action verb — summarize, analyze, write, classify, compare, translate, generate. Best when the task is obvious and needs no role setup.",
+    desc_en: "Lead with a clear action verb · summarize, analyze, write, classify, compare, translate, generate. Best when the task is obvious and needs no role setup.",
     desc_ar: "ابدأ بفعل إجراء واضح: لخّص، حلّل، اكتب، صنّف، قارن، ترجم، أنتج. الأفضل حين تكون المهمة واضحة ولا تحتاج إعدادًا للدور.",
     best_for_en: ["Quick summaries", "Data extraction", "Translation", "Classification"],
     best_for_ar: ["الملخصات السريعة", "استخراج البيانات", "الترجمة", "التصنيف"],
@@ -90,8 +90,8 @@ export const PROMPT_METHODS: PromptMethod[] = [
     color: "bg-sky-500",
     name_en: "Zero-Shot",
     name_ar: "توجيه صفري",
-    tagline_en: "No examples — just a clear direct instruction",
-    tagline_ar: "بدون أمثلة — فقط تعليمة مباشرة وواضحة",
+    tagline_en: "No examples · just a clear direct instruction",
+    tagline_ar: "بدون أمثلة · فقط تعليمة مباشرة وواضحة",
     desc_en: "Give the AI a clear task without examples. Works when the task is simple and the model's general knowledge is sufficient. Fast and low-friction.",
     desc_ar: "أعطِ الذكاء الاصطناعي مهمة واضحة دون أمثلة. يعمل حين تكون المهمة بسيطة ومعرفة النموذج العامة كافية. سريع وبدون تعقيد.",
     best_for_en: ["Simple Q&A", "Factual lookup", "Short generation tasks"],
@@ -106,14 +106,14 @@ export const PROMPT_METHODS: PromptMethod[] = [
     color: "bg-violet-500",
     name_en: "Few-Shot",
     name_ar: "توجيه بالأمثلة",
-    tagline_en: "Show 1–3 examples so the AI mimics your style",
-    tagline_ar: "أظهر 1–3 أمثلة حتى يحاكي الذكاء الاصطناعي أسلوبك",
+    tagline_en: "Show 1·3 examples so the AI mimics your style",
+    tagline_ar: "أظهر 1·3 أمثلة حتى يحاكي الذكاء الاصطناعي أسلوبك",
     desc_en: "Provide one to three input-output examples before the real task. The AI learns your expected format, tone, and structure from the examples.",
     desc_ar: "قدّم مثالًا إلى ثلاثة أمثلة على المدخل والمخرج قبل المهمة الحقيقية. يتعلم الذكاء الاصطناعي صيغتك المتوقعة وأسلوبك وبنيتك من الأمثلة.",
     best_for_en: ["Style matching", "Data labelling", "Pattern extraction", "Classification"],
     best_for_ar: ["مطابقة الأسلوب", "تسمية البيانات", "استخراج الأنماط", "التصنيف"],
-    example_en: "Example 1 — Input: 'Product X launch delayed.' → Output: 'Launch Risk: Product X delayed — escalate to steering committee.' Now classify: 'Q3 budget overrun by 12%.'",
-    example_ar: "مثال 1 — المدخل: 'تأخّر إطلاق المنتج X.' ← المخرج: 'خطر الإطلاق: تأخّر المنتج X — ارفع للجنة التوجيه.' الآن صنّف: 'تجاوز ميزانية الربع الثالث بنسبة 12٪.'",
+    example_en: "Example 1 · Input: 'Product X launch delayed.' → Output: 'Launch Risk: Product X delayed · escalate to steering committee.' Now classify: 'Q3 budget overrun by 12%.'",
+    example_ar: "مثال 1 · المدخل: 'تأخّر إطلاق المنتج X.' ← المخرج: 'خطر الإطلاق: تأخّر المنتج X · ارفع للجنة التوجيه.' الآن صنّف: 'تجاوز ميزانية الربع الثالث بنسبة 12٪.'",
     complexity: "intermediate",
   },
   {
@@ -186,7 +186,7 @@ export const PROMPT_METHODS: PromptMethod[] = [
     color: "bg-indigo-500",
     name_en: "Critique & Improve",
     name_ar: "النقد والتحسين",
-    tagline_en: "Paste existing content — get weakness analysis + improved version",
+    tagline_en: "Paste existing content · get weakness analysis + improved version",
     tagline_ar: "الصق محتوى موجودًا واحصل على تحليل نقاط الضعف + نسخة محسّنة",
     desc_en: "Provide an existing prompt or AI output. The AI identifies weaknesses, missing elements, and logical gaps, then delivers an improved version with a clear rationale.",
     desc_ar: "قدّم موجِّهًا موجودًا أو مخرجات ذكاء اصطناعي. يحدّد الذكاء الاصطناعي نقاط الضعف والعناصر المفقودة والثغرات المنطقية، ثم يقدّم نسخة محسّنة مع مبرر واضح.",

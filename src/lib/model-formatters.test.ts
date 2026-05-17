@@ -12,7 +12,7 @@ const baseInput: FormatInput = {
   locale: "en"
 };
 
-describe("formatPromptFor — text styles", () => {
+describe("formatPromptFor · text styles", () => {
   it("openai-system has a System section and the task", () => {
     const out = formatPromptFor("openai-system", baseInput);
     expect(out).toContain("# System");
@@ -56,7 +56,7 @@ describe("formatPromptFor — text styles", () => {
   });
 });
 
-describe("formatPromptFor — image styles", () => {
+describe("formatPromptFor · image styles", () => {
   const imgInput: FormatInput = {
     raw: "a cyberpunk lion at neon-lit street",
     intent: "image",
@@ -84,7 +84,7 @@ describe("formatPromptFor — image styles", () => {
   });
 });
 
-describe("formatPromptFor — video", () => {
+describe("formatPromptFor · video", () => {
   const vid: FormatInput = {
     raw: "a falcon flying over Dubai skyline at sunrise",
     intent: "video",
@@ -104,7 +104,7 @@ describe("formatPromptFor — video", () => {
   });
 });
 
-describe("formatPromptFor — audio + code + generic", () => {
+describe("formatPromptFor · audio + code + generic", () => {
   it("music-prompt has Genre / Mood / Tempo", () => {
     const out = formatPromptFor("music-prompt", { ...baseInput, intent: "audio" });
     expect(out).toContain("Genre:");

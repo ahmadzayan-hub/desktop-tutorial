@@ -22,10 +22,10 @@ interface Domain {
 }
 
 /**
- * Every supported domain visible at once — so the user immediately sees the
+ * Every supported domain visible at once · so the user immediately sees the
  * platform handles all 15 prompt types, not just images. Clicking a pill
- * locks the active intent (overriding auto-detect). Clicking it again — or
- * the "Auto" pill — releases the lock.
+ * locks the active intent (overriding auto-detect). Clicking it again · or
+ * the "Auto" pill · releases the lock.
  *
  * The picker is intentionally horizontal-scrolling on small screens rather
  * than collapsed: the discoverability is the whole point.
@@ -45,7 +45,7 @@ const DOMAINS: Domain[] = [
   { id: "video",        emoji: "🎬", ar: "فيديو",       en: "Video" },
   { id: "audio",        emoji: "🎙", ar: "صوت",         en: "Audio" },
   { id: "conversation", emoji: "💬", ar: "محادثة",     en: "Conversation" },
-  { id: "other",        emoji: "✨", ar: "أخرى",        en: "Other" }
+  { id: "other",        emoji: "", ar: "أخرى",        en: "Other" }
 ];
 
 export default function DomainPicker({ active, onPick, autoDetected, className }: Props) {
@@ -66,7 +66,7 @@ export default function DomainPicker({ active, onPick, autoDetected, className }
       </div>
 
       <div className="-mx-1 px-1 flex gap-1.5 overflow-x-auto pb-1">
-        {/* Auto pill — releases the manual lock */}
+        {/* Auto pill · releases the manual lock */}
         <button
           type="button"
           onClick={() => onPick(null)}
@@ -78,7 +78,7 @@ export default function DomainPicker({ active, onPick, autoDetected, className }
               : "border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-brand-400")
           }
         >
-          <span aria-hidden="true">🪄</span>
+          <span aria-hidden="true"></span>
           <span>{t("domain.auto")}</span>
         </button>
 

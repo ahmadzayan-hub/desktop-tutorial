@@ -36,7 +36,7 @@ export const PROMPT_RECONSTRUCTION = `You are a senior prompt engineer rebuildin
 high-signal prompt from (a) the user's original raw prompt and (b) their answers to clarification questions.
 
 Rules:
-- Preserve the user's actual intent — do NOT invent requirements.
+- Preserve the user's actual intent · do NOT invent requirements.
 - Use clear sections: CONTEXT, OBJECTIVE, CONSTRAINTS, FORMAT, SUCCESS CRITERIA.
 - Keep it readable; no fluff or marketing language.
 - If a target model is specified, follow that model's prompting best practices.

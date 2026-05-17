@@ -12,7 +12,7 @@ interface Props {
  * Tap a flag-pack to append its visual modifiers to the raw prompt.
  *
  * Visible only when the workspace is on the `image` intent. The picker is
- * non-destructive — it adds a "## Visual style" section; users can edit or
+ * non-destructive · it adds a "## Visual style" section; users can edit or
  * remove it before generating.
  */
 export default function StylePackPicker({ onPick, className }: Props) {

@@ -423,8 +423,8 @@ const FORMATTERS: Record<PromptStyle, (i: FormatInput) => string> = {
 /**
  * Styles that take a freeform-text scaffold and benefit from the expert
  * preamble prepended (current date + senior-engineer rules). Argument-style
- * formats — Midjourney `--ar 16:9 --v 7`, SDXL tag lists, music-genre
- * prompts — would only be polluted by markdown text, so they're excluded.
+ * formats · Midjourney `--ar 16:9 --v 7`, SDXL tag lists, music-genre
+ * prompts · would only be polluted by markdown text, so they're excluded.
  */
 const PREAMBLE_FRIENDLY: ReadonlySet<PromptStyle> = new Set<PromptStyle>([
   "openai-system",

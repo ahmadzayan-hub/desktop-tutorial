@@ -10,7 +10,7 @@ import {
 
 interface Props {
   text: string;
-  /** Called when the user accepts a suggestion — append to the textarea. */
+  /** Called when the user accepts a suggestion · append to the textarea. */
   onApply: (appended: string) => void;
   className?: string;
 }
@@ -22,7 +22,7 @@ const DEBOUNCE_MS = 250;
  *
  * Suggestions are computed locally (no network) on every keystroke, with a
  * 250 ms debounce so it doesn't fire on every key. Each chip shows a short
- * label; tapping it appends a markdown block — never replaces the user's
+ * label; tapping it appends a markdown block · never replaces the user's
  * text. Every applied suggestion is dismissed (not re-shown that session)
  * so the strip doesn't get noisy.
  */
@@ -69,7 +69,7 @@ export default function LiveSuggestions({ text, onApply, className }: Props) {
       aria-label={t("live.label")}
     >
       <span className="text-[11px] text-slate-500 dark:text-slate-400 self-center">
-        ✨ {t("live.label")}
+        {t("live.label")}
       </span>
       {list.map((s) => {
         const loc = localizedSuggestion(s, locale);

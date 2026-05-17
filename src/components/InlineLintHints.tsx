@@ -21,7 +21,7 @@ interface Hint {
  * Reuses the same five-dimension score the result card uses (clarity,
  * specificity, structure, audience, format). Shows at most two hints at a
  * time so it never feels nagging. When the prompt looks healthy, it shows a
- * cheerful "looking good" — no chips at all.
+ * cheerful "looking good" · no chips at all.
  */
 export default function InlineLintHints({ text, className }: Props) {
   const t = useT();

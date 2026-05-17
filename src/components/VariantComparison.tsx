@@ -19,7 +19,7 @@ type VariantId = "concise" | "detailed";
 /**
  * A/B variant card.
  *
- * Generates two flavours of the same prompt — a Concise one (raw + intent
+ * Generates two flavours of the same prompt · a Concise one (raw + intent
  * scaffold, no clarification answers) and a Detailed one (full QA-injected
  * version). The user picks the winner; the choice POSTs to /api/feedback as
  * a structured comment ("variant_winner: concise|detailed") so the platform
@@ -73,7 +73,7 @@ export default function VariantComparison({
         })
       });
     } catch {
-      /* swallow — UI already shows the winner */
+      /* swallow · UI already shows the winner */
     } finally {
       setBusy(false);
     }
