@@ -1,44 +1,19 @@
 {
-  "name": "prompt-orchestrator",
-  "version": "0.18.0",
+  "name": "saas-platform-monorepo",
+  "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "apps/tweenz",
+    "apps/prompt-optimizer"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest"
-  },
-  "dependencies": {
-    "@stripe/stripe-js": "^9.4.0",
-    "@supabase/auth-helpers-nextjs": "^0.10.0",
-    "@supabase/ssr": "^0.5.2",
-    "@supabase/supabase-js": "^2.45.4",
-    "clsx": "^2.1.1",
-    "date-fns": "^4.1.0",
-    "framer-motion": "^12.38.0",
-    "lucide-react": "^1.14.0",
-    "next": "14.2.15",
-    "react": "18.3.1",
-    "react-day-picker": "^9.14.0",
-    "react-dom": "18.3.1",
-    "react-dropzone": "^15.0.0",
-    "recharts": "^3.8.1",
-    "stripe": "^22.1.0",
-    "zod": "^3.23.8"
-  },
-  "devDependencies": {
-    "@types/node": "^20.16.10",
-    "@types/react": "^18.3.11",
-    "@types/react-dom": "^18.3.0",
-    "autoprefixer": "^10.4.20",
-    "eslint": "^8.57.1",
-    "eslint-config-next": "14.2.15",
-    "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.13",
-    "typescript": "^5.6.2",
-    "vitest": "^2.1.2"
+    "dev:tweenz": "npm run dev --workspace=apps/tweenz",
+    "dev:po": "npm run dev --workspace=apps/prompt-optimizer",
+    "build:tweenz": "npm run build --workspace=apps/tweenz",
+    "build:po": "npm run build --workspace=apps/prompt-optimizer",
+    "build": "npm run build:tweenz && npm run build:po",
+    "typecheck:tweenz": "npm run typecheck --workspace=apps/tweenz",
+    "typecheck:po": "npm run typecheck --workspace=apps/prompt-optimizer",
+    "typecheck": "npm run typecheck:tweenz && npm run typecheck:po"
   }
 }
