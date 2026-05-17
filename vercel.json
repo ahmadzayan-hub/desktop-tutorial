@@ -5,6 +5,7 @@
   "installCommand": "npm install",
   "outputDirectory": ".next",
   "regions": ["iad1"],
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ':(exclude)apps/**'",
   "env": {
     "NEXT_PUBLIC_DEMO_MODE": "true"
   }

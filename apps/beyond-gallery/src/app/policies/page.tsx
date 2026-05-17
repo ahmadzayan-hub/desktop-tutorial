@@ -56,7 +56,7 @@ export default function PoliciesPage() {
       />
       <header className="bg-beyond-white border-b border-beyond-line sticky top-0 z-30">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/beyond-gallery" className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-beyond-navy flex items-center justify-center">
               <span className="font-display font-bold text-beyond-gold">B</span>
             </div>
@@ -70,7 +70,7 @@ export default function PoliciesPage() {
             </div>
           </Link>
           <Link
-            href="/beyond-gallery"
+            href="/"
             className="text-[13px] font-semibold text-beyond-gold hover:underline"
           >
             ← Back to store

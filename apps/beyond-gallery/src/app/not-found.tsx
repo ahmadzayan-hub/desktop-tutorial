@@ -21,7 +21,7 @@ export default function NotFound() {
       </p>
       <div className="mt-6 flex flex-wrap gap-2 justify-center">
         <Link
-          href="/beyond-gallery"
+          href="/"
           className="px-5 py-3 rounded-full bg-beyond-navy text-beyond-ivory text-[13px] font-semibold"
         >
           Back to store

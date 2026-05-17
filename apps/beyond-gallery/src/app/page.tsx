@@ -2481,19 +2481,19 @@ function Contact({ lang }: { lang: "en" | "ar" }) {
 function Footer({ lang }: { lang: "en" | "ar" }) {
   const links: Array<{ label: string; href: string }> = lang === "en"
     ? [
-        { label: "Privacy Policy", href: "/beyond-gallery/policies#privacy" },
-        { label: "Terms and Conditions", href: "/beyond-gallery/policies#terms" },
-        { label: "Return and Exchange Policy", href: "/beyond-gallery/policies#returns" },
-        { label: "Shipping Policy", href: "/beyond-gallery/policies#shipping" },
+        { label: "Privacy Policy", href: "/policies#privacy" },
+        { label: "Terms and Conditions", href: "/policies#terms" },
+        { label: "Return and Exchange Policy", href: "/policies#returns" },
+        { label: "Shipping Policy", href: "/policies#shipping" },
         { label: "Corporate Orders", href: "#corporate" },
         { label: "Supply Desk", href: "#supply" },
         { label: "Contact", href: "#contact" },
       ]
     : [
-        { label: "سياسة الخصوصية", href: "/beyond-gallery/policies#privacy" },
-        { label: "الشروط والأحكام", href: "/beyond-gallery/policies#terms" },
-        { label: "سياسة الاسترجاع والاستبدال", href: "/beyond-gallery/policies#returns" },
-        { label: "سياسة الشحن", href: "/beyond-gallery/policies#shipping" },
+        { label: "سياسة الخصوصية", href: "/policies#privacy" },
+        { label: "الشروط والأحكام", href: "/policies#terms" },
+        { label: "سياسة الاسترجاع والاستبدال", href: "/policies#returns" },
+        { label: "سياسة الشحن", href: "/policies#shipping" },
         { label: "طلبات الشركات", href: "#corporate" },
         { label: "قسم التوريد", href: "#supply" },
         { label: "تواصل", href: "#contact" },
@@ -2516,7 +2516,7 @@ function Footer({ lang }: { lang: "en" | "ar" }) {
           </p>
 
           <Link
-            href="/beyond-gallery#home"
+            href="/#home"
             className="mt-5 inline-flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-white/[0.04] border border-white/10 hover:border-beyond-gold transition-colors group"
           >
             <span className="w-9 h-9 rounded-xl bg-beyond-gold/15 flex items-center justify-center text-beyond-gold font-display text-lg font-bold">
@@ -2655,7 +2655,7 @@ function CookieConsent({ lang }: { lang: "en" | "ar" }) {
                   {lang === "en" ? "Essential Only" : "ضرورية فقط"}
                 </button>
                 <Link
-                  href="/beyond-gallery/policies#privacy"
+                  href="/policies#privacy"
                   className="px-3.5 py-2 rounded-full text-beyond-gold text-[12.5px] font-semibold hover:underline"
                 >
                   {lang === "en" ? "Learn more" : "المزيد"}
