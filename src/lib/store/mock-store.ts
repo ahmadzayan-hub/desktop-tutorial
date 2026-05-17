@@ -176,34 +176,45 @@ export async function deleteProject(id: string): Promise<boolean> {
   return true;
 }
 
+const DEMO_SAMPLES: CreateProjectInput[] = [
+  {
+    name: "Project Alpha · Strategic Contract",
+    subject: "contract_management",
+    theme: "civic",
+    client_authority_en: "Government Authority",
+    client_authority_ar: "جهة حكومية",
+    counterparty_en: "Consulting Co.",
+    counterparty_ar: "شركة استشارات",
+    start_date: "2026-01-15",
+    end_date: "2026-12-31",
+  },
+  {
+    name: "Tender 2026/A · Engineering Services",
+    subject: "tender_evaluation",
+    theme: "petrol",
+    client_authority_en: "Energy Authority",
+    client_authority_ar: "هيئة طاقة",
+    counterparty_en: "Three bidders",
+    counterparty_ar: "ثلاث جهات متقدّمة",
+    start_date: "2026-03-01",
+    end_date: "2026-05-30",
+  },
+];
+
 export async function seedDemoProjects(): Promise<DbProject[]> {
+  if (isUsingSupabase()) {
+    const existing = await sbListProjects();
+    if (existing.length > 0) return existing;
+    const created: DbProject[] = [];
+    for (const sample of DEMO_SAMPLES) {
+      const p = await sbCreateProject(sample);
+      if (p) created.push(p);
+    }
+    return sortProjects(created);
+  }
   const current = await readRaw();
   if (current.length > 0) return current;
-  const samples: CreateProjectInput[] = [
-    {
-      name: "Project Alpha · Strategic Contract",
-      subject: "contract_management",
-      theme: "civic",
-      client_authority_en: "Government Authority",
-      client_authority_ar: "جهة حكومية",
-      counterparty_en: "Consulting Co.",
-      counterparty_ar: "شركة استشارات",
-      start_date: "2026-01-15",
-      end_date: "2026-12-31",
-    },
-    {
-      name: "Tender 2026/A · Engineering Services",
-      subject: "tender_evaluation",
-      theme: "petrol",
-      client_authority_en: "Energy Authority",
-      client_authority_ar: "هيئة طاقة",
-      counterparty_en: "Three bidders",
-      counterparty_ar: "ثلاث جهات متقدّمة",
-      start_date: "2026-03-01",
-      end_date: "2026-05-30",
-    },
-  ];
-  const seeded = samples.map(newProject);
+  const seeded = DEMO_SAMPLES.map(newProject);
   await writeRaw(seeded);
   return sortProjects(seeded);
 }

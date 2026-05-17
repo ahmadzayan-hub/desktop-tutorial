@@ -60,17 +60,28 @@ export async function createProjectAction(
     return { ok: false, fieldErrors };
   }
 
-  const project = await createProject({
-    name: parsed.data.name,
-    subject: parsed.data.subject as Subject,
-    theme: parsed.data.theme as ThemeId,
-    client_authority_en: emptyToNull(parsed.data.client_authority_en),
-    client_authority_ar: emptyToNull(parsed.data.client_authority_ar),
-    counterparty_en: emptyToNull(parsed.data.counterparty_en),
-    counterparty_ar: emptyToNull(parsed.data.counterparty_ar),
-    start_date: emptyToNull(parsed.data.start_date),
-    end_date: emptyToNull(parsed.data.end_date),
-  });
+  let project;
+  try {
+    project = await createProject({
+      name: parsed.data.name,
+      subject: parsed.data.subject as Subject,
+      theme: parsed.data.theme as ThemeId,
+      client_authority_en: emptyToNull(parsed.data.client_authority_en),
+      client_authority_ar: emptyToNull(parsed.data.client_authority_ar),
+      counterparty_en: emptyToNull(parsed.data.counterparty_en),
+      counterparty_ar: emptyToNull(parsed.data.counterparty_ar),
+      start_date: emptyToNull(parsed.data.start_date),
+      end_date: emptyToNull(parsed.data.end_date),
+    });
+  } catch (err) {
+    return {
+      ok: false,
+      error:
+        err instanceof Error
+          ? err.message
+          : "Could not create project. Please try again.",
+    };
+  }
 
   revalidatePath("/projects");
   redirect(`/projects/${project.id}`);

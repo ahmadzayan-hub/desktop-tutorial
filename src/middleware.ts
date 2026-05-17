@@ -33,9 +33,15 @@ export async function middleware(req: NextRequest) {
     },
   });
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user: { id: string } | null = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch (err) {
+    // A Supabase outage shouldn't take down the whole site. Treat the
+    // request as unauthenticated and let route-level errors surface.
+    console.warn("[middleware] auth.getUser failed:", err);
+  }
 
   const pathname = req.nextUrl.pathname;
   const isProtected = PROTECTED_PREFIXES.some(
