@@ -3,8 +3,22 @@ import { cookies } from "next/headers";
 import type { DbProject, Subject } from "@/types/database";
 import type { ThemeId } from "@/lib/themes/types";
 import { mockSession } from "./session";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
+import {
+  sbCreateProject,
+  sbDeleteProject,
+  sbGetProject,
+  sbListProjects,
+} from "./supabase-store";
 
 export { mockSession };
+
+// All project CRUD here delegates to Supabase when env vars are set. The
+// cookie-backed fallback survives so the app remains usable in demo mode.
+
+function isUsingSupabase(): boolean {
+  return isSupabaseConfigured();
+}
 
 const COOKIE_NAME = "mutabasir.demo.projects";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
@@ -104,11 +118,13 @@ async function writeRaw(list: DbProject[]): Promise<void> {
 // --- Public API -------------------------------------------------------------
 
 export async function listProjects(): Promise<DbProject[]> {
+  if (isUsingSupabase()) return sbListProjects();
   return sortProjects(await readRaw());
 }
 
 export async function getProject(id: string): Promise<DbProject | null> {
   if (!id) return null;
+  if (isUsingSupabase()) return sbGetProject(id);
   const list = await readRaw();
   return list.find((p) => p.id === id) ?? null;
 }
@@ -116,6 +132,13 @@ export async function getProject(id: string): Promise<DbProject | null> {
 export async function createProject(
   input: CreateProjectInput,
 ): Promise<DbProject> {
+  if (isUsingSupabase()) {
+    const created = await sbCreateProject(input);
+    if (!created) {
+      throw new Error("Could not create project (not signed in or DB error).");
+    }
+    return created;
+  }
   const current = await readRaw();
   const project = newProject(input);
   await writeRaw([project, ...current]);
@@ -145,6 +168,7 @@ export async function updateProject(
 }
 
 export async function deleteProject(id: string): Promise<boolean> {
+  if (isUsingSupabase()) return sbDeleteProject(id);
   const list = await readRaw();
   const next = list.filter((p) => p.id !== id);
   if (next.length === list.length) return false;

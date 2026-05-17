@@ -1,26 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
-import { useTransition } from "react";
+import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocale } from "@/lib/i18n/locale-provider";
+import { signUpAction, type AuthState } from "../actions";
 
-export function SignUpForm() {
+const initial: AuthState = { ok: false };
+
+interface Props {
+  supabaseConfigured: boolean;
+}
+
+export function SignUpForm({ supabaseConfigured }: Props) {
   const { t, dir } = useLocale();
-  const router = useRouter();
-  const [pending, startTransition] = useTransition();
-
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    startTransition(() => {
-      router.push("/projects");
-    });
-  }
+  const [state, formAction, pending] = useActionState(signUpAction, initial);
 
   return (
     <motion.div
@@ -35,7 +33,7 @@ export function SignUpForm() {
           <p className="mt-1 text-sm text-slate-500">{t.auth.signUpSub}</p>
         </CardHeader>
         <CardBody>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form action={formAction} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="full_name">{t.auth.fullName}</Label>
               <Input
@@ -44,6 +42,11 @@ export function SignUpForm() {
                 required
                 autoComplete="name"
               />
+              {state.fieldErrors?.full_name && (
+                <p className="text-xs text-brand-red">
+                  {state.fieldErrors.full_name}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -56,6 +59,9 @@ export function SignUpForm() {
                 autoComplete="email"
                 placeholder="you@authority.gov.ae"
               />
+              {state.fieldErrors?.email && (
+                <p className="text-xs text-brand-red">{state.fieldErrors.email}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -68,11 +74,24 @@ export function SignUpForm() {
                 autoComplete="new-password"
                 minLength={8}
               />
+              {state.fieldErrors?.password && (
+                <p className="text-xs text-brand-red">
+                  {state.fieldErrors.password}
+                </p>
+              )}
             </div>
 
-            <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-              {t.auth.authNotConfigured}
-            </div>
+            {state.error && (
+              <div className="rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-900">
+                {state.error}
+              </div>
+            )}
+
+            {!supabaseConfigured && (
+              <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                {t.auth.authNotConfigured}
+              </div>
+            )}
 
             <Button type="submit" className="w-full" disabled={pending}>
               {pending ? "…" : t.auth.submitSignUp}

@@ -7,10 +7,16 @@ import { Wordmark } from "@/components/branding/wordmark";
 import { LocaleToggle } from "@/components/branding/locale-toggle";
 import { Button } from "@/components/ui/button";
 import { useLocale } from "@/lib/i18n/locale-provider";
-import { mockSession } from "@/lib/store/session";
+import { signOutAction } from "@/app/(auth)/actions";
 import { cn } from "@/lib/utils/cn";
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+interface AppShellProps {
+  children: React.ReactNode;
+  userEmail: string;
+  usingRealAuth: boolean;
+}
+
+export function AppShell({ children, userEmail, usingRealAuth }: AppShellProps) {
   const { t, dir } = useLocale();
   const pathname = usePathname();
 
@@ -60,13 +66,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-2">
             <LocaleToggle />
             <span className="hidden text-xs text-slate-500 md:inline">
-              {mockSession.user.email}
+              {userEmail}
             </span>
-            <Link href="/">
-              <Button variant="secondary" size="sm">
-                {t.nav.signOut}
-              </Button>
-            </Link>
+            {usingRealAuth ? (
+              <form action={signOutAction}>
+                <Button type="submit" variant="secondary" size="sm">
+                  {t.nav.signOut}
+                </Button>
+              </form>
+            ) : (
+              <Link href="/">
+                <Button variant="secondary" size="sm">
+                  {t.nav.signOut}
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
 

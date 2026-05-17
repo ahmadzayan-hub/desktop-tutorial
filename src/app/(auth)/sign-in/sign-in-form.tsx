@@ -1,26 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { motion } from "motion/react";
-import { useTransition } from "react";
+import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocale } from "@/lib/i18n/locale-provider";
+import { signInAction, type AuthState } from "../actions";
 
-export function SignInForm() {
+const initial: AuthState = { ok: false };
+
+interface Props {
+  supabaseConfigured: boolean;
+}
+
+export function SignInForm({ supabaseConfigured }: Props) {
   const { t, dir } = useLocale();
-  const router = useRouter();
-  const [pending, startTransition] = useTransition();
-
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    startTransition(() => {
-      router.push("/projects");
-    });
-  }
+  const search = useSearchParams();
+  const next = search.get("next") ?? "/projects";
+  const [state, formAction, pending] = useActionState(signInAction, initial);
 
   return (
     <motion.div
@@ -35,7 +36,8 @@ export function SignInForm() {
           <p className="mt-1 text-sm text-slate-500">{t.auth.signInSub}</p>
         </CardHeader>
         <CardBody>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form action={formAction} className="space-y-4">
+            <input type="hidden" name="next" value={next} />
             <div className="space-y-2">
               <Label htmlFor="email">{t.auth.email}</Label>
               <Input
@@ -46,6 +48,9 @@ export function SignInForm() {
                 required
                 placeholder="you@authority.gov.ae"
               />
+              {state.fieldErrors?.email && (
+                <p className="text-xs text-brand-red">{state.fieldErrors.email}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -57,11 +62,22 @@ export function SignInForm() {
                 autoComplete="current-password"
                 required
               />
+              {state.fieldErrors?.password && (
+                <p className="text-xs text-brand-red">{state.fieldErrors.password}</p>
+              )}
             </div>
 
-            <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-              {t.auth.authNotConfigured}
-            </div>
+            {state.error && (
+              <div className="rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-900">
+                {state.error}
+              </div>
+            )}
+
+            {!supabaseConfigured && (
+              <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                {t.auth.authNotConfigured}
+              </div>
+            )}
 
             <Button type="submit" className="w-full" disabled={pending}>
               {pending ? "…" : t.auth.submitSignIn}
