@@ -34,9 +34,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans:   ["Inter", "Segoe UI", "system-ui", "sans-serif"],
-        arabic: ["IBM Plex Sans Arabic", "Noto Sans Arabic", "sans-serif"],
-        mono:   ["JetBrains Mono", "Fira Code", "monospace"],
+        sans:   ["Plus Jakarta Sans", "Segoe UI", "system-ui", "sans-serif"],
+        arabic: ["Noto Kufi Arabic", "sans-serif"],
+        mono:   ["JetBrains Mono", "monospace"],
       },
       borderRadius: {
         "2xl": "1rem", "3xl": "1.5rem", "4xl": "2rem",

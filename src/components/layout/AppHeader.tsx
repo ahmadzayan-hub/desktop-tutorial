@@ -30,6 +30,7 @@ export function AppHeader({ onMenuClick, title }: AppHeaderProps) {
   const [searching, setSearching] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [profile, setProfile] = useState<{ full_name?: string } | null>(null);
   const searchRef  = useRef<HTMLDivElement>(null);
   const inputRef   = useRef<HTMLInputElement>(null);
   const timeout    = useRef<NodeJS.Timeout | null>(null);
@@ -37,6 +38,7 @@ export function AppHeader({ onMenuClick, title }: AppHeaderProps) {
 
   useEffect(() => {
     setDark(document.documentElement.classList.contains("dark"));
+    fetch("/api/profile").then(r => r.ok ? r.json() : null).then(d => d && setProfile(d));
   }, []);
 
   useEffect(() => {
@@ -222,13 +224,19 @@ export function AppHeader({ onMenuClick, title }: AppHeaderProps) {
               <div className="px-4 py-3">
                 <p className="text-[10px] text-slate-400 mb-2 uppercase tracking-wider font-semibold">Quick access</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {["Courses", "Deadlines", "Grades", "Files", "Tutor"].map(link => (
+                  {[
+                    { label: "Courses",   href: "/courses"  },
+                    { label: "Plan",      href: "/plan"     },
+                    { label: "Progress",  href: "/progress" },
+                    { label: "Study",     href: "/study"    },
+                    { label: "Messages",  href: "/messages" },
+                  ].map(link => (
                     <button
-                      key={link}
-                      onClick={() => navigate(`/${link.toLowerCase()}`)}
+                      key={link.href}
+                      onClick={() => navigate(link.href)}
                       className="text-xs bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 rounded-xl px-2.5 py-1 hover:bg-brand-100 dark:hover:bg-brand-900/50 transition font-medium"
                     >
-                      {link}
+                      {link.label}
                     </button>
                   ))}
                 </div>
@@ -314,7 +322,9 @@ export function AppHeader({ onMenuClick, title }: AppHeaderProps) {
 
         {/* User avatar */}
         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-sm cursor-pointer hover:shadow-glow transition press ml-0.5">
-          SA
+          {profile?.full_name
+            ? profile.full_name.split(" ").slice(0, 2).map((n: string) => n[0]).join("").toUpperCase()
+            : "ME"}
         </div>
       </div>
     </header>

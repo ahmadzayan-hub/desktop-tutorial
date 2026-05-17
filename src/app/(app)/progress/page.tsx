@@ -3,11 +3,11 @@ import { useState, useEffect } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import {
   TrendingUp, BarChart3, Star, Flame, Brain, Clock, Award,
-  BookOpen, CheckSquare, Target, Zap, Lock, Trophy,
+  BookOpen, CheckSquare, Target, Zap, Lock, Trophy, X,
 } from "lucide-react";
 import clsx from "clsx";
 
-type ProgressTab = "grades" | "achievements";
+type ProgressTab = "grades" | "achievements" | "gpa";
 
 /* ─── Grades ─────────────────────────────────────────────────────── */
 interface Grade  { id:string; course_id:string; category:string; item_name:string; score:number|null; max_score:number; weight:number; }
@@ -127,6 +127,125 @@ function GradesTab() {
   );
 }
 
+/* ─── GPA Calculator ─────────────────────────────────────────────── */
+interface GPACourse { name: string; credits: number; grade: string; }
+
+const GRADE_POINTS: Record<string, number> = {
+  "A+": 4.0, "A": 4.0, "A-": 3.7,
+  "B+": 3.3, "B": 3.0, "B-": 2.7,
+  "C+": 2.3, "C": 2.0, "C-": 1.7,
+  "D+": 1.3, "D": 1.0, "F": 0.0,
+};
+
+function GPACalculatorTab() {
+  const [rows, setRows] = useState<GPACourse[]>([
+    { name: "Strategic Management", credits: 3, grade: "A" },
+    { name: "Corporate Finance",    credits: 3, grade: "B+" },
+    { name: "Marketing Management", credits: 3, grade: "A-" },
+  ]);
+  const [targetGPA, setTargetGPA] = useState("3.5");
+
+  function addRow() { setRows(r => [...r, { name: "", credits: 3, grade: "B" }]); }
+  function removeRow(i: number) { setRows(r => r.filter((_, idx) => idx !== i)); }
+  function update(i: number, field: keyof GPACourse, val: string | number) {
+    setRows(r => r.map((row, idx) => idx === i ? { ...row, [field]: val } : row));
+  }
+
+  const totalCredits = rows.reduce((s, r) => s + Number(r.credits), 0);
+  const totalPoints  = rows.reduce((s, r) => s + (GRADE_POINTS[r.grade] ?? 0) * Number(r.credits), 0);
+  const gpa = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : "0.00";
+  const gpaNum = parseFloat(gpa);
+  const targetNum = parseFloat(targetGPA) || 0;
+  const onTrack = gpaNum >= targetNum;
+  const gpaColor = gpaNum >= 3.5 ? "text-emerald-500" : gpaNum >= 3.0 ? "text-amber-500" : "text-red-500";
+
+  return (
+    <div className="space-y-5">
+      <div className="grid grid-cols-2 gap-3">
+        <div className="card text-center">
+          <p className={`text-3xl font-black ${gpaColor}`}>{gpa}</p>
+          <p className="text-xs font-semibold text-slate-500 mt-1">Current GPA</p>
+          <p className="text-[10px] text-slate-400">{totalCredits} credit hours</p>
+        </div>
+        <div className="card text-center">
+          <p className={`text-3xl font-black ${onTrack ? "text-emerald-500" : "text-red-500"}`}>
+            {onTrack ? "On Track" : "Below"}
+          </p>
+          <p className="text-xs font-semibold text-slate-500 mt-1">vs. Target {targetNum.toFixed(1)}</p>
+          <p className="text-[10px] text-slate-400">{onTrack ? "Keep it up" : `Need ${(targetNum - gpaNum).toFixed(2)} more`}</p>
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+            <Target size={15} className="text-brand-500" /> GPA Calculator
+          </h3>
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-slate-500">Target GPA</label>
+            <input
+              type="number" min="0" max="4" step="0.1" value={targetGPA}
+              onChange={e => setTargetGPA(e.target.value)}
+              className="w-16 text-xs text-center rounded-xl border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/70 px-2 py-1.5"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          {rows.map((row, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <input
+                type="text" placeholder="Course name"
+                value={row.name} onChange={e => update(i, "name", e.target.value)}
+                className="flex-1 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/70 px-3 py-1.5"
+              />
+              <input
+                type="number" min="1" max="6" value={row.credits}
+                onChange={e => update(i, "credits", parseInt(e.target.value) || 1)}
+                className="w-14 text-xs text-center rounded-xl border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/70 px-2 py-1.5"
+                placeholder="Cr"
+              />
+              <select value={row.grade} onChange={e => update(i, "grade", e.target.value)}
+                className="w-16 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/70 px-2 py-1.5">
+                {Object.keys(GRADE_POINTS).map(g => <option key={g} value={g}>{g}</option>)}
+              </select>
+              <button onClick={() => removeRow(i)} className="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-red-500 transition rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 flex-shrink-0">
+                <X size={13} />
+              </button>
+            </div>
+          ))}
+        </div>
+        <button onClick={addRow}
+          className="mt-3 w-full text-xs border border-dashed border-brand-300 dark:border-brand-700 text-brand-600 dark:text-brand-400 rounded-xl py-2 hover:bg-brand-50 dark:hover:bg-brand-900/20 transition">
+          Add Course
+        </button>
+      </div>
+
+      <div className="card">
+        <h3 className="font-bold text-sm text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+          <Award size={15} className="text-amber-500" /> GPA Scale Reference
+        </h3>
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            { range: "3.7 - 4.0", letter: "A", label: "Excellent", color: "text-emerald-600" },
+            { range: "3.0 - 3.6", letter: "B", label: "Good",      color: "text-blue-600"    },
+            { range: "2.0 - 2.9", letter: "C", label: "Average",   color: "text-amber-600"   },
+            { range: "0.0 - 1.9", letter: "D/F", label: "Below",   color: "text-red-600"     },
+          ].map(item => (
+            <div key={item.letter} className="flex items-center gap-2 p-2 rounded-xl bg-white/40 dark:bg-white/5">
+              <span className={`text-base font-black w-8 ${item.color}`}>{item.letter}</span>
+              <div>
+                <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">{item.label}</p>
+                <p className="text-[10px] text-slate-400">{item.range}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Achievements ───────────────────────────────────────────────── */
 interface Badge { id:string; icon:React.ReactNode; title:string; description:string; earned:boolean; earnedDate?:string; category:string; progress?:number; target?:number; color:string; }
 
@@ -195,7 +314,7 @@ function AchievementsTab() {
             <p className="text-xs font-bold text-slate-900 dark:text-white leading-tight">{b.title}</p>
             <p className="text-[10px] text-slate-400 mt-0.5 leading-snug">{b.description}</p>
             {b.earned && b.earnedDate && (
-              <p className="text-[9px] text-amber-500 font-semibold mt-1.5">✓ {b.earnedDate}</p>
+              <p className="text-[9px] text-amber-500 font-semibold mt-1.5">{b.earnedDate}</p>
             )}
             {!b.earned && b.progress!==undefined && b.target && (
               <div className="mt-2">
@@ -223,10 +342,11 @@ export default function ProgressPage() {
         <p className="text-sm text-slate-500 mt-0.5">Grades and achievements</p>
       </div>
 
-      <div className="flex gap-1 p-1 bg-white/60 dark:bg-white/5 rounded-2xl border border-white/60 dark:border-white/10 w-fit">
+      <div className="flex gap-1 p-1 bg-white/60 dark:bg-white/5 rounded-2xl border border-white/60 dark:border-white/10 w-fit flex-wrap">
         {([
-          { id:"grades",       label:"Grades",       icon:<BarChart3 size={15}/> },
-          { id:"achievements", label:"Achievements", icon:<Trophy size={15}/>    },
+          { id:"grades",       label:"Grades",         icon:<BarChart3 size={15}/> },
+          { id:"gpa",          label:"GPA Calc",       icon:<Target size={15}/>    },
+          { id:"achievements", label:"Achievements",   icon:<Trophy size={15}/>    },
         ] as const).map(t=>(
           <button key={t.id} onClick={()=>setTab(t.id)}
             className={clsx("flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all",
@@ -237,6 +357,7 @@ export default function ProgressPage() {
       </div>
 
       {tab==="grades"       && <GradesTab />}
+      {tab==="gpa"          && <GPACalculatorTab />}
       {tab==="achievements" && <AchievementsTab />}
     </div>
   );
