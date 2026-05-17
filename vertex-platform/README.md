@@ -147,6 +147,44 @@ Database:
 - [ ] RLS enabled (lock icon) on every table
 - [ ] Inserting a test user via Supabase Auth seeds `public.users`
 
+## Deployment — keeping VERTEX isolated from the root project
+
+This repo also hosts a separate Next.js app at the root (Prompt
+Orchestrator / Tweenz). To prevent the two from interfering on Vercel, each
+project ignores changes that don't belong to it via `ignoreCommand` in its
+own `vercel.json`:
+
+| File | Behaviour |
+|------|-----------|
+| `/vercel.json` (root) | Skips build when a commit only touches `vertex-platform/`. |
+| `/vertex-platform/vercel.json` | Skips build when a commit doesn't touch `vertex-platform/`. |
+
+### One-time Vercel setup for VERTEX
+
+1. Vercel dashboard → **Add New… → Project**.
+2. Import the same Git repository (`ahmadzayan-hub/desktop-tutorial`).
+3. **Root Directory**: `vertex-platform` (click **Edit** and pick the subdir).
+4. **Framework Preset**: `Vite` (auto-detected).
+5. **Build Command**: `npm run build` (auto).
+6. **Output Directory**: `dist` (auto).
+7. Add environment variables (Settings → Environment Variables):
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+   - `VITE_CLAUDE_API_KEY` (Session 2+)
+8. Deploy. Future commits that don't touch `vertex-platform/` will be
+   ignored automatically.
+
+The existing root project keeps deploying the Next.js app exactly as
+before, but now skips any commit that only changes `vertex-platform/` —
+so the two projects never collide on previews, domains, or build logs.
+
+### Branch strategy
+
+- VERTEX work → `claude/vertex-foundation-setup-*` branches (or future
+  `vertex/*` branches).
+- The existing app continues on `main` and its own feature branches.
+- A PR that touches both folders will trigger both projects — by design.
+
 ## Next steps (Session 2)
 
 - Dashboard widgets (KPIs, traffic-light summary)

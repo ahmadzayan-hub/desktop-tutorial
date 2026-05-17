@@ -4,6 +4,12 @@ A 100% free, multi-tenant SaaS that turns rough user ideas into polished,
 model-aware prompts. Built on **Next.js + Supabase + Ollama + Vercel** —
 zero hosting, database, and AI fees.
 
+> **Note:** This monorepo also hosts an independent project at
+> [`vertex-platform/`](./vertex-platform/README.md) (VERTEX — Contract &
+> Project Intelligence, Vite + React). Each project has its own
+> `vercel.json` with path-based `ignoreCommand`, so the two are isolated
+> in CI / deployment / preview URLs.
+
 ## Features
 
 - Raw prompt intake with intent detection
