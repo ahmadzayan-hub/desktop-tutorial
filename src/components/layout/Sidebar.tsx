@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import {
   GraduationCap, LayoutDashboard, BookOpen, Brain,
@@ -40,6 +41,14 @@ function NavLink({ href, icon, label, color, onClose }: NavItem & { onClose?: ()
 }
 
 export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
+  const [profile, setProfile] = useState<{ full_name?: string } | null>(null);
+  useEffect(() => {
+    fetch("/api/profile").then(r => r.ok ? r.json() : null).then(d => d && setProfile(d));
+  }, []);
+
+  const displayName = profile?.full_name ?? "Student";
+  const initials = displayName.split(" ").slice(0, 2).map((n: string) => n[0]).join("").toUpperCase();
+
   const mainNav: NavItem[] = [
     { href: "/dashboard", icon: <LayoutDashboard size={18} />, label: "Today",    color: "text-brand-500"   },
     { href: "/courses",   icon: <BookOpen size={18} />,        label: "Courses",  color: "text-sky-500"     },
@@ -76,12 +85,12 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
         <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-brand-50/80 to-purple-50/80 dark:from-brand-950/40 dark:to-purple-950/30 border border-brand-100/60 dark:border-brand-800/30">
           <div className="relative flex-shrink-0">
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-400 to-purple-500 flex items-center justify-center text-white text-xs font-bold shadow-sm">
-              SA
+              {initials || "S"}
             </div>
             <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-white dark:border-slate-950" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">Sara Al-Mansouri</p>
+            <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">{displayName}</p>
             <p className="text-[10px] text-slate-400 truncate">MBA Year 2</p>
           </div>
           <Sparkles className="w-3.5 h-3.5 text-brand-400 flex-shrink-0 animate-pulse-soft" />

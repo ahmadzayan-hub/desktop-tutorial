@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
@@ -8,8 +8,99 @@ import {
   Brain, Layers, BookOpen, Mic, Bot, Send, Plus, ChevronLeft,
   ChevronRight, RotateCcw, ThumbsUp, ThumbsDown, CheckCircle,
   XCircle, RefreshCw, Sparkles, X, ChevronDown, AlertCircle,
+  Timer, Play, Pause, Square, Coffee,
 } from "lucide-react";
 import clsx from "clsx";
+
+/* ─── Pomodoro Timer ────────────────────────────────────────────── */
+const MODES = [
+  { label: "Focus", minutes: 25, color: "bg-red-500", text: "text-red-600 dark:text-red-400", border: "border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/20" },
+  { label: "Short Break", minutes: 5,  color: "bg-emerald-500", text: "text-emerald-600 dark:text-emerald-400", border: "border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/20" },
+  { label: "Long Break", minutes: 15, color: "bg-blue-500", text: "text-blue-600 dark:text-blue-400", border: "border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/20" },
+];
+
+function PomodoroWidget() {
+  const [modeIdx, setModeIdx] = useState(0);
+  const [running, setRunning] = useState(false);
+  const [secs, setSecs] = useState(MODES[0].minutes * 60);
+  const [cycles, setCycles] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const mode = MODES[modeIdx];
+
+  const reset = useCallback((idx: number) => {
+    setRunning(false);
+    setModeIdx(idx);
+    setSecs(MODES[idx].minutes * 60);
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  }, []);
+
+  useEffect(() => {
+    if (running) {
+      intervalRef.current = setInterval(() => {
+        setSecs(s => {
+          if (s <= 1) {
+            clearInterval(intervalRef.current!);
+            setRunning(false);
+            if (modeIdx === 0) setCycles(c => c + 1);
+            return 0;
+          }
+          return s - 1;
+        });
+      }, 1000);
+    }
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, [running, modeIdx]);
+
+  const mm = Math.floor(secs / 60).toString().padStart(2, "0");
+  const ss = (secs % 60).toString().padStart(2, "0");
+  const pct = (secs / (mode.minutes * 60)) * 100;
+
+  return (
+    <div className={`card flex flex-col sm:flex-row items-center gap-4 p-4 border ${mode.border}`}>
+      <div className="flex items-center gap-3 flex-shrink-0">
+        <Timer size={18} className={mode.text} />
+        <div className="flex gap-1">
+          {MODES.map((m, i) => (
+            <button key={i} onClick={() => reset(i)}
+              className={clsx("px-2.5 py-1 rounded-lg text-xs font-semibold transition", modeIdx === i ? `${m.color} text-white` : "text-slate-500 hover:bg-white/60 dark:hover:bg-white/5")}>
+              {m.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Timer display */}
+      <div className="flex items-center gap-3 flex-1 justify-center">
+        <div className="relative w-16 h-16 flex-shrink-0">
+          <svg className="w-full h-full -rotate-90" viewBox="0 0 64 64">
+            <circle cx="32" cy="32" r="28" fill="none" stroke="rgba(148,163,184,.2)" strokeWidth="4" />
+            <circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" strokeWidth="4"
+              className={mode.text} strokeLinecap="round"
+              strokeDasharray={`${(pct / 100) * 2 * Math.PI * 28} ${2 * Math.PI * 28}`} />
+          </svg>
+          <span className={`absolute inset-0 flex items-center justify-center text-sm font-black tabular-nums ${mode.text}`}>{mm}:{ss}</span>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={() => setRunning(r => !r)}
+            className={`w-9 h-9 rounded-xl flex items-center justify-center text-white transition ${mode.color} hover:opacity-90`}>
+            {running ? <Pause size={15} /> : <Play size={15} />}
+          </button>
+          <button onClick={() => reset(modeIdx)}
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-white/60 dark:hover:bg-white/10 transition">
+            <Square size={14} />
+          </button>
+        </div>
+      </div>
+
+      {cycles > 0 && (
+        <div className="flex items-center gap-1.5 text-xs text-slate-500 flex-shrink-0">
+          <Coffee size={12} />
+          <span>{cycles} session{cycles > 1 ? "s" : ""} done</span>
+        </div>
+      )}
+    </div>
+  );
+}
 
 type Tab = "tutor" | "flashcards" | "quizzes" | "packs" | "lecture";
 
@@ -600,10 +691,15 @@ export default function StudyPage() {
   return (
     <div className="space-y-5 animate-fade-up">
       {/* Header */}
-      <div>
-        <h1 className="text-xl font-bold text-slate-900 dark:text-white">Study Tools</h1>
-        <p className="text-sm text-slate-500 mt-0.5">All your learning tools in one place</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white">Study Tools</h1>
+          <p className="text-sm text-slate-500 mt-0.5">All your learning tools in one place</p>
+        </div>
       </div>
+
+      {/* Pomodoro Timer */}
+      <PomodoroWidget />
 
       {/* Tab bar */}
       <div className="flex gap-1 p-1 bg-white/60 dark:bg-white/5 rounded-2xl border border-white/60 dark:border-white/10 overflow-x-auto">

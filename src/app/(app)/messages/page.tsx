@@ -48,6 +48,7 @@ export default function MessagesPage() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Message | null>(null);
   const [showCompose, setShowCompose] = useState(false);
+  const [mobilePanel, setMobilePanel] = useState<"list" | "detail">("list");
   const [replyLang, setReplyLang] = useState<"en" | "ar">("en");
   const [replyText, setReplyText] = useState("");
   const [sendingReply, setSendingReply] = useState(false);
@@ -69,6 +70,7 @@ export default function MessagesPage() {
 
   async function openMessage(msg: Message) {
     setSelected(msg);
+    setMobilePanel("detail");
     setReplySent(false);
     setReplyText(msg.ai_reply_suggestion_en ?? "");
     setReplyLang("en");
@@ -144,7 +146,7 @@ export default function MessagesPage() {
           )}
         </div>
         <button
-          onClick={() => { setShowCompose(true); setSelected(null); }}
+          onClick={() => { setShowCompose(true); setSelected(null); setMobilePanel("detail"); }}
           className="btn btn-primary flex items-center gap-2 text-sm"
         >
           <PenLine className="w-4 h-4" />
@@ -154,7 +156,7 @@ export default function MessagesPage() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Message list */}
-        <div className="w-80 border-r border-slate-200 dark:border-slate-700 overflow-y-auto flex-shrink-0">
+        <div className={`${mobilePanel === "list" ? "flex" : "hidden"} md:flex flex-col w-full md:w-80 border-r border-slate-200 dark:border-slate-700 overflow-y-auto flex-shrink-0`}>
           {messages.length === 0 ? (
             <div className="p-8 text-center text-slate-400">
               <Inbox className="w-10 h-10 mx-auto mb-3" />
@@ -195,7 +197,14 @@ export default function MessagesPage() {
         </div>
 
         {/* Right panel */}
-        <div className="flex-1 overflow-y-auto">
+        <div className={`${mobilePanel === "detail" ? "flex" : "hidden"} md:flex flex-col flex-1 overflow-y-auto`}>
+          {/* Mobile back button */}
+          <button
+            onClick={() => { setMobilePanel("list"); setSelected(null); setShowCompose(false); }}
+            className="md:hidden flex items-center gap-2 px-4 py-2.5 text-sm text-brand-600 dark:text-brand-400 font-medium border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+          >
+            <ChevronRight className="w-4 h-4 rotate-180" /> Back to inbox
+          </button>
           {showCompose ? (
             /* Compose */
             <div className="p-6 max-w-2xl">
