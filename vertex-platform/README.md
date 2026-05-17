@@ -151,13 +151,21 @@ Database:
 
 This repo also hosts a separate Next.js app at the root (Prompt
 Orchestrator / Tweenz). To prevent the two from interfering on Vercel, each
-project ignores changes that don't belong to it via `ignoreCommand` in its
-own `vercel.json`:
+project has an `ignoreCommand` in its own `vercel.json` that combines
+**branch-name policy** with a path-based diff check:
 
-| File | Behaviour |
-|------|-----------|
-| `/vercel.json` (root) | Skips build when a commit only touches `vertex-platform/`. |
-| `/vertex-platform/vercel.json` | Skips build when a commit doesn't touch `vertex-platform/`. |
+| File | Always skips on | Otherwise |
+|------|------------------|-----------|
+| `/vercel.json` (root) | `claude/vertex-*`, `vertex/*` branches | Skips when the last commit didn't touch any file outside `vertex-platform/` |
+| `/vertex-platform/vercel.json` | _never_ — these branches **always build** | Skips when the last commit didn't touch `vertex-platform/` |
+
+Why both? The branch-name rule gives a hard, permanent guarantee:
+**any branch matching `claude/vertex-*` or `vertex/*` cannot trigger a
+root build, even if its commits also touch root files** (such as a
+README tweak, dependency bump, or a fix to the root `vercel.json`
+itself). The path-based check is the fallback for ordinary feature
+branches on `main` so the root project still skips redundant builds for
+VERTEX-only changes.
 
 ### One-time Vercel setup for VERTEX
 
@@ -171,19 +179,30 @@ own `vercel.json`:
    - `VITE_SUPABASE_URL`
    - `VITE_SUPABASE_ANON_KEY`
    - `VITE_CLAUDE_API_KEY` (Session 2+)
-8. Deploy. Future commits that don't touch `vertex-platform/` will be
-   ignored automatically.
-
-The existing root project keeps deploying the Next.js app exactly as
-before, but now skips any commit that only changes `vertex-platform/` —
-so the two projects never collide on previews, domains, or build logs.
+8. Deploy. Future commits on `claude/vertex-*` / `vertex/*` branches will
+   be built only by this project — the root project will skip them.
 
 ### Branch strategy
 
-- VERTEX work → `claude/vertex-foundation-setup-*` branches (or future
-  `vertex/*` branches).
-- The existing app continues on `main` and its own feature branches.
-- A PR that touches both folders will trigger both projects — by design.
+| Branch pattern | Root project | VERTEX project |
+|----------------|--------------|----------------|
+| `main`, feature branches | Builds | Builds only if `vertex-platform/` changed |
+| `claude/vertex-*` | **Skipped** (branch policy) | **Builds** (branch policy) |
+| `vertex/*` | **Skipped** (branch policy) | **Builds** (branch policy) |
+
+If you ever need an existing-app preview from a `claude/vertex-*`
+branch, push that work to a regular branch instead — that's the
+explicit boundary between the two products in this monorepo.
+
+### Cleaning up the stale "Tweenz" previews
+
+The first deployments from this branch (e.g. `BNsMzoMsN`, `A1bDQPtCj`)
+were the root project building the existing Next.js app before the
+branch policy was in place. They are safe to leave in deployment
+history; if you want them gone:
+
+- Vercel dashboard → root project → **Deployments** → ⋯ → **Delete**
+- New commits on this branch will not produce new ones.
 
 ## Next steps (Session 2)
 
