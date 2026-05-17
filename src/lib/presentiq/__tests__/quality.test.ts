@@ -4,7 +4,7 @@ import { loadBrandContext } from "../brand/governance";
 
 describe("quality/score", () => {
   it("penalises fake approvals via hallucination_risk", () => {
-    const ctx = loadBrandContext(null, "rta_boardroom", "bilingual");
+    const ctx = loadBrandContext(null, "enterprise_boardroom", "bilingual");
     const report = scoreDeck({
       slides: [
         {

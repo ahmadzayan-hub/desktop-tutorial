@@ -29,7 +29,7 @@ export type Template = {
   presentationMode: string;
   defaultSlides: number;
   defaultDurationMin: number;
-  tone: "orange" | "green" | "purple" | "blue" | "ink" | "lime" | "metro" | "violet" | "cyan";
+  tone: "orange" | "green" | "purple" | "blue" | "ink" | "lime" | "steel" | "violet" | "cyan";
   /** Real, ordered outline that ships with this template. */
   outline: TemplateOutlineSlide[];
 };
@@ -212,7 +212,7 @@ export const TEMPLATES: Template[] = [
     presentationMode: "government_boardroom",
     defaultSlides: 12,
     defaultDurationMin: 25,
-    tone: "metro",
+    tone: "steel",
     outline: [
       { titleEn: "Cover & Mandate", titleAr: "الغلاف والاختصاص", purposeEn: COVER_PURPOSE.en, purposeAr: COVER_PURPOSE.ar },
       { titleEn: "Recommendation", titleAr: "التوصية", purposeEn: "Lead with the recommended decision.", purposeAr: "ابدأ بالتوصية." },

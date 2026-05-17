@@ -17,7 +17,7 @@ import { z } from "zod";
 export const PresentationModes = [
   "corporate_boardroom",
   "government_boardroom",
-  "rta_boardroom",
+  "enterprise_boardroom",
   "consulting_partner",
   "sales_pitch",
   "project_steering",

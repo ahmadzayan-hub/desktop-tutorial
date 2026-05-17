@@ -3,9 +3,9 @@ import { loadBrandContext } from "../brand/governance";
 import { bilingualTerminology } from "../brand/presets";
 
 describe("brand/governance", () => {
-  it("loads the Metro Authority boardroom preset", () => {
-    const ctx = loadBrandContext(null, "rta_boardroom", "bilingual");
-    // Imperial blue + signature red transit-authority palette.
+  it("loads the Enterprise Sapphire boardroom preset", () => {
+    const ctx = loadBrandContext(null, "enterprise_boardroom", "bilingual");
+    // Sapphire + crimson enterprise palette.
     expect(ctx.palette.primary.toUpperCase()).toBe("#1A2E64");
     expect(ctx.palette.secondary.toUpperCase()).toBe("#D81E05");
     expect(ctx.language.arabic_required).toBe(true);
@@ -26,8 +26,8 @@ describe("brand/governance", () => {
     expect(ctx.language.rtl_required).toBe(true);
   });
 
-  it("includes the full bilingual terminology table for the Metro Authority preset", () => {
-    const ctx = loadBrandContext(null, "rta_boardroom", "ar");
+  it("includes the full bilingual terminology table for the Enterprise Sapphire preset", () => {
+    const ctx = loadBrandContext(null, "enterprise_boardroom", "ar");
     const en = new Set(ctx.language.approved_terminology.map((t) => t.en));
     for (const t of bilingualTerminology) {
       expect(en.has(t.en)).toBe(true);

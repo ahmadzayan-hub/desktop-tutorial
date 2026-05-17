@@ -2,10 +2,19 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Check, Sparkles, Rocket, Building2, Crown, ShieldHalf } from "lucide-react";
 import { useI18n } from "@/lib/presentiq/i18n/context";
 import { Frame4D } from "@/components/presentiq/ui/Frame4D";
 import { Magnetic, Reveal, Tilt } from "@/components/presentiq/ui/motion";
 import { PLANS } from "@/lib/presentiq/stripe/plans";
+
+const PLAN_ICONS: Record<string, any> = {
+  trial: Sparkles,
+  pro: Rocket,
+  business: Building2,
+  enterprise: Crown,
+  gov_private: ShieldHalf,
+};
 
 export function Pricing() {
   const { lang } = useI18n();
@@ -56,6 +65,7 @@ export function Pricing() {
           const price = annual ? Math.round(p.annualUsd / 12) : p.monthlyUsd;
           const priceLabel = p.monthlyUsd === 0 && p.code === "enterprise" ? (lang === "ar" ? "تواصل معنا" : "Contact us") : `$${price}`;
           const periodLabel = p.monthlyUsd === 0 ? "" : (lang === "ar" ? "/شهر" : "/mo");
+          const PlanIcon = PLAN_ICONS[p.code] ?? Sparkles;
 
           return (
             <Tilt key={p.code} max={3}>
@@ -64,9 +74,12 @@ export function Pricing() {
                 className="p-6 h-full flex flex-col"
                 interactive={false}
               >
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold" style={{ color: "var(--pq-text-main)" }}>{p.name}</h3>
-                  {isFeatured && <span className="pq-pill pq-pill-strong">{lang === "ar" ? "الأكثر شعبيّة" : "Most popular"}</span>}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <PlanIcon size={20} strokeWidth={2} style={{ color: "var(--pq-primary)" }} aria-hidden />
+                    <h3 className="text-lg font-semibold" style={{ color: "var(--pq-text-main)" }}>{p.name}</h3>
+                  </div>
+                  {isFeatured && <span className="pq-pill pq-pill-strong">{lang === "ar" ? "الأكثر شيوعاً" : "Most popular"}</span>}
                 </div>
                 <div style={{ marginTop: "1rem", display: "flex", alignItems: "baseline", gap: "0.3rem" }}>
                   <span style={{ fontSize: "2.4rem", fontWeight: 800, color: "var(--pq-text-main)" }}>{priceLabel}</span>
@@ -75,19 +88,19 @@ export function Pricing() {
                 <ul style={{ marginTop: "1.2rem", display: "grid", gap: "0.55rem", flex: 1 }}>
                   {p.features.map((f) => (
                     <li key={f} className="flex items-start gap-2 text-sm" style={{ color: "var(--pq-text-secondary)" }}>
-                      <span style={{ color: "var(--pq-primary)", marginTop: "0.18rem" }} aria-hidden>✓</span>
+                      <Check size={16} strokeWidth={2.2} style={{ color: "var(--pq-primary)", marginTop: "0.18rem", flexShrink: 0 }} aria-hidden />
                       {f}
                     </li>
                   ))}
                   {p.decksPerMonth !== null && (
                     <li className="flex items-start gap-2 text-sm" style={{ color: "var(--pq-text-secondary)" }}>
-                      <span style={{ color: "var(--pq-primary)", marginTop: "0.18rem" }} aria-hidden>✓</span>
-                      {p.decksPerMonth} {lang === "ar" ? "عرض شهرياً" : "decks / month"}
+                      <Check size={16} strokeWidth={2.2} style={{ color: "var(--pq-primary)", marginTop: "0.18rem", flexShrink: 0 }} aria-hidden />
+                      {p.decksPerMonth} {lang === "ar" ? "عرضاً شهرياً" : "decks / month"}
                     </li>
                   )}
                   {p.brandKits !== null && (
                     <li className="flex items-start gap-2 text-sm" style={{ color: "var(--pq-text-secondary)" }}>
-                      <span style={{ color: "var(--pq-primary)", marginTop: "0.18rem" }} aria-hidden>✓</span>
+                      <Check size={16} strokeWidth={2.2} style={{ color: "var(--pq-primary)", marginTop: "0.18rem", flexShrink: 0 }} aria-hidden />
                       {p.brandKits} {lang === "ar" ? "هويّة علامة" : p.brandKits === 1 ? "brand kit" : "brand kits"}
                     </li>
                   )}

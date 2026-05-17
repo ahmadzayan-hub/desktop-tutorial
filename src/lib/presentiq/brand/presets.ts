@@ -6,21 +6,21 @@
  *   2. Organisation brand kit (if selected and applicable)
  *   3. Corporate default
  *
- * v0.2: removed any single-organisation references.
- * "uae_pine_boardroom" is the new bilingual UAE-government-friendly preset
- * using the Pine palette (Pine / Teal / Emerald / Spearmint).
+ * v0.5: every preset is organisation-agnostic. Names, fonts, and palettes
+ * never reference a specific real-world entity. Customers bring their own
+ * brand kit; we provide neutral starting points.
  */
 
 import type { BrandRulesContext, PresentationMode } from "../types";
 
-// Bilingual government / corporate boardroom terminology — neutral, no
+// Bilingual corporate boardroom terminology — neutral, no
 // org-specific references. Use as a starting point for new brand kits.
 export const bilingualTerminology: { en: string; ar: string }[] = [
-  { en: "Government Entity", ar: "جهة حكومية" },
+  { en: "Corporate Entity", ar: "جهة مؤسسية" },
   { en: "Executive Committee", ar: "اللجنة التنفيذية" },
   { en: "Strategic Alignment", ar: "المواءمة الاستراتيجية" },
-  { en: "Current Status", ar: "الوضع الحالي" },
-  { en: "Key Risks", ar: "المخاطر الرئيسية" },
+  { en: "Current Status", ar: "الوضع الراهن" },
+  { en: "Key Risks", ar: "أبرز المخاطر" },
   { en: "Risk Mitigation", ar: "معالجة المخاطر" },
   { en: "Recommendation", ar: "التوصية" },
   { en: "Decision Required", ar: "القرار المطلوب" },
@@ -28,9 +28,9 @@ export const bilingualTerminology: { en: string; ar: string }[] = [
   { en: "Timeline", ar: "الجدول الزمني" },
   { en: "Stakeholder", ar: "صاحب المصلحة" },
   { en: "Operational Continuity", ar: "استمرارية التشغيل" },
-  { en: "Customer Happiness", ar: "إسعاد المتعاملين" },
+  { en: "Customer Experience", ar: "تجربة المتعاملين" },
   { en: "Sustainability", ar: "الاستدامة" },
-  { en: "Digital Transformation", ar: "التحول الرقمي" },
+  { en: "Digital Transformation", ar: "التحوّل الرقمي" },
   { en: "Maintenance", ar: "الصيانة" },
   { en: "Asset Management", ar: "إدارة الأصول" },
   { en: "Safety", ar: "السلامة" },
@@ -41,8 +41,10 @@ export const bilingualTerminology: { en: string; ar: string }[] = [
   { en: "Corrective and Preventive Actions", ar: "الإجراءات التصحيحية والوقائية" },
 ];
 
-// Backwards compatibility — older modules imported `rtaTerminology`.
-// Keep the export name so we don't break consumers, but it's now neutral.
+// Backwards-compatible alias used by older callers — points at the same
+// neutral terminology table.
+export const corporateTerminology = bilingualTerminology;
+/** @deprecated use `bilingualTerminology` */
 export const rtaTerminology = bilingualTerminology;
 
 const FORBIDDEN_GENERIC = [
@@ -69,7 +71,7 @@ const corporateDefault: BrandRulesContext = {
     en_primary: "Inter",
     en_fallback: ["Calibri", "Arial"],
     ar_primary: "IBM Plex Sans Arabic",
-    ar_fallback: ["Tajawal", "Noto Kufi Arabic", "Cairo", "Dubai"],
+    ar_fallback: ["Tajawal", "Noto Kufi Arabic", "Cairo"],
     title_size_pt: [32, 40],
     body_size_pt: [14, 20],
     line_height: 1.35,
@@ -129,25 +131,25 @@ const uaePineBoardroom: BrandRulesContext = {
   },
 };
 
-// Metro Authority boardroom preset — imperial blue + signature red on the
-// Dubai font stack. Generic transit-authority palette suitable for any
-// public-sector mobility / infrastructure entity.
-const metroAuthorityBoardroom: BrandRulesContext = {
+// Enterprise Sapphire boardroom preset — sapphire blue + crimson accent
+// on a neutral sans stack. Generic enterprise palette suitable for any
+// large corporate / public-sector entity.
+const enterpriseBoardroom: BrandRulesContext = {
   ...corporateDefault,
-  identity: { org_name: "Metro Transit Authority", logos: {} },
+  identity: { org_name: "Enterprise", logos: {} },
   palette: {
-    primary: "#1A2E64",     // Imperial blue
-    secondary: "#D81E05",   // Signature red
+    primary: "#1A2E64",     // Sapphire
+    secondary: "#D81E05",   // Crimson
     accent: ["#0E1F4A", "#FFFFFF", "#F4F6FB", "#A6B0C9", "#FFC83D", "#11244F"],
     background: "#FFFFFF",
     surface: "#F5F7FC",
     foreground: "#0E1F4A",
   },
   typography: {
-    en_primary: "Dubai",
-    en_fallback: ["Inter", "Calibri", "Arial"],
-    ar_primary: "Dubai",
-    ar_fallback: ["IBM Plex Sans Arabic", "Tajawal", "Noto Kufi Arabic", "Cairo"],
+    en_primary: "Inter",
+    en_fallback: ["Calibri", "Arial"],
+    ar_primary: "IBM Plex Sans Arabic",
+    ar_fallback: ["Tajawal", "Noto Kufi Arabic", "Cairo"],
     title_size_pt: [32, 40],
     body_size_pt: [14, 20],
     line_height: 1.35,
@@ -289,18 +291,18 @@ export const CURATED_PALETTES: CuratedPalette[] = [
     charts: ["#0F172A", "#10B981", "#22D3EE", "#94A3B8", "#34D399", "#1E293B"],
     fonts: { en_primary: "Inter", ar_primary: "Cairo" },
   },
-  // ── Metro Authority (transit-grade imperial blue + signature red) ────
+  // ── Enterprise Sapphire (corporate sapphire + crimson accent) ───────
   {
-    id: "metro-authority",
-    nameEn: "Metro Authority — Imperial Blue & Red",
-    nameAr: "هيئة المترو — أزرق ملكي وأحمر",
+    id: "enterprise-sapphire",
+    nameEn: "Enterprise — Sapphire & Crimson",
+    nameAr: "مؤسسي — ياقوتي وقرمزي",
     colors: {
       primary: "#1A2E64", secondary: "#D81E05",
       accent: ["#0E1F4A", "#FFFFFF", "#F4F6FB", "#A6B0C9", "#FFC83D", "#11244F"],
       background: "#FFFFFF", surface: "#F5F7FC", foreground: "#0E1F4A",
     },
     charts: ["#1A2E64", "#D81E05", "#0E1F4A", "#A6B0C9", "#FFC83D", "#11244F"],
-    fonts: { en_primary: "Dubai", ar_primary: "Dubai" },
+    fonts: { en_primary: "Inter", ar_primary: "IBM Plex Sans Arabic" },
   },
   // ── Obsidian (purple + charcoal — clean dark UI vibe) ──────────
   {
@@ -315,18 +317,18 @@ export const CURATED_PALETTES: CuratedPalette[] = [
     charts: ["#7C3AED", "#A78BFA", "#C4B5FD", "#9F7AEA", "#F4F1FB", "#1F1A2E"],
     fonts: { en_primary: "Inter", ar_primary: "IBM Plex Sans Arabic" },
   },
-  // ── UAE Government (federal palette: black, red, green, white) ─
+  // ── National Tricolour (generic government palette) ─────────────
   {
-    id: "uae-federal",
-    nameEn: "UAE Federal — Black, Red, Green",
-    nameAr: "الإمارات الاتحادي — أسود وأحمر وأخضر",
+    id: "national-tricolour",
+    nameEn: "National Tricolour — Black, Red, Green",
+    nameAr: "ثلاثي الألوان الوطني — أسود وأحمر وأخضر",
     colors: {
       primary: "#000000", secondary: "#EF3340",
       accent: ["#00732F", "#FFFFFF", "#F4F4F4", "#1A1A1A", "#C99B2A", "#0E1F4A"],
       background: "#FFFFFF", surface: "#FAFAFA", foreground: "#0A0A0A",
     },
     charts: ["#000000", "#EF3340", "#00732F", "#C99B2A", "#A6A6A6", "#1A1A1A"],
-    fonts: { en_primary: "Dubai", ar_primary: "Dubai" },
+    fonts: { en_primary: "Inter", ar_primary: "IBM Plex Sans Arabic" },
   },
   // ── Year of Hand-style (calligraphic Arabic, sky/teal) ─────────
   {
@@ -362,7 +364,7 @@ export const FONT_PAIRS: { id: string; en: string; ar: string; label: string }[]
   { id: "source-tajawal",en: "Source Sans 3",  ar: "Tajawal",              label: "Source Sans · Tajawal" },
   { id: "inter-cairo",   en: "Inter",          ar: "Cairo",                label: "Inter · Cairo" },
   { id: "lora-amiri",    en: "Lora",           ar: "Amiri",                label: "Lora · Amiri (formal)" },
-  { id: "dubai-dubai",   en: "Dubai",          ar: "Dubai",                label: "Dubai · Dubai (Metro / Gov)" },
+  { id: "inter-ibm-arabic", en: "Inter",       ar: "IBM Plex Sans Arabic", label: "Inter · IBM Plex (corporate)" },
   { id: "inter-noto",    en: "Inter",          ar: "Noto Naskh Arabic",    label: "Inter · Noto Naskh (formal)" },
   { id: "inter-tajawal", en: "Inter",          ar: "Tajawal",              label: "Inter · Tajawal (modern)" },
   { id: "playfair-amiri",en: "Playfair Display",ar: "Amiri Quran",         label: "Playfair · Amiri (editorial)" },
@@ -376,17 +378,17 @@ export const FONT_PAIRS: { id: string; en: string; ar: string; label: string }[]
 export type CuratedColor = { id: string; nameEn: string; nameAr: string; hex: string };
 
 export const CURATED_COLORS: CuratedColor[] = [
-  { id: "imperial-blue",  nameEn: "Imperial Blue",     nameAr: "أزرق ملكي",        hex: "#1A2E64" },
-  { id: "signature-red",  nameEn: "Signature Red",     nameAr: "أحمر مميّز",       hex: "#D81E05" },
+  { id: "sapphire",       nameEn: "Sapphire Blue",     nameAr: "أزرق ياقوتي",      hex: "#1A2E64" },
+  { id: "crimson",        nameEn: "Crimson Red",       nameAr: "أحمر قرمزي",       hex: "#D81E05" },
   { id: "zaian-indigo",   nameEn: "Zaian Indigo",      nameAr: "نيلي زيان",          hex: "#6366F1" },
   { id: "zaian-violet",   nameEn: "Zaian Violet",      nameAr: "بنفسجي زيان",        hex: "#8A6CF7" },
   { id: "zaian-cyan",     nameEn: "Zaian Cyan",        nameAr: "سماوي زيان",         hex: "#4DC9E6" },
   { id: "zaian-magenta",  nameEn: "Zaian Magenta",     nameAr: "فوشي زيان",          hex: "#E94B9F" },
   { id: "zaian-sky",      nameEn: "Zaian Sky",         nameAr: "سماء زيان",          hex: "#C9D5F8" },
   { id: "zaian-deep",     nameEn: "Zaian Deep Navy",   nameAr: "كحلي زيان",          hex: "#1A2456" },
-  { id: "uae-red",        nameEn: "UAE Federal Red",   nameAr: "الأحمر الاتحادي",   hex: "#EF3340" },
-  { id: "uae-green",      nameEn: "UAE Federal Green", nameAr: "الأخضر الاتحادي",   hex: "#00732F" },
-  { id: "uae-black",      nameEn: "UAE Federal Black", nameAr: "الأسود الاتحادي",   hex: "#000000" },
+  { id: "national-red",   nameEn: "National Red",      nameAr: "أحمر وطني",         hex: "#EF3340" },
+  { id: "national-green", nameEn: "National Green",    nameAr: "أخضر وطني",         hex: "#00732F" },
+  { id: "national-black", nameEn: "National Black",    nameAr: "أسود وطني",         hex: "#000000" },
   { id: "obsidian-purple",nameEn: "Obsidian Purple",   nameAr: "بنفسجي أوبسيديان",  hex: "#7C3AED" },
   { id: "obsidian-ink",   nameEn: "Obsidian Ink",      nameAr: "حبر أوبسيديان",     hex: "#1F1A2E" },
   { id: "olive",          nameEn: "Zaytouni Olive",    nameAr: "زيتوني",            hex: "#425722" },
@@ -413,7 +415,6 @@ export const CURATED_AR_FONTS: CuratedFont[] = [
   { id: "amiri-quran",     family: "Amiri Quran",          sample: "العنوان", nameEn: "Amiri Quran",          nameAr: "الأميري — مصحف" },
   { id: "noto-naskh",      family: "Noto Naskh Arabic",    sample: "العنوان", nameEn: "Noto Naskh",           nameAr: "نوتو نسخ" },
   { id: "noto-kufi",       family: "Noto Kufi Arabic",     sample: "العنوان", nameEn: "Noto Kufi",            nameAr: "نوتو كوفي" },
-  { id: "dubai",           family: "Dubai",                sample: "العنوان", nameEn: "Dubai (Metro / Gov)",  nameAr: "دبي" },
   { id: "scheherazade",    family: "Scheherazade New",     sample: "العنوان", nameEn: "Scheherazade",         nameAr: "شهرزاد" },
   { id: "lateef",          family: "Lateef",               sample: "العنوان", nameEn: "Lateef",               nameAr: "لطيف" },
 ];
@@ -425,7 +426,6 @@ export const CURATED_EN_FONTS: CuratedFont[] = [
   { id: "lora",             family: "Lora",             sample: "Title", nameEn: "Lora (serif)",     nameAr: "لورا" },
   { id: "playfair",         family: "Playfair Display", sample: "Title", nameEn: "Playfair Display", nameAr: "بلاي فير" },
   { id: "merriweather",     family: "Merriweather",     sample: "Title", nameEn: "Merriweather",     nameAr: "ميري ويذر" },
-  { id: "dubai-en",         family: "Dubai",            sample: "Title", nameEn: "Dubai (Latin)",    nameAr: "دبي" },
   { id: "ibm-plex-sans",    family: "IBM Plex Sans",    sample: "Title", nameEn: "IBM Plex Sans",    nameAr: "آي بي إم بلكس" },
 ];
 
@@ -433,7 +433,7 @@ export const BUILT_IN_PRESETS: Record<PresentationMode | "default", BrandRulesCo
   default: corporateDefault,
   corporate_boardroom: corporateDefault,
   government_boardroom: governmentBoardroom,
-  rta_boardroom: metroAuthorityBoardroom, // Generic transit-authority preset (imperial blue + signature red, Dubai font)
+  enterprise_boardroom: enterpriseBoardroom,
   consulting_partner: consultingPartner,
   sales_pitch: corporateDefault,
   project_steering: corporateDefault,

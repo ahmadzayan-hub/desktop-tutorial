@@ -99,8 +99,8 @@ const V0_2_DELTAS: Entry[] = [
     bodyAr: `زر تواصل عائم وصفحة مخصصة. ترسل الملاحظات إلى ${PQ_CONTACT_EMAIL}.`,
   },
   {
-    titleEn: "Removed transit-authority-specific copy",
-    titleAr: "إزالة المراجع الخاصة بهيئات النقل",
+    titleEn: "Removed organisation-specific copy",
+    titleAr: "إزالة المراجع الخاصة بمؤسّسات بعينها",
     bodyEn: "Pitchora is org-agnostic. Government Boardroom and Government Committee templates remain available, without naming a specific authority.",
     bodyAr: "أصبحت بِتشورا محايدة تنظيمياً. تبقى قوالب المجلس الحكومي واللجنة الحكومية متاحة دون تسمية جهة بعينها.",
   },

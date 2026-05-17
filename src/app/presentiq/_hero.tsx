@@ -3,6 +3,20 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import {
+  ShieldCheck,
+  FileSliders,
+  Languages,
+  Gauge,
+  RotateCcw,
+  BadgeCheck,
+  Sparkles,
+  ArrowUp,
+  ChevronDown,
+  Mic,
+  Plus,
+  type LucideIcon,
+} from "lucide-react";
 import { useI18n } from "@/lib/presentiq/i18n/context";
 import { Frame4D } from "@/components/presentiq/ui/Frame4D";
 import { TEMPLATES } from "@/lib/presentiq/templates/registry";
@@ -14,13 +28,13 @@ import {
   Tilt,
 } from "@/components/presentiq/ui/motion";
 
-const FEATURES: { titleKey: any; bodyKey: any; icon: string }[] = [
-  { titleKey: "feat.brand.title",    bodyKey: "feat.brand.body",    icon: "🛡" },
-  { titleKey: "feat.pptx.title",     bodyKey: "feat.pptx.body",     icon: "📑" },
-  { titleKey: "feat.rtl.title",      bodyKey: "feat.rtl.body",      icon: "ع" },
-  { titleKey: "feat.quality.title",  bodyKey: "feat.quality.body",  icon: "◆" },
-  { titleKey: "feat.regen.title",    bodyKey: "feat.regen.body",    icon: "↻" },
-  { titleKey: "feat.evidence.title", bodyKey: "feat.evidence.body", icon: "✓" },
+const FEATURES: { titleKey: any; bodyKey: any; Icon: LucideIcon }[] = [
+  { titleKey: "feat.brand.title",    bodyKey: "feat.brand.body",    Icon: ShieldCheck },
+  { titleKey: "feat.pptx.title",     bodyKey: "feat.pptx.body",     Icon: FileSliders },
+  { titleKey: "feat.rtl.title",      bodyKey: "feat.rtl.body",      Icon: Languages },
+  { titleKey: "feat.quality.title",  bodyKey: "feat.quality.body",  Icon: Gauge },
+  { titleKey: "feat.regen.title",    bodyKey: "feat.regen.body",    Icon: RotateCcw },
+  { titleKey: "feat.evidence.title", bodyKey: "feat.evidence.body", Icon: BadgeCheck },
 ];
 
 const V2_KEYS: any[] = ["v2.outline", "v2.theme", "v2.share", "v2.compare", "v2.assets", "v2.demo"];
@@ -137,7 +151,7 @@ export function Hero() {
 
           {/* Hero question */}
           <h1 className="pq-composer-hero-h1 pq-rise pq-rise-3">
-            <span className="pq-emoji" aria-hidden>▣</span>
+            <Sparkles className="pq-emoji" aria-hidden size={28} />
             <span className="pq-aurora-underline">
               {lang === "ar" ? "من أين نبدأ؟" : "Where should we begin?"}
             </span>
@@ -177,7 +191,7 @@ export function Hero() {
                 onClick={() => router.push(`/presentiq/projects/new?step=sources`)}
                 title={lang === "ar" ? "إضافة مصدر" : "Attach"}
               >
-                <span aria-hidden>＋</span>
+                <Plus aria-hidden size={16} strokeWidth={2.2} />
               </button>
               <span className="spacer" />
               <label className="pq-composer-slidesel">
@@ -192,7 +206,7 @@ export function Hero() {
                     </option>
                   ))}
                 </select>
-                <span aria-hidden>⌃</span>
+                <ChevronDown aria-hidden size={14} />
               </label>
               <button
                 type="button"
@@ -200,7 +214,7 @@ export function Hero() {
                 aria-label={lang === "ar" ? "إدخال صوتي" : "Voice input"}
                 title={lang === "ar" ? "قريباً" : "Coming soon"}
               >
-                <span aria-hidden>🎙</span>
+                <Mic aria-hidden size={16} strokeWidth={2.2} />
               </button>
               <button
                 type="button"
@@ -209,7 +223,7 @@ export function Hero() {
                 aria-label={lang === "ar" ? "ابدأ التوليد" : "Start generation"}
                 title={lang === "ar" ? "ابدأ" : "Start"}
               >
-                <span aria-hidden>↑</span>
+                <ArrowUp aria-hidden size={16} strokeWidth={2.4} />
               </button>
             </div>
           </div>
@@ -352,29 +366,32 @@ export function Hero() {
         variant="stagger"
         className="grid grid-cols-1 md:grid-cols-3 gap-5"
       >
-        {FEATURES.map((f) => (
-          <Tilt key={String(f.titleKey)} max={4}>
-            <Frame4D className="p-6">
-              <div
-                className="grid place-items-center w-10 h-10 rounded-xl text-base font-bold mb-3"
-                style={{
-                  background: "rgba(159,205,99,0.14)",
-                  color: "var(--pq-primary)",
-                  border: "1px solid rgba(159,205,99,0.32)",
-                }}
-                aria-hidden
-              >
-                {f.icon}
-              </div>
-              <h3 className="text-base font-semibold" style={{ color: "var(--pq-text-main)" }}>
-                {t(f.titleKey)}
-              </h3>
-              <p className="text-sm mt-2" style={{ color: "var(--pq-text-secondary)", lineHeight: 1.55 }}>
-                {t(f.bodyKey)}
-              </p>
-            </Frame4D>
-          </Tilt>
-        ))}
+        {FEATURES.map((f) => {
+          const Icon = f.Icon;
+          return (
+            <Tilt key={String(f.titleKey)} max={4}>
+              <Frame4D className="p-6">
+                <div
+                  className="grid place-items-center w-10 h-10 rounded-xl mb-3"
+                  style={{
+                    background: "rgba(159,205,99,0.14)",
+                    color: "var(--pq-primary)",
+                    border: "1px solid rgba(159,205,99,0.32)",
+                  }}
+                  aria-hidden
+                >
+                  <Icon size={20} strokeWidth={2} />
+                </div>
+                <h3 className="text-base font-semibold" style={{ color: "var(--pq-text-main)" }}>
+                  {t(f.titleKey)}
+                </h3>
+                <p className="text-sm mt-2" style={{ color: "var(--pq-text-secondary)", lineHeight: 1.55 }}>
+                  {t(f.bodyKey)}
+                </p>
+              </Frame4D>
+            </Tilt>
+          );
+        })}
       </Reveal>
 
       {/* ── What's new in v0.5 ────────────────────────────────────── */}

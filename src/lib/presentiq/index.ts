@@ -1,10 +1,10 @@
 /**
- * PresentIQ — public re-exports.
+ * Pitchora — public re-exports.
  */
 
 export * from "./types";
 export { loadBrandContext, validateText, validatePalette, validateLayoutDensity } from "./brand/governance";
-export { BUILT_IN_PRESETS, rtaTerminology } from "./brand/presets";
+export { BUILT_IN_PRESETS, bilingualTerminology, corporateTerminology } from "./brand/presets";
 export { scanForInjection, scanForFakeApproval, sanitiseForAgent } from "./security/guardrail";
 export { validateSlideRtl, normaliseArabicPunctuation } from "./rtl/validate";
 export { scoreDeck } from "./quality/score";

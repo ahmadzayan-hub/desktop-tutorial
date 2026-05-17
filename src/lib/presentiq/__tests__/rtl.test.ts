@@ -3,7 +3,7 @@ import { loadBrandContext } from "../brand/governance";
 import { validateSlideRtl, normaliseArabicPunctuation } from "../rtl/validate";
 
 describe("rtl/validate", () => {
-  const ctx = loadBrandContext(null, "rta_boardroom", "bilingual");
+  const ctx = loadBrandContext(null, "enterprise_boardroom", "bilingual");
 
   it("returns 100 when RTL not required", () => {
     const en = loadBrandContext(null, "corporate_boardroom", "en");

@@ -4,7 +4,7 @@ import { Orchestrator, MockProvider, loadBrandContext, MemoryAiCache } from ".."
 describe("orchestrator (mock provider)", () => {
   it("produces a blueprint and a deck end-to-end", async () => {
     const provider = new MockProvider();
-    const ctx = loadBrandContext(null, "rta_boardroom", "bilingual");
+    const ctx = loadBrandContext(null, "enterprise_boardroom", "bilingual");
     const orch = new Orchestrator(provider, "org-1", new MemoryAiCache());
     const blueprint = await orch.runBlueprint({
       brief: {
@@ -13,7 +13,7 @@ describe("orchestrator (mock provider)", () => {
         objective: "Approve Option 2",
         decision_required: "Approve",
         language_mode: "bilingual",
-        presentation_mode: "rta_boardroom",
+        presentation_mode: "enterprise_boardroom",
         target_slide_count: 8,
         target_duration_min: 25,
         confidentiality_level: "confidential",
@@ -30,7 +30,7 @@ describe("orchestrator (mock provider)", () => {
         objective: "Approve",
         decision_required: "Approve",
         language_mode: "bilingual",
-        presentation_mode: "rta_boardroom",
+        presentation_mode: "enterprise_boardroom",
         target_slide_count: 8,
         target_duration_min: 25,
         confidentiality_level: "confidential",

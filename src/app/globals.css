@@ -2069,7 +2069,7 @@ html.dark {
 .pq-tpl-card-cover[data-tone="blue"]   { background: linear-gradient(135deg, #0E1F4A, #1A2E64 80%); }
 .pq-tpl-card-cover[data-tone="ink"]    { background: linear-gradient(135deg, #0E0B1A, #1F1A2E 80%); }
 .pq-tpl-card-cover[data-tone="lime"]   { background: linear-gradient(135deg, #1B2E0E, #7BB94A 110%); }
-.pq-tpl-card-cover[data-tone="metro"]  { background: linear-gradient(135deg, #1A2E64, #D81E05 130%); }
+.pq-tpl-card-cover[data-tone="steel"]  { background: linear-gradient(135deg, #1A2E64, #D81E05 130%); }
 .pq-tpl-card-cover[data-tone="violet"] { background: linear-gradient(135deg, #2B1A55, #8A6CF7 110%); }
 .pq-tpl-card-cover[data-tone="cyan"]   { background: linear-gradient(135deg, #0E2C3A, #4DC9E6 110%); }
 .pq-tpl-card-blank {
@@ -2351,4 +2351,207 @@ html.dark {
   letter-spacing: 0.05em;
   color: var(--pq-text-secondary);
   opacity: 0.7;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   Pitchora — Responsive polish (v0.5.2)
+   Mobile-first refinements layered on top of the existing
+   breakpoints. Targets 360 / 768 / 1024 / 1440 viewports.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Tablet (≤1024px) — tighten the hero composer, stack templates 2-up */
+@media (max-width: 1024px) {
+  .pq-tpl-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .pq-composer-card {
+    max-width: 100% !important;
+  }
+  .pq-composer-hero-h1 {
+    font-size: clamp(1.85rem, 4.4vw, 2.6rem) !important;
+  }
+  .pq-trust-strip {
+    gap: 1.2rem;
+    padding: 1rem 0.75rem;
+  }
+}
+
+/* Mobile portrait (≤640px) — 1-col templates, compact controls, no marquee fade */
+@media (max-width: 640px) {
+  /* App shell padding */
+  main#main {
+    padding-inline: 1rem !important;
+    padding-block: 1.5rem !important;
+  }
+  /* Hero */
+  .pq-composer-hero {
+    padding: 1.75rem 0.25rem 1rem !important;
+  }
+  .pq-composer-hero-h1 {
+    font-size: clamp(1.6rem, 7vw, 2.1rem) !important;
+    margin-top: 0.85rem !important;
+  }
+  .pq-composer-card {
+    border-radius: 22px;
+    padding: 0.45rem;
+  }
+  .pq-composer-textarea {
+    font-size: 1rem;
+    min-height: 3rem;
+    padding: 0.75rem 0.85rem 0.4rem;
+  }
+  .pq-composer-controls {
+    gap: 0.35rem;
+    padding: 0.35rem;
+    flex-wrap: wrap;
+  }
+  .pq-composer-slidesel {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.7rem;
+  }
+  .pq-composer-send {
+    width: 2.2rem;
+    height: 2.2rem;
+  }
+  .pq-mode-tabs {
+    gap: 0.35rem;
+  }
+  .pq-mode-tab {
+    padding: 0.4rem 0.85rem;
+    font-size: 0.8rem;
+  }
+  /* Templates */
+  .pq-tpl-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+  .pq-tpl-card-cover {
+    aspect-ratio: 5 / 3;
+  }
+  .pq-tpl-chips {
+    gap: 0.4rem;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 0.4rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .pq-tpl-chips::-webkit-scrollbar { display: none; }
+  .pq-tpl-chip { flex-shrink: 0; }
+  /* Stats — 2x2 instead of 4-wide */
+  .pq-stats-flat {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+  .pq-stat-num { font-size: 1.4rem !important; }
+  /* How-it-works — stack */
+  .pq-howit {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+  /* CTA row stretches */
+  .pq-hero-cta-row {
+    flex-direction: column;
+    gap: 0.55rem;
+    align-items: stretch;
+  }
+  .pq-hero-cta-row > .pq-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  /* Header — tighter */
+  .pq-header > div {
+    padding-inline: 1rem !important;
+  }
+  .pq-header-logo {
+    height: 22px !important;
+    width: auto !important;
+  }
+  /* Promo banner — compact */
+  .pq-promo-banner-inner {
+    font-size: 0.74rem !important;
+    padding: 0.45rem 0.65rem !important;
+    gap: 0.45rem !important;
+  }
+  .pq-promo-cta {
+    padding: 0.28rem 0.55rem !important;
+    font-size: 0.7rem !important;
+  }
+  /* Theme toggle — same size; LangToggle slightly smaller */
+  .pq-theme-toggle, .pq-lang-toggle {
+    width: 1.85rem !important;
+    height: 1.85rem !important;
+  }
+  /* Footer */
+  .pq-footer-slim-inner {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+    padding: 1.5rem 1rem !important;
+    text-align: start;
+  }
+  .pq-footer-slim-trust {
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+  .pq-footer-slim-pill {
+    font-size: 0.7rem;
+    padding: 0.28rem 0.55rem;
+  }
+  .pq-footer-slim-meta {
+    align-self: stretch;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 0.75rem;
+  }
+  /* Contact bubble — corner, not edge */
+  .pq-bubble {
+    bottom: 0.85rem !important;
+    inset-inline-end: 0.85rem !important;
+    padding: 0.55rem 0.85rem !important;
+    font-size: 0.8rem !important;
+  }
+  /* Pricing — 1-col on mobile */
+  .pq-billing-toggle { transform: scale(0.95); }
+}
+
+/* Small mobile (≤380px) — last-mile compact */
+@media (max-width: 380px) {
+  .pq-composer-hero-h1 {
+    font-size: 1.4rem !important;
+  }
+  .pq-mode-tab span { display: none; }
+  .pq-stats-flat .pq-stat-num { font-size: 1.2rem !important; }
+  .pq-tpl-chips { gap: 0.3rem; }
+  .pq-tpl-chip { font-size: 0.74rem; padding: 0.35rem 0.7rem; }
+}
+
+/* Touch devices — disable hover-only lift to prevent stuck states */
+@media (hover: none) and (pointer: coarse) {
+  .pq-tilt:hover { box-shadow: none !important; }
+  .pq-magnetic::before { display: none !important; }
+}
+
+/* Print-friendly — strip animations and dark surfaces */
+@media print {
+  .pq-orb, .pq-mesh, .pq-aurora-flow,
+  .pq-bubble, .pq-promo-banner, .pq-footer-slim,
+  .pq-marquee, .pq-theme-toggle {
+    display: none !important;
+  }
+  [data-pq] {
+    background: #ffffff !important;
+    color: #111 !important;
+  }
+  .pq-liquid-card, .pq-tpl-card, .frame4d {
+    background: #ffffff !important;
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+  }
+  .pq-aurora-text {
+    -webkit-text-fill-color: currentColor !important;
+    color: #1A2E64 !important;
+  }
 }

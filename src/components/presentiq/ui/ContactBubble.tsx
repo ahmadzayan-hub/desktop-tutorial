@@ -1,5 +1,6 @@
 "use client";
 
+import { Mail } from "lucide-react";
 import { useI18n } from "@/lib/presentiq/i18n/context";
 import { PQ_CONTACT_EMAIL, PQ_FOUNDER_NAME } from "@/lib/presentiq/config";
 
@@ -16,7 +17,7 @@ export function ContactBubble() {
       style={{ direction: dir }}
       aria-label={t("ctc.email")}
     >
-      <span aria-hidden>✉</span>
+      <Mail aria-hidden size={16} strokeWidth={2} />
       {t("ctc.email")}
     </a>
   );

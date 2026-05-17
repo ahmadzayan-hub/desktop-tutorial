@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { AlertTriangle, Cpu, Award } from "lucide-react";
 import { useI18n } from "@/lib/presentiq/i18n/context";
 import { Frame4D } from "@/components/presentiq/ui/Frame4D";
 import { AuroraWord, Magnetic, Reveal, Tilt } from "@/components/presentiq/ui/motion";
@@ -30,45 +31,48 @@ export function About() {
       <Reveal variant="stagger" className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {[
           {
-            icon: "◇",
+            Icon: AlertTriangle,
             title: lang === "ar" ? "المشكلة" : "The problem",
             body: lang === "ar"
-              ? "الفِرَق التنفيذية تحرق ساعات لتحويل نقاط متفرّقة إلى عرض موحّد ومحوكَم وموثَّق — ثم تعيد الكرّة لكل اجتماع."
+              ? "تستهلك الفِرَق التنفيذية ساعات لتحويل ملاحظات متفرّقة إلى عرضٍ موحَّد ومحوكَم وموثَّق بالأدلّة — ثم تكرّر العملية لكل اجتماع."
               : "Executive teams burn hours turning rough notes into a coherent, governed, evidence-backed deck — then repeat it for every meeting.",
           },
           {
-            icon: "▲",
+            Icon: Cpu,
             title: lang === "ar" ? "الحل" : "The solution",
             body: lang === "ar"
-              ? "ستوديو وكلاء يستلم الفكرة، يجمع الأدلّة، يصوغ السرد، يطبّق الهوية، يبني الشرائح، ويقيس الجاهزية على ١٠ أبعاد — تلقائياً."
+              ? "استوديو وكلاء ذكاء اصطناعي يستلم الفكرة، يجمع الأدلّة، يصوغ السرد، يُطبِّق الهويّة، يبني الشرائح، ويقيس الجاهزية على عشرة أبعاد — كلّ ذلك تلقائياً."
               : "An agent studio that takes the idea, gathers evidence, drafts the narrative, applies the brand, builds the slides, and scores readiness on 10 dimensions — automatically.",
           },
           {
-            icon: "◎",
+            Icon: Award,
             title: lang === "ar" ? "النتيجة" : "The outcome",
             body: lang === "ar"
-              ? "PPTX قابل للتحرير، ثنائي اللغة، محكوم بالهوية، مُقيَّم على ١٠ أبعاد للجاهزية — جاهز للعرض على الرئيس التنفيذي."
+              ? "ملف PPTX قابل للتحرير، ثنائي اللغة، محكوم بالهويّة، ومُقيَّم على عشرة أبعاد للجاهزية — جاهز للعرض على الرئيس التنفيذي."
               : "An editable PPTX, bilingual, brand-governed, scored on 10 boardroom dimensions — ready for the CEO.",
           },
-        ].map((item, i) => (
-          <Tilt key={i} max={4}>
-            <Frame4D className="p-6 h-full" interactive={false}>
-              <div
-                className="grid place-items-center w-10 h-10 rounded-xl text-base font-bold mb-3"
-                style={{
-                  background: "rgba(159,205,99,0.14)",
-                  color: "var(--pq-primary)",
-                  border: "1px solid rgba(159,205,99,0.32)",
-                }}
-                aria-hidden
-              >
-                {item.icon}
-              </div>
-              <h3 className="text-lg font-semibold" style={{ color: "var(--pq-text-main)" }}>{item.title}</h3>
-              <p className="mt-2 text-sm" style={{ color: "var(--pq-text-secondary)", lineHeight: 1.55 }}>{item.body}</p>
-            </Frame4D>
-          </Tilt>
-        ))}
+        ].map((item, i) => {
+          const Icon = item.Icon;
+          return (
+            <Tilt key={i} max={4}>
+              <Frame4D className="p-6 h-full" interactive={false}>
+                <div
+                  className="grid place-items-center w-10 h-10 rounded-xl mb-3"
+                  style={{
+                    background: "rgba(159,205,99,0.14)",
+                    color: "var(--pq-primary)",
+                    border: "1px solid rgba(159,205,99,0.32)",
+                  }}
+                  aria-hidden
+                >
+                  <Icon size={20} strokeWidth={2} />
+                </div>
+                <h3 className="text-lg font-semibold" style={{ color: "var(--pq-text-main)" }}>{item.title}</h3>
+                <p className="mt-2 text-sm" style={{ color: "var(--pq-text-secondary)", lineHeight: 1.55 }}>{item.body}</p>
+              </Frame4D>
+            </Tilt>
+          );
+        })}
       </Reveal>
 
       <Reveal variant="single">
