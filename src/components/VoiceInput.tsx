@@ -1,5 +1,29 @@
 "use client";
 
+/**
+ * VoiceInput — MediaRecorder-based recording state machine.
+ *
+ * State machine:
+ *   idle ──(click mic)──► requesting ──(permission granted)──► recording
+ *   recording ──(click stop)──► stopping ──(onstop fires)──► processing
+ *   processing ──(API ok)──► completed
+ *   processing ──(API error)──► error
+ *   completed / error ──(click mic again)──► requesting
+ *
+ * Key guarantees:
+ *   • Audio is NEVER sent for transcription while the user is still recording.
+ *   • All chunks are collected in an array; combined into one Blob only after
+ *     MediaRecorder.onstop fires (i.e. after Stop is pressed).
+ *   • An isProcessingRef flag prevents duplicate submissions if Stop is
+ *     pressed or the component re-renders during processing.
+ *   • Silence detection is NOT used as a stop trigger. Manual Stop is the
+ *     only way to end a recording session.
+ *   • onTranscript is called exactly once — with the final transcript and
+ *     isFinal=true — after the server returns the result.
+ *   • Mobile Chrome: start(1000) timeslice ensures ondataavailable fires
+ *     regularly even before the stream ends.
+ */
+
 import { useEffect, useRef, useState } from "react";
 import { useI18n, useT } from "@/lib/i18n/I18nProvider";
 import {
@@ -7,169 +31,121 @@ import {
   listFor,
   loadPreferred,
   savePreferred,
-  type VoiceLocale
+  type VoiceLocale,
 } from "@/lib/voice-locales";
 
-interface SpeechRecognitionLike {
-  lang: string;
-  continuous: boolean;
-  interimResults: boolean;
-  maxAlternatives?: number;
-  start(): void;
-  stop(): void;
-  abort?(): void;
-  onresult: ((e: SpeechRecognitionEvent) => void) | null;
-  onerror: ((e: { error: string }) => void) | null;
-  onend: (() => void) | null;
-  onstart?: (() => void) | null;
-  onaudiostart?: (() => void) | null;
-}
-
-interface SpeechRecognitionEvent {
-  resultIndex: number;
-  results: ArrayLike<{
-    isFinal: boolean;
-    0: { transcript: string };
-  }>;
-}
-
-declare global {
-  interface Window {
-    SpeechRecognition?: new () => SpeechRecognitionLike;
-    webkitSpeechRecognition?: new () => SpeechRecognitionLike;
-  }
-}
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface Props {
-  /** Called with each transcribed chunk. The second arg is true when final. */
+  /** Called once with the final transcript after processing completes. */
   onTranscript: (text: string, isFinal: boolean) => void;
   /**
-   * Optional: when smart-submit is enabled and the user has a final
-   * transcript followed by SILENCE_HOLD_MS of silence, this fires. The
-   * parent typically uses it to auto-generate the prompt.
+   * Kept for interface compatibility with Workspace. In this implementation
+   * it is NEVER auto-fired — the user must press Stop themselves, then
+   * manually trigger analysis. Pass undefined to make that explicit.
    */
   onAutoSubmit?: () => void;
-  /**
-   * Optional: called when voice fails entirely so the parent can focus the
-   * textarea for typing. Wired by the workspace.
-   */
+  /** Called when the user wants to type instead of using voice. */
   onTypeInstead?: () => void;
   className?: string;
 }
 
-const SILENCE_THRESHOLD = 0.04;     // RMS below this counts as silence
-const SILENCE_HOLD_MS  = 2500;      // need this much continuous silence
-const SMART_SUBMIT_KEY = "po_smart_submit_v1";
-
-// If the recogniser captures audio but produces zero transcripts for this
-// long, fall back to en-US once (most universally supported STT language)
-// and surface a "Type instead" escape hatch.
-const NO_RESULT_FALLBACK_MS = 8000;
-const FALLBACK_LANG = "en-US";
-
-type Status = "idle" | "requesting" | "listening" | "denied" | "error" | "unsupported";
-
 /**
- * Professional voice input.
+ * Recording state machine states.
  *
- * Why this rewrite — the previous version had three concrete bugs:
- *   1. It never explicitly requested microphone permission via getUserMedia,
- *      so on some browsers `recognition.start()` silently failed before any
- *      prompt appeared.
- *   2. It only forwarded final transcripts. With no interim feedback, users
- *      couldn't tell whether the recogniser was hearing them.
- *   3. There was no audio-level meter, so a muted mic looked the same as a
- *      working one until 30 s passed with no result.
- *
- * This version:
- *   - Requests mic permission up front via `getUserMedia` (with a clear
- *     error path for "denied" / "no device").
- *   - Streams interim transcripts to the parent so the textarea fills as
- *     the user speaks (with a delete-and-replace strategy to avoid double
- *     insertion when a chunk is finalised).
- *   - Renders a live RMS audio-level bar from a Web Audio analyser node, so
- *     the user sees their voice is actually being captured.
- *   - Auto-restarts only on benign auto-end events (Chrome's silence timer)
- *     and gives up cleanly on hard failures.
+ * idle        – waiting for the user to press the microphone button
+ * requesting  – asking the browser for microphone permission
+ * recording   – actively recording; collecting audio chunks
+ * stopping    – Stop pressed; waiting for MediaRecorder.onstop to fire
+ * processing  – sending the audio blob to the transcription API
+ * completed   – transcript received; shown in a popover
+ * error       – something went wrong; user can retry
  */
-export default function VoiceInput({ onTranscript, onAutoSubmit, onTypeInstead, className }: Props) {
+type RecState =
+  | "idle"
+  | "requesting"
+  | "recording"
+  | "stopping"
+  | "processing"
+  | "completed"
+  | "error";
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+/** Pick the best supported audio MIME type for this browser. */
+function getBestMimeType(): string {
+  if (typeof MediaRecorder === "undefined") return "";
+  const candidates = [
+    "audio/webm;codecs=opus",
+    "audio/webm",
+    "audio/ogg;codecs=opus",
+    "audio/mp4",
+    "audio/mpeg",
+  ];
+  return candidates.find((t) => MediaRecorder.isTypeSupported(t)) ?? "";
+}
+
+/** Format elapsed seconds as MM:SS. */
+function formatElapsed(secs: number): string {
+  const m = String(Math.floor(secs / 60)).padStart(2, "0");
+  const s = String(secs % 60).padStart(2, "0");
+  return `${m}:${s}`;
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export default function VoiceInput({
+  onTranscript,
+  onTypeInstead,
+  className,
+}: Props) {
   const t = useT();
   const { locale } = useI18n();
-  const [status, setStatus] = useState<Status>("idle");
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  const [recState, setRecState] = useState<RecState>("idle");
   const [errorDetail, setErrorDetail] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
-  const [level, setLevel] = useState(0);              // 0..1 audio RMS
+  const [level, setLevel] = useState(0);           // 0..1 RMS for the level meter
   const [voiceLocale, setVoiceLocale] = useState<VoiceLocale | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [smartSubmit, setSmartSubmit] = useState(false);
-  // What the recogniser is hearing *right now* — shown so the user has
-  // immediate proof that speech is being captured. Cleared on stop / on the
-  // next interim chunk.
-  const [liveText, setLiveText] = useState<string>("");
-  // True once at least one final transcript has arrived in this session;
-  // suppresses the "no speech detected" hint after that.
-  const [gotResult, setGotResult] = useState<boolean>(false);
+  const [transcript, setTranscript] = useState("");
 
-  const recRef = useRef<SpeechRecognitionLike | null>(null);
-  const userStoppedRef = useRef(false);
+  // ── Refs ───────────────────────────────────────────────────────────────────
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  /** All audio chunks collected during recording. Cleared before each new session. */
+  const chunksRef = useRef<Blob[]>([]);
+  /** Guards against duplicate submissions (e.g. rapid Stop clicks). */
+  const isProcessingRef = useRef(false);
+
+  // Web Audio chain for the level meter visualisation
+  const streamRef    = useRef<MediaStream | null>(null);
+  const audioCtxRef  = useRef<AudioContext | null>(null);
+  const analyserRef  = useRef<AnalyserNode | null>(null);
+  const rafRef       = useRef<number | null>(null);
+
+  // Timer
+  const tickRef      = useRef<ReturnType<typeof setInterval> | null>(null);
   const startedAtRef = useRef<number | null>(null);
-  const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Web-audio chain for the level meter
-  const streamRef = useRef<MediaStream | null>(null);
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const rafRef = useRef<number | null>(null);
+  // Keep voiceLocale accessible inside the onstop closure without stale capture
+  const voiceLocaleRef = useRef<VoiceLocale | null>(voiceLocale);
+  useEffect(() => { voiceLocaleRef.current = voiceLocale; }, [voiceLocale]);
 
-  // Track last interim transcript so we can replace, not duplicate
-  const lastInterimRef = useRef<string>("");
-  // Smart-submit silence tracker
-  const lastVoiceAtRef = useRef<number>(0);
-  const hasFinalRef = useRef<boolean>(false);
-  const autoSubmittedRef = useRef<boolean>(false);
-  const onAutoSubmitRef = useRef(onAutoSubmit);
-  onAutoSubmitRef.current = onAutoSubmit;
+  // ── Initialise locale preference ──────────────────────────────────────────
+  useEffect(() => { setVoiceLocale(loadPreferred(locale)); }, [locale]);
 
-  // Stuck-recogniser tracker: if audio is being captured but no transcript
-  // arrives, switch to a universal fallback language and remember we tried.
-  const audioStartedAtRef = useRef<number>(0);
-  const audioSeenRef = useRef<boolean>(false);
-  const fallbackTriedRef = useRef<boolean>(false);
-  const [stuck, setStuck] = useState(false);
+  // ── Cleanup on unmount ────────────────────────────────────────────────────
+  useEffect(() => () => { releaseAudioResources(); }, []);
 
-  useEffect(() => {
-    setVoiceLocale(loadPreferred(locale));
-  }, [locale]);
+  // ── Browser support check ─────────────────────────────────────────────────
+  const isSupported =
+    typeof window !== "undefined" && typeof MediaRecorder !== "undefined";
 
-  // Restore smart-submit preference
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      setSmartSubmit(window.localStorage.getItem(SMART_SUBMIT_KEY) === "1");
-    } catch { /* ignore */ }
-  }, []);
+  // ── Internal helpers ──────────────────────────────────────────────────────
 
-  // Detect browser support once
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const Ctor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
-    if (!Ctor) setStatus("unsupported");
-  }, []);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      stopAll();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  function stopAll() {
-    userStoppedRef.current = true;
-    if (recRef.current) {
-      try { recRef.current.stop(); } catch { /* ignore */ }
-      recRef.current = null;
-    }
+  /** Stop all audio resources: stream, AudioContext, level-meter RAF, timer. */
+  function releaseAudioResources() {
     if (rafRef.current !== null) {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
@@ -191,235 +167,268 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, onTypeInstead, 
     setLevel(0);
   }
 
-  async function requestMicAndStart() {
-    setErrorDetail(null);
-    setStatus("requesting");
+  /** Wire up a Web Audio analyser for the visual level meter (cosmetic only). */
+  function startLevelMeter(stream: MediaStream) {
+    try {
+      const Ctx =
+        window.AudioContext ??
+        (window as unknown as { webkitAudioContext?: typeof AudioContext })
+          .webkitAudioContext;
+      if (!Ctx) return;
+      const ctx = new Ctx();
+      const source = ctx.createMediaStreamSource(stream);
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 1024;
+      source.connect(analyser);
+      audioCtxRef.current = ctx;
+      analyserRef.current = analyser;
 
-    // 1. Explicit mic permission so the browser shows its prompt now, not
-    //    silently inside SpeechRecognition.start(). Bonus: the resulting
-    //    MediaStream powers the level meter.
+      const buf = new Uint8Array(analyser.fftSize);
+      const tick = () => {
+        if (!analyserRef.current) return;
+        analyserRef.current.getByteTimeDomainData(buf);
+        let sum = 0;
+        for (let i = 0; i < buf.length; i++) {
+          const v = (buf[i] - 128) / 128;
+          sum += v * v;
+        }
+        setLevel(Math.min(1, Math.sqrt(sum / buf.length) * 3));
+        rafRef.current = requestAnimationFrame(tick);
+      };
+      rafRef.current = requestAnimationFrame(tick);
+    } catch {
+      // Level meter is cosmetic; silently skip if the browser doesn't cooperate
+    }
+  }
+
+  // ── State machine actions ─────────────────────────────────────────────────
+
+  /**
+   * STATE: idle → requesting → recording
+   *
+   * 1. Request microphone permission explicitly (shows the browser prompt up-front).
+   * 2. Start a Web Audio analyser for the level visualisation.
+   * 3. Create a MediaRecorder and start it with a 1-second timeslice.
+   *    The timeslice guarantees ondataavailable fires regularly on mobile Chrome,
+   *    preventing the "empty blob on first stop" bug.
+   */
+  async function startRecording() {
+    if (isProcessingRef.current) return;
+
+    // Reset state for a fresh session
+    setRecState("requesting");
+    setErrorDetail(null);
+    setTranscript("");
+    chunksRef.current = [];
+
+    // ── 1. Request microphone permission ───────────────────────────────────
     let stream: MediaStream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
-          autoGainControl: true
-        }
+          autoGainControl: true,
+        },
       });
     } catch (e) {
       const err = e as DOMException;
-      if (err?.name === "NotAllowedError" || err?.name === "PermissionDeniedError") {
-        setStatus("denied");
-      } else if (err?.name === "NotFoundError" || err?.name === "DevicesNotFoundError") {
-        setStatus("error");
-        setErrorDetail(t("voice.no_device"));
+      let msg: string;
+      if (
+        err?.name === "NotAllowedError" ||
+        err?.name === "PermissionDeniedError"
+      ) {
+        msg = t("voice.denied") !== "voice.denied"
+          ? t("voice.denied")
+          : "Microphone access denied. Please allow microphone access in your browser settings.";
+      } else if (
+        err?.name === "NotFoundError" ||
+        err?.name === "DevicesNotFoundError"
+      ) {
+        msg = t("voice.no_device") !== "voice.no_device"
+          ? t("voice.no_device")
+          : "No microphone found. Please connect a microphone and try again.";
       } else {
-        setStatus("error");
-        setErrorDetail(err?.message ?? String(e));
+        msg = err?.message ?? String(e);
       }
+      setErrorDetail(msg);
+      setRecState("error");
       return;
     }
+
     streamRef.current = stream;
 
-    // 2. Wire up the level meter
+    // ── 2. Level meter (cosmetic) ──────────────────────────────────────────
+    startLevelMeter(stream);
+
+    // ── 3. Create MediaRecorder ────────────────────────────────────────────
+    const mimeType = getBestMimeType();
+    let recorder: MediaRecorder;
     try {
-      const Ctx =
-        window.AudioContext ??
-        (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-      if (Ctx) {
-        const ctx = new Ctx();
-        const source = ctx.createMediaStreamSource(stream);
-        const analyser = ctx.createAnalyser();
-        analyser.fftSize = 1024;
-        source.connect(analyser);
-        audioCtxRef.current = ctx;
-        analyserRef.current = analyser;
-
-        const buf = new Uint8Array(analyser.fftSize);
-        const tick = () => {
-          if (!analyserRef.current) return;
-          analyserRef.current.getByteTimeDomainData(buf);
-          let sum = 0;
-          for (let i = 0; i < buf.length; i++) {
-            const v = (buf[i] - 128) / 128;
-            sum += v * v;
-          }
-          const rms = Math.sqrt(sum / buf.length);
-          setLevel(Math.min(1, rms * 3));
-
-          // Smart-submit: refresh "last voice" timestamp whenever the user is
-          // audibly speaking. When we have a final transcript AND continuous
-          // silence for SILENCE_HOLD_MS, fire onAutoSubmit exactly once.
-          const now = Date.now();
-          if (rms > SILENCE_THRESHOLD) {
-            lastVoiceAtRef.current = now;
-            // Mark that we've seen the user actually speak — this rules out
-            // "user is silent" as the cause when no transcript arrives.
-            audioSeenRef.current = true;
-          }
-          const silentFor = lastVoiceAtRef.current ? now - lastVoiceAtRef.current : 0;
-          if (
-            !autoSubmittedRef.current &&
-            hasFinalRef.current &&
-            silentFor >= SILENCE_HOLD_MS &&
-            onAutoSubmitRef.current
-          ) {
-            autoSubmittedRef.current = true;
-            stop();
-            setTimeout(() => onAutoSubmitRef.current?.(), 50);
-          }
-
-          // Stuck recogniser: audible speech detected, but no transcript for
-          // NO_RESULT_FALLBACK_MS. Try once with FALLBACK_LANG (en-US),
-          // which is the most universally supported STT locale. If that
-          // also fails the user still has the "Type instead" button.
-          const sinceStart = audioStartedAtRef.current ? now - audioStartedAtRef.current : 0;
-          if (
-            !hasFinalRef.current &&
-            audioSeenRef.current &&
-            sinceStart >= NO_RESULT_FALLBACK_MS &&
-            !fallbackTriedRef.current
-          ) {
-            fallbackTriedRef.current = true;
-            setStuck(true);
-            const r = recRef.current;
-            if (r) {
-              try {
-                userStoppedRef.current = false;
-                r.lang = FALLBACK_LANG;
-                try { r.stop(); } catch { /* will restart in onend */ }
-              } catch { /* ignore */ }
-            }
-          }
-
-          rafRef.current = requestAnimationFrame(tick);
-        };
-        rafRef.current = requestAnimationFrame(tick);
-      }
+      recorder = mimeType
+        ? new MediaRecorder(stream, { mimeType })
+        : new MediaRecorder(stream);
     } catch {
-      // Level meter is decoration; ignore failures
-    }
-
-    // 3. Start the actual SpeechRecognition.
-    //
-    // Mobile browsers (Samsung Internet, Chrome on Android) consistently
-    // misbehave when continuous=true: they fire onstart, capture audio,
-    // but never emit results. The reliable shape on mobile is single-shot
-    // recognition with onend → restart, which we transparently emulate.
-    const Ctor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
-    if (!Ctor) {
-      setStatus("unsupported");
-      return;
-    }
-    const isMobile =
-      typeof navigator !== "undefined" &&
-      /android|iphone|ipad|ipod|mobile|silk/i.test(navigator.userAgent);
-    const rec = new Ctor();
-    rec.continuous = !isMobile;        // single-shot on mobile, continuous on desktop
-    rec.interimResults = true;
-    rec.maxAlternatives = 1;
-    rec.lang = voiceLocale?.code ?? (locale === "ar" ? "ar-EG" : "en-US");
-
-    rec.onresult = (e: SpeechRecognitionEvent) => {
-      let interim = "";
-      let finalText = "";
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        const r = e.results[i];
-        const txt = r[0].transcript;
-        if (r.isFinal) finalText += txt;
-        else interim += txt;
-      }
-      // Always show the live transcript pill — this is the user's confirmation
-      // that the recogniser is hearing them, even before a final arrives.
-      setLiveText(finalText || interim);
-      if (finalText) {
-        // Final overrides any pending interim → tell parent to replace+commit
-        if (lastInterimRef.current) {
-          // First, undo the interim (parent saw it as "interim:true")
-          onTranscript(lastInterimRef.current, false /* not final */);
-          lastInterimRef.current = "";
-        }
-        onTranscript(finalText, true);
-        hasFinalRef.current = true;
-        setGotResult(true);
-        lastVoiceAtRef.current = Date.now();
-        // Fade the pill briefly so finals feel "committed"
-        setTimeout(() => setLiveText(""), 1200);
-      } else if (interim) {
-        lastInterimRef.current = interim;
-        onTranscript(interim, false);
-      }
-    };
-
-    rec.onerror = (e: any) => {
-      // Recoverable on mobile during pauses — keep going unless the user stopped
-      if (
-        !userStoppedRef.current &&
-        (e.error === "no-speech" || e.error === "audio-capture" || e.error === "aborted")
-      ) {
+      // Last resort: no mimeType constraint
+      try {
+        recorder = new MediaRecorder(stream);
+      } catch (e) {
+        setErrorDetail(
+          "Unable to start recording on this browser. " + String(e)
+        );
+        setRecState("error");
+        releaseAudioResources();
         return;
       }
-      setStatus("error");
-      setErrorDetail(t("voice.error", { detail: e.error }));
-      stopAll();
-    };
+    }
 
-    rec.onend = () => {
-      if (!userStoppedRef.current) {
-        try {
-          rec.start();
-          return;
-        } catch {
-          /* ignore */
-        }
+    // ── ondataavailable: accumulate chunks ONLY — no processing here ───────
+    recorder.ondataavailable = (e: BlobEvent) => {
+      if (e.data && e.data.size > 0) {
+        chunksRef.current.push(e.data);
       }
-      setStatus("idle");
-      stopAll();
     };
 
-    recRef.current = rec;
-    userStoppedRef.current = false;
-    hasFinalRef.current = false;
-    autoSubmittedRef.current = false;
-    lastVoiceAtRef.current = Date.now();
-    audioStartedAtRef.current = Date.now();
-    audioSeenRef.current = false;
-    fallbackTriedRef.current = false;
-    setStuck(false);
-    // Reset diagnostic surface so an old transcript / state doesn't leak
-    // into a fresh listening session.
-    setLiveText("");
-    setGotResult(false);
+    // ── onstop: called after Stop is pressed and the final chunk arrives ───
+    recorder.onstop = async () => {
+      // Release the microphone and level meter immediately
+      releaseAudioResources();
+
+      // Guard against duplicate processing (e.g. rapid Stop clicks)
+      if (isProcessingRef.current) return;
+      isProcessingRef.current = true;
+
+      setRecState("processing");
+
+      try {
+        const usedMime =
+          recorder.mimeType || mimeType || "audio/webm";
+        const blob = new Blob(chunksRef.current, { type: usedMime });
+        chunksRef.current = []; // free memory
+
+        if (blob.size === 0) {
+          throw new Error(
+            "No audio data was captured. Please check your microphone and try again."
+          );
+        }
+
+        // Determine the right file extension for the transcription server
+        const ext = usedMime.includes("mp4") ? "mp4"
+                  : usedMime.includes("ogg") ? "ogg"
+                  : usedMime.includes("mpeg") || usedMime.includes("mp3") ? "mp3"
+                  : "webm";
+
+        const form = new FormData();
+        form.append("audio", blob, `recording.${ext}`);
+        form.append(
+          "lang",
+          voiceLocaleRef.current?.code ??
+            (locale === "ar" ? "ar" : "en-US")
+        );
+
+        // ── Send complete audio blob to the transcription API ──────────────
+        const res = await fetch("/api/transcribe", {
+          method: "POST",
+          body: form,
+        });
+
+        let responseBody: { transcript?: string; error?: string };
+        try {
+          responseBody = await res.json();
+        } catch {
+          responseBody = { error: `HTTP ${res.status}` };
+        }
+
+        if (!res.ok) {
+          throw new Error(
+            responseBody?.error ?? `Transcription failed (HTTP ${res.status})`
+          );
+        }
+
+        const text = (responseBody.transcript ?? "").trim();
+        if (!text) {
+          throw new Error(
+            "No speech was detected in the recording. Please speak clearly and try again."
+          );
+        }
+
+        // ── Deliver the final transcript to the parent ─────────────────────
+        setTranscript(text);
+        onTranscript(text, true);
+        setRecState("completed");
+      } catch (e: unknown) {
+        setErrorDetail(e instanceof Error ? e.message : String(e));
+        setRecState("error");
+      } finally {
+        isProcessingRef.current = false;
+      }
+    };
+
+    recorder.onerror = () => {
+      setErrorDetail("A recording error occurred. Please try again.");
+      setRecState("error");
+      releaseAudioResources();
+      mediaRecorderRef.current = null;
+    };
+
+    // ── 4. Start recording ─────────────────────────────────────────────────
+    // timeslice=1000 → ondataavailable fires every ~1 s during recording,
+    // ensuring we accumulate data on mobile Chrome even for short clips.
+    recorder.start(1000);
+    mediaRecorderRef.current = recorder;
+    setRecState("recording");
+
+    // ── 5. Start the elapsed-time ticker ──────────────────────────────────
+    setElapsed(0);
+    startedAtRef.current = Date.now();
+    tickRef.current = setInterval(() => {
+      if (startedAtRef.current) {
+        setElapsed(
+          Math.floor((Date.now() - startedAtRef.current) / 1000)
+        );
+      }
+    }, 1000);
+  }
+
+  /**
+   * STATE: recording → stopping
+   *
+   * Sets the state to "stopping" immediately so the UI reflects the change,
+   * stops the timer, then calls recorder.stop() which will trigger onstop
+   * asynchronously. The actual processing happens inside onstop.
+   *
+   * Idempotent: calling this more than once while already in "stopping" or
+   * "processing" has no effect.
+   */
+  function stopRecording() {
+    if (recState !== "recording") return;
+
+    setRecState("stopping");
+
+    // Stop the timer immediately so the user doesn't see it keep counting
+    if (tickRef.current) {
+      clearInterval(tickRef.current);
+      tickRef.current = null;
+    }
 
     try {
-      rec.start();
-      setStatus("listening");
-      startedAtRef.current = Date.now();
-      setElapsed(0);
-      if (tickRef.current) clearInterval(tickRef.current);
-      tickRef.current = setInterval(() => {
-        if (startedAtRef.current) {
-          setElapsed(Math.floor((Date.now() - startedAtRef.current) / 1000));
-        }
-      }, 1000);
-    } catch (e) {
-      setStatus("error");
-      setErrorDetail(String(e));
-      stopAll();
+      mediaRecorderRef.current?.stop();
+    } catch {
+      /* MediaRecorder.stop() may throw if already stopped; safe to ignore */
     }
+    mediaRecorderRef.current = null;
   }
 
-  function stop() {
-    setStatus("idle");
-    setLiveText("");
-    stopAll();
+  /** Reset to idle so the user can try again after an error or completion. */
+  function resetToIdle() {
+    setErrorDetail(null);
+    setTranscript("");
+    chunksRef.current = [];
+    isProcessingRef.current = false;
+    setRecState("idle");
   }
 
-  function toggle() {
-    if (status === "listening" || status === "requesting") stop();
-    else void requestMicAndStart();
-  }
+  // ── Locale picker ─────────────────────────────────────────────────────────
 
   function pickLocale(v: VoiceLocale) {
     setVoiceLocale(v);
@@ -427,110 +436,115 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, onTypeInstead, 
     setPickerOpen(false);
   }
 
-  function toggleSmartSubmit() {
-    const next = !smartSubmit;
-    setSmartSubmit(next);
-    try { window.localStorage.setItem(SMART_SUBMIT_KEY, next ? "1" : "0"); } catch { /* ignore */ }
-  }
+  // ── Derived booleans ──────────────────────────────────────────────────────
 
-  if (status === "unsupported") {
+  // MediaRecorder is not available (old browsers / non-HTTPS)
+  if (!isSupported) {
     return (
-      <span className={`text-xs text-slate-500 ${className ?? ""}`} title={t("voice.unsupported")}>
+      <span
+        className={`text-xs text-slate-500 ${className ?? ""}`}
+        title="Voice recording requires a modern browser over HTTPS"
+      >
         🎤 —
       </span>
     );
   }
 
-  const mm = String(Math.floor(elapsed / 60)).padStart(2, "0");
-  const ss = String(elapsed % 60).padStart(2, "0");
+  const isRecording = recState === "recording";
+  // Busy: don't allow any user action during these transient states
+  const isBusy =
+    recState === "requesting" ||
+    recState === "stopping" ||
+    recState === "processing";
+  // Can start a new recording
+  const canStart =
+    recState === "idle" || recState === "completed" || recState === "error";
+
   const list = listFor(locale);
-  const listening = status === "listening";
 
-  // The auto-submit trigger only fires when the user has opted in.
-  const effectiveAutoSubmit = onAutoSubmit && smartSubmit ? onAutoSubmit : undefined;
-  // Re-bind ref on every render so the always-current callback is reachable.
-  onAutoSubmitRef.current = effectiveAutoSubmit;
+  const stateLabel: Record<RecState, string> = {
+    idle:       "",
+    requesting: "Requesting microphone…",
+    recording:  "", // shown via timer+level meter below
+    stopping:   "Stopping…",
+    processing: "Transcribing…",
+    completed:  "",
+    error:      "",
+  };
 
-  // Diagnostic hint shown when audio is being captured but no transcript has
-  // arrived for ≥ 5 seconds. Helps the user realise their dialect setting
-  // is wrong, the language is mismatched, or the mic is picking up silence.
-  const showNoSpeechHint =
-    listening &&
-    !gotResult &&
-    !liveText &&
-    elapsed >= 5;
+  // ── Render ────────────────────────────────────────────────────────────────
 
   return (
     <div className={`relative flex items-center gap-1.5 ${className ?? ""}`}>
-      {/* Live-transcript popover. floats above the button row when active so
-          the user has visible proof the recogniser is hearing them. When the
-          recogniser gets stuck (audio detected, no transcript), we surface a
-          "Type instead" escape hatch that focuses the textarea. */}
-      {(listening && (liveText || showNoSpeechHint || stuck)) && (
+
+      {/* ── Transcript popover (completed state) ── */}
+      {recState === "completed" && transcript && (
         <div
-          className="absolute bottom-full end-0 mb-2 max-w-[min(520px,calc(100vw-2rem))] min-w-[220px] rounded-xl border border-rose-300 dark:border-rose-700 bg-white dark:bg-slate-900 shadow-lg px-3 py-2 z-30"
+          className="absolute bottom-full end-0 mb-2 max-w-[min(520px,calc(100vw-2rem))] min-w-[220px] rounded-xl border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-slate-900 shadow-lg px-3 py-2 z-30"
           aria-live="polite"
         >
-          {liveText ? (
-            <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-100 whitespace-pre-wrap">
-              {liveText}
-            </p>
-          ) : (
-            <>
-              <p className="text-xs text-amber-700 dark:text-amber-300">
-                {stuck
-                  ? t("voice.fallback_tried")
-                  : t("voice.no_speech_hint", { dialect: voiceLocale ? labelFor(voiceLocale, locale) : "—" })}
-              </p>
-              {onTypeInstead && (
-                <button
-                  type="button"
-                  onClick={() => { stop(); onTypeInstead(); }}
-                  className="mt-2 btn-ghost text-[11px] px-2 py-1 border border-slate-300 dark:border-slate-700"
-                >
-                  ⌨️ {t("voice.type_instead")}
-                </button>
-              )}
-            </>
+          <p className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 mb-1 uppercase tracking-wide">
+            Transcription complete
+          </p>
+          <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-100 whitespace-pre-wrap line-clamp-4">
+            {transcript}
+          </p>
+        </div>
+      )}
+
+      {/* ── Error popover ── */}
+      {recState === "error" && errorDetail && (
+        <div
+          className="absolute bottom-full end-0 mb-2 max-w-[min(520px,calc(100vw-2rem))] min-w-[220px] rounded-xl border border-rose-300 dark:border-rose-700 bg-white dark:bg-slate-900 shadow-lg px-3 py-2 z-30"
+          aria-live="assertive"
+          role="alert"
+        >
+          <p className="text-xs text-rose-700 dark:text-rose-300">{errorDetail}</p>
+          {onTypeInstead && (
+            <button
+              type="button"
+              onClick={() => { resetToIdle(); onTypeInstead(); }}
+              className="mt-2 btn-ghost text-[11px] px-2 py-1 border border-slate-300 dark:border-slate-700"
+            >
+              ⌨️{" "}
+              {t("voice.type_instead") !== "voice.type_instead"
+                ? t("voice.type_instead")
+                : "Type instead"}
+            </button>
           )}
         </div>
       )}
 
-      {onAutoSubmit && (
-        <button
-          type="button"
-          onClick={toggleSmartSubmit}
-          aria-pressed={smartSubmit}
-          aria-label={t("voice.smart_submit")}
-          title={t(smartSubmit ? "voice.smart_submit_on" : "voice.smart_submit_off")}
-          className={
-            "inline-flex items-center justify-center w-9 h-9 rounded-full transition text-base " +
-            (smartSubmit
-              ? "bg-emerald-50 text-emerald-700 border border-emerald-300 dark:bg-emerald-900/30 dark:border-emerald-700"
-              : "bg-white dark:bg-slate-900 text-slate-500 border border-slate-300 dark:border-slate-700 hover:border-emerald-300")
-          }
-        >
-          <span aria-hidden="true">⚡</span>
-        </button>
-      )}
+      {/* ── Dialect / language picker ── */}
       <div className="relative">
         <button
           type="button"
           onClick={() => setPickerOpen((v) => !v)}
-          aria-label={t("voice.dialect")}
+          aria-label={
+            t("voice.dialect") !== "voice.dialect"
+              ? t("voice.dialect")
+              : "Select recording language"
+          }
           aria-haspopup="listbox"
           aria-expanded={pickerOpen}
-          disabled={listening}
-          className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-slate-300 bg-white hover:border-brand-400 transition text-base leading-none disabled:opacity-60"
-          title={voiceLocale ? labelFor(voiceLocale, locale) : t("voice.dialect")}
+          disabled={isRecording || isBusy}
+          className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-slate-300 bg-white hover:border-brand-400 dark:bg-slate-800 dark:border-slate-600 dark:hover:border-brand-500 transition text-base leading-none disabled:opacity-50 disabled:cursor-not-allowed"
+          title={
+            voiceLocale
+              ? labelFor(voiceLocale, locale)
+              : (t("voice.dialect") !== "voice.dialect"
+                  ? t("voice.dialect")
+                  : "Select language")
+          }
         >
           <span aria-hidden="true">{voiceLocale?.flag ?? "🌐"}</span>
         </button>
+
         {pickerOpen && (
           <ul
             role="listbox"
-            aria-label={t("voice.dialect")}
-            className="absolute bottom-full mb-2 end-0 z-40 max-h-72 w-44 overflow-auto rounded-lg border border-slate-200 bg-white shadow-lg py-1"
+            aria-label="Recording language"
+            className="absolute bottom-full mb-2 end-0 z-40 max-h-72 w-44 overflow-auto rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg py-1"
           >
             {list.map((v) => {
               const active = voiceLocale?.code === v.code;
@@ -542,8 +556,10 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, onTypeInstead, 
                     aria-selected={active}
                     onClick={() => pickLocale(v)}
                     className={
-                      "w-full flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-slate-100 " +
-                      (active ? "bg-brand-50 text-brand-700 font-medium" : "text-slate-700")
+                      "w-full flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 " +
+                      (active
+                        ? "bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 font-medium"
+                        : "text-slate-700 dark:text-slate-200")
                     }
                   >
                     <span aria-hidden="true" className="text-base">{v.flag}</span>
@@ -557,49 +573,84 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, onTypeInstead, 
         )}
       </div>
 
+      {/* ── Main record / stop button ── */}
       <button
         type="button"
-        onClick={toggle}
-        aria-label={listening ? t("voice.stop") : t("voice.start")}
-        aria-pressed={listening}
+        onClick={isRecording ? stopRecording : canStart ? startRecording : undefined}
+        disabled={isBusy}
+        aria-label={
+          isRecording
+            ? (t("voice.stop") !== "voice.stop" ? t("voice.stop") : "Stop recording")
+            : (t("voice.start") !== "voice.start" ? t("voice.start") : "Start recording")
+        }
+        aria-pressed={isRecording}
         className={
           "relative inline-flex items-center justify-center w-10 h-10 rounded-full transition shadow-sm " +
-          (listening
-            ? "bg-rose-600 text-white shadow-rose-300/50"
-            : "bg-white border border-slate-300 text-slate-700 hover:border-brand-400 hover:text-brand-700")
+          "disabled:opacity-50 disabled:cursor-not-allowed " +
+          (isRecording
+            ? "bg-rose-600 text-white shadow-rose-300/50 hover:bg-rose-700"
+            : "bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 " +
+              "text-slate-700 dark:text-slate-200 hover:border-brand-400 hover:text-brand-700")
         }
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          {listening ? (
+        {/* Icon changes based on state */}
+        {isBusy ? (
+          // Spinning indicator during transient states
+          <svg
+            className="animate-spin w-4.5 h-4.5"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
+            <circle
+              cx="12" cy="12" r="9"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeDasharray="20 40"
+            />
+          </svg>
+        ) : isRecording ? (
+          // Stop square
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <rect x="6" y="6" width="12" height="12" rx="2" />
-          ) : (
-            <>
-              <rect x="9" y="2" width="6" height="12" rx="3" />
-              <path d="M5 10v2a7 7 0 0 0 14 0v-2" />
-              <line x1="12" y1="19" x2="12" y2="22" />
-            </>
-          )}
-        </svg>
-        {listening && (
+          </svg>
+        ) : (
+          // Microphone
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="9" y="2" width="6" height="12" rx="3" />
+            <path d="M5 10v2a7 7 0 0 0 14 0v-2" />
+            <line x1="12" y1="19" x2="12" y2="22" />
+          </svg>
+        )}
+
+        {/* Pulse ring + level ring when recording */}
+        {isRecording && (
           <>
-            <span className="absolute inset-0 rounded-full animate-ping bg-rose-400/40" />
-            {/* Live audio-level ring — scales with RMS */}
+            <span className="absolute inset-0 rounded-full animate-ping bg-rose-400/40" aria-hidden="true" />
             <span
-              className="absolute inset-0 rounded-full bg-rose-300/30"
-              style={{ transform: `scale(${1 + level * 0.45})`, transition: "transform 80ms linear" }}
+              className="absolute inset-0 rounded-full bg-rose-300/25"
+              style={{
+                transform: `scale(${1 + level * 0.45})`,
+                transition: "transform 80ms linear",
+              }}
               aria-hidden="true"
             />
           </>
         )}
       </button>
 
-      {status === "requesting" && (
-        <span className="text-xs text-slate-500" aria-live="polite">{t("voice.requesting")}</span>
-      )}
-      {listening && (
-        <span className="flex items-center gap-2 text-xs text-rose-600 font-medium" aria-live="polite">
-          <span className="tabular-nums">● {mm}:{ss}</span>
-          {/* 5-bar mini level meter */}
+      {/* ── Status label ── */}
+      {recState === "recording" && (
+        <span
+          className="flex items-center gap-2 text-xs text-rose-600 font-medium"
+          aria-live="polite"
+        >
+          {/* Elapsed timer */}
+          <span className="tabular-nums">● {formatElapsed(elapsed)}</span>
+
+          {/* 5-bar level meter */}
           <span className="inline-flex items-end gap-[2px] h-3.5" aria-hidden="true">
             {[0.15, 0.35, 0.55, 0.75, 0.95].map((threshold, i) => (
               <span
@@ -612,14 +663,34 @@ export default function VoiceInput({ onTranscript, onAutoSubmit, onTypeInstead, 
               />
             ))}
           </span>
-          <span>{t("voice.listening")}</span>
+
+          <span>
+            {t("voice.listening") !== "voice.listening"
+              ? t("voice.listening")
+              : "Recording"}
+          </span>
         </span>
       )}
-      {status === "denied" && (
-        <span className="text-xs text-rose-700">{t("voice.denied")}</span>
-      )}
-      {status === "error" && errorDetail && (
-        <span className="text-xs text-rose-700">{errorDetail}</span>
+
+      {/* Transient state labels */}
+      {stateLabel[recState] && (
+        <span className="text-xs text-slate-500 dark:text-slate-400" aria-live="polite">
+          {recState === "processing" ? (
+            <span className="flex items-center gap-1.5">
+              <svg
+                className="animate-spin w-3 h-3 text-sky-500"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3" strokeDasharray="15 45" />
+              </svg>
+              {stateLabel[recState]}
+            </span>
+          ) : (
+            stateLabel[recState]
+          )}
+        </span>
       )}
     </div>
   );

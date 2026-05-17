@@ -357,30 +357,16 @@ export default function Workspace() {
     setTimeout(() => { void startSession(true); }, 50);
   }
 
-  // Voice transcript handler with two modes:
-  //   - isFinal=true  → commit the chunk and clear the interim buffer.
-  //   - isFinal=false → render this chunk live so the user sees their words,
-  //                     but mark it as provisional so the next chunk can
-  //                     replace it instead of doubling up.
-  const interimBaseRef = useRef<string>("");
+  // Voice transcript handler.
+  // VoiceInput only calls this once, with isFinal=true, after the user
+  // presses Stop and the server returns the complete transcription.
+  // Analysis must be triggered manually by the user after this fills the textarea.
   function handleVoice(text: string, isFinal: boolean) {
-    if (isFinal) {
-      setRaw((cur) => {
-        const base = interimBaseRef.current || cur;
-        const cleaned = (base ? base.trim() + " " : "") + text.trim();
-        interimBaseRef.current = "";
-        return cleaned;
-      });
-    } else {
-      setRaw((cur) => {
-        // Capture the committed-so-far baseline the first time we see an
-        // interim chunk; subsequent interim updates rewrite from there.
-        if (!interimBaseRef.current) interimBaseRef.current = cur;
-        const base = interimBaseRef.current;
-        const sep = base && !base.endsWith(" ") ? " " : "";
-        return base + sep + text;
-      });
-    }
+    if (!isFinal) return; // guard — should never fire with current VoiceInput
+    setRaw((cur) => {
+      const sep = cur.trim() ? " " : "";
+      return cur.trimEnd() + sep + text.trim();
+    });
   }
 
   function restoreFromHistory(entry: LocalHistoryEntry) {
@@ -504,11 +490,6 @@ export default function Workspace() {
             <div className="absolute bottom-2 end-2">
               <VoiceInput
                 onTranscript={handleVoice}
-                onAutoSubmit={() => {
-                  // Voice "smart-submit": after the user stops speaking for a
-                  // beat, kick off the questions flow automatically.
-                  if (raw.trim().length >= 3 && !loading) void startSession(false);
-                }}
                 onTypeInstead={() => {
                   const el = document.getElementById("po-raw") as HTMLTextAreaElement | null;
                   el?.focus();
