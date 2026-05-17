@@ -67,7 +67,7 @@ export function expertPreamble(opts: PreambleOptions): string {
     : "";
 
   return en
-    ? `<!-- engineered by ZAIan Studio · ${date} -->
+    ? `<!-- engineered by Maktab · ${date} -->
 # Operating context
 - Today's date: **${date}** (use this when reasoning about anything time-sensitive).${targetLine}
 
@@ -75,7 +75,7 @@ export function expertPreamble(opts: PreambleOptions): string {
 ${rules}
 
 `
-    : `<!-- مُعدّ بواسطة زيان ستوديو · ${date} -->
+    : `<!-- مُعدّ بواسطة مكتب · ${date} -->
 # سياق التشغيل
 - تاريخ اليوم: **${date}** (استخدمه عند الاستدلال على أي شيء مرتبط بالزمن).${targetLine}
 

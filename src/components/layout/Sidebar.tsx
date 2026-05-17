@@ -92,8 +92,8 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
             <GraduationCap className="w-5 h-5 text-white" />
           </div>
           <div>
-            <span className="text-sm font-bold gradient-text">Tweenz AI</span>
-            <p className="text-[9px] text-slate-400 -mt-0.5 leading-none">MBA Learning OS</p>
+            <span className="text-sm font-bold gradient-text">Maktab</span>
+            <p className="text-[9px] text-slate-400 -mt-0.5 leading-none">مكتب · Your MBA desk</p>
           </div>
         </Link>
         <button
@@ -124,7 +124,7 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-2 space-y-4 overflow-y-auto" aria-label="App navigation">
-        <NavSection title="Overview">
+        <NavSection title={t("nav.section.overview")}>
           <NavLink href="/dashboard"     icon={<LayoutDashboard size={17} />} label={t("nav.dashboard")}      color="text-brand-500"   onClose={onClose} />
           <NavLink href="/courses"       icon={<BookOpen size={17} />}        label={t("nav.courses")}         color="text-sky-500"     onClose={onClose} />
           <NavLink href="/announcements" icon={<Megaphone size={17} />}       label={t("nav.announcements")}   color="text-purple-500"  onClose={onClose} />
@@ -133,29 +133,29 @@ export function Sidebar({ mobileOpen, onClose }: SidebarProps) {
           <NavLink href="/calendar"      icon={<Calendar size={17} />}        label={t("nav.calendar")}        color="text-rose-500"    onClose={onClose} />
         </NavSection>
 
-        <NavSection title="Study Tools">
+        <NavSection title={t("nav.section.study")}>
           <NavLink href="/files"         icon={<FolderOpen size={17} />}      label={t("nav.files")}           color="text-blue-500"    onClose={onClose} />
           <NavLink href="/study-packs"   icon={<Package size={17} />}         label={t("nav.study_packs")}     color="text-violet-500"  onClose={onClose} />
           <NavLink href="/tutor"         icon={<Bot size={17} />}             label={t("nav.tutor")}           color="text-teal-500"    onClose={onClose} />
           <NavLink href="/flashcards"    icon={<Zap size={17} />}             label={t("nav.flashcards")}      color="text-yellow-500"  onClose={onClose} />
           <NavLink href="/quizzes"       icon={<ClipboardList size={17} />}   label={t("nav.quizzes")}         color="text-orange-500"  onClose={onClose} />
-          <NavLink href="/lecture"       icon={<Mic size={17} />}             label="Lecture Transcription"    color="text-red-500"     onClose={onClose} isNew />
-          <NavLink href="/learn"         icon={<Sparkles size={17} />}        label="Free MBA Courses"         color="text-pink-500"    onClose={onClose} isNew />
+          <NavLink href="/lecture"       icon={<Mic size={17} />}             label={t("nav.lecture")}         color="text-red-500"     onClose={onClose} isNew />
+          <NavLink href="/learn"         icon={<Sparkles size={17} />}        label={t("nav.learn")}           color="text-pink-500"    onClose={onClose} isNew />
         </NavSection>
 
-        <NavSection title="Collaboration">
-          <NavLink href="/group-project" icon={<Users size={17} />}           label="Group Workspace"          color="text-indigo-500"  onClose={onClose} isNew />
+        <NavSection title={t("nav.section.collab")}>
+          <NavLink href="/group-project" icon={<Users size={17} />}           label={t("nav.group_project")}   color="text-indigo-500"  onClose={onClose} isNew />
           <NavLink href="/messages"      icon={<MessageSquare size={17} />}   label={t("nav.messages")}        color="text-cyan-500"    onClose={onClose} />
         </NavSection>
 
-        <NavSection title="Productivity">
+        <NavSection title={t("nav.section.productivity")}>
           <NavLink href="/tasks"         icon={<FileText size={17} />}        label={t("nav.tasks")}           color="text-lime-600"    onClose={onClose} />
           <NavLink href="/weekly-brief"  icon={<Newspaper size={17} />}       label={t("nav.weekly_brief")}    color="text-pink-500"    onClose={onClose} />
           <NavLink href="/ask-mba"       icon={<HelpCircle size={17} />}      label={t("nav.ask_mba")}         color="text-fuchsia-500" onClose={onClose} />
-          <NavLink href="/achievements"  icon={<Trophy size={17} />}          label="Achievements"             color="text-gold-500"    onClose={onClose} isNew />
+          <NavLink href="/achievements"  icon={<Trophy size={17} />}          label={t("nav.achievements")}    color="text-amber-500"   onClose={onClose} isNew />
         </NavSection>
 
-        <NavSection title="Account">
+        <NavSection title={t("nav.section.account")}>
           <NavLink href="/subscription"  icon={<CreditCard size={17} />}      label={t("nav.subscription")}   color="text-slate-500"   onClose={onClose} />
           <NavLink href="/settings"      icon={<Settings size={17} />}        label={t("nav.settings")}        color="text-slate-500"   onClose={onClose} />
           <NavLink href="/admin"         icon={<ShieldCheck size={17} />}     label={t("nav.admin")}           color="text-slate-500"   onClose={onClose} />

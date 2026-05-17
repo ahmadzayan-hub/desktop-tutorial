@@ -1,6 +1,6 @@
 {
-  "name": "prompt-orchestrator",
-  "version": "0.18.0",
+  "name": "maktab",
+  "version": "0.19.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

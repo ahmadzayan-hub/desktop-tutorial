@@ -8,7 +8,7 @@ export default function PrivacyPage() {
         {[
           {
             title: "1. Introduction",
-            body: "Tweenz AI ('we', 'us', 'our') operates www.tweenz.ae, a bilingual AI academic operating system for MBA and university students. This Privacy Policy explains how we collect, use, store, and protect your personal data in compliance with applicable laws including UAE data protection regulations."
+            body: "Maktab ('we', 'us', 'our') operates www.tweenz.ae, a bilingual AI academic operating system for MBA and university students. This Privacy Policy explains how we collect, use, store, and protect your personal data in compliance with applicable laws including UAE data protection regulations."
           },
           {
             title: "2. Data We Collect",
@@ -44,7 +44,7 @@ export default function PrivacyPage() {
           },
           {
             title: "10. Children",
-            body: "Tweenz AI is designed for university students and professionals aged 18 and above. We do not knowingly collect data from children under 18."
+            body: "Maktab is designed for university students and professionals aged 18 and above. We do not knowingly collect data from children under 18."
           },
           {
             title: "11. Changes",
@@ -52,7 +52,7 @@ export default function PrivacyPage() {
           },
           {
             title: "12. Contact",
-            body: "For privacy questions, data requests, or concerns: privacy@tweenz.ae | Tweenz AI, United Arab Emirates"
+            body: "For privacy questions, data requests, or concerns: privacy@tweenz.ae | Maktab, United Arab Emirates"
           },
         ].map((s, i) => (
           <div key={i}>

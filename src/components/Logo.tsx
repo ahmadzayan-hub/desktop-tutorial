@@ -3,43 +3,58 @@ interface LogoProps {
 }
 
 /**
- * Brand mark: prompt cursor (>) into an input line, with a spark above —
- * symbolising "your input becomes a polished, sparkling prompt".
+ * Maktab brand mark: a stylised desk with a book and a focus dot —
+ * the "one desk where every piece of your MBA lives". Single SVG, no deps.
  */
 export default function Logo({ className }: LogoProps) {
   return (
     <svg
       viewBox="0 0 512 512"
       role="img"
-      aria-label="ZAIan Studio"
+      aria-label="Maktab · مكتب"
       className={className}
     >
       <defs>
-        <linearGradient id="po-bg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#6366f1" />
-          <stop offset="60%" stopColor="#8b5cf6" />
-          <stop offset="100%" stopColor="#ec4899" />
+        <linearGradient id="mk-bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#2563eb" />
+          <stop offset="55%" stopColor="#6366f1" />
+          <stop offset="100%" stopColor="#7c3aed" />
         </linearGradient>
-        <linearGradient id="po-spark" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#fde68a" />
+        <linearGradient id="mk-book" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fef3c7" />
           <stop offset="100%" stopColor="#ffffff" />
         </linearGradient>
       </defs>
-      <rect width="512" height="512" rx="112" fill="url(#po-bg)" />
+
+      {/* Rounded tile background */}
+      <rect width="512" height="512" rx="112" fill="url(#mk-bg)" />
+
+      {/* The "desk" — a horizontal surface with two legs */}
+      <rect x="96"  y="316" width="320" height="20" rx="10" fill="#ffffff" opacity="0.95" />
+      <rect x="124" y="336" width="18"  height="64" rx="6"  fill="#ffffff" opacity="0.7" />
+      <rect x="370" y="336" width="18"  height="64" rx="6"  fill="#ffffff" opacity="0.7" />
+
+      {/* Open book sitting on the desk */}
       <path
-        d="M120 188 L196 256 L120 324"
-        stroke="#ffffff"
-        strokeWidth="34"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-        opacity="0.92"
+        d="M152 316 L152 220 Q152 200 172 200 L248 200 Q256 200 256 208 L256 316 Z"
+        fill="url(#mk-book)"
+        opacity="0.96"
       />
-      <rect x="216" y="338" width="180" height="20" rx="10" fill="#ffffff" opacity="0.55" />
       <path
-        d="M360 120 L376 168 L424 184 L376 200 L360 248 L344 200 L296 184 L344 168 Z"
-        fill="url(#po-spark)"
+        d="M360 316 L360 220 Q360 200 340 200 L264 200 Q256 200 256 208 L256 316 Z"
+        fill="url(#mk-book)"
+        opacity="0.78"
       />
+      {/* Book spine + page lines */}
+      <line x1="256" y1="208" x2="256" y2="316" stroke="#1e3a8a" strokeWidth="3" opacity="0.35" />
+      <line x1="178" y1="232" x2="240" y2="232" stroke="#1e3a8a" strokeWidth="3" opacity="0.25" />
+      <line x1="178" y1="252" x2="240" y2="252" stroke="#1e3a8a" strokeWidth="3" opacity="0.20" />
+      <line x1="272" y1="232" x2="334" y2="232" stroke="#1e3a8a" strokeWidth="3" opacity="0.25" />
+      <line x1="272" y1="252" x2="334" y2="252" stroke="#1e3a8a" strokeWidth="3" opacity="0.20" />
+
+      {/* Focus spark — the "AI" of the desk */}
+      <circle cx="384" cy="140" r="20" fill="#fde68a" />
+      <circle cx="384" cy="140" r="38" fill="#fde68a" opacity="0.25" />
     </svg>
   );
 }

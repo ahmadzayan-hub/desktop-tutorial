@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Check } from "lucide-react";
 import type { DictKey } from "@/lib/i18n/dictionaries";
 import { useState } from "react";
+import { FadeUp, Stagger, StaggerItem } from "@/components/motion/Motion";
 
 const plans = [
   { key: "free",    popular: false },
@@ -18,7 +19,7 @@ export default function PricingPage() {
 
   return (
     <div className="py-16 px-4 max-w-6xl mx-auto">
-      <div className="text-center mb-12">
+      <FadeUp className="text-center mb-12">
         <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
           {t("pricing.title")}
         </h1>
@@ -40,9 +41,9 @@ export default function PricingPage() {
             <span className="badge-green text-xs">{t("pricing.save")}</span>
           </button>
         </div>
-      </div>
+      </FadeUp>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <Stagger className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         {plans.map(plan => {
           const price = annual
             ? t(`pricing.${plan.key}.price_annual` as DictKey)
@@ -51,7 +52,7 @@ export default function PricingPage() {
           const featureList = (t(`pricing.${plan.key}.features` as DictKey) as string).split(",");
 
           return (
-            <div key={plan.key} className={`relative card text-start flex flex-col ${plan.popular ? "border-2 border-brand-500 shadow-card-lg" : ""}`}>
+            <StaggerItem key={plan.key} className={`relative card text-start flex flex-col ${plan.popular ? "border-2 border-brand-500 shadow-card-lg" : ""}`}>
               {plan.popular && (
                 <div className="absolute -top-3 start-1/2 -translate-x-1/2 rtl:translate-x-1/2">
                   <span className="inline-flex items-center gap-1.5 bg-brand-600 text-white text-xs font-semibold px-4 py-1 rounded-full shadow">
@@ -86,10 +87,10 @@ export default function PricingPage() {
                   {t(plan.key === "free" ? "pricing.cta.free" : "pricing.cta.paid")}
                 </Button>
               </Link>
-            </div>
+            </StaggerItem>
           );
         })}
-      </div>
+      </Stagger>
 
       <p className="text-center text-sm text-slate-400">{t("pricing.trial_note")}</p>
 

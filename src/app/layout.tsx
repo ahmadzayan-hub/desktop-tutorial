@@ -3,22 +3,23 @@ import "./globals.css";
 import { I18nProvider } from "@/lib/i18n/I18nProvider";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.tweenz.ae";
-const TITLE = "Tweenz AI Learning OS — MBA Study Platform | منصة التعلم الذكي";
+const TITLE = "Maktab · مكتب — Your MBA on one desk | منصة طلاب الماجستير";
 const DESCRIPTION =
-  "Tweenz AI Learning OS — bilingual AI academic operating system for MBA and university students. Manage courses, lectures, study packs, grades, deadlines, and AI tutor chat in one professional platform. From UAE to the world. | نظام تشغيل أكاديمي ذكي ثنائي اللغة لطلاب الماجستير والجامعات.";
+  "Maktab brings every part of your MBA — courses, lectures, study packs, grades, deadlines, and an AI tutor that cites your own materials — onto one bilingual desk. Built in the UAE, for students worldwide. | مكتب يجمع كل ما تحتاجه في دراسة الماجستير: المقررات، المحاضرات، حزم الدراسة، الدرجات، والمواعيد، مع معلّم ذكي يستشهد من مواد مقرّرك — في مكتب واحد بلغتين.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
-  title: { default: TITLE, template: "%s · Tweenz AI" },
+  title: { default: TITLE, template: "%s · Maktab" },
   description: DESCRIPTION,
-  applicationName: "Tweenz AI",
+  applicationName: "Maktab",
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, title: "Tweenz AI", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "Maktab", statusBarStyle: "default" },
   icons: { icon: "/icon.svg", apple: "/apple-icon.png" },
-  authors: [{ name: "Tweenz AI", url: APP_URL }],
+  authors: [{ name: "Maktab", url: APP_URL }],
   keywords: [
-    "Tweenz AI", "MBA study app", "AI tutor", "study packs", "Moodle companion",
-    "bilingual education", "Arabic learning", "UAE EdTech", "online MBA",
+    "Maktab", "مكتب", "MBA study app", "AI tutor that cites your lectures",
+    "study packs", "Moodle companion", "bilingual education",
+    "Arabic learning platform", "UAE EdTech", "online MBA workspace",
     "academic AI", "study flashcards", "grade tracker", "exam readiness",
     "منصة تعليمية", "تعلم ذكي", "ماجستير", "طلاب الجامعة"
   ],
@@ -27,9 +28,9 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
     url: APP_URL,
-    siteName: "Tweenz AI",
+    siteName: "Maktab",
     locale: "en_US",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Tweenz AI Learning OS" }]
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Maktab — Your MBA on one desk" }]
   },
   twitter: {
     card: "summary_large_image",
@@ -61,7 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Prevent flash of wrong theme */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var k='tz_theme',v=localStorage.getItem(k);var d=v==='dark'||((v===null||v==='system')&&window.matchMedia('(prefers-color-scheme:dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();`
+            __html: `(function(){try{var k='mk_theme',v=localStorage.getItem(k);var d=v==='dark'||((v===null||v==='system')&&window.matchMedia('(prefers-color-scheme:dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();`
           }}
         />
       </head>
@@ -78,8 +79,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              name: "Tweenz AI Learning OS",
-              alternateName: ["Tweenz AI", "منصة Tweenz التعليمية"],
+              name: "Maktab",
+              alternateName: ["مكتب", "Maktab — MBA Learning OS"],
               description: DESCRIPTION,
               url: APP_URL,
               applicationCategory: "EducationApplication",

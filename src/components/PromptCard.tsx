@@ -89,10 +89,10 @@ export default function PromptCard({ text, intent, className }: Props) {
     // Top — brand wordmark
     ctx.fillStyle = "#ffffff";
     ctx.font = "700 56px system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
-    ctx.fillText("ZAIan Studio", pad + 32, pad + 88);
+    ctx.fillText("Maktab", pad + 32, pad + 88);
     ctx.fillStyle = "rgba(255,255,255,0.7)";
     ctx.font = "500 28px system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
-    ctx.fillText("زيان ستوديو · From the UAE 🇦🇪 to the world", pad + 32, pad + 132);
+    ctx.fillText("مكتب · From the UAE to the world", pad + 32, pad + 132);
 
     // Intent pill
     if (intent) {
@@ -169,7 +169,7 @@ export default function PromptCard({ text, intent, className }: Props) {
       if (!url) return;
       const a = document.createElement("a");
       a.href = url;
-      a.download = `zaian-studio-${new Date().toISOString().slice(0, 10)}.png`;
+      a.download = `maktab-${new Date().toISOString().slice(0, 10)}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -187,13 +187,13 @@ export default function PromptCard({ text, intent, className }: Props) {
       // Convert data URL → File so navigator.share can attach the image
       const res = await fetch(url);
       const blob = await res.blob();
-      const file = new File([blob], "zaian-studio.png", { type: "image/png" });
+      const file = new File([blob], "maktab.png", { type: "image/png" });
       const navAny = navigator as Navigator & { canShare?: (data: ShareData) => boolean };
       if (typeof navigator !== "undefined" && navAny.canShare?.({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: "ZAIan Studio",
-          text: "Built with ZAIan Studio · زيان ستوديو"
+          title: "Maktab",
+          text: "Built with Maktab · مكتب"
         });
         return;
       }

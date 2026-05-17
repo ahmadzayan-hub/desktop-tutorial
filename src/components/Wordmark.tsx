@@ -7,32 +7,25 @@ interface Props {
 }
 
 /**
- * Wordmark for the platform brand.
+ * Wordmark for the platform brand: **Maktab** / **مكتب**.
+ * The word means "desk / study / office" in Arabic, and that's the promise:
+ * one desk where every part of your MBA lives.
  *
- * - English: **ZAIan Studio** — the "ZAI" tri-letter is rendered in the
- *   brand gradient to read "Z-A-I" (the AI half of the name).
- * - Arabic:  **زيان ستوديو**.
- *
- * The component picks the right form based on the active locale, but always
- * renders the *other* form as a small subtitle so both audiences recognise
- * the platform.
+ * Renders the form matching the active locale and keeps the other form as a
+ * small subtitle so both audiences recognise the brand.
  */
 export default function Wordmark({ className }: Props) {
   const { locale } = useI18n();
 
-  // The English wordmark: "ZAI" tri-letter rendered in the brand gradient
-  // with explicit `tracking-wide` so the capital "I" stays visually distinct
-  // from a lowercase "l" in the system sans-serif. Studio sits separately so
-  // the brand reads as two words at every size.
   const en = (
     <span className="font-bold tracking-tight">
-      <span className="text-brand-600 dark:text-brand-300 tracking-wider">ZAI</span>an{" "}
-      <span className="font-semibold text-slate-700 dark:text-slate-200">Studio</span>
+      <span className="text-brand-600 dark:text-brand-300">Mak</span>
+      <span className="font-semibold text-slate-800 dark:text-slate-100">tab</span>
     </span>
   );
   const ar = (
     <span className="font-semibold tracking-tight">
-      زيان ستوديو
+      مكتب
     </span>
   );
 
@@ -42,7 +35,7 @@ export default function Wordmark({ className }: Props) {
         {locale === "ar" ? ar : en}
       </span>
       <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal truncate" aria-hidden="true">
-        {locale === "ar" ? "ZAIan Studio" : "زيان ستوديو"}
+        {locale === "ar" ? "Maktab" : "مكتب · your MBA desk"}
       </span>
     </span>
   );
