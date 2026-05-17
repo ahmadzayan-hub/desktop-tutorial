@@ -1,7 +1,8 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Beyond Gallery by Beyond Jewellery — curated accessories, gifts and lifestyle from Dubai. Powered by GiftMajlis.";
+export const alt =
+  "Beyond Gallery by Beyond Jewellery. Curated accessories, gifts and lifestyle from Dubai. Powered by GiftMajlis.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -91,10 +92,10 @@ export default async function OG() {
                 fontWeight: 700,
               }}
             >
-              WhatsApp · +971 55 155 6991
+              WhatsApp +971 55 155 6991
             </div>
             <div style={{ color: "#6B7280" }}>
-              UAE delivery · AED pricing · Retail + Bulk
+              UAE delivery, AED pricing, retail and bulk
             </div>
           </div>
           <div

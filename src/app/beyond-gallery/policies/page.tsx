@@ -2,7 +2,7 @@ import Link from "next/link";
 import "../brand.css";
 
 export const metadata = {
-  title: "Policies — Beyond Gallery by Beyond Jewellery",
+  title: "Policies. Beyond Gallery by Beyond Jewellery",
   description:
     "Privacy Policy, Terms and Conditions, Return and Exchange Policy and Shipping Policy for Beyond Gallery by Beyond Jewellery, operated by BEYOND CONNECT GENERAL TRADING L.L.C, Dubai.",
 };
@@ -41,7 +41,7 @@ const SECTIONS = [
     title: "Shipping Policy",
     body: [
       "We deliver across all seven Emirates of the UAE through trusted courier partners. Delivery options and fees are confirmed before order completion.",
-      "Standard retail orders typically arrive within 1–4 working days. Personalised, customised and bulk corporate orders require additional preparation time and have a separate timeline shared upon confirmation.",
+      "Standard retail orders typically arrive within 1 to 4 working days. Personalised, customised and bulk corporate orders require additional preparation time and have a separate timeline shared upon confirmation.",
       "Supply desk and B2B orders are coordinated according to feasibility, supplier confirmation and delivery location.",
     ],
   },
@@ -113,8 +113,8 @@ export default function PoliciesPage() {
           ))}
 
           <div className="text-[12px] text-beyond-charcoal/60">
-            Operated by BEYOND CONNECT GENERAL TRADING L.L.C, Dubai, UAE — Trade
-            License No. 1498624 — General Trading.
+            Operated by BEYOND CONNECT GENERAL TRADING L.L.C, Dubai, UAE. Trade
+            License No. 1498624, General Trading.
           </div>
         </article>
       </main>

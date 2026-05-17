@@ -1,4 +1,4 @@
-/* Beyond Gallery — brand tokens scoped to /beyond-gallery */
+/* Beyond Gallery brand tokens scoped to /beyond-gallery */
 
 :root {
   --beyond-ivory: #FAF8F1;
@@ -32,11 +32,18 @@
 
 .ring-beyond-gold   { --tw-ring-color: var(--beyond-gold); }
 
-.font-display { font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif; }
-.font-bg-body { font-family: "Inter", "Segoe UI", system-ui, sans-serif; }
-.font-arabic  { font-family: "Noto Kufi Arabic", "Alexandria", "Dubai", sans-serif; }
+/* Unique editorial typography stack
+   English display: Fraunces (variable, editorial, distinctive)
+   English body: Inter
+   Arabic display: Alexandria
+   Arabic body: Tajawal
+*/
+.font-display { font-family: "Fraunces", "Cormorant Garamond", Georgia, serif; font-feature-settings: "ss01" on, "ss02" on; }
+.font-bg-body { font-family: "Inter", "Segoe UI", system-ui, sans-serif; font-feature-settings: "cv11" on; }
+.font-arabic  { font-family: "Tajawal", "Alexandria", "Dubai", "Noto Kufi Arabic", sans-serif; }
+.font-arabic-display { font-family: "Alexandria", "Tajawal", "Dubai", sans-serif; font-weight: 600; }
 
-/* Subtle paper texture for hero background */
+/* Premium paper texture */
 .beyond-paper {
   background-image:
     radial-gradient(1200px 600px at 90% -10%, rgba(182,138,53,0.10), transparent 60%),
@@ -44,7 +51,7 @@
     linear-gradient(180deg, #FAF8F1 0%, #F6F1E1 100%);
 }
 
-/* Premium gold gradient text */
+/* Gold gradient text */
 .beyond-gold-gradient {
   background: linear-gradient(90deg, #B68A35 0%, #E2C079 50%, #B68A35 100%);
   -webkit-background-clip: text;
@@ -52,6 +59,7 @@
   color: transparent;
 }
 
+/* Shadows */
 .beyond-card-shadow {
   box-shadow: 0 1px 2px rgba(31,41,51,0.04), 0 8px 32px -12px rgba(31,41,51,0.12);
 }
@@ -59,7 +67,7 @@
   box-shadow: 0 2px 6px rgba(31,41,51,0.06), 0 18px 48px -16px rgba(182,138,53,0.25);
 }
 
-/* Hairline divider with gold seed */
+/* Section divider, no em dashes */
 .beyond-divider {
   display: inline-flex;
   align-items: center;
@@ -78,12 +86,32 @@
   background: var(--beyond-gold);
   opacity: 0.7;
 }
+[dir="rtl"] .beyond-divider { letter-spacing: 0; }
 
-/* Hide scrollbars on horizontal product rail */
+/* Unique gold leaf ornament under headlines */
+.beyond-ornament {
+  position: relative;
+  display: inline-block;
+}
+.beyond-ornament::after {
+  content: "";
+  display: block;
+  margin: 12px auto 0;
+  width: 88px;
+  height: 12px;
+  background-image:
+    radial-gradient(circle at 6px 6px, rgba(182,138,53,0.85) 2px, transparent 3px),
+    radial-gradient(circle at 22px 6px, rgba(182,138,53,0.7) 2px, transparent 3px),
+    radial-gradient(circle at 44px 6px, rgba(182,138,53,1) 3px, transparent 4px),
+    radial-gradient(circle at 66px 6px, rgba(182,138,53,0.7) 2px, transparent 3px),
+    radial-gradient(circle at 82px 6px, rgba(182,138,53,0.85) 2px, transparent 3px);
+}
+
+/* Hide scrollbars */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Smooth focus rings */
+/* Focus rings */
 .beyond-focus:focus-visible {
   outline: 2px solid var(--beyond-gold);
   outline-offset: 3px;
@@ -93,30 +121,25 @@
 /* RTL helpers */
 [dir="rtl"] .flip-x { transform: scaleX(-1); }
 
-/* ---- Interactive motion ---- */
-
-/* gentle float for hero pieces */
+/* Animations */
 @keyframes bgFloat {
   0%, 100% { transform: translateY(0) rotate(0); }
   50%      { transform: translateY(-10px) rotate(-1deg); }
 }
 .beyond-float { animation: bgFloat 7s ease-in-out infinite; }
 
-/* sparkle pulse */
 @keyframes bgSparkle {
   0%, 100% { opacity: .35; transform: scale(.9); }
   50%      { opacity: 1;   transform: scale(1.2); }
 }
 .beyond-sparkle { animation: bgSparkle 2.6s ease-in-out infinite; }
 
-/* gold halo behind primary CTA */
 @keyframes bgHalo {
   0%, 100% { box-shadow: 0 0 0 0 rgba(182,138,53,0.45); }
   50%      { box-shadow: 0 0 0 14px rgba(182,138,53,0); }
 }
 .beyond-halo { animation: bgHalo 2.6s ease-out infinite; }
 
-/* shimmer sweep on premium chips */
 @keyframes bgShimmer {
   from { background-position: -200% 0; }
   to   { background-position: 200% 0; }
@@ -127,11 +150,11 @@
   animation: bgShimmer 3.2s linear infinite;
 }
 
-/* lift on hover (cards) */
+/* Lift on hover */
 .beyond-lift { transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s ease, border-color .35s ease; }
 .beyond-lift:hover { transform: translateY(-4px); }
 
-/* underline on hover (nav) */
+/* Underline animation */
 .beyond-link { position: relative; }
 .beyond-link::after {
   content: "";
@@ -144,16 +167,15 @@
 [dir="rtl"] .beyond-link::after { transform-origin: left; }
 [dir="rtl"] .beyond-link:hover::after { transform-origin: right; }
 
-/* gold chip with glow on selection */
 .beyond-chip-selected {
   box-shadow: 0 8px 24px -10px rgba(182,138,53,0.55);
 }
 
-/* tilt for product cards */
+/* Subtle tilt */
 .beyond-tilt { transition: transform .4s cubic-bezier(.22,1,.36,1); }
 .beyond-tilt:hover { transform: translateY(-4px) rotate(-0.4deg); }
 
-/* gradient border for collection cards on hover */
+/* Gradient hover border on collection cards */
 .beyond-grad-border { position: relative; }
 .beyond-grad-border::before {
   content: "";
@@ -169,14 +191,31 @@
 }
 .beyond-grad-border:hover::before { opacity: 1; }
 
-/* whatsapp pulse — subtle accent ring */
 @keyframes bgWaPulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(31,111,91,0.4); }
   60%      { box-shadow: 0 0 0 12px rgba(31,111,91,0); }
 }
 .beyond-wa-pulse { animation: bgWaPulse 2.6s ease-out infinite; }
 
-/* respect reduced motion */
+/* Unique vertical hairline divider on the left of section content */
+.beyond-rule {
+  position: relative; padding-inline-start: 22px;
+}
+.beyond-rule::before {
+  content: ""; position: absolute; inset-block: 4px; inset-inline-start: 0;
+  width: 2px; background: linear-gradient(180deg, var(--beyond-gold), transparent);
+  border-radius: 2px;
+}
+
+/* Toast */
+.beyond-toast {
+  background: rgba(31,41,51,0.96); color: #FAF8F1;
+  padding: 10px 16px; border-radius: 999px;
+  font-weight: 600; font-size: 13px;
+  box-shadow: 0 12px 36px -10px rgba(0,0,0,0.45);
+  display: inline-flex; align-items: center; gap: 8px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .beyond-float, .beyond-sparkle, .beyond-halo, .beyond-shimmer, .beyond-wa-pulse {
     animation: none !important;

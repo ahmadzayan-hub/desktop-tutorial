@@ -235,7 +235,7 @@ export const TamaraMark = (p: P) => (
 export const CashMark = (p: P) => (
   <svg viewBox="0 0 64 16" aria-hidden {...p}>
     <rect width="64" height="16" rx="4" fill="#1F6F5B" />
-    <text x="32" y="11.5" textAnchor="middle" fontFamily="Inter, Arial, sans-serif" fontWeight="700" fontSize="9" fill="#FAF8F1">COD · AED</text>
+    <text x="32" y="11.5" textAnchor="middle" fontFamily="Inter, Arial, sans-serif" fontWeight="700" fontSize="9" fill="#FAF8F1">COD in AED</text>
   </svg>
 );
 
