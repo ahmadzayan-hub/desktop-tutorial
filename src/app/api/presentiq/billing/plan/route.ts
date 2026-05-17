@@ -1,9 +1,20 @@
-import { getRequestContext, getSupabase, getPlan } from "@/lib/presentiq";
+import { getRequestContext, getSupabase, getPlan, isDemoContext } from "@/lib/presentiq";
 import { json, unauthorized } from "@/lib/presentiq/api/response";
 
 export async function GET() {
   const ctx = await getRequestContext();
   if (!ctx) return unauthorized();
+
+  // Demo mode: no Supabase wired. Return the trial plan with no usage so the
+  // billing screen renders without throwing the env-not-configured error.
+  if (isDemoContext(ctx)) {
+    return json({
+      plan: getPlan("trial"),
+      subscription: null,
+      usage: {},
+    });
+  }
+
   const supabase = await getSupabase();
   const [{ data: org }, { data: sub }] = await Promise.all([
     supabase.from("pq_organizations").select("plan, settings").eq("id", ctx.orgId).maybeSingle(),

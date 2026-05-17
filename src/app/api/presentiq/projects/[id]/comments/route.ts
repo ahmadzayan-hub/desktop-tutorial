@@ -1,9 +1,10 @@
-import { getRequestContext, getSupabase, writeAudit } from "@/lib/presentiq";
+import { getRequestContext, getSupabase, writeAudit, isDemoContext } from "@/lib/presentiq";
 import { fail, json, unauthorized } from "@/lib/presentiq/api/response";
 
 export async function GET(_req: Request, { params }: { params: { id: string } }) {
   const ctx = await getRequestContext();
   if (!ctx) return unauthorized();
+  if (isDemoContext(ctx)) return json({ items: [] });
   const supabase = await getSupabase();
   const { data } = await supabase
     .from("pq_comments")
@@ -18,6 +19,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   if (!ctx) return unauthorized();
   const body = (await req.json().catch(() => ({}))) as { slide_id?: string; body?: string };
   if (!body.slide_id || !body.body) return fail("invalid_input", "slide_id and body required", 400);
+  if (isDemoContext(ctx)) return fail("demo_readonly", "Demo mode does not persist comments.", 400);
   const supabase = await getSupabase();
   const { data, error } = await supabase
     .from("pq_comments")
