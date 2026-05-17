@@ -1,55 +1,45 @@
-import type { DbProject } from "@/types/database";
+import "server-only";
+import { cookies } from "next/headers";
+import type { DbProject, Subject } from "@/types/database";
+import type { ThemeId } from "@/lib/themes/types";
+import { mockSession } from "./session";
 
-// Phase 1 only. Replaced by Supabase queries in Phase 2.
-// Process-memory only: data is lost on dev server restart.
+export { mockSession };
 
-const projects = new Map<string, DbProject>();
+const COOKIE_NAME = "mutabasir.demo.projects";
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
+const MAX_PROJECTS = 25;
 
-const DEMO_OWNER = "demo-owner-00000000";
-
-export const mockSession = {
-  user: {
-    id: DEMO_OWNER,
-    email: "demo@mutabasir.ae",
-    full_name: "Demo User",
-  },
-};
-
-function id(): string {
-  return crypto.randomUUID();
-}
-
-function nowIso(): string {
-  return new Date().toISOString();
-}
-
-export function listProjects(): DbProject[] {
-  return Array.from(projects.values())
-    .filter((p) => p.owner_id === DEMO_OWNER)
-    .sort((a, b) => b.created_at.localeCompare(a.created_at));
-}
-
-export function getProject(projectId: string): DbProject | null {
-  const p = projects.get(projectId);
-  if (!p || p.owner_id !== DEMO_OWNER) return null;
-  return p;
-}
-
-export function createProject(input: {
+export interface CreateProjectInput {
   name: string;
-  subject: DbProject["subject"];
-  theme: DbProject["theme"];
+  subject: Subject;
+  theme: ThemeId;
   client_authority_en: string | null;
   client_authority_ar: string | null;
   counterparty_en: string | null;
   counterparty_ar: string | null;
   start_date: string | null;
   end_date: string | null;
-}): DbProject {
+}
+
+// --- Pure functions (no I/O) — safe for unit tests --------------------------
+
+function newId(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `p_${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`;
+}
+
+function nowIso(): string {
+  return new Date().toISOString();
+}
+
+export function newProject(input: CreateProjectInput): DbProject {
   const now = nowIso();
-  const project: DbProject = {
-    id: id(),
-    owner_id: DEMO_OWNER,
+  return {
+    id: newId(),
+    owner_id: mockSession.user.id,
     name: input.name,
     subject: input.subject,
     theme: input.theme,
@@ -63,12 +53,137 @@ export function createProject(input: {
     created_at: now,
     updated_at: now,
   };
-  projects.set(project.id, project);
+}
+
+export function sortProjects(list: DbProject[]): DbProject[] {
+  return [...list].sort((a, b) => b.created_at.localeCompare(a.created_at));
+}
+
+export function isValidProject(value: unknown): value is DbProject {
+  if (!value || typeof value !== "object") return false;
+  const p = value as Record<string, unknown>;
+  return (
+    typeof p.id === "string" &&
+    typeof p.name === "string" &&
+    typeof p.subject === "string" &&
+    typeof p.theme === "string" &&
+    typeof p.status === "string" &&
+    typeof p.created_at === "string"
+  );
+}
+
+// --- Cookie I/O -------------------------------------------------------------
+
+async function readRaw(): Promise<DbProject[]> {
+  const store = await cookies();
+  const raw = store.get(COOKIE_NAME)?.value;
+  if (!raw) return [];
+  try {
+    const decoded = decodeURIComponent(raw);
+    const parsed = JSON.parse(decoded);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(isValidProject);
+  } catch {
+    return [];
+  }
+}
+
+async function writeRaw(list: DbProject[]): Promise<void> {
+  const trimmed = list.slice(0, MAX_PROJECTS);
+  const encoded = encodeURIComponent(JSON.stringify(trimmed));
+  const store = await cookies();
+  store.set(COOKIE_NAME, encoded, {
+    maxAge: COOKIE_MAX_AGE,
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    secure: process.env.NODE_ENV === "production",
+  });
+}
+
+// --- Public API -------------------------------------------------------------
+
+export async function listProjects(): Promise<DbProject[]> {
+  return sortProjects(await readRaw());
+}
+
+export async function getProject(id: string): Promise<DbProject | null> {
+  if (!id) return null;
+  const list = await readRaw();
+  return list.find((p) => p.id === id) ?? null;
+}
+
+export async function createProject(
+  input: CreateProjectInput,
+): Promise<DbProject> {
+  const current = await readRaw();
+  const project = newProject(input);
+  await writeRaw([project, ...current]);
   return project;
 }
 
-export function deleteProject(projectId: string): void {
-  const p = projects.get(projectId);
-  if (!p || p.owner_id !== DEMO_OWNER) return;
-  projects.delete(projectId);
+export async function updateProject(
+  id: string,
+  patch: Partial<Omit<DbProject, "id" | "owner_id" | "created_at">>,
+): Promise<DbProject | null> {
+  const list = await readRaw();
+  const idx = list.findIndex((p) => p.id === id);
+  if (idx < 0) return null;
+  const existing = list[idx]!;
+  const updated: DbProject = {
+    ...existing,
+    ...patch,
+    id: existing.id,
+    owner_id: existing.owner_id,
+    created_at: existing.created_at,
+    updated_at: nowIso(),
+  };
+  const next = [...list];
+  next[idx] = updated;
+  await writeRaw(next);
+  return updated;
+}
+
+export async function deleteProject(id: string): Promise<boolean> {
+  const list = await readRaw();
+  const next = list.filter((p) => p.id !== id);
+  if (next.length === list.length) return false;
+  await writeRaw(next);
+  return true;
+}
+
+export async function seedDemoProjects(): Promise<DbProject[]> {
+  const current = await readRaw();
+  if (current.length > 0) return current;
+  const samples: CreateProjectInput[] = [
+    {
+      name: "Project Alpha · Strategic Contract",
+      subject: "contract_management",
+      theme: "civic",
+      client_authority_en: "Government Authority",
+      client_authority_ar: "جهة حكومية",
+      counterparty_en: "Consulting Co.",
+      counterparty_ar: "شركة استشارات",
+      start_date: "2026-01-15",
+      end_date: "2026-12-31",
+    },
+    {
+      name: "Tender 2026/A · Engineering Services",
+      subject: "tender_evaluation",
+      theme: "petrol",
+      client_authority_en: "Energy Authority",
+      client_authority_ar: "هيئة طاقة",
+      counterparty_en: "Three bidders",
+      counterparty_ar: "ثلاث جهات متقدّمة",
+      start_date: "2026-03-01",
+      end_date: "2026-05-30",
+    },
+  ];
+  const seeded = samples.map(newProject);
+  await writeRaw(seeded);
+  return sortProjects(seeded);
+}
+
+export async function clearAllProjects(): Promise<void> {
+  await writeRaw([]);
 }

@@ -10,6 +10,7 @@ import {
   Sparkles,
   FileText,
   ScrollText,
+  Wand2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody } from "@/components/ui/card";
@@ -19,6 +20,7 @@ import { useLocale } from "@/lib/i18n/locale-provider";
 import { formatDate } from "@/lib/utils/dates";
 import { cn } from "@/lib/utils/cn";
 import type { DbProject } from "@/types/database";
+import { seedDemoAction } from "../new/actions";
 
 type Filter = "all" | "contract_management" | "tender_evaluation";
 
@@ -152,7 +154,7 @@ export function ProjectsView({ projects }: { projects: DbProject[] }) {
                   <Card className="transition-shadow hover:shadow-md">
                     <CardBody className="flex flex-wrap items-center justify-between gap-4">
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-wrap items-center gap-3">
                           <PulseDot status={project.status} />
                           <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
                             {project.subject === "contract_management" ? (
@@ -204,7 +206,7 @@ export function ProjectsView({ projects }: { projects: DbProject[] }) {
 }
 
 function EmptyState() {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -228,13 +230,19 @@ function EmptyState() {
           <p className="relative mx-auto mt-1 max-w-md text-sm text-slate-500">
             {t.projects.emptyHint}
           </p>
-          <div className="relative mt-6">
+          <div className="relative mt-6 flex flex-wrap justify-center gap-3">
             <Link href="/new">
               <Button size="lg">
                 <FolderPlus className="h-4 w-4" />
                 {t.projects.newProject}
               </Button>
             </Link>
+            <form action={seedDemoAction}>
+              <Button type="submit" variant="secondary" size="lg">
+                <Wand2 className="h-4 w-4" />
+                {locale === "ar" ? "حمّل مشاريع تجريبية" : "Load sample projects"}
+              </Button>
+            </form>
           </div>
         </CardBody>
       </Card>

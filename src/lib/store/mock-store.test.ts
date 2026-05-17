@@ -1,27 +1,9 @@
-import { afterEach, describe, expect, it } from "vitest";
-import {
-  createProject,
-  deleteProject,
-  getProject,
-  listProjects,
-} from "./mock-store";
+import { describe, expect, it } from "vitest";
+import { isValidProject, newProject, sortProjects } from "./mock-store";
 
-function cleanup() {
-  for (const p of listProjects()) {
-    deleteProject(p.id);
-  }
-}
-
-describe("mock-store", () => {
-  afterEach(() => cleanup());
-
-  it("starts empty", () => {
-    cleanup();
-    expect(listProjects()).toHaveLength(0);
-  });
-
-  it("creates a project with the provided fields", () => {
-    const p = createProject({
+describe("mock-store · pure logic", () => {
+  it("newProject builds a draft project with timestamps", () => {
+    const p = newProject({
       name: "Strategic Contract Q2",
       subject: "contract_management",
       theme: "civic",
@@ -38,11 +20,13 @@ describe("mock-store", () => {
     expect(p.subject).toBe("contract_management");
     expect(p.theme).toBe("civic");
     expect(p.status).toBe("draft");
+    expect(p.created_at).toMatch(/\d{4}-\d{2}-\d{2}T/);
+    expect(p.owner_id).toBeTruthy();
   });
 
-  it("retrieves a project by id", () => {
-    const p = createProject({
-      name: "Tender 2026/A",
+  it("newProject preserves nullable fields", () => {
+    const p = newProject({
+      name: "Minimal",
       subject: "tender_evaluation",
       theme: "petrol",
       client_authority_en: null,
@@ -52,17 +36,13 @@ describe("mock-store", () => {
       start_date: null,
       end_date: null,
     });
-
-    expect(getProject(p.id)?.name).toBe("Tender 2026/A");
+    expect(p.client_authority_en).toBeNull();
+    expect(p.start_date).toBeNull();
   });
 
-  it("returns null for unknown ids", () => {
-    expect(getProject("does-not-exist")).toBeNull();
-  });
-
-  it("lists projects newest-first", async () => {
-    const a = createProject({
-      name: "First",
+  it("sortProjects orders by created_at descending", () => {
+    const older = newProject({
+      name: "Older",
       subject: "contract_management",
       theme: "civic",
       client_authority_en: null,
@@ -72,27 +52,30 @@ describe("mock-store", () => {
       start_date: null,
       end_date: null,
     });
-    await new Promise((resolve) => setTimeout(resolve, 5));
-    const b = createProject({
-      name: "Second",
-      subject: "tender_evaluation",
-      theme: "utility",
-      client_authority_en: null,
-      client_authority_ar: null,
-      counterparty_en: null,
-      counterparty_ar: null,
-      start_date: null,
-      end_date: null,
-    });
+    // Force newer timestamp
+    const newer = {
+      ...newProject({
+        name: "Newer",
+        subject: "tender_evaluation",
+        theme: "utility",
+        client_authority_en: null,
+        client_authority_ar: null,
+        counterparty_en: null,
+        counterparty_ar: null,
+        start_date: null,
+        end_date: null,
+      }),
+      created_at: new Date(Date.now() + 1000).toISOString(),
+    };
 
-    const list = listProjects();
-    expect(list[0]?.id).toBe(b.id);
-    expect(list[1]?.id).toBe(a.id);
+    const sorted = sortProjects([older, newer]);
+    expect(sorted[0]?.name).toBe("Newer");
+    expect(sorted[1]?.name).toBe("Older");
   });
 
-  it("deletes a project", () => {
-    const p = createProject({
-      name: "Temp",
+  it("sortProjects does not mutate input", () => {
+    const a = newProject({
+      name: "A",
       subject: "contract_management",
       theme: "civic",
       client_authority_en: null,
@@ -102,8 +85,29 @@ describe("mock-store", () => {
       start_date: null,
       end_date: null,
     });
+    const input = [a];
+    sortProjects(input);
+    expect(input).toHaveLength(1);
+    expect(input[0]).toBe(a);
+  });
 
-    deleteProject(p.id);
-    expect(getProject(p.id)).toBeNull();
+  it("isValidProject accepts well-formed values and rejects others", () => {
+    const p = newProject({
+      name: "Real",
+      subject: "contract_management",
+      theme: "civic",
+      client_authority_en: null,
+      client_authority_ar: null,
+      counterparty_en: null,
+      counterparty_ar: null,
+      start_date: null,
+      end_date: null,
+    });
+    expect(isValidProject(p)).toBe(true);
+    expect(isValidProject(null)).toBe(false);
+    expect(isValidProject(undefined)).toBe(false);
+    expect(isValidProject({})).toBe(false);
+    expect(isValidProject({ id: "x" })).toBe(false);
+    expect(isValidProject("string")).toBe(false);
   });
 });

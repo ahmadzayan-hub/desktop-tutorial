@@ -7,7 +7,7 @@ import { Wordmark } from "@/components/branding/wordmark";
 import { LocaleToggle } from "@/components/branding/locale-toggle";
 import { Button } from "@/components/ui/button";
 import { useLocale } from "@/lib/i18n/locale-provider";
-import { mockSession } from "@/lib/store/mock-store";
+import { mockSession } from "@/lib/store/session";
 import { cn } from "@/lib/utils/cn";
 
 export function AppShell({ children }: { children: React.ReactNode }) {

@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { User, Cpu, Database, Hammer } from "lucide-react";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocale } from "@/lib/i18n/locale-provider";
-import { mockSession } from "@/lib/store/mock-store";
+import { mockSession } from "@/lib/store/session";
 
 export function SettingsView() {
   const { t, dir, locale } = useLocale();

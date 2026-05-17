@@ -3,13 +3,20 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { createProject } from "@/lib/store/mock-store";
+import {
+  createProject,
+  deleteProject,
+  seedDemoProjects,
+} from "@/lib/store/mock-store";
 import { themeOrder } from "@/lib/themes";
 import type { Subject } from "@/types/database";
 import type { ThemeId } from "@/lib/themes/types";
 
 const Schema = z.object({
-  name: z.string().min(2, "Project name must be at least 2 characters."),
+  name: z
+    .string()
+    .min(2, "Project name must be at least 2 characters.")
+    .max(200, "Project name is too long."),
   subject: z.enum(["contract_management", "tender_evaluation"]),
   theme: z.enum(themeOrder as [ThemeId, ...ThemeId[]]),
   client_authority_en: z.string().trim().optional().or(z.literal("")),
@@ -48,7 +55,7 @@ export async function createProjectAction(
     return { ok: false, fieldErrors };
   }
 
-  const project = createProject({
+  const project = await createProject({
     name: parsed.data.name,
     subject: parsed.data.subject as Subject,
     theme: parsed.data.theme as ThemeId,
@@ -62,4 +69,18 @@ export async function createProjectAction(
 
   revalidatePath("/projects");
   redirect(`/projects/${project.id}`);
+}
+
+export async function deleteProjectAction(formData: FormData): Promise<void> {
+  const id = formData.get("id");
+  if (typeof id !== "string" || !id) return;
+  await deleteProject(id);
+  revalidatePath("/projects");
+  redirect("/projects");
+}
+
+export async function seedDemoAction(): Promise<void> {
+  await seedDemoProjects();
+  revalidatePath("/projects");
+  redirect("/projects");
 }
