@@ -5,8 +5,6 @@ import Link from "next/link";
 import {
   ArrowLeft,
   ArrowRight,
-  FileUp,
-  Lock,
   Sparkles,
   Trash2,
   AlertTriangle,
@@ -15,25 +13,18 @@ import { AnimatePresence, motion } from "motion/react";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PulseDot } from "@/components/motion/pulse-dot";
-import { StaggerInView, StaggerItem } from "@/components/motion/stagger";
 import { getTheme } from "@/lib/themes";
 import { useLocale } from "@/lib/i18n/locale-provider";
 import { formatDate } from "@/lib/utils/dates";
 import type { DbProject } from "@/types/database";
 import { deleteProjectAction } from "../../new/actions";
+import { ProjectPipeline } from "./project-pipeline";
 
 export function ProjectDetailView({ project }: { project: DbProject }) {
   const { t, dir, locale } = useLocale();
   const theme = getTheme(project.theme);
   const themeName = locale === "ar" ? theme.name_ar : theme.name_en;
   const [confirmOpen, setConfirmOpen] = useState(false);
-
-  const steps = [
-    { title: t.projects.stepUpload, body: t.projects.stepUploadBody },
-    { title: t.projects.stepExtract, body: t.projects.stepExtractBody },
-    { title: t.projects.stepBrief, body: t.projects.stepBriefBody },
-    { title: t.projects.stepPublish, body: t.projects.stepPublishBody },
-  ];
 
   return (
     <div dir={dir}>
@@ -76,48 +67,30 @@ export function ProjectDetailView({ project }: { project: DbProject }) {
         </Button>
       </motion.div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="lg:col-span-2"
+          className="space-y-5"
         >
-          <Card>
-            <CardHeader>
-              <CardTitle>{t.projects.sourceDocs}</CardTitle>
-            </CardHeader>
-            <CardBody>
-              <motion.div
-                whileHover={{ borderColor: "#171C8F" }}
-                className="rounded-xl border-2 border-dashed border-slate-300 bg-slate-50/70 py-12 text-center transition-colors"
-              >
-                <motion.div
-                  animate={{ y: [0, -4, 0] }}
-                  transition={{
-                    duration: 3.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-white shadow-sm"
-                >
-                  <FileUp className="h-5 w-5 text-brand-navy" />
-                </motion.div>
-                <p className="mt-4 text-sm font-medium text-slate-700">
-                  {t.projects.noDocuments}
-                </p>
-                <p className="mt-1 text-xs text-slate-500">
-                  {t.projects.uploadComing}
-                </p>
-              </motion.div>
-            </CardBody>
-          </Card>
+          <div className="rounded-xl border border-brand-navy/10 bg-brand-navy/5 p-4">
+            <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-brand-navy">
+              <Sparkles className="h-3.5 w-3.5 text-brand-gold" />
+              {t.pipeline.heading}
+            </div>
+            <p className="mt-1 text-xs leading-relaxed text-slate-600">
+              {t.pipeline.subheading}
+            </p>
+          </div>
+          <ProjectPipeline project={project} />
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
+          className="space-y-5"
         >
           <Card>
             <CardHeader>
@@ -160,68 +133,15 @@ export function ProjectDetailView({ project }: { project: DbProject }) {
               />
             </CardBody>
           </Card>
+
+          <div className="rounded-xl border border-slate-200 bg-white p-4">
+            <Link href="/projects">
+              <Button variant="secondary" size="sm" className="w-full">
+                {t.projects.backToProjects}
+              </Button>
+            </Link>
+          </div>
         </motion.div>
-
-        <div className="lg:col-span-3">
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                <span className="inline-flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-brand-gold" />
-                  {t.projects.nextSteps}
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardBody>
-              <StaggerInView
-                className="grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4"
-                staggerChildren={0.08}
-              >
-                {steps.map((step, i) => (
-                  <StaggerItem key={step.title}>
-                    <motion.div
-                      whileHover={{ y: -3 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 280,
-                        damping: 18,
-                      }}
-                      className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3"
-                    >
-                      <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
-                        <span className="num inline-flex h-5 w-5 items-center justify-center rounded-full bg-brand-navy text-[10px] font-bold text-white">
-                          {i + 1}
-                        </span>
-                        <span className="inline-flex items-center gap-1 rounded bg-slate-200 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-slate-600">
-                          <Lock className="h-2.5 w-2.5" />
-                          {t.projects.stepLocked}
-                        </span>
-                      </div>
-                      <p className="mt-2 text-sm font-semibold text-brand-navy">
-                        {step.title}
-                      </p>
-                      <p className="mt-1 text-xs leading-relaxed text-slate-600">
-                        {step.body}
-                      </p>
-                    </motion.div>
-                  </StaggerItem>
-                ))}
-              </StaggerInView>
-
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Button disabled>
-                  <FileUp className="h-4 w-4" />
-                  {t.projects.uploadDocs}
-                </Button>
-                <Link href="/projects">
-                  <Button variant="secondary">
-                    {t.projects.backToProjects}
-                  </Button>
-                </Link>
-              </div>
-            </CardBody>
-          </Card>
-        </div>
       </div>
 
       <DeleteConfirm

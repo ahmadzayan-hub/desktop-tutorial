@@ -17,7 +17,12 @@ const Schema = z.object({
     .string()
     .min(2, "Project name must be at least 2 characters.")
     .max(200, "Project name is too long."),
-  subject: z.enum(["contract_management", "tender_evaluation"]),
+  subject: z.enum([
+    "contract_management",
+    "tender_evaluation",
+    "operations_maintenance",
+    "construction",
+  ]),
   theme: z.enum(themeOrder as [ThemeId, ...ThemeId[]]),
   client_authority_en: z.string().trim().optional().or(z.literal("")),
   client_authority_ar: z.string().trim().optional().or(z.literal("")),

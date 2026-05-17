@@ -11,7 +11,10 @@ import {
   FileText,
   ScrollText,
   Wand2,
+  Wrench,
+  HardHat,
 } from "lucide-react";
+import type { Subject } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -22,7 +25,14 @@ import { cn } from "@/lib/utils/cn";
 import type { DbProject } from "@/types/database";
 import { seedDemoAction } from "../new/actions";
 
-type Filter = "all" | "contract_management" | "tender_evaluation";
+type Filter = "all" | Subject;
+
+const SUBJECT_ICON: Record<Subject, typeof FileText> = {
+  contract_management: FileText,
+  tender_evaluation: ScrollText,
+  operations_maintenance: Wrench,
+  construction: HardHat,
+};
 
 export function ProjectsView({ projects }: { projects: DbProject[] }) {
   const { t, dir, locale } = useLocale();
@@ -98,6 +108,8 @@ export function ProjectsView({ projects }: { projects: DbProject[] }) {
                 { id: "all", label: t.projects.filterAll },
                 { id: "contract_management", label: t.projects.filterContract },
                 { id: "tender_evaluation", label: t.projects.filterTender },
+                { id: "operations_maintenance", label: t.projects.filterOps },
+                { id: "construction", label: t.projects.filterConstruction },
               ] as { id: Filter; label: string }[]
             ).map((tab) => (
               <button
@@ -157,11 +169,10 @@ export function ProjectsView({ projects }: { projects: DbProject[] }) {
                         <div className="flex flex-wrap items-center gap-3">
                           <PulseDot status={project.status} />
                           <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
-                            {project.subject === "contract_management" ? (
-                              <FileText className="h-3 w-3" />
-                            ) : (
-                              <ScrollText className="h-3 w-3" />
-                            )}
+                            {(() => {
+                              const Icon = SUBJECT_ICON[project.subject];
+                              return <Icon className="h-3 w-3" />;
+                            })()}
                             {t.subjects[project.subject]}
                           </span>
                           <h2 className="display-tight truncate text-base font-semibold text-brand-navy sm:text-lg">

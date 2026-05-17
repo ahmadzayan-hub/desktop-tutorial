@@ -1,6 +1,17 @@
 import type { ThemeId } from "@/lib/themes/types";
 
-export type Subject = "contract_management" | "tender_evaluation";
+export type Subject =
+  | "contract_management"
+  | "tender_evaluation"
+  | "operations_maintenance"
+  | "construction";
+
+export type BriefAudience =
+  | "director"
+  | "ceo"
+  | "board"
+  | "internal_team"
+  | "external_client";
 
 export type RagStatus = "green" | "amber" | "red" | "draft";
 
@@ -13,6 +24,12 @@ export type DocumentType =
   | "technical_note"
   | "tender_submission"
   | "evaluation_criteria"
+  | "maintenance_log"
+  | "sla_report"
+  | "work_order"
+  | "construction_drawing"
+  | "site_progress"
+  | "safety_report"
   | "unknown";
 
 export type Confidence = "HIGH" | "MEDIUM" | "LOW";
@@ -65,7 +82,7 @@ export interface DbBrief {
   project_id: string;
   author_id: string;
   text_en: string;
-  audience: "director" | "ceo" | "board" | "internal_team" | "external_client";
+  audience: BriefAudience;
   created_at: string;
 }
 

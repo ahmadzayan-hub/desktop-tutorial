@@ -66,6 +66,12 @@ export function NewProjectForm() {
             <option value="tender_evaluation">
               {t.newProject.subjectTender}
             </option>
+            <option value="operations_maintenance">
+              {t.newProject.subjectOps}
+            </option>
+            <option value="construction">
+              {t.newProject.subjectConstruction}
+            </option>
           </Select>
         </div>
 
