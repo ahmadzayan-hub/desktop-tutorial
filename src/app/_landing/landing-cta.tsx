@@ -11,16 +11,16 @@ export function LandingCta() {
   return (
     <section className="px-6 pb-24" dir={dir}>
       <FadeInView>
-        <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl bg-rta-navy px-8 py-16 text-center text-white shadow-xl">
+        <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl bg-brand-navy px-8 py-16 text-center text-white shadow-xl">
           <motion.div
             aria-hidden
-            className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-rta-red/20 blur-3xl"
+            className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-brand-red/20 blur-3xl"
             animate={{ x: [0, 12, 0], y: [0, 8, 0] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           />
           <motion.div
             aria-hidden
-            className="absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-rta-gold/20 blur-3xl"
+            className="absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-brand-gold/20 blur-3xl"
             animate={{ x: [0, -10, 0], y: [0, -6, 0] }}
             transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
           />
@@ -36,7 +36,7 @@ export function LandingCta() {
               <Link href="/sign-up">
                 <Button
                   size="lg"
-                  className="bg-white text-rta-navy hover:bg-slate-100 focus-visible:ring-white"
+                  className="bg-white text-brand-navy hover:bg-slate-100 focus-visible:ring-white"
                 >
                   {t.landing.ctaPrimary}
                 </Button>

@@ -83,7 +83,7 @@ export function SignUpForm() {
             {t.auth.hasAccount}{" "}
             <Link
               href="/sign-in"
-              className="font-medium text-rta-navy hover:underline"
+              className="font-medium text-brand-navy hover:underline"
             >
               {t.nav.signIn}
             </Link>

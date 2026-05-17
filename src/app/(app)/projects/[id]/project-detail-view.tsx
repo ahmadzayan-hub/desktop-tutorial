@@ -28,7 +28,7 @@ export function ProjectDetailView({ project }: { project: DbProject }) {
     <div dir={dir}>
       <Link
         href="/projects"
-        className="mb-4 inline-flex items-center gap-1 text-sm text-slate-500 transition-colors hover:text-rta-navy"
+        className="mb-4 inline-flex items-center gap-1 text-sm text-slate-500 transition-colors hover:text-brand-navy"
       >
         {dir === "rtl" ? (
           <ArrowRight className="h-3.5 w-3.5" />
@@ -45,7 +45,7 @@ export function ProjectDetailView({ project }: { project: DbProject }) {
       >
         <div className="flex items-center gap-3">
           <PulseDot status={project.status} />
-          <h1 className="display-tight text-3xl font-bold text-rta-navy sm:text-4xl">
+          <h1 className="display-tight text-3xl font-bold text-brand-navy sm:text-4xl">
             {project.name}
           </h1>
         </div>
@@ -79,7 +79,7 @@ export function ProjectDetailView({ project }: { project: DbProject }) {
                   }}
                   className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-white shadow-sm"
                 >
-                  <FileUp className="h-5 w-5 text-rta-navy" />
+                  <FileUp className="h-5 w-5 text-brand-navy" />
                 </motion.div>
                 <p className="mt-4 text-sm font-medium text-slate-700">
                   {t.projects.noDocuments}
@@ -142,7 +142,7 @@ export function ProjectDetailView({ project }: { project: DbProject }) {
             <CardHeader>
               <CardTitle>
                 <span className="inline-flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-rta-gold" />
+                  <Sparkles className="h-4 w-4 text-brand-gold" />
                   {t.projects.nextSteps}
                 </span>
               </CardTitle>
@@ -164,7 +164,7 @@ export function ProjectDetailView({ project }: { project: DbProject }) {
                       className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3"
                     >
                       <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
-                        <span className="num inline-flex h-5 w-5 items-center justify-center rounded-full bg-rta-navy text-[10px] font-bold text-white">
+                        <span className="num inline-flex h-5 w-5 items-center justify-center rounded-full bg-brand-navy text-[10px] font-bold text-white">
                           {i + 1}
                         </span>
                         <span className="inline-flex items-center gap-1 rounded bg-slate-200 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-slate-600">
@@ -172,7 +172,7 @@ export function ProjectDetailView({ project }: { project: DbProject }) {
                           {t.projects.stepLocked}
                         </span>
                       </div>
-                      <p className="mt-2 text-sm font-semibold text-rta-navy">
+                      <p className="mt-2 text-sm font-semibold text-brand-navy">
                         {step.title}
                       </p>
                       <p className="mt-1 text-xs leading-relaxed text-slate-600">

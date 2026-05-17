@@ -14,7 +14,7 @@ export function NewProjectView() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-8"
       >
-        <h1 className="display-tight text-3xl font-bold text-rta-navy sm:text-4xl">
+        <h1 className="display-tight text-3xl font-bold text-brand-navy sm:text-4xl">
           {t.newProject.title}
         </h1>
         <p className="mt-1 text-sm text-slate-500">{t.newProject.subtitle}</p>

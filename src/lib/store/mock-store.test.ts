@@ -22,29 +22,29 @@ describe("mock-store", () => {
 
   it("creates a project with the provided fields", () => {
     const p = createProject({
-      name: "SENER Contract",
+      name: "Strategic Contract Q2",
       subject: "contract_management",
-      theme: "rta",
-      client_authority_en: "RTA",
-      client_authority_ar: "هيئة الطرق والمواصلات",
-      counterparty_en: "SENER",
-      counterparty_ar: "سينر",
+      theme: "civic",
+      client_authority_en: "Government Authority",
+      client_authority_ar: "جهة حكومية",
+      counterparty_en: "Consulting Co.",
+      counterparty_ar: "شركة استشارات",
       start_date: "2026-01-01",
       end_date: "2026-12-31",
     });
 
     expect(p.id).toBeTruthy();
-    expect(p.name).toBe("SENER Contract");
+    expect(p.name).toBe("Strategic Contract Q2");
     expect(p.subject).toBe("contract_management");
-    expect(p.theme).toBe("rta");
+    expect(p.theme).toBe("civic");
     expect(p.status).toBe("draft");
   });
 
   it("retrieves a project by id", () => {
     const p = createProject({
-      name: "Test",
+      name: "Tender 2026/A",
       subject: "tender_evaluation",
-      theme: "adnoc",
+      theme: "petrol",
       client_authority_en: null,
       client_authority_ar: null,
       counterparty_en: null,
@@ -53,7 +53,7 @@ describe("mock-store", () => {
       end_date: null,
     });
 
-    expect(getProject(p.id)?.name).toBe("Test");
+    expect(getProject(p.id)?.name).toBe("Tender 2026/A");
   });
 
   it("returns null for unknown ids", () => {
@@ -64,7 +64,7 @@ describe("mock-store", () => {
     const a = createProject({
       name: "First",
       subject: "contract_management",
-      theme: "rta",
+      theme: "civic",
       client_authority_en: null,
       client_authority_ar: null,
       counterparty_en: null,
@@ -72,12 +72,11 @@ describe("mock-store", () => {
       start_date: null,
       end_date: null,
     });
-    // Ensure a strictly later timestamp for the second project.
     await new Promise((resolve) => setTimeout(resolve, 5));
     const b = createProject({
       name: "Second",
       subject: "tender_evaluation",
-      theme: "dewa",
+      theme: "utility",
       client_authority_en: null,
       client_authority_ar: null,
       counterparty_en: null,
@@ -95,7 +94,7 @@ describe("mock-store", () => {
     const p = createProject({
       name: "Temp",
       subject: "contract_management",
-      theme: "rta",
+      theme: "civic",
       client_authority_en: null,
       client_authority_ar: null,
       counterparty_en: null,

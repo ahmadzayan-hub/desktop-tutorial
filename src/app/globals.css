@@ -3,10 +3,10 @@
 @import "tailwindcss";
 
 @theme {
-  --color-rta-navy: #171c8f;
-  --color-rta-red: #ee0032;
-  --color-rta-gold: #d4a017;
-  --color-rta-teal: #00b0b9;
+  --color-brand-navy: #171c8f;
+  --color-brand-red: #ee0032;
+  --color-brand-gold: #d4a017;
+  --color-brand-teal: #00b0b9;
 
   --color-status-green: #10b981;
   --color-status-amber: #f59e0b;
@@ -53,7 +53,7 @@
   }
 
   *:focus-visible {
-    outline: 2px solid var(--color-rta-navy);
+    outline: 2px solid var(--color-brand-navy);
     outline-offset: 2px;
   }
 }

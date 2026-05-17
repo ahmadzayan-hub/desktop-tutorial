@@ -12,12 +12,12 @@ export function LandingOutputs() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="mx-auto max-w-2xl text-center">
           <FadeInView>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-rta-red">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-red">
               {t.landing.outputsEyebrow}
             </p>
           </FadeInView>
           <FadeInView delay={0.1}>
-            <h2 className="display-tight mt-3 text-balance text-3xl font-bold text-rta-navy sm:text-4xl">
+            <h2 className="display-tight mt-3 text-balance text-3xl font-bold text-brand-navy sm:text-4xl">
               {t.landing.outputsTitle}
             </h2>
           </FadeInView>
@@ -35,11 +35,11 @@ export function LandingOutputs() {
                 className="group relative h-full overflow-hidden rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition-shadow hover:shadow-lg"
               >
                 <div className="flex items-center justify-between">
-                  <span className="inline-flex items-center rounded-full bg-rta-navy/5 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-rta-navy">
+                  <span className="inline-flex items-center rounded-full bg-brand-navy/5 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-brand-navy">
                     {card.chip}
                   </span>
                 </div>
-                <h3 className="display-tight mt-5 text-xl font-semibold text-rta-navy">
+                <h3 className="display-tight mt-5 text-xl font-semibold text-brand-navy">
                   {card.title}
                 </h3>
                 <p className="mt-3 text-sm leading-relaxed text-slate-600">
@@ -51,13 +51,13 @@ export function LandingOutputs() {
                 >
                   <div className="flex h-full flex-col justify-between">
                     <div className="flex gap-1.5">
-                      <span className="h-1.5 w-12 rounded-full bg-rta-navy/30" />
-                      <span className="h-1.5 w-6 rounded-full bg-rta-navy/15" />
+                      <span className="h-1.5 w-12 rounded-full bg-brand-navy/30" />
+                      <span className="h-1.5 w-6 rounded-full bg-brand-navy/15" />
                     </div>
                     <div className="space-y-1">
-                      <span className="block h-1.5 w-full rounded-full bg-rta-navy/10" />
-                      <span className="block h-1.5 w-4/5 rounded-full bg-rta-navy/10" />
-                      <span className="block h-1.5 w-3/5 rounded-full bg-rta-navy/10" />
+                      <span className="block h-1.5 w-full rounded-full bg-brand-navy/10" />
+                      <span className="block h-1.5 w-4/5 rounded-full bg-brand-navy/10" />
+                      <span className="block h-1.5 w-3/5 rounded-full bg-brand-navy/10" />
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className="h-1.5 w-1.5 rounded-full bg-status-green" />

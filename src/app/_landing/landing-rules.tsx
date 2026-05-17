@@ -12,12 +12,12 @@ export function LandingRules() {
       <div className="mx-auto max-w-5xl px-6">
         <div className="mx-auto max-w-2xl text-center">
           <FadeInView>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-rta-red">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-red">
               {t.landing.rulesEyebrow}
             </p>
           </FadeInView>
           <FadeInView delay={0.1}>
-            <h2 className="display-tight mt-3 text-balance text-3xl font-bold text-rta-navy sm:text-4xl">
+            <h2 className="display-tight mt-3 text-balance text-3xl font-bold text-brand-navy sm:text-4xl">
               {t.landing.rulesTitle}
             </h2>
           </FadeInView>

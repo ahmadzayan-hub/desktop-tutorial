@@ -20,8 +20,8 @@ exception when duplicate_object then null; end $$;
 
 do $$ begin
   create type theme_id as enum (
-    'rta', 'adnoc', 'aldar', 'etihad-rail',
-    'dewa', 'dubai-police', 'generic', 'custom'
+    'civic', 'petrol', 'sand', 'rail',
+    'utility', 'guardian', 'slate', 'custom'
   );
 exception when duplicate_object then null; end $$;
 
@@ -87,7 +87,7 @@ create table if not exists public.projects (
   owner_id uuid not null references auth.users(id) on delete cascade,
   name text not null check (char_length(name) between 2 and 200),
   subject subject_type not null,
-  theme theme_id not null default 'rta',
+  theme theme_id not null default 'civic',
   client_authority_en text,
   client_authority_ar text,
   counterparty_en text,

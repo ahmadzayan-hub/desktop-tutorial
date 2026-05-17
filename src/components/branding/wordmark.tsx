@@ -31,7 +31,7 @@ export function Wordmark({
         whileTap={{ scale: 0.95 }}
         transition={{ type: "spring", stiffness: 320, damping: 18 }}
         className={cn(
-          "relative grid place-items-center rounded-lg bg-rta-navy text-white",
+          "relative grid place-items-center rounded-lg bg-brand-navy text-white",
           s.logo,
         )}
         aria-hidden
@@ -44,13 +44,13 @@ export function Wordmark({
         </svg>
         <motion.span
           aria-hidden
-          className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-rta-red"
+          className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-brand-red"
           animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
           transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
         />
       </motion.div>
       <div className="flex flex-col leading-tight">
-        <span className={cn("display-tight font-semibold text-rta-navy", s.title)}>
+        <span className={cn("display-tight font-semibold text-brand-navy", s.title)}>
           Mutabasir
         </span>
         {showTagline && (

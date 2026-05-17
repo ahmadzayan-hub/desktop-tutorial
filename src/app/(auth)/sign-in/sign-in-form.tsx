@@ -72,7 +72,7 @@ export function SignInForm() {
             {t.auth.noAccount}{" "}
             <Link
               href="/sign-up"
-              className="font-medium text-rta-navy hover:underline"
+              className="font-medium text-brand-navy hover:underline"
             >
               {t.nav.signUp}
             </Link>

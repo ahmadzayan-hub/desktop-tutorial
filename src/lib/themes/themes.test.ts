@@ -19,30 +19,48 @@ describe("themes", () => {
     }
   });
 
-  it("RTA theme matches v8 SENER brand spec", () => {
-    expect(themes.rta.brand.primary).toBe("#171C8F");
-    expect(themes.rta.brand.secondary).toBe("#EE0032");
-    expect(themes.rta.brand.accent).toBe("#D4A017");
+  it("civic theme uses the executive default brand palette", () => {
+    expect(themes.civic.brand.primary).toBe("#171C8F");
+    expect(themes.civic.brand.secondary).toBe("#EE0032");
+    expect(themes.civic.brand.accent).toBe("#D4A017");
   });
 
-  it("every theme has bilingual names and authority", () => {
+  it("every theme has bilingual names, descriptions and authority placeholders", () => {
     for (const id of themeOrder) {
       const t = themes[id];
       expect(t.name_en.length).toBeGreaterThan(0);
       expect(t.name_ar.length).toBeGreaterThan(0);
-      expect(t.authority_en.length).toBeGreaterThan(0);
-      expect(t.authority_ar.length).toBeGreaterThan(0);
+      expect(t.description_en.length).toBeGreaterThan(0);
+      expect(t.description_ar.length).toBeGreaterThan(0);
     }
   });
 
-  it("getTheme falls back to RTA on unknown id", () => {
-    expect(getTheme("nonsense").id).toBe("rta");
-    expect(getTheme(null).id).toBe("rta");
-    expect(getTheme(undefined).id).toBe("rta");
+  it("getTheme falls back to civic on unknown id", () => {
+    expect(getTheme("nonsense").id).toBe("civic");
+    expect(getTheme(null).id).toBe("civic");
+    expect(getTheme(undefined).id).toBe("civic");
   });
 
   it("getTheme resolves known ids exactly", () => {
-    expect(getTheme("adnoc").id).toBe("adnoc");
-    expect(getTheme("dewa").id).toBe("dewa");
+    expect(getTheme("petrol").id).toBe("petrol");
+    expect(getTheme("guardian").id).toBe("guardian");
+    expect(getTheme("utility").id).toBe("utility");
+  });
+
+  it("contains no references to specific customer authorities (privacy)", () => {
+    const json = JSON.stringify(themes);
+    const forbidden = [
+      "RTA",
+      "ADNOC",
+      "Aldar",
+      "Etihad",
+      "DEWA",
+      "Dubai Police",
+      "Roads and Transport",
+      "SENER",
+    ];
+    for (const word of forbidden) {
+      expect(json).not.toContain(word);
+    }
   });
 });

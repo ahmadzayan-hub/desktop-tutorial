@@ -14,7 +14,7 @@ export function LocaleToggle({ className }: { className?: string }) {
       onClick={toggleLocale}
       aria-label={isAr ? "Switch to English" : "التبديل إلى العربية"}
       className={cn(
-        "relative inline-flex h-9 w-[78px] items-center rounded-full border border-slate-200 bg-slate-100 p-1 text-xs font-semibold text-slate-700 transition-colors hover:border-rta-navy/40",
+        "relative inline-flex h-9 w-[78px] items-center rounded-full border border-slate-200 bg-slate-100 p-1 text-xs font-semibold text-slate-700 transition-colors hover:border-brand-navy/40",
         className,
       )}
     >
@@ -22,7 +22,7 @@ export function LocaleToggle({ className }: { className?: string }) {
         layout
         transition={{ type: "spring", stiffness: 500, damping: 30 }}
         className={cn(
-          "absolute top-1 h-7 w-9 rounded-full bg-rta-navy shadow-sm",
+          "absolute top-1 h-7 w-9 rounded-full bg-brand-navy shadow-sm",
           isAr ? "right-1" : "left-1",
         )}
         aria-hidden

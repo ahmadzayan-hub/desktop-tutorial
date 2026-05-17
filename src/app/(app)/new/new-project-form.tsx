@@ -11,18 +11,25 @@ import { themeOrder, themes } from "@/lib/themes";
 import { useLocale } from "@/lib/i18n/locale-provider";
 import type { ThemeId } from "@/lib/themes/types";
 import { cn } from "@/lib/utils/cn";
+import { useToast } from "@/components/ui/toast";
+import { useEffect } from "react";
 import { createProjectAction, type CreateProjectState } from "./actions";
 
 const initialState: CreateProjectState = { ok: true };
 
 export function NewProjectForm() {
   const { t, locale, dir } = useLocale();
+  const toast = useToast();
   const [state, formAction, pending] = useActionState(
     createProjectAction,
     initialState,
   );
-  const [selectedTheme, setSelectedTheme] = useState<ThemeId>("rta");
+  const [selectedTheme, setSelectedTheme] = useState<ThemeId>("civic");
   const errors = state.fieldErrors ?? {};
+
+  useEffect(() => {
+    if (state.error) toast.error(state.error);
+  }, [state.error, toast]);
 
   return (
     <form action={formAction} className="space-y-6" dir={dir}>
@@ -36,7 +43,7 @@ export function NewProjectForm() {
           aria-invalid={!!errors.name}
         />
         {errors.name ? (
-          <p className="text-xs text-rta-red">{errors.name}</p>
+          <p className="text-xs text-brand-red">{errors.name}</p>
         ) : (
           <p className="text-xs text-slate-500">
             {t.newProject.projectNameHint}
@@ -107,7 +114,7 @@ export function NewProjectForm() {
             name="client_authority_ar"
             dir="rtl"
             lang="ar"
-            placeholder="هيئة الطرق والمواصلات"
+            placeholder="جهة حكومية"
           />
         </div>
 
@@ -130,7 +137,7 @@ export function NewProjectForm() {
             name="counterparty_ar"
             dir="rtl"
             lang="ar"
-            placeholder="سينر للهندسة"
+            placeholder="شركة استشارات"
           />
         </div>
 
@@ -168,13 +175,16 @@ function ThemePreview({ themeId }: { themeId: ThemeId }) {
       initial={false}
       className="rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-4"
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-            Preview
+            {locale === "ar" ? "معاينة" : "Preview"}
           </p>
           <p className="display-tight text-sm font-semibold text-slate-800">
             {locale === "ar" ? theme.name_ar : theme.name_en}
+          </p>
+          <p className="mt-0.5 max-w-[18rem] text-[11px] leading-snug text-slate-500">
+            {locale === "ar" ? theme.description_ar : theme.description_en}
           </p>
         </div>
         <div className="flex items-center gap-1.5">
@@ -195,21 +205,23 @@ function ThemePreview({ themeId }: { themeId: ThemeId }) {
           ))}
         </div>
       </div>
-      <div className="mt-3 flex items-center gap-3 text-xs text-slate-500">
+      <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-slate-500">
         <span className="inline-flex items-center gap-1.5">
           <span className="h-2 w-2 rounded-full bg-status-green" />
-          Green
+          {locale === "ar" ? "أخضر" : "Green"}
         </span>
         <span className="inline-flex items-center gap-1.5">
           <span className="h-2 w-2 rounded-full bg-status-amber" />
-          Amber
+          {locale === "ar" ? "كهرماني" : "Amber"}
         </span>
         <span className="inline-flex items-center gap-1.5">
           <span className="h-2 w-2 rounded-full bg-status-red" />
-          Red
+          {locale === "ar" ? "أحمر" : "Red"}
         </span>
-        <span className={cn("ml-auto text-[10px]")}>
-          Status palette never changes
+        <span className={cn("text-[10px] sm:ms-auto")}>
+          {locale === "ar"
+            ? "ألوان الحالة لا تتغيّر"
+            : "Status palette never changes"}
         </span>
       </div>
     </motion.div>

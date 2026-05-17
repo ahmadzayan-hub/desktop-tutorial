@@ -22,7 +22,7 @@ export function NotFoundView() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="display-tight num mt-10 text-7xl font-bold text-rta-navy sm:text-8xl"
+        className="display-tight num mt-10 text-7xl font-bold text-brand-navy sm:text-8xl"
       >
         404
       </motion.p>

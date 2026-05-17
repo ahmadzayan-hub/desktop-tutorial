@@ -1,11 +1,11 @@
 export type ThemeId =
-  | "rta"
-  | "adnoc"
-  | "aldar"
-  | "etihad-rail"
-  | "dewa"
-  | "dubai-police"
-  | "generic"
+  | "civic"
+  | "petrol"
+  | "sand"
+  | "rail"
+  | "utility"
+  | "guardian"
+  | "slate"
   | "custom";
 
 export interface ThemeBrand {
@@ -26,8 +26,8 @@ export interface ThemeMeta {
   id: ThemeId;
   name_en: string;
   name_ar: string;
-  authority_en: string;
-  authority_ar: string;
+  description_en: string;
+  description_ar: string;
   brand: ThemeBrand;
   status: ThemeStatus;
 }

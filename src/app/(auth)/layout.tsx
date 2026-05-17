@@ -11,7 +11,7 @@ export default function AuthLayout({
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-slate-50">
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-32 left-1/2 h-[480px] w-[480px] -translate-x-1/2 rounded-full bg-rta-navy/10 blur-3xl"
+        className="pointer-events-none absolute -top-32 left-1/2 h-[480px] w-[480px] -translate-x-1/2 rounded-full bg-brand-navy/10 blur-3xl"
       />
       <header className="relative border-b border-slate-200/70 bg-white/70 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">

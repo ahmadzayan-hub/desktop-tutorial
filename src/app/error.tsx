@@ -20,7 +20,7 @@ export default function GlobalError({
     <main className="grid min-h-screen place-items-center bg-slate-50 px-6">
       <div className="max-w-md text-center">
         <Wordmark href="/" size="lg" showTagline className="justify-center" />
-        <p className="display-tight mt-10 text-5xl font-bold text-rta-red sm:text-6xl">
+        <p className="display-tight mt-10 text-5xl font-bold text-brand-red sm:text-6xl">
           Oops
         </p>
         <h1 className="display-tight mt-4 text-2xl font-semibold text-slate-800">

@@ -2,7 +2,7 @@
 
 ## Mission
 
-Convert unstructured UAE government project documents (contracts, monthly reports, BAFOs, meeting minutes, invoices, technical notes) into board-grade bilingual executive dashboards in under 90 seconds, rendered in the v8 RTA SENER design system.
+Convert unstructured project documents (contracts, monthly reports, best-and-final offers, meeting minutes, invoices, technical notes) into board-grade bilingual executive dashboards in under 90 seconds, rendered in a privacy-safe, configurable design system.
 
 ## Stack
 
@@ -22,26 +22,34 @@ src/
 ├── app/
 │   ├── (auth)/sign-in, sign-up
 │   ├── (app)/projects, new, settings
-│   ├── api/ ingest, compose, quality-gate, export
-│   └── layout.tsx, page.tsx
+│   ├── _landing/  landing sections (hero, stats, features, FAQ, pricing, ...)
+│   ├── _legal/    privacy + terms long-form content
+│   ├── pricing, faq, privacy, terms  marketing pages
+│   ├── api/health  monitoring endpoint
+│   ├── opengraph-image.tsx  dynamic OG image
+│   ├── robots.ts, sitemap.ts
+│   └── layout.tsx, page.tsx, not-found.tsx, error.tsx
 ├── components/
-│   ├── ui/             primitives
-│   ├── dashboard/      the 12 section components (Phase 3)
-│   ├── editor/         click-to-edit (Phase 3)
-│   └── brief/          brief form (Phase 3)
+│   ├── ui/         primitives + toast system
+│   ├── motion/     fade, stagger, count-up, pulse-dot
+│   ├── branding/   wordmark, locale toggle
+│   ├── dashboard/  the 12 section components (Phase 3)
+│   ├── editor/     click-to-edit (Phase 3)
+│   └── brief/      brief form (Phase 3)
 ├── lib/
-│   ├── supabase/       client + server wrappers (Phase 2)
-│   ├── anthropic/      API wrapper (Phase 2)
-│   ├── prompts/        the 5 prompt layers (Phase 2-4)
-│   ├── themes/         RTA + 5 authority kits + custom
-│   ├── i18n/           en + ar dictionary
-│   ├── store/          mock store (Phase 1 only)
-│   └── utils/          cn, dates, format
-└── types/              database, facts, sections, themes
+│   ├── supabase/   client + server wrappers (Phase 2)
+│   ├── anthropic/  API wrapper (Phase 2)
+│   ├── prompts/    the 5 prompt layers (Phase 2-4)
+│   ├── themes/     8 generic presets (Civic, Petrol, Sand, Rail,
+│   │               Utility, Guardian, Slate, Custom)
+│   ├── i18n/       native bilingual (en + ar) dictionary + provider
+│   ├── store/      mock store (Phase 1 only)
+│   └── utils/      cn, dates, format
+└── types/          database, facts, sections, themes
 
 supabase/
-├── migrations/         0001_initial_schema.sql (six tables + RLS)
-└── storage/            bucket setup
+├── migrations/     0001_initial_schema.sql (six tables + RLS)
+└── storage/        bucket setup
 ```
 
 ## Database
@@ -94,7 +102,7 @@ R1 traffic-light only · R2 never invent data · R3 bilingual default · R4 RLS 
 
 ## Phase status
 
-- ✅ **Phase 1** Foundation — auth shells, project CRUD against mock store, theme system, migration SQL ready
+- ✅ **Phase 1** Foundation — auth shells, project CRUD, themes, migration SQL, marketing pages (Pricing/FAQ/Privacy/Terms), motion layer, bilingual native UAE Arabic, responsive design, toast system, search/filter
 - ⏳ **Phase 2** Document ingestion — uploader, classifier, six extractors
 - ⏳ **Phase 3** Composition — brief + 12 section components + layout engine
 - ⏳ **Phase 4** Quality gate + exports — Playwright PDF, WhatsApp, Arabic letter

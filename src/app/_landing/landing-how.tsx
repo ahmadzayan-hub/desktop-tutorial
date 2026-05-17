@@ -12,12 +12,12 @@ export function LandingHow() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="mx-auto max-w-2xl text-center">
           <FadeInView>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-rta-red">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-red">
               {t.landing.howEyebrow}
             </p>
           </FadeInView>
           <FadeInView delay={0.1}>
-            <h2 className="display-tight mt-3 text-balance text-3xl font-bold text-rta-navy sm:text-4xl">
+            <h2 className="display-tight mt-3 text-balance text-3xl font-bold text-brand-navy sm:text-4xl">
               {t.landing.howTitle}
             </h2>
           </FadeInView>
@@ -34,12 +34,12 @@ export function LandingHow() {
                 transition={{ type: "spring", stiffness: 280, damping: 18 }}
                 className="group relative h-full overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
               >
-                <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-rta-navy/5 transition-all group-hover:bg-rta-navy/10" />
+                <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-brand-navy/5 transition-all group-hover:bg-brand-navy/10" />
                 <div className="relative">
-                  <span className="display-tight num inline-flex h-9 w-9 items-center justify-center rounded-full bg-rta-navy text-base font-bold text-white">
+                  <span className="display-tight num inline-flex h-9 w-9 items-center justify-center rounded-full bg-brand-navy text-base font-bold text-white">
                     {step.n}
                   </span>
-                  <h3 className="display-tight mt-4 text-base font-semibold text-rta-navy">
+                  <h3 className="display-tight mt-4 text-base font-semibold text-brand-navy">
                     {step.title}
                   </h3>
                   <p className="mt-2 text-sm leading-relaxed text-slate-600">

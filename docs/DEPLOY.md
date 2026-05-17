@@ -56,6 +56,6 @@ Cloudflare DNS record:
 - [ ] All RLS policies tested with two distinct test users
 - [ ] Anthropic key has spend cap configured
 - [ ] Sentry DSN connected
-- [ ] First test project ingested 16 SENER PDFs successfully
+- [ ] First test project ingested representative source PDFs successfully
 - [ ] Quality gate blocks publish when one gate fails
-- [ ] PDF export renders identically to v8 SENER reference
+- [ ] PDF export matches the v1 executive design system reference

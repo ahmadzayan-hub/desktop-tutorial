@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { LocaleProvider } from "@/lib/i18n/locale-provider";
+import { ToastProvider } from "@/components/ui/toast";
 import "./globals.css";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://mutabasir.ae";
@@ -11,18 +12,19 @@ export const metadata: Metadata = {
     template: "%s · Mutabasir",
   },
   description:
-    "From paperwork to board insight in 90 seconds. Mutabasir converts UAE government project documents into bilingual executive dashboards powered by the Basira engine.",
+    "From paperwork to board insight in 90 seconds. Mutabasir turns project documents into bilingual executive dashboards powered by the Basira engine.",
   applicationName: "Mutabasir",
   keywords: [
     "Mutabasir",
     "Basira",
-    "UAE government",
     "executive dashboard",
-    "RTA",
-    "project management",
-    "PMO",
-    "bilingual",
+    "PMO software",
+    "contract management",
+    "tender evaluation",
+    "bilingual dashboard",
     "Arabic dashboard",
+    "board reporting",
+    "AI document intelligence",
   ],
   authors: [{ name: "Eng. Ahmed Zaian" }],
   openGraph: {
@@ -57,7 +59,9 @@ export default function RootLayout({
   return (
     <html lang="en" dir="ltr" suppressHydrationWarning>
       <body className="min-h-screen bg-slate-50 text-slate-900 antialiased">
-        <LocaleProvider>{children}</LocaleProvider>
+        <LocaleProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

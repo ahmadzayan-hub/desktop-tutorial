@@ -35,15 +35,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     className={cn(
                       "relative inline-flex h-9 items-center rounded-md px-3 text-sm font-medium transition-colors",
                       active
-                        ? "text-rta-navy"
-                        : "text-slate-600 hover:text-rta-navy",
+                        ? "text-brand-navy"
+                        : "text-slate-600 hover:text-brand-navy",
                     )}
                   >
                     {item.label}
                     {active && (
                       <motion.span
                         layoutId="nav-active"
-                        className="absolute inset-0 -z-0 rounded-md bg-rta-navy/10"
+                        className="absolute inset-0 -z-0 rounded-md bg-brand-navy/10"
                         transition={{
                           type: "spring",
                           stiffness: 360,
@@ -79,7 +79,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   className={cn(
                     "inline-flex h-10 items-center px-3 text-sm font-medium",
                     active
-                      ? "border-b-2 border-rta-navy text-rta-navy"
+                      ? "border-b-2 border-brand-navy text-brand-navy"
                       : "text-slate-500",
                   )}
                 >
