@@ -6,7 +6,7 @@ import Link from "next/link";
 
 const FAQS = [
   { q: "What is Tweenz AI?", a: "Tweenz AI is a bilingual AI-powered academic operating system designed specifically for MBA students. It combines AI study intelligence with Moodle-style course management to help you answer: 'What should I focus on today to improve my MBA performance?'" },
-  { q: "Who is Tweenz AI for?", a: "Tweenz AI is built for MBA students, particularly those studying online or in bilingual programs in the GCC and MENA region. It supports both English and Arabic interfaces with full RTL layout." },
+  { q: "Who is Tweenz AI for?", a: "Tweenz AI is built for MBA students worldwide, particularly those studying online or in bilingual programs. It is especially suited for Arabic-speaking learners, with full RTL support and professional Arabic academic language built in." },
   { q: "How does the AI Tutor work?", a: "The AI Tutor uses Retrieval-Augmented Generation (RAG) to answer questions based on your uploaded course materials — lecture slides, PDFs, notes — with cited sources, so you always know where the answer came from." },
   { q: "Is my data private?", a: "Yes. Your files and academic data are private to you, protected by row-level security in our database. We never share your data with third parties or use it to train AI models." },
   { q: "What file types can I upload?", a: "You can upload PDF, DOCX, PPTX, and TXT files up to 50MB each. The AI processes them into searchable chunks for the tutor, study packs, flashcards, and quizzes." },

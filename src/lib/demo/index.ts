@@ -51,10 +51,10 @@ export const DEMO_COURSES = [
 ];
 
 export const DEMO_DEADLINES = [
-  { id: "dl-001", user_id: DEMO_USER.id, title: "SWOT Analysis Report", type: "assignment", course_id: "course-001", course_name: "Strategic Management", due_date: d(-3, "T23:59:00.000Z"), risk: "overdue", is_done: false, priority: "high", notes: "Must include competitive analysis for UAE market", created_at: d(-20) },
-  { id: "dl-002", user_id: DEMO_USER.id, title: "Porter's Five Forces Case Study", type: "case_study", course_id: "course-001", course_name: "Strategic Management", due_date: d(2, "T23:59:00.000Z"), risk: "at_risk", is_done: false, priority: "high", notes: "Tesla Motors in the GCC region", created_at: d(-15) },
-  { id: "dl-003", user_id: DEMO_USER.id, title: "Marketing Campaign Proposal", type: "project", course_id: "course-004", course_name: "Digital Marketing", due_date: d(3, "T23:59:00.000Z"), risk: "at_risk", is_done: false, priority: "high", notes: "Social media strategy for Noon.com", created_at: d(-10) },
-  { id: "dl-004", user_id: DEMO_USER.id, title: "Financial Modeling Assignment", type: "assignment", course_id: "course-002", course_name: "Financial Analysis", due_date: d(5, "T23:59:00.000Z"), risk: "due_soon", is_done: false, priority: "medium", notes: "DCF valuation model for a UAE retail company", created_at: d(-12) },
+  { id: "dl-001", user_id: DEMO_USER.id, title: "SWOT Analysis Report", type: "assignment", course_id: "course-001", course_name: "Strategic Management", due_date: d(-3, "T23:59:00.000Z"), risk: "overdue", is_done: false, priority: "high", notes: "Must include competitive analysis for the target market", created_at: d(-20) },
+  { id: "dl-002", user_id: DEMO_USER.id, title: "Porter's Five Forces Case Study", type: "case_study", course_id: "course-001", course_name: "Strategic Management", due_date: d(2, "T23:59:00.000Z"), risk: "at_risk", is_done: false, priority: "high", notes: "Tesla Motors in emerging markets", created_at: d(-15) },
+  { id: "dl-003", user_id: DEMO_USER.id, title: "Marketing Campaign Proposal", type: "project", course_id: "course-004", course_name: "Digital Marketing", due_date: d(3, "T23:59:00.000Z"), risk: "at_risk", is_done: false, priority: "high", notes: "Social media strategy for a leading e-commerce platform", created_at: d(-10) },
+  { id: "dl-004", user_id: DEMO_USER.id, title: "Financial Modeling Assignment", type: "assignment", course_id: "course-002", course_name: "Financial Analysis", due_date: d(5, "T23:59:00.000Z"), risk: "due_soon", is_done: false, priority: "medium", notes: "DCF valuation model for a publicly listed retail company", created_at: d(-12) },
   { id: "dl-005", user_id: DEMO_USER.id, title: "HRM Leadership Essay", type: "essay", course_id: "course-005", course_name: "Leadership & Org Behavior", due_date: d(7, "T23:59:00.000Z"), risk: "due_soon", is_done: false, priority: "medium", notes: "Transformational vs. Transactional leadership (1500 words)", created_at: d(-8) },
   { id: "dl-006", user_id: DEMO_USER.id, title: "Group Project Presentation", type: "presentation", course_id: "course-003", course_name: "Operations & Supply Chain", due_date: d(10, "T14:00:00.000Z"), risk: "safe", is_done: false, priority: "medium", notes: "Supply chain disruption analysis — 15-min slot", created_at: d(-5) },
   { id: "dl-007", user_id: DEMO_USER.id, title: "Mid-term Exam: Financial Analysis", type: "exam", course_id: "course-002", course_name: "Financial Analysis", due_date: d(14, "T10:00:00.000Z"), risk: "safe", is_done: false, priority: "high", notes: "Chapters 1–6, open book, 2 hours", created_at: d(-3) },
@@ -65,7 +65,7 @@ export const DEMO_ANNOUNCEMENTS = [
   {
     id: "ann-001", user_id: DEMO_USER.id, course_id: "course-001", course_name: "Strategic Management",
     title: "Guest Speaker Session Rescheduled",
-    body: "The session with McKinsey partner Abdullah Al-Harbi has been rescheduled from May 8 to May 15. Location: Room B-204. Attendance is mandatory and counts toward your participation grade.",
+    body: "The session with a senior McKinsey partner has been rescheduled from May 8 to May 15. Location: Room B-204. Attendance is mandatory and counts toward your participation grade.",
     source: "email", summary: "McKinsey guest lecture moved from May 8 to May 15 in Room B-204. Mandatory attendance.", required_action: "Update your calendar and confirm attendance via the portal by May 10.", risk_level: "medium", is_archived: false, created_at: d(-1),
   },
   {
@@ -77,7 +77,7 @@ export const DEMO_ANNOUNCEMENTS = [
   {
     id: "ann-003", user_id: DEMO_USER.id, course_id: "course-003", course_name: "Operations & Supply Chain",
     title: "Group Project Deadline Extended",
-    body: "Due to the Emirates National Day holiday, the group project submission deadline has been moved to May 16. The presentation schedule remains unchanged. Please submit your slide deck to the course portal 48 hours before your presentation slot.",
+    body: "Due to the upcoming national holiday, the group project submission deadline has been moved to May 16. The presentation schedule remains unchanged. Please submit your slide deck to the course portal 48 hours before your presentation slot.",
     source: "portal", summary: "Group project submission deadline extended to May 16. Presentations unchanged.", required_action: "Submit slide deck 48 hours before your presentation slot on May 10.", risk_level: "low", is_archived: false, created_at: d(-3),
   },
   {
@@ -92,7 +92,7 @@ export const DEMO_TASKS = [
   { id: "task-001", user_id: DEMO_USER.id, title: "Review Porter's 5 Forces lecture notes", status: "todo", priority: "high", course_id: "course-001", course_name: "Strategic Management", due_date: d(1), created_at: d(-2) },
   { id: "task-002", user_id: DEMO_USER.id, title: "Read Chapter 8 — Financial Statement Analysis", status: "todo", priority: "high", course_id: "course-002", course_name: "Financial Analysis", due_date: d(3), created_at: d(-2) },
   { id: "task-003", user_id: DEMO_USER.id, title: "Schedule group meeting for Operations project", status: "todo", priority: "medium", course_id: "course-003", course_name: "Operations & Supply Chain", due_date: d(2), created_at: d(-1) },
-  { id: "task-004", user_id: DEMO_USER.id, title: "Prepare Case Study slides (Tesla / GCC)", status: "in_progress", priority: "high", course_id: "course-001", course_name: "Strategic Management", due_date: d(2), created_at: d(-3) },
+  { id: "task-004", user_id: DEMO_USER.id, title: "Prepare Case Study slides (Tesla / Emerging Markets)", status: "in_progress", priority: "high", course_id: "course-001", course_name: "Strategic Management", due_date: d(2), created_at: d(-3) },
   { id: "task-005", user_id: DEMO_USER.id, title: "Draft marketing campaign creative brief", status: "in_progress", priority: "high", course_id: "course-004", course_name: "Digital Marketing", due_date: d(3), created_at: d(-2) },
   { id: "task-006", user_id: DEMO_USER.id, title: "Outline DCF model structure", status: "in_progress", priority: "medium", course_id: "course-002", course_name: "Financial Analysis", due_date: d(5), created_at: d(-1) },
   { id: "task-007", user_id: DEMO_USER.id, title: "Submit MGMT 601 reading summary", status: "completed", priority: "low", course_id: "course-001", course_name: "Strategic Management", due_date: d(-7), created_at: d(-10) },
@@ -122,7 +122,7 @@ export const DEMO_STUDY_PACKS = [
     id: "pack-001", user_id: DEMO_USER.id, file_id: "file-001", course_id: "course-001", course_name: "Strategic Management",
     title: "Porter's Five Forces — Complete Guide", topic: "Porter's Five Forces", status: "ready",
     overview: "Porter's Five Forces is a strategic analysis framework developed by Michael Porter (Harvard, 1979) that evaluates competitive intensity and market attractiveness across five dimensions: competitive rivalry, threat of new entrants, bargaining power of buyers, bargaining power of suppliers, and threat of substitutes.",
-    summary: "This pack covers the complete Porter's Five Forces framework applied to real-world MBA case studies. You'll understand how to evaluate industry attractiveness, identify strategic positioning, and apply the model to UAE and GCC market contexts. The framework remains the gold standard for external environmental analysis in MBA programs worldwide.",
+    summary: "This pack covers the complete Porter's Five Forces framework applied to real-world MBA case studies. You'll understand how to evaluate industry attractiveness, identify strategic positioning, and apply the model to international market contexts. The framework remains the gold standard for external environmental analysis in MBA programs worldwide.",
     detailed_notes: "## Porter's Five Forces Framework\n\n### 1. Competitive Rivalry\n- Number of competitors, their size, and diversity\n- Industry growth rate — slow growth = higher rivalry\n- Fixed costs — high fixed costs pressure firms to compete on price\n- **UAE Context**: Telecoms (Etisalat vs. du) shows duopoly rivalry\n\n### 2. Threat of New Entrants\n- Barriers to entry: capital requirements, economies of scale, brand loyalty, regulatory\n- **Key insight**: High barriers = low threat = more attractive industry\n- Saudi Vision 2030 is reducing barriers in many sectors\n\n### 3. Bargaining Power of Buyers\n- Buyer concentration, price sensitivity, switching costs\n- When buyers are powerful, they squeeze margins\n- **Example**: Large UAE government procurement contracts\n\n### 4. Bargaining Power of Suppliers\n- Supplier concentration, uniqueness of input, switching cost\n- OPEC as the ultimate supplier power example\n\n### 5. Threat of Substitutes\n- Price-performance ratio of substitutes\n- **Digital disruption** = biggest source of substitution today\n\n## Applying the Framework\n1. Identify all relevant factors for each force\n2. Rate each force: Low / Medium / High\n3. Aggregate to determine overall industry attractiveness\n4. Link analysis to strategic recommendations",
     key_takeaways: ["Porter's Five Forces provides a systematic way to assess industry attractiveness and competitive dynamics", "The most attractive industries have low rivalry, high entry barriers, weak buyers and suppliers, and few substitutes", "In the GCC context, government regulation and Vision programs significantly alter traditional force assessments", "Always pair Five Forces with internal analysis (VRIO/SWOT) for a complete strategic picture", "The framework is static — use Dynamic Capabilities theory to account for rapid change"],
     glossary: [
@@ -137,7 +137,7 @@ export const DEMO_STUDY_PACKS = [
       { name: "PESTLE Analysis", application: "Provides macro-environmental context that shapes the intensity of each force (e.g., political barriers to entry)" },
       { name: "Value Chain Analysis", application: "Identifies where supplier/buyer power is concentrated along the production process" },
     ],
-    exam_prep_notes: "Focus on: (1) Applying all 5 forces to a given case with evidence, not just listing them. (2) UAE/GCC-specific examples — professor emphasizes regional context. (3) Be able to argue which force is most important in a specific industry. Likely exam question: 'Apply Porter's Five Forces to the UAE aviation industry and recommend a strategic response.'",
+    exam_prep_notes: "Focus on: (1) Applying all 5 forces to a given case with evidence, not just listing them. (2) Industry-specific examples — professor emphasizes real-world context. (3) Be able to argue which force is most important in a specific industry. Likely exam question: 'Apply Porter's Five Forces to the aviation industry and recommend a strategic response.'",
     created_at: d(-13),
   },
   {
@@ -165,9 +165,9 @@ export const DEMO_STUDY_PACKS = [
     id: "pack-003", user_id: DEMO_USER.id, file_id: "file-004", course_id: "course-004", course_name: "Digital Marketing",
     title: "Digital Marketing Strategy Framework", topic: "Digital Marketing & Campaign Strategy", status: "ready",
     overview: "Modern digital marketing integrates paid, owned, and earned media across search, social, email, and content channels to reach target audiences with measurable precision, guided by data analytics and customer journey mapping.",
-    summary: "This pack covers the full digital marketing strategy lifecycle: audience segmentation, channel selection, content strategy, campaign execution, and ROI measurement. Special focus on social media marketing (Instagram, TikTok, LinkedIn) and performance marketing channels relevant to the UAE/GCC market.",
-    detailed_notes: "## Digital Marketing Strategy\n\n### The RACE Framework\n- **Reach**: Build awareness (SEO, paid ads, social)\n- **Act**: Drive interaction (content, landing pages)\n- **Convert**: Turn leads to customers (email, retargeting)\n- **Engage**: Build loyalty (CRM, community)\n\n### UAE Digital Landscape\n- 99% internet penetration\n- Highest Instagram and Twitter usage per capita globally\n- WhatsApp Business critical for B2C\n- TikTok fastest growing in 18–35 demographic\n\n### Campaign Planning\n1. Define SMART objectives\n2. Audience segmentation (demographic, psychographic, behavioral)\n3. Channel mix strategy\n4. Content calendar\n5. KPI dashboard setup\n6. A/B testing plan",
-    key_takeaways: ["UAE has one of the world's highest social media penetration rates — digital-first is mandatory", "RACE framework provides a customer journey structure for campaign planning", "Data-driven decisions: set KPIs before launching any campaign", "Influencer marketing is particularly powerful in UAE — 40% of consumers trust influencer recommendations"],
+    summary: "This pack covers the full digital marketing strategy lifecycle: audience segmentation, channel selection, content strategy, campaign execution, and ROI measurement. Special focus on social media marketing (Instagram, TikTok, LinkedIn) and performance marketing channels relevant to global and regional markets.",
+    detailed_notes: "## Digital Marketing Strategy\n\n### The RACE Framework\n- **Reach**: Build awareness (SEO, paid ads, social)\n- **Act**: Drive interaction (content, landing pages)\n- **Convert**: Turn leads to customers (email, retargeting)\n- **Engage**: Build loyalty (CRM, community)\n\n### Global Digital Landscape\n- Mobile-first consumers dominate across all regions\n- Instagram, TikTok, and LinkedIn are the top professional and consumer platforms globally\n- WhatsApp Business critical for B2C in many markets\n- TikTok fastest growing in 18–35 demographic worldwide\n\n### Campaign Planning\n1. Define SMART objectives\n2. Audience segmentation (demographic, psychographic, behavioral)\n3. Channel mix strategy\n4. Content calendar\n5. KPI dashboard setup\n6. A/B testing plan",
+    key_takeaways: ["Digital-first is mandatory — social media penetration exceeds 90% in many key markets", "RACE framework provides a customer journey structure for campaign planning", "Data-driven decisions: set KPIs before launching any campaign", "Influencer marketing is increasingly powerful globally — consumers trust peer recommendations over brand messaging"],
     glossary: [
       { term: "CTR", definition: "Click-Through Rate — percentage of impressions that result in a click" },
       { term: "ROAS", definition: "Return on Ad Spend — revenue generated per dirham spent on advertising" },
@@ -238,7 +238,7 @@ export const DEMO_WEEKLY_BRIEF = {
   top_priorities: [
     "Submit overdue SWOT Analysis Report to Strategic Management TODAY",
     "Complete Porter's Five Forces Case Study (due May 8) — use Study Pack 1",
-    "Finalize Marketing Campaign Proposal (due May 9) — Noon.com social strategy",
+    "Finalize Marketing Campaign Proposal (due May 9) — e-commerce social strategy",
     "Begin Financial Modeling Assignment (due May 11) — DCF model skeleton",
   ],
   at_risk_items: [
@@ -280,13 +280,13 @@ export const DEMO_MESSAGES = [
     from_role: "instructor",
     to_id: DEMO_USER.id,
     subject: "Re: SWOT Analysis Submission — Late Penalty Waiver",
-    body: "Dear Sara,\n\nThank you for reaching out about your SWOT Analysis. I understand this has been a challenging week. Given your strong performance in the other assignments (78% overall), I am willing to waive 50% of the late penalty if you submit by tomorrow (Thursday, May 7) before 11:59 PM.\n\nPlease make sure the analysis covers:\n1. At least 4 points per quadrant\n2. UAE market context for the chosen company\n3. Strategic recommendations section (minimum 300 words)\n\nBest regards,\nDr. Khalid Al-Rashidi\nStrategic Management — MGMT 601",
+    body: "Dear Sara,\n\nThank you for reaching out about your SWOT Analysis. I understand this has been a challenging week. Given your strong performance in the other assignments (78% overall), I am willing to waive 50% of the late penalty if you submit by tomorrow (Thursday, May 7) before 11:59 PM.\n\nPlease make sure the analysis covers:\n1. At least 4 points per quadrant\n2. Industry and market context for the chosen company\n3. Strategic recommendations section (minimum 300 words)\n\nBest regards,\nDr. Khalid Al-Rashidi\nStrategic Management — MGMT 601",
     read: false,
     course_id: "course-001",
     course_name: "Strategic Management",
     created_at: d(-1, "T08:30:00.000Z"),
-    ai_summary: "Dr. Al-Rashidi agreed to waive 50% of the late penalty if you submit the SWOT Analysis by Thursday May 7 at midnight. He requires 4+ points per SWOT quadrant, UAE market context, and a 300-word strategy section.",
-    ai_reply_suggestion_en: "Dear Dr. Al-Rashidi,\n\nThank you so much for your understanding and for offering the penalty waiver. I truly appreciate your flexibility.\n\nI will submit the complete SWOT Analysis before 11:59 PM on Thursday, May 7. The report will include detailed analysis across all four quadrants with UAE market context and a comprehensive strategic recommendations section.\n\nThank you again for your support.\n\nBest regards,\nSara Al-Mansouri",
+    ai_summary: "Dr. Al-Rashidi agreed to waive 50% of the late penalty if you submit the SWOT Analysis by Thursday May 7 at midnight. He requires 4+ points per SWOT quadrant, market context, and a 300-word strategy section.",
+    ai_reply_suggestion_en: "Dear Dr. Al-Rashidi,\n\nThank you so much for your understanding and for offering the penalty waiver. I truly appreciate your flexibility.\n\nI will submit the complete SWOT Analysis before 11:59 PM on Thursday, May 7. The report will include detailed analysis across all four quadrants with full market context and a comprehensive strategic recommendations section.\n\nThank you again for your support.\n\nBest regards,\nSara Al-Mansouri",
     ai_reply_suggestion_ar: "عزيزي الدكتور خالد،\n\nشكراً جزيلاً على تفهمكم ومرونتكم في منح التمديد. أقدر ذلك كثيراً.\n\nسأقوم بتسليم تحليل SWOT كاملاً قبل الساعة 11:59 مساءً يوم الخميس 7 مايو، متضمناً تحليلاً شاملاً لجميع العناصر الأربعة مع السياق الإماراتي وتوصيات استراتيجية وافية.\n\nشكراً مجدداً على دعمكم.\n\nمع أطيب التحيات،\nسارة المنصوري",
   },
   {
@@ -297,12 +297,12 @@ export const DEMO_MESSAGES = [
     from_role: "instructor",
     to_id: DEMO_USER.id,
     subject: "Financial Analysis Mid-Term — Format Change Notice",
-    body: "Dear Students,\n\nPlease note an important update regarding the upcoming Financial Analysis mid-term exam (May 20).\n\nThe format has been changed from multiple-choice questions to two comprehensive case studies:\n\nCase Study 1 (50 pts): DCF Valuation — you will be given a company's financials and asked to build a complete valuation model.\nCase Study 2 (50 pts): Ratio Analysis — comparative analysis of two UAE-listed companies.\n\nSample case studies are now available on the course portal. Please review the WACC and DCF chapters thoroughly.\n\nBest,\nProf. Layla Hassan\nFinancial Analysis — FIN 502",
+    body: "Dear Students,\n\nPlease note an important update regarding the upcoming Financial Analysis mid-term exam (May 20).\n\nThe format has been changed from multiple-choice questions to two comprehensive case studies:\n\nCase Study 1 (50 pts): DCF Valuation — you will be given a company's financials and asked to build a complete valuation model.\nCase Study 2 (50 pts): Ratio Analysis — comparative analysis of two publicly listed companies.\n\nSample case studies are now available on the course portal. Please review the WACC and DCF chapters thoroughly.\n\nBest,\nProf. Layla Hassan\nFinancial Analysis — FIN 502",
     read: false,
     course_id: "course-002",
     course_name: "Financial Analysis",
     created_at: d(-2, "T14:00:00.000Z"),
-    ai_summary: "The FIN 502 mid-term on May 20 changed format: now 2 case studies instead of MCQ. Case 1 = DCF valuation (50pts), Case 2 = ratio analysis of 2 UAE companies (50pts). Sample cases are on the portal.",
+    ai_summary: "The FIN 502 mid-term on May 20 changed format: now 2 case studies instead of MCQ. Case 1 = DCF valuation (50pts), Case 2 = ratio analysis of 2 publicly listed companies (50pts). Sample cases are on the portal.",
     ai_reply_suggestion_en: "Dear Prof. Hassan,\n\nThank you for the timely notification about the format change. I have noted the two case study structure and will begin reviewing the DCF and WACC chapters immediately.\n\nCould you please clarify whether the DCF case study will include a terminal value calculation, and if we should use the Gordon Growth Model or Exit Multiple approach?\n\nThank you for your guidance.\n\nBest regards,\nSara Al-Mansouri",
     ai_reply_suggestion_ar: "عزيزتي الأستاذة ليلى،\n\nشكراً للإخطار في الوقت المناسب عن تغيير الصيغة. سجّلت هيكل دراستَي الحالة وسأبدأ في مراجعة فصول DCF وWACC فوراً.\n\nهل يمكنكم توضيح ما إذا كانت دراسة الحالة الخاصة بـ DCF ستتضمن حساب القيمة الطرفية؟ وهل نستخدم نموذج نمو Gordon أم مضاعف الخروج؟\n\nشكراً على توجيهاتكم.\n\nمع أطيب التحيات،\nسارة المنصوري",
   },
@@ -331,14 +331,14 @@ export const DEMO_MESSAGES = [
     from_role: "instructor",
     to_id: DEMO_USER.id,
     subject: "Leadership Essay — Feedback on Outline",
-    body: "Dear Sara,\n\nI reviewed the outline you submitted for the Leadership Essay. Overall it is a good start, but I have some suggestions:\n\n1. Strengthen your theoretical framework — consider applying Transformational vs. Transactional Leadership theory to the UAE context\n2. Your case selection is strong (Emirates Group is an excellent example), but add a contrasting company for comparative depth\n3. The conclusion should link back to your personal leadership philosophy\n\nThe essay is due May 13. You are currently at 55% progress in this course — this essay represents 20% of your final grade, so please give it the attention it deserves.\n\nFeel free to visit office hours (Sunday 2-4 PM) if you need further guidance.\n\nBest,\nProf. Omar Shaikh\nLeadership & Org Behavior — HRM 501",
+    body: "Dear Sara,\n\nI reviewed the outline you submitted for the Leadership Essay. Overall it is a good start, but I have some suggestions:\n\n1. Strengthen your theoretical framework — consider applying Transformational vs. Transactional Leadership theory to a real-world corporate context\n2. Your case selection is strong (a major global conglomerate is an excellent example), but add a contrasting company for comparative depth\n3. The conclusion should link back to your personal leadership philosophy\n\nThe essay is due May 13. You are currently at 55% progress in this course — this essay represents 20% of your final grade, so please give it the attention it deserves.\n\nFeel free to visit office hours (Sunday 2-4 PM) if you need further guidance.\n\nBest,\nProf. Omar Shaikh\nLeadership & Org Behavior — HRM 501",
     read: true,
     course_id: "course-005",
     course_name: "Leadership & Org Behavior",
     created_at: d(-3, "T16:00:00.000Z"),
-    ai_summary: "Prof. Shaikh reviewed your Leadership Essay outline and suggested: (1) add Transformational vs. Transactional Leadership theory, (2) add a contrasting UAE company alongside Emirates Group, (3) link conclusion to personal leadership philosophy. Essay is 20% of grade, due May 13.",
-    ai_reply_suggestion_en: "Dear Prof. Shaikh,\n\nThank you for the detailed feedback on my essay outline. Your suggestions are very helpful.\n\nI will incorporate the Transformational vs. Transactional Leadership framework and add Etihad Airways as a contrasting case to Emirates Group for comparative analysis. I will also strengthen the conclusion to reflect my personal leadership philosophy.\n\nI may attend your office hours on Sunday to discuss the theoretical framework further.\n\nThank you for your continued support.\n\nBest regards,\nSara Al-Mansouri",
-    ai_reply_suggestion_ar: "عزيزي الأستاذ عمر،\n\nشكراً جزيلاً على ملاحظاتكم التفصيلية حول مخطط المقالة. اقتراحاتكم مفيدة جداً.\n\nسأدمج إطار القيادة التحويلية مقابل المعاملاتية وسأضيف الاتحاد للطيران كحالة مقارنة مع مجموعة الإمارات. كما سأعزز الخاتمة لتعكس فلسفتي القيادية الشخصية.\n\nقد أحضر ساعات مكتبكم يوم الأحد لمناقشة الإطار النظري.\n\nشكراً على دعمكم المستمر.\n\nمع أطيب التحيات،\nسارة المنصوري",
+    ai_summary: "Prof. Shaikh reviewed your Leadership Essay outline and suggested: (1) add Transformational vs. Transactional Leadership theory, (2) add a contrasting company alongside your primary case, (3) link conclusion to personal leadership philosophy. Essay is 20% of grade, due May 13.",
+    ai_reply_suggestion_en: "Dear Prof. Shaikh,\n\nThank you for the detailed feedback on my essay outline. Your suggestions are very helpful.\n\nI will incorporate the Transformational vs. Transactional Leadership framework and add a competing company as a contrasting case for comparative analysis. I will also strengthen the conclusion to reflect my personal leadership philosophy.\n\nI may attend your office hours on Sunday to discuss the theoretical framework further.\n\nThank you for your continued support.\n\nBest regards,\nSara Al-Mansouri",
+    ai_reply_suggestion_ar: "عزيزي الأستاذ عمر،\n\nشكراً جزيلاً على ملاحظاتكم التفصيلية حول مخطط المقالة. اقتراحاتكم مفيدة جداً.\n\nسأدمج إطار القيادة التحويلية مقابل المعاملاتية وسأضيف شركة منافسة كحالة مقارنة للتحليل المقارن. كما سأعزز الخاتمة لتعكس فلسفتي القيادية الشخصية.\n\nقد أحضر ساعات مكتبكم يوم الأحد لمناقشة الإطار النظري.\n\nشكراً على دعمكم المستمر.\n\nمع أطيب التحيات،\nسارة المنصوري",
   },
 ];
 

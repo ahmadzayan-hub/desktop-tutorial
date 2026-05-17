@@ -25,10 +25,10 @@ const DEMO_SUMMARY = `## Lecture Summary — Porter's Five Forces Analysis
 
 **Key Concepts Covered:**
 1. **Competitive Rivalry** — Intensity of competition among existing firms. In UAE telecoms (Etisalat vs. du), rivalry is high due to market saturation and price sensitivity.
-2. **Threat of New Entrants** — Barriers to entry in UAE aviation are very high (capital requirements, regulatory approvals, slot availability at DXB).
-3. **Bargaining Power of Suppliers** — Boeing and Airbus duopoly gives suppliers strong leverage over airlines. Emirates manages this via long-term contracts and fleet diversity.
+2. **Threat of New Entrants** — Barriers to entry in aviation are very high (capital requirements, regulatory approvals, slot availability at major hubs).
+3. **Bargaining Power of Suppliers** — Boeing and Airbus duopoly gives suppliers strong leverage over airlines. Leading carriers manage this via long-term contracts and fleet diversity.
 4. **Bargaining Power of Buyers** — In B2C markets, individual buyers have low power; corporate clients (B2B) can negotiate volume discounts.
-5. **Threat of Substitutes** — UAE rail (Etihad Rail) is a moderate substitute for short-haul flights; videoconferencing reduced business travel demand post-COVID.
+5. **Threat of Substitutes** — High-speed rail is a moderate substitute for short-haul flights; videoconferencing reduced business travel demand post-COVID.
 
 **Action Items:**
 - Apply the framework to your SWOT Analysis case company
