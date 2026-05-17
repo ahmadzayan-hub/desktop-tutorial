@@ -1,0 +1,41 @@
+/*
+ * VERTEX RTL stylesheet
+ *
+ * Strategy: use CSS Logical Properties throughout the codebase
+ * (margin-inline-start/end, padding-inline-start/end, inset-inline-start, etc.)
+ * so most layout flips automatically when html[dir="rtl"] is set.
+ *
+ * This file holds the few cases that need explicit handling: directional
+ * icons that should mirror, and number fields that must remain LTR even
+ * inside Arabic content.
+ */
+
+html[dir='rtl'] {
+  text-align: right;
+}
+
+html[dir='rtl'] .mirror-on-rtl {
+  transform: scaleX(-1);
+}
+
+/* Numeric / latin content stays LTR inside Arabic UI */
+.bidi-isolate {
+  unicode-bidi: isolate;
+  direction: ltr;
+}
+
+/* Tabular numbers — used for currency, percent, dates */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sidebar slides from the appropriate side on mobile */
+.sidebar-mobile-enter {
+  transform: translateX(-100%);
+}
+html[dir='rtl'] .sidebar-mobile-enter {
+  transform: translateX(100%);
+}
+.sidebar-mobile-active {
+  transform: translateX(0);
+}
