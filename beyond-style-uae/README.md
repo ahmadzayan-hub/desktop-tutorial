@@ -27,6 +27,41 @@ works standalone.
 | `test` | Vitest unit tests |
 | `db:push` / `db:generate` / `db:studio` | Drizzle Kit |
 
+## Deploy to Vercel (full stack)
+
+The frontend (Vite SPA) and the API (Hono) deploy to the **same Vercel project**.
+`api/[[...route]].ts` mounts the Hono app as a Node.js serverless function, so
+`/api/*` is served on the same origin as the site.
+
+1. **Point Vercel at the subfolder.** Project → Settings → Build & Deployment →
+   **Root Directory** = `beyond-style-uae`. Vercel auto-detects Vite and reads
+   `vercel.json` (output `dist`, SPA rewrite that excludes `/api/`).
+2. **Provision a publicly reachable MySQL** (PlanetScale, Railway, Aiven, etc.)
+   with SSL.
+3. **Set Environment Variables** in Vercel (Production + Preview):
+
+   | Variable | Notes |
+   | --- | --- |
+   | `DATABASE_URL` | `mysql://user:pass@host:3306/db?ssl={"rejectUnauthorized":true}` |
+   | `VITE_CLOUDINARY_CLOUD_NAME` | image CDN |
+   | `VITE_GA4_MEASUREMENT_ID`, `VITE_META_PIXEL_ID` | analytics |
+   | `VITE_FREE_SHIPPING_THRESHOLD` | defaults to 200 |
+   | `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_ACCESS_TOKEN`, `OPS_WHATSAPP_TO` | COD verification (server-only) |
+
+   `VITE_*` vars are inlined into the client bundle at build time; the rest are
+   read by the serverless function at runtime.
+4. **Push the schema + seed** (run locally against the same `DATABASE_URL`):
+   ```bash
+   npm run db:push
+   npm run db:seed
+   ```
+5. **Redeploy.** `/api/health` should return `{"ok":true}` and the storefront
+   renders the seeded catalogue.
+
+> Serverless + MySQL: connections open lazily and the pool is reused across warm
+> invocations. Under heavy cold-start churn consider a serverless-friendly driver
+> (e.g. PlanetScale's HTTP driver) to avoid exhausting connection limits.
+
 ## Architecture
 
 ```
