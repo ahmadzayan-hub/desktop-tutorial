@@ -1,0 +1,189 @@
+import { useEffect, useState } from "react";
+import { adminApi } from "@/lib/api";
+import { productInputSchema } from "@/schemas/product";
+import { formatAED } from "@/lib/utils";
+import type { ProductDTO } from "@/types";
+
+const TOKEN_KEY = "bsu_admin_token";
+const EMPTY = {
+  slug: "",
+  titleEn: "",
+  titleAr: "",
+  descriptionEn: "",
+  descriptionAr: "",
+  priceAed: "",
+  compareAtAed: "",
+  material: "Gold-tone plated",
+  cloudinaryIds: "",
+  stock: "0",
+};
+
+export default function Admin() {
+  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY) ?? "");
+  const [authed, setAuthed] = useState(false);
+  const [products, setProducts] = useState<ProductDTO[]>([]);
+  const [form, setForm] = useState({ ...EMPTY });
+  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  async function load(tok = token) {
+    try {
+      const rows = await adminApi.list(tok);
+      setProducts(rows);
+      setAuthed(true);
+      localStorage.setItem(TOKEN_KEY, tok);
+      setError(null);
+    } catch (e) {
+      setAuthed(false);
+      setError(e instanceof Error && e.message === "unauthorized" ? "Invalid admin token." : "Could not load products.");
+    }
+  }
+
+  useEffect(() => {
+    if (token) void load(token);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function onCreate(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setNotice(null);
+
+    const candidate = {
+      slug: form.slug.trim(),
+      titleEn: form.titleEn.trim(),
+      titleAr: form.titleAr.trim(),
+      descriptionEn: form.descriptionEn.trim(),
+      descriptionAr: form.descriptionAr.trim(),
+      priceAed: Number(form.priceAed),
+      compareAtAed: form.compareAtAed ? Number(form.compareAtAed) : undefined,
+      material: form.material.trim(),
+      cloudinaryIds: form.cloudinaryIds.split(",").map((s) => s.trim()).filter(Boolean),
+      stock: Number(form.stock),
+    };
+
+    const parsed = productInputSchema.safeParse(candidate);
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? "Check the form.");
+      return;
+    }
+
+    try {
+      await adminApi.create(token, parsed.data);
+      setNotice(`Created "${parsed.data.titleEn}".`);
+      setForm({ ...EMPTY });
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Create failed.");
+    }
+  }
+
+  async function toggleActive(p: ProductDTO & { active?: boolean }) {
+    try {
+      // ProductDTO doesn't carry `active`; admin list rows do at runtime.
+      const isActive = (p as { active?: boolean }).active !== false;
+      if (isActive) await adminApi.remove(token, p.id);
+      else await adminApi.update(token, p.id, { active: true });
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Update failed.");
+    }
+  }
+
+  if (!authed) {
+    return (
+      <div className="mx-auto max-w-sm px-4 py-20">
+        <h1 className="mb-4 font-display text-2xl gold-text">Admin</h1>
+        <input
+          type="password"
+          value={token}
+          onChange={(e) => setToken(e.target.value)}
+          placeholder="Admin token"
+          className="w-full rounded-md border border-gold/20 bg-ink px-3 py-2 text-cream"
+        />
+        <button className="gold-cta mt-4 w-full" onClick={() => load(token)}>
+          Sign in
+        </button>
+        {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-10">
+      <h1 className="mb-6 font-display text-2xl gold-text">Product Admin</h1>
+
+      <form onSubmit={onCreate} className="space-y-3 rounded-2xl border border-gold/15 p-5">
+        <h2 className="font-display text-lg text-cream/90">New product</h2>
+        <div className="grid gap-3 md:grid-cols-2">
+          <Input label="Slug (kebab-case)" value={form.slug} onChange={(v) => setForm({ ...form, slug: v })} />
+          <Input label="Material" value={form.material} onChange={(v) => setForm({ ...form, material: v })} />
+          <Input label="Title (EN)" value={form.titleEn} onChange={(v) => setForm({ ...form, titleEn: v })} />
+          <Input label="Title (AR)" value={form.titleAr} onChange={(v) => setForm({ ...form, titleAr: v })} />
+          <Input label="Price (AED)" value={form.priceAed} onChange={(v) => setForm({ ...form, priceAed: v })} type="number" />
+          <Input label="Compare-at (AED, optional)" value={form.compareAtAed} onChange={(v) => setForm({ ...form, compareAtAed: v })} type="number" />
+          <Input label="Stock" value={form.stock} onChange={(v) => setForm({ ...form, stock: v })} type="number" />
+          <Input label="Cloudinary IDs (comma-separated)" value={form.cloudinaryIds} onChange={(v) => setForm({ ...form, cloudinaryIds: v })} />
+        </div>
+        <Input label="Description (EN)" value={form.descriptionEn} onChange={(v) => setForm({ ...form, descriptionEn: v })} />
+        <Input label="Description (AR)" value={form.descriptionAr} onChange={(v) => setForm({ ...form, descriptionAr: v })} />
+        <p className="text-xs text-cream/50">
+          Compliance: terms like "Real Gold" or "18k" are rejected; material must say "plated".
+        </p>
+        {error && <p className="text-sm text-red-400">{error}</p>}
+        {notice && <p className="text-sm text-green-400">{notice}</p>}
+        <button type="submit" className="gold-cta">Create product</button>
+      </form>
+
+      <h2 className="mb-3 mt-8 font-display text-lg text-cream/90">Catalogue ({products.length})</h2>
+      <ul className="space-y-2">
+        {products.map((p) => {
+          const isActive = (p as { active?: boolean }).active !== false;
+          return (
+            <li key={p.id} className="flex items-center gap-3 rounded-xl border border-gold/15 p-3">
+              <div className="flex-1">
+                <p className="text-cream/90">{p.titleEn}</p>
+                <p className="text-xs text-cream/50">
+                  {p.slug} · {formatAED(Number(p.priceAed))} · stock {p.stock}
+                </p>
+              </div>
+              <span className={`text-xs ${isActive ? "text-green-400" : "text-cream/40"}`}>
+                {isActive ? "active" : "inactive"}
+              </span>
+              <button
+                onClick={() => toggleActive(p)}
+                className="rounded-md border border-gold/30 px-3 py-1 text-xs text-gold hover:bg-gold/10"
+              >
+                {isActive ? "Deactivate" : "Activate"}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+function Input({
+  label,
+  value,
+  onChange,
+  type = "text",
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-sm text-cream/70">{label}</span>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full rounded-md border border-gold/20 bg-ink px-3 py-2 text-cream placeholder:text-cream/30"
+      />
+    </label>
+  );
+}

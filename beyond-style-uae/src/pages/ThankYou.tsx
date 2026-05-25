@@ -15,8 +15,8 @@ export default function ThankYou() {
       </h1>
       <p className="mt-3 text-cream/70">
         {locale === "ar"
-          ? "سنتواصل معك عبر واتساب لتأكيد الطلب قبل الشحن."
-          : "We'll reach you on WhatsApp to confirm your order before dispatch."}
+          ? "تم استلام طلبك. لطلبات الدفع عند الاستلام سنؤكد عبر واتساب قبل الشحن."
+          : "Your order is received. For Cash on Delivery, we'll confirm by WhatsApp before dispatch."}
       </p>
       {order && <p className="mt-2 text-xs text-cream/40">Order #{order}</p>}
       <Link to="/" className="gold-cta mt-8 inline-block">

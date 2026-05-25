@@ -50,11 +50,22 @@ export default function Checkout() {
     track("begin_checkout", { value: total, currency: "AED" });
     try {
       const order = await api.createOrder(parsed.data);
+      // Card orders return a Stripe Checkout URL — redirect to capture payment.
+      // The cart is intentionally kept until Stripe confirms (cancel returns here).
+      if (order.checkoutUrl) {
+        window.location.href = order.checkoutUrl;
+        return;
+      }
+      // COD: order is placed (pending WhatsApp verification).
       track("purchase", { transaction_id: order.id, value: total, currency: "AED" });
       clear();
       navigate(`/thank-you?order=${order.id}`);
-    } catch {
-      setError("Could not place the order. Please try again.");
+    } catch (err) {
+      setError(
+        err instanceof Error && err.message === "card_payments_unavailable"
+          ? "Card payments are temporarily unavailable. Please choose Cash on Delivery."
+          : "Could not place the order. Please try again.",
+      );
     } finally {
       setSubmitting(false);
     }

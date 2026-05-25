@@ -64,10 +64,10 @@ export async function createOrder(input: OrderInput): Promise<CreatedOrder> {
   const total = subtotal + shippingAed;
 
   const id = randomUUID();
-  // COD is always unverified at creation. Card payments would flip to
-  // "confirmed" only after a successful gateway capture (not wired here).
+  // COD is unverified until ops confirm by WhatsApp. Card starts at
+  // pending_payment and only flips to confirmed via the Stripe webhook.
   const status: schema.Order["status"] =
-    input.paymentMethod === "cod" ? "pending_verification" : "pending_verification";
+    input.paymentMethod === "cod" ? "pending_verification" : "pending_payment";
 
   const created: CreatedOrder = {
     id,

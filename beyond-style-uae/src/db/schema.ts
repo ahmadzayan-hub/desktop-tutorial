@@ -37,8 +37,11 @@ export const orders = mysqlTable("orders", {
   emirate: varchar("emirate", { length: 60 }).notNull(),
   addressLine: varchar("address_line", { length: 300 }).notNull(),
   paymentMethod: mysqlEnum("payment_method", ["cod", "card"]).notNull(),
-  // COD orders are forced to pending_verification by the payment API
+  // COD orders are forced to pending_verification by the payment API.
+  // Card orders start at pending_payment and flip to confirmed via the
+  // Stripe webhook once checkout.session.completed arrives.
   status: mysqlEnum("status", [
+    "pending_payment",
     "pending_verification",
     "confirmed",
     "dispatched",
@@ -47,6 +50,7 @@ export const orders = mysqlTable("orders", {
   ])
     .notNull()
     .default("pending_verification"),
+  stripeSessionId: varchar("stripe_session_id", { length: 255 }),
   subtotalAed: decimal("subtotal_aed", { precision: 10, scale: 2 }).notNull(),
   shippingAed: decimal("shipping_aed", { precision: 10, scale: 2 }).notNull(),
   totalAed: decimal("total_aed", { precision: 10, scale: 2 }).notNull(),

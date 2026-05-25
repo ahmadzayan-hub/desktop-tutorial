@@ -60,6 +60,26 @@ export const productInputSchema = z
 
 export type ProductInput = z.infer<typeof productInputSchema>;
 
+// Partial schema for admin edits. Text fields stay compliance-checked; if a
+// new material is provided it must still use plated terminology.
+export const productUpdateSchema = z
+  .object({
+    titleEn: compliantText("titleEn"),
+    titleAr: compliantText("titleAr"),
+    descriptionEn: compliantText("descriptionEn"),
+    descriptionAr: compliantText("descriptionAr"),
+    priceAed: z.number().positive(),
+    compareAtAed: z.number().positive().nullable(),
+    material: z.string().refine((m) => m.toLowerCase().includes("plated"), {
+      message: `material must use approved plated terminology, e.g. "${REQUIRED_MATERIAL}".`,
+    }),
+    stock: z.number().int().min(0),
+    active: z.boolean(),
+  })
+  .partial();
+
+export type ProductUpdate = z.infer<typeof productUpdateSchema>;
+
 export const orderInputSchema = z.object({
   customerName: z.string().min(2),
   phone: z.string().regex(/^\+9715\d{8}$/, "phone must be a UAE mobile in E.164 (+9715XXXXXXXX)"),
