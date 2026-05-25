@@ -1,6 +1,17 @@
-export const FREE_SHIPPING_THRESHOLD = Number(
-  import.meta.env.VITE_FREE_SHIPPING_THRESHOLD ?? 200,
-);
+// Isomorphic env read: Vite injects import.meta.env in the browser bundle,
+// while Node/Vercel serverless reads process.env. Guard both so this module
+// is safe to import from the client *and* the API.
+function readThreshold(): number {
+  const viteVal =
+    typeof import.meta !== "undefined"
+      ? import.meta.env?.VITE_FREE_SHIPPING_THRESHOLD
+      : undefined;
+  const nodeVal =
+    typeof process !== "undefined" ? process.env?.VITE_FREE_SHIPPING_THRESHOLD : undefined;
+  return Number(viteVal ?? nodeVal ?? 200);
+}
+
+export const FREE_SHIPPING_THRESHOLD = readThreshold();
 
 export const STANDARD_SHIPPING_AED = 20;
 
