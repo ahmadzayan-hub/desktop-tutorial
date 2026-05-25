@@ -1,8 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { adminApi } from "@/lib/api";
 import { productInputSchema } from "@/schemas/product";
-import { formatAED } from "@/lib/utils";
+import { downloadCsv, formatAED } from "@/lib/utils";
 import type { OrderDTO, OrderStatus, ProductDTO } from "@/types";
+
+const ALL_STATUSES: OrderStatus[] = [
+  "pending_payment",
+  "pending_verification",
+  "confirmed",
+  "dispatched",
+  "delivered",
+  "cancelled",
+];
 
 // Fulfilment buttons available for each order status.
 function nextActions(status: OrderStatus): { label: string; to: OrderStatus; danger?: boolean }[] {
@@ -55,6 +64,40 @@ export default function Admin() {
   const [form, setForm] = useState({ ...EMPTY });
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [orderQuery, setOrderQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<OrderStatus | "all">("all");
+  const [expanded, setExpanded] = useState<string | null>(null);
+
+  const filteredOrders = useMemo(() => {
+    const q = orderQuery.trim().toLowerCase();
+    return orders.filter((o) => {
+      if (statusFilter !== "all" && o.status !== statusFilter) return false;
+      if (!q) return true;
+      return (
+        o.customerName.toLowerCase().includes(q) ||
+        o.phone.toLowerCase().includes(q) ||
+        o.id.toLowerCase().includes(q)
+      );
+    });
+  }, [orders, orderQuery, statusFilter]);
+
+  function exportOrdersCsv() {
+    downloadCsv(
+      `orders-${new Date().toISOString().slice(0, 10)}.csv`,
+      ["id", "created", "customer", "phone", "emirate", "payment", "status", "items", "total_aed"],
+      filteredOrders.map((o) => [
+        o.id,
+        new Date(o.createdAt).toISOString(),
+        o.customerName,
+        o.phone,
+        o.emirate,
+        o.paymentMethod,
+        o.status,
+        o.items.reduce((n, i) => n + i.qty, 0),
+        o.totalAed,
+      ]),
+    );
+  }
 
   async function load(tok = token) {
     try {
@@ -172,47 +215,97 @@ export default function Admin() {
       </div>
 
       {tab === "orders" && (
-        <ul className="space-y-3">
-          {orders.length === 0 && <li className="text-sm text-cream/50">No orders yet.</li>}
-          {orders.map((o) => (
-            <li key={o.id} className="rounded-xl border border-gold/15 p-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <p className="text-cream/90">
-                    {o.customerName}{" "}
-                    <span className="text-xs text-cream/50">· {o.phone} · {o.emirate}</span>
-                  </p>
-                  <p className="text-xs text-cream/50">
-                    {o.paymentMethod.toUpperCase()} · {new Date(o.createdAt).toLocaleString()} ·{" "}
-                    {o.items.reduce((n, i) => n + i.qty, 0)} item(s)
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="gold-text font-semibold">{formatAED(Number(o.totalAed))}</p>
-                  <p className={`text-xs ${STATUS_COLOR[o.status]}`}>{o.status.replace("_", " ")}</p>
-                </div>
-              </div>
-              <p className="mt-2 text-xs text-cream/50">{o.addressLine}</p>
-              {nextActions(o.status).length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {nextActions(o.status).map((a) => (
-                    <button
-                      key={a.to}
-                      onClick={() => setOrderStatus(o.id, a.to)}
-                      className={`rounded-md px-3 py-1 text-xs ${
-                        a.danger
-                          ? "border border-red-400/40 text-red-300 hover:bg-red-400/10"
-                          : "border border-gold/30 text-gold hover:bg-gold/10"
-                      }`}
-                    >
-                      {a.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
+        <>
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <input
+              value={orderQuery}
+              onChange={(e) => setOrderQuery(e.target.value)}
+              placeholder="Search name / phone / id"
+              className="flex-1 rounded-md border border-gold/20 bg-ink px-3 py-2 text-sm text-cream placeholder:text-cream/30"
+            />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as OrderStatus | "all")}
+              className="rounded-md border border-gold/20 bg-ink px-3 py-2 text-sm text-cream"
+            >
+              <option value="all">All statuses</option>
+              {ALL_STATUSES.map((s) => (
+                <option key={s} value={s}>{s.replace("_", " ")}</option>
+              ))}
+            </select>
+            <button
+              onClick={exportOrdersCsv}
+              disabled={filteredOrders.length === 0}
+              className="rounded-md border border-gold/30 px-3 py-2 text-sm text-gold hover:bg-gold/10 disabled:opacity-40"
+            >
+              Export CSV
+            </button>
+          </div>
+
+          <ul className="space-y-3">
+            {filteredOrders.length === 0 && (
+              <li className="text-sm text-cream/50">No matching orders.</li>
+            )}
+            {filteredOrders.map((o) => (
+              <li key={o.id} className="rounded-xl border border-gold/15 p-4">
+                <button
+                  onClick={() => setExpanded(expanded === o.id ? null : o.id)}
+                  className="flex w-full flex-wrap items-center justify-between gap-2 text-start"
+                >
+                  <div>
+                    <p className="text-cream/90">
+                      {o.customerName}{" "}
+                      <span className="text-xs text-cream/50">· {o.phone} · {o.emirate}</span>
+                    </p>
+                    <p className="text-xs text-cream/50">
+                      {o.paymentMethod.toUpperCase()} · {new Date(o.createdAt).toLocaleString()} ·{" "}
+                      {o.items.reduce((n, i) => n + i.qty, 0)} item(s)
+                    </p>
+                  </div>
+                  <div className="text-end">
+                    <p className="gold-text font-semibold">{formatAED(Number(o.totalAed))}</p>
+                    <p className={`text-xs ${STATUS_COLOR[o.status]}`}>{o.status.replace("_", " ")}</p>
+                  </div>
+                </button>
+
+                {expanded === o.id && (
+                  <div className="mt-3 border-t border-white/5 pt-3 text-xs text-cream/60">
+                    <p className="mb-1 text-cream/80">{o.addressLine}</p>
+                    <p className="mb-2 font-mono text-cream/40">{o.id}</p>
+                    <ul className="space-y-1">
+                      {o.items.map((i, idx) => (
+                        <li key={idx} className="flex justify-between">
+                          <span>{i.productId}</span>
+                          <span>
+                            {i.qty} × {formatAED(i.priceAed)}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {nextActions(o.status).length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {nextActions(o.status).map((a) => (
+                      <button
+                        key={a.to}
+                        onClick={() => setOrderStatus(o.id, a.to)}
+                        className={`rounded-md px-3 py-1 text-xs ${
+                          a.danger
+                            ? "border border-red-400/40 text-red-300 hover:bg-red-400/10"
+                            : "border border-gold/30 text-gold hover:bg-gold/10"
+                        }`}
+                      >
+                        {a.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </>
       )}
 
       {tab === "products" && (

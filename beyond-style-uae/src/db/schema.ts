@@ -68,7 +68,18 @@ export const reviews = mysqlTable("reviews", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Append-only trail of admin mutations (who did what, when).
+export const adminAudit = mysqlTable("admin_audit", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  actor: varchar("actor", { length: 120 }).notNull(),
+  action: varchar("action", { length: 80 }).notNull(),
+  target: varchar("target", { length: 120 }),
+  detail: json("detail").$type<Record<string, unknown>>(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export type Product = typeof products.$inferSelect;
 export type Order = typeof orders.$inferSelect;
 export type NewOrder = typeof orders.$inferInsert;
 export type Review = typeof reviews.$inferSelect;
+export type AdminAudit = typeof adminAudit.$inferSelect;

@@ -128,16 +128,32 @@ beyond-style-uae/
 
 ---
 
-## 7. Known gaps / next steps
+## 7. Resolved hardening
 
-- **Auth:** admin is a single shared token — fine for one operator; add real auth
-  + audit logging for a team.
-- **Card capture path** is unverified end-to-end in CI (needs live test key + DB);
-  smoke test covers session creation only.
-- **No inventory decrement** on order placement yet.
-- **Abandoned-cart** currently logs/beacons; wire to an email/WhatsApp sender.
-- **Order admin** could gain detail view, search, and CSV export.
-- **Tests** cover shipping + compliance units; add API integration + E2E coverage.
+- **Admin auth + audit:** multi-token identities (`ADMIN_TOKEN` and/or
+  `ADMIN_TOKENS="name:token,…"`); every mutation is attributed to an actor and
+  written to the `admin_audit` table.
+- **Inventory:** order placement decrements stock atomically (conditional
+  `stock >= qty`, returns `409 out_of_stock` on oversell); cancelling an order
+  restocks it once.
+- **Card path:** fails fast with `503` before reserving stock when Stripe is
+  unconfigured; covered by API integration tests via `app.request`.
+- **Abandoned cart:** the beacon now routes through `sendAbandonedCartNudge`
+  (WhatsApp when a contact is known, else an ops ping; logs as fallback).
+- **Order admin:** search (name/phone/id), status filter, expandable detail,
+  and CSV export.
+- **Tests:** added API integration coverage (auth gate, Zod validation,
+  fail-fast card) alongside the shipping + compliance units (13 total).
+
+## 8. Remaining next steps
+
+- **Real auth:** token-based admin is solid for a small team; a full user system
+  (sessions/SSO, roles) is the next step at scale.
+- **End-to-end card test:** the smoke test covers session creation; a true E2E
+  (place card order → webhook → confirmed) still needs a test DB + Stripe CLI.
+- **Abandoned-cart contact capture:** wire customer email/phone into the beacon
+  to target buyers directly (currently ops-only for anonymous carts).
+- **Audit viewer:** surface `admin_audit` in the admin UI.
 
 ---
 

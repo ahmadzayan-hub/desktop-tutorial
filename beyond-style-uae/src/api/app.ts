@@ -1,7 +1,7 @@
 import { Hono, type MiddlewareHandler } from "hono";
 import { cors } from "hono/cors";
 import { zValidator } from "@hono/zod-validator";
-import { desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray, like, or } from "drizzle-orm";
 import { db, schema } from "@/db";
 import {
   orderInputSchema,
@@ -9,22 +9,26 @@ import {
   productInputSchema,
   productUpdateSchema,
 } from "@/schemas/product";
-import { createOrder } from "@/api/payment";
+import { createOrder, InsufficientStockError, restockOrder } from "@/api/payment";
 import { createCheckoutSession, getStripe, stripeConfigured } from "@/api/stripe";
+import { audit, resolveActor } from "@/api/admin-auth";
+import { sendAbandonedCartNudge } from "@/api/notify";
+
+type Variables = { actor: string };
 
 // Shared Hono app, reused by the local Node server (server.ts) and the
 // Vercel serverless handler (api/[[...route]].ts). Routes keep the /api
 // prefix so the same app matches in both environments.
-export const app = new Hono();
+export const app = new Hono<{ Variables: Variables }>();
 
 app.use("/api/*", cors());
 
-// Simple shared-secret gate for admin routes (x-admin-token header).
-const adminAuth: MiddlewareHandler = async (c, next) => {
-  const token = process.env.ADMIN_TOKEN;
-  if (!token || c.req.header("x-admin-token") !== token) {
-    return c.json({ error: "unauthorized" }, 401);
-  }
+// Resolves the admin actor from x-admin-token (multi-token aware) and stores
+// it on the context so handlers can attribute audit-log entries.
+const adminAuth: MiddlewareHandler<{ Variables: Variables }> = async (c, next) => {
+  const actor = resolveActor(c.req.header("x-admin-token"));
+  if (!actor) return c.json({ error: "unauthorized" }, 401);
+  c.set("actor", actor);
   await next();
 };
 
@@ -50,16 +54,27 @@ app.get("/api/products/:slug", async (c) => {
   return c.json({ product, reviews: productReviews });
 });
 
-// Checkout. COD → pending_verification + WhatsApp. Card → pending_payment
-// plus a hosted Stripe Checkout Session whose URL the client redirects to.
+// Checkout. COD → pending_verification + WhatsApp. Card → pending_payment plus
+// a hosted Stripe Checkout Session whose URL the client redirects to.
 app.post("/api/orders", zValidator("json", orderInputSchema), async (c) => {
   const input = c.req.valid("json");
-  const order = await createOrder(input);
+
+  // Fail fast before reserving stock or creating an order we can't charge.
+  if (input.paymentMethod === "card" && !stripeConfigured()) {
+    return c.json({ error: "card_payments_unavailable" }, 503);
+  }
+
+  let order;
+  try {
+    order = await createOrder(input);
+  } catch (err) {
+    if (err instanceof InsufficientStockError) {
+      return c.json({ error: "out_of_stock", productId: err.productId }, 409);
+    }
+    throw err;
+  }
 
   if (input.paymentMethod === "card") {
-    if (!stripeConfigured()) {
-      return c.json({ error: "card_payments_unavailable" }, 503);
-    }
     const ids = input.items.map((i) => i.productId);
     const products = ids.length
       ? await db.select().from(schema.products).where(inArray(schema.products.id, ids))
@@ -117,19 +132,21 @@ app.post("/api/stripe/webhook", async (c) => {
 // Abandoned-cart recovery beacon (from useAbandonedCart).
 app.post("/api/abandoned-cart", async (c) => {
   const payload = await c.req.json().catch(() => ({}));
-  console.info("[abandoned-cart]", payload);
+  await sendAbandonedCartNudge({
+    items: Number(payload.items ?? 0),
+    subtotal: Number(payload.subtotal ?? 0),
+    contact: typeof payload.contact === "string" ? payload.contact : undefined,
+  });
   return c.json({ queued: true });
 });
 
 // ---- Admin (x-admin-token) ----
 
-// Full catalogue including inactive products.
 app.get("/api/admin/products", adminAuth, async (c) => {
   const rows = await db.select().from(schema.products);
   return c.json(rows);
 });
 
-// Create — Zod compliance rejects misleading gold terms.
 app.post("/api/admin/products", adminAuth, zValidator("json", productInputSchema), async (c) => {
   const input = c.req.valid("json");
   const id = crypto.randomUUID();
@@ -146,10 +163,10 @@ app.post("/api/admin/products", adminAuth, zValidator("json", productInputSchema
     cloudinaryIds: input.cloudinaryIds,
     stock: input.stock,
   });
+  await audit(c.get("actor"), "product.create", id, { slug: input.slug });
   return c.json({ id }, 201);
 });
 
-// Update — partial, compliance-checked.
 app.patch(
   "/api/admin/products/:id",
   adminAuth,
@@ -173,24 +190,45 @@ app.patch(
         ...(u.active !== undefined && { active: u.active }),
       })
       .where(eq(schema.products.id, id));
+    await audit(c.get("actor"), "product.update", id, u);
     return c.json({ id });
   },
 );
 
-// Soft-delete — deactivate so existing orders keep referencing the product.
 app.delete("/api/admin/products/:id", adminAuth, async (c) => {
   const id = c.req.param("id");
   await db.update(schema.products).set({ active: false }).where(eq(schema.products.id, id));
+  await audit(c.get("actor"), "product.deactivate", id);
   return c.json({ id, active: false });
 });
 
-// Orders, newest first.
+// Orders, newest first. Optional ?q= (name/phone/id) and ?status= filters.
 app.get("/api/admin/orders", adminAuth, async (c) => {
-  const rows = await db.select().from(schema.orders).orderBy(desc(schema.orders.createdAt));
+  const q = c.req.query("q")?.trim();
+  const status = c.req.query("status")?.trim();
+
+  const filters = [];
+  if (status) filters.push(eq(schema.orders.status, status as schema.Order["status"]));
+  if (q) {
+    const term = `%${q}%`;
+    filters.push(
+      or(
+        like(schema.orders.customerName, term),
+        like(schema.orders.phone, term),
+        like(schema.orders.id, term),
+      ),
+    );
+  }
+
+  const rows = await db
+    .select()
+    .from(schema.orders)
+    .where(filters.length ? and(...filters) : undefined)
+    .orderBy(desc(schema.orders.createdAt));
   return c.json(rows);
 });
 
-// Fulfilment transition — e.g. COD pending_verification → confirmed → dispatched.
+// Fulfilment transition. Cancelling restocks the reserved inventory once.
 app.patch(
   "/api/admin/orders/:id/status",
   adminAuth,
@@ -198,7 +236,20 @@ app.patch(
   async (c) => {
     const id = c.req.param("id");
     const { status } = c.req.valid("json");
+
+    const [order] = await db
+      .select()
+      .from(schema.orders)
+      .where(eq(schema.orders.id, id))
+      .limit(1);
+    if (!order) return c.json({ error: "not_found" }, 404);
+
+    if (status === "cancelled" && order.status !== "cancelled") {
+      await restockOrder(order.items);
+    }
+
     await db.update(schema.orders).set({ status }).where(eq(schema.orders.id, id));
+    await audit(c.get("actor"), "order.status", id, { from: order.status, to: status });
     return c.json({ id, status });
   },
 );

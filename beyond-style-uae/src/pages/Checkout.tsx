@@ -61,10 +61,13 @@ export default function Checkout() {
       clear();
       navigate(`/thank-you?order=${order.id}`);
     } catch (err) {
+      const code = err instanceof Error ? err.message : "";
       setError(
-        err instanceof Error && err.message === "card_payments_unavailable"
+        code === "card_payments_unavailable"
           ? "Card payments are temporarily unavailable. Please choose Cash on Delivery."
-          : "Could not place the order. Please try again.",
+          : code === "out_of_stock"
+            ? "Sorry, one of your items just sold out. Please adjust your cart."
+            : "Could not place the order. Please try again.",
       );
     } finally {
       setSubmitting(false);

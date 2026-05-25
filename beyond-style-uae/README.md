@@ -79,15 +79,23 @@ Without `STRIPE_SECRET_KEY`, card checkout returns `503` and the UI falls back t
 
 ### Admin
 
-Visit `/admin`, enter `ADMIN_TOKEN`. Two tabs:
+Visit `/admin`, enter a token. Auth accepts a single `ADMIN_TOKEN` (actor
+"admin") and/or `ADMIN_TOKENS="name:token,…"` so a team each get their own token;
+every mutation is recorded in the `admin_audit` table with the actor's name.
 
 - **Products** — create (same Zod compliance rules: "Real Gold"/"18k" rejected),
   activate/deactivate.
-- **Orders** — view all orders newest-first and advance fulfilment:
-  COD `pending_verification → confirmed → dispatched → delivered` (or `cancelled`).
-  Card orders sit at `pending_payment` until the Stripe webhook confirms them.
+- **Orders** — search (name/phone/id), filter by status, expand for line items,
+  export CSV, and advance fulfilment:
+  COD `pending_verification → confirmed → dispatched → delivered` (or `cancelled`,
+  which restocks inventory). Card orders sit at `pending_payment` until the Stripe
+  webhook confirms them.
 
-Endpoints live under `/api/admin/*` behind the `x-admin-token` header.
+Endpoints live under `/api/admin/*` behind the `x-admin-token` header. Inventory
+is decremented atomically at checkout; an oversell returns `409 out_of_stock`.
+
+> Schema changed (added `admin_audit`, order `pending_payment` + `stripeSessionId`)
+> — rerun `npm run db:push` after pulling.
 
 ### Stripe smoke test
 
