@@ -47,6 +47,9 @@ The frontend (Vite SPA) and the API (Hono) deploy to the **same Vercel project**
    | `VITE_GA4_MEASUREMENT_ID`, `VITE_META_PIXEL_ID` | analytics |
    | `VITE_FREE_SHIPPING_THRESHOLD` | defaults to 200 |
    | `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_ACCESS_TOKEN`, `OPS_WHATSAPP_TO` | COD verification (server-only) |
+   | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | card payments (server-only) |
+   | `PUBLIC_BASE_URL` | Stripe success/cancel redirect base (e.g. `https://beyondstyle.ae`) |
+   | `ADMIN_TOKEN` | shared secret for the `/admin` UI + `/api/admin/*` |
 
    `VITE_*` vars are inlined into the client bundle at build time; the rest are
    read by the serverless function at runtime.
@@ -61,6 +64,25 @@ The frontend (Vite SPA) and the API (Hono) deploy to the **same Vercel project**
 > Serverless + MySQL: connections open lazily and the pool is reused across warm
 > invocations. Under heavy cold-start churn consider a serverless-friendly driver
 > (e.g. PlanetScale's HTTP driver) to avoid exhausting connection limits.
+
+### Card payments (Stripe)
+
+Card orders create a **hosted Stripe Checkout Session** (no card data touches our
+servers). Flow: `POST /api/orders` with `paymentMethod: "card"` → order saved as
+`pending_payment` → client redirects to the returned `checkoutUrl` → on success
+Stripe redirects to `/thank-you`, and the webhook confirms the order.
+
+Register the webhook in the Stripe Dashboard pointing at
+`https://<your-domain>/api/stripe/webhook` for the `checkout.session.completed`
+event, then put its signing secret in `STRIPE_WEBHOOK_SECRET`. Currency is AED.
+Without `STRIPE_SECRET_KEY`, card checkout returns `503` and the UI falls back to COD.
+
+### Admin
+
+Visit `/admin`, enter `ADMIN_TOKEN`. You can create products (the form runs the
+same Zod compliance rules — "Real Gold"/"18k" are rejected), and activate/
+deactivate items. Endpoints live under `/api/admin/*` behind the `x-admin-token`
+header.
 
 ## Architecture
 
