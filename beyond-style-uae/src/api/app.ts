@@ -1,10 +1,11 @@
 import { Hono, type MiddlewareHandler } from "hono";
 import { cors } from "hono/cors";
 import { zValidator } from "@hono/zod-validator";
-import { eq, inArray } from "drizzle-orm";
+import { desc, eq, inArray } from "drizzle-orm";
 import { db, schema } from "@/db";
 import {
   orderInputSchema,
+  orderStatusUpdateSchema,
   productInputSchema,
   productUpdateSchema,
 } from "@/schemas/product";
@@ -182,3 +183,22 @@ app.delete("/api/admin/products/:id", adminAuth, async (c) => {
   await db.update(schema.products).set({ active: false }).where(eq(schema.products.id, id));
   return c.json({ id, active: false });
 });
+
+// Orders, newest first.
+app.get("/api/admin/orders", adminAuth, async (c) => {
+  const rows = await db.select().from(schema.orders).orderBy(desc(schema.orders.createdAt));
+  return c.json(rows);
+});
+
+// Fulfilment transition — e.g. COD pending_verification → confirmed → dispatched.
+app.patch(
+  "/api/admin/orders/:id/status",
+  adminAuth,
+  zValidator("json", orderStatusUpdateSchema),
+  async (c) => {
+    const id = c.req.param("id");
+    const { status } = c.req.valid("json");
+    await db.update(schema.orders).set({ status }).where(eq(schema.orders.id, id));
+    return c.json({ id, status });
+  },
+);

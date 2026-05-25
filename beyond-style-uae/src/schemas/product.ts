@@ -106,3 +106,11 @@ export const orderInputSchema = z.object({
 });
 
 export type OrderInput = z.infer<typeof orderInputSchema>;
+
+// Admin order fulfilment transitions. Excludes the pending_* states, which are
+// only set by the system (COD intake / Stripe webhook), never set manually.
+export const orderStatusUpdateSchema = z.object({
+  status: z.enum(["confirmed", "dispatched", "delivered", "cancelled"]),
+});
+
+export type OrderStatusUpdate = z.infer<typeof orderStatusUpdateSchema>;

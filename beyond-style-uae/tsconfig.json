@@ -23,5 +23,5 @@
     },
     "types": ["node", "vite/client"]
   },
-  "include": ["src", "api", "drizzle.config.ts", "vite.config.ts"]
+  "include": ["src", "api", "scripts", "drizzle.config.ts", "vite.config.ts"]
 }

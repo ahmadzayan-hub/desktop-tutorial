@@ -14,7 +14,8 @@
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx src/db/seed.ts",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "stripe:smoke": "tsx scripts/stripe-smoke.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",

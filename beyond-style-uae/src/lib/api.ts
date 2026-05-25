@@ -1,4 +1,4 @@
-import type { ProductDTO, ReviewDTO } from "@/types";
+import type { OrderDTO, OrderStatus, ProductDTO, ReviewDTO } from "@/types";
 import type { OrderInput, ProductInput, ProductUpdate } from "@/schemas/product";
 
 async function json<T>(res: Response): Promise<T> {
@@ -52,4 +52,12 @@ export const adminApi = {
       method: "DELETE",
       headers: { "x-admin-token": token },
     }).then(json<{ id: string; active: boolean }>),
+  listOrders: (token: string) =>
+    fetch("/api/admin/orders", { headers: { "x-admin-token": token } }).then(json<OrderDTO[]>),
+  updateOrderStatus: (token: string, id: string, status: OrderStatus) =>
+    fetch(`/api/admin/orders/${id}/status`, {
+      method: "PATCH",
+      headers: adminHeaders(token),
+      body: JSON.stringify({ status }),
+    }).then(json<{ id: string; status: OrderStatus }>),
 };

@@ -2,7 +2,35 @@ import { useEffect, useState } from "react";
 import { adminApi } from "@/lib/api";
 import { productInputSchema } from "@/schemas/product";
 import { formatAED } from "@/lib/utils";
-import type { ProductDTO } from "@/types";
+import type { OrderDTO, OrderStatus, ProductDTO } from "@/types";
+
+// Fulfilment buttons available for each order status.
+function nextActions(status: OrderStatus): { label: string; to: OrderStatus; danger?: boolean }[] {
+  switch (status) {
+    case "pending_verification":
+      return [
+        { label: "Mark verified", to: "confirmed" },
+        { label: "Cancel", to: "cancelled", danger: true },
+      ];
+    case "pending_payment":
+      return [{ label: "Cancel", to: "cancelled", danger: true }];
+    case "confirmed":
+      return [{ label: "Mark dispatched", to: "dispatched" }];
+    case "dispatched":
+      return [{ label: "Mark delivered", to: "delivered" }];
+    default:
+      return [];
+  }
+}
+
+const STATUS_COLOR: Record<OrderStatus, string> = {
+  pending_payment: "text-amber-400",
+  pending_verification: "text-amber-400",
+  confirmed: "text-sky-400",
+  dispatched: "text-sky-300",
+  delivered: "text-green-400",
+  cancelled: "text-cream/40",
+};
 
 const TOKEN_KEY = "bsu_admin_token";
 const EMPTY = {
@@ -21,21 +49,36 @@ const EMPTY = {
 export default function Admin() {
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY) ?? "");
   const [authed, setAuthed] = useState(false);
+  const [tab, setTab] = useState<"products" | "orders">("products");
   const [products, setProducts] = useState<ProductDTO[]>([]);
+  const [orders, setOrders] = useState<OrderDTO[]>([]);
   const [form, setForm] = useState({ ...EMPTY });
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
   async function load(tok = token) {
     try {
-      const rows = await adminApi.list(tok);
+      const [rows, orderRows] = await Promise.all([
+        adminApi.list(tok),
+        adminApi.listOrders(tok),
+      ]);
       setProducts(rows);
+      setOrders(orderRows);
       setAuthed(true);
       localStorage.setItem(TOKEN_KEY, tok);
       setError(null);
     } catch (e) {
       setAuthed(false);
-      setError(e instanceof Error && e.message === "unauthorized" ? "Invalid admin token." : "Could not load products.");
+      setError(e instanceof Error && e.message === "unauthorized" ? "Invalid admin token." : "Could not load data.");
+    }
+  }
+
+  async function setOrderStatus(id: string, status: OrderStatus) {
+    try {
+      await adminApi.updateOrderStatus(token, id, status);
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Status update failed.");
     }
   }
 
@@ -111,8 +154,69 @@ export default function Admin() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="mb-6 font-display text-2xl gold-text">Product Admin</h1>
+      <h1 className="mb-6 font-display text-2xl gold-text">Admin</h1>
 
+      <div className="mb-6 flex gap-2">
+        {(["products", "orders"] as const).map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className={`rounded-full px-4 py-1.5 text-sm capitalize transition-colors ${
+              tab === t ? "bg-gold-gradient text-ink" : "border border-gold/30 text-cream/70"
+            }`}
+          >
+            {t}
+            {t === "orders" && orders.length > 0 ? ` (${orders.length})` : ""}
+          </button>
+        ))}
+      </div>
+
+      {tab === "orders" && (
+        <ul className="space-y-3">
+          {orders.length === 0 && <li className="text-sm text-cream/50">No orders yet.</li>}
+          {orders.map((o) => (
+            <li key={o.id} className="rounded-xl border border-gold/15 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <p className="text-cream/90">
+                    {o.customerName}{" "}
+                    <span className="text-xs text-cream/50">· {o.phone} · {o.emirate}</span>
+                  </p>
+                  <p className="text-xs text-cream/50">
+                    {o.paymentMethod.toUpperCase()} · {new Date(o.createdAt).toLocaleString()} ·{" "}
+                    {o.items.reduce((n, i) => n + i.qty, 0)} item(s)
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="gold-text font-semibold">{formatAED(Number(o.totalAed))}</p>
+                  <p className={`text-xs ${STATUS_COLOR[o.status]}`}>{o.status.replace("_", " ")}</p>
+                </div>
+              </div>
+              <p className="mt-2 text-xs text-cream/50">{o.addressLine}</p>
+              {nextActions(o.status).length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {nextActions(o.status).map((a) => (
+                    <button
+                      key={a.to}
+                      onClick={() => setOrderStatus(o.id, a.to)}
+                      className={`rounded-md px-3 py-1 text-xs ${
+                        a.danger
+                          ? "border border-red-400/40 text-red-300 hover:bg-red-400/10"
+                          : "border border-gold/30 text-gold hover:bg-gold/10"
+                      }`}
+                    >
+                      {a.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {tab === "products" && (
+        <>
       <form onSubmit={onCreate} className="space-y-3 rounded-2xl border border-gold/15 p-5">
         <h2 className="font-display text-lg text-cream/90">New product</h2>
         <div className="grid gap-3 md:grid-cols-2">
@@ -160,6 +264,8 @@ export default function Admin() {
           );
         })}
       </ul>
+        </>
+      )}
     </div>
   );
 }

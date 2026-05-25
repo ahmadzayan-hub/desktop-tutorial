@@ -23,3 +23,28 @@ export interface ReviewDTO {
   body: string;
   createdAt: string;
 }
+
+export type OrderStatus =
+  | "pending_payment"
+  | "pending_verification"
+  | "confirmed"
+  | "dispatched"
+  | "delivered"
+  | "cancelled";
+
+export interface OrderDTO {
+  id: string;
+  customerName: string;
+  phone: string;
+  emirate: string;
+  addressLine: string;
+  paymentMethod: "cod" | "card";
+  status: OrderStatus;
+  subtotalAed: string;
+  shippingAed: string;
+  totalAed: string;
+  items: { productId: string; qty: number; priceAed: number }[];
+  stripeSessionId: string | null;
+  verificationSentAt: string | null;
+  createdAt: string;
+}

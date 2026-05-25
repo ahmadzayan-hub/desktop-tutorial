@@ -79,10 +79,26 @@ Without `STRIPE_SECRET_KEY`, card checkout returns `503` and the UI falls back t
 
 ### Admin
 
-Visit `/admin`, enter `ADMIN_TOKEN`. You can create products (the form runs the
-same Zod compliance rules — "Real Gold"/"18k" are rejected), and activate/
-deactivate items. Endpoints live under `/api/admin/*` behind the `x-admin-token`
-header.
+Visit `/admin`, enter `ADMIN_TOKEN`. Two tabs:
+
+- **Products** — create (same Zod compliance rules: "Real Gold"/"18k" rejected),
+  activate/deactivate.
+- **Orders** — view all orders newest-first and advance fulfilment:
+  COD `pending_verification → confirmed → dispatched → delivered` (or `cancelled`).
+  Card orders sit at `pending_payment` until the Stripe webhook confirms them.
+
+Endpoints live under `/api/admin/*` behind the `x-admin-token` header.
+
+### Stripe smoke test
+
+Verify card checkout against Stripe **test mode** without touching the DB:
+
+```bash
+STRIPE_SECRET_KEY=sk_test_... npm run stripe:smoke
+```
+
+It calls the real `createCheckoutSession`, refuses non-`sk_test_` keys, and prints a
+Checkout URL you can open and pay with test card `4242 4242 4242 4242`.
 
 ## Architecture
 
