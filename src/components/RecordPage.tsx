@@ -53,7 +53,7 @@ export default async function RecordPage({
               </tr>
             ) : (
               rows.map((row, i) => (
-                <tr key={row.id ?? i} className="border-b border-gray-100">
+                <tr key={(row.id as string) ?? i} className="border-b border-gray-100">
                   {columns.map((c) => (
                     <td key={c.key} className="px-3 py-2 align-top">
                       {format(row[c.key])}

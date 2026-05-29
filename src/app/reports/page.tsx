@@ -1,4 +1,9 @@
-import { fetchKpis } from "@/lib/data";
+import { fetchKpis, fetchRows, formatAed } from "@/lib/data";
+import { DemoBanner, PageHeader, Kpi, SectionTitle } from "@/components/ui";
+import { OrdersBarChart, RevenueAreaChart, FunnelBarChart, TopProductsChart } from "@/components/charts";
+import { revenueByDay, ordersByDay, conversionFunnel, topProducts } from "@/lib/analytics";
+import { buildVatCsv, type OrderForTax } from "@/lib/growth";
+import VatExportButton from "./VatExportButton";
 
 export const dynamic = "force-dynamic";
 
@@ -16,49 +21,93 @@ const WEEKLY_SECTIONS = [
 ];
 
 export default async function ReportsPage() {
-  const { kpis } = await fetchKpis();
-  return (
-    <div className="mx-auto max-w-5xl">
-      <h1 className="mb-1 text-xl font-semibold">Reports &amp; Reviews</h1>
-      <p className="mb-4 text-sm text-gray-500">
-        The improvement loop. Generate the daily review every evening and the weekly review every
-        week — without it, the system repeats mistakes faster.
-      </p>
+  const [{ kpis, demoMode }, ordersRes, convsRes] = await Promise.all([
+    fetchKpis(),
+    fetchRows("orders", { order: "created_at" }),
+    fetchRows("conversations", { order: "created_at" }),
+  ]);
+  const orders = ordersRes.rows as Array<Record<string, unknown> & { created_at: string }>;
+  const conversations = convsRes.rows as Array<Record<string, unknown> & { created_at: string }>;
 
-      <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Snap label="Total leads" v={kpis.totalLeads} />
-        <Snap label="Hot leads" v={kpis.hotLeads} />
-        <Snap label="Paid orders" v={kpis.paidOrders} />
-        <Snap label="Lead → payment" v={`${kpis.leadToPayment}%`} />
+  const revenue = revenueByDay(orders, 30);
+  const ordersTrend = ordersByDay(orders, 30);
+  const funnel = conversionFunnel(conversations, orders);
+  const top = topProducts(orders);
+  const csv = buildVatCsv(
+    orders
+      .filter((o) => o.payment_status === "confirmed")
+      .map((o) => ({
+        id: o.id as string,
+        created_at: o.created_at,
+        product_summary: o.product_summary as string,
+        product_price: Number(o.product_price),
+        delivery_cost: Number(o.delivery_cost),
+        vat_amount: Number(o.vat_amount),
+        total_amount: Number(o.total_amount),
+        payment_status: o.payment_status as string,
+      })) as OrderForTax[]
+  );
+
+  return (
+    <div className="mx-auto max-w-7xl">
+      <PageHeader
+        title="Reports &amp; Reviews"
+        subtitle="The improvement loop. Use the daily review every evening and the weekly review every week — without it, the system repeats mistakes faster."
+        action={<VatExportButton csv={csv} />}
+      />
+      <DemoBanner demoMode={demoMode} />
+
+      <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-5">
+        <Kpi label="Revenue 30d" value={formatAed(kpis.revenueAed30d)} />
+        <Kpi label="Revenue 7d" value={formatAed(kpis.revenueAed7d)} />
+        <Kpi label="Paid orders" value={kpis.paidOrders} />
+        <Kpi label="Lead → payment" value={`${kpis.leadToPayment}%`} />
+        <Kpi label="Open disputes" value={kpis.openDisputes} />
+      </div>
+
+      <div className="mb-4 grid gap-4 lg:grid-cols-3">
+        <div className="card lg:col-span-2">
+          <SectionTitle>Revenue (30 days)</SectionTitle>
+          <RevenueAreaChart data={revenue} />
+        </div>
+        <div className="card">
+          <SectionTitle>Conversion funnel</SectionTitle>
+          <FunnelBarChart data={funnel} />
+        </div>
+      </div>
+
+      <div className="mb-4 grid gap-4 lg:grid-cols-2">
+        <div className="card">
+          <SectionTitle>Orders per day</SectionTitle>
+          <OrdersBarChart data={ordersTrend} />
+        </div>
+        <div className="card">
+          <SectionTitle>Top products (paid)</SectionTitle>
+          <TopProductsChart data={top} />
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="card">
-          <h2 className="mb-2 text-sm font-semibold">Daily operating review (§21)</h2>
+          <SectionTitle>Daily operating review</SectionTitle>
           <ul className="list-disc pl-5 text-sm text-gray-700">
             {DAILY_SECTIONS.map((s) => <li key={s}>{s}</li>)}
           </ul>
           <p className="mt-2 text-xs text-gray-500">
-            Wire the <code>daily_review</code> prompt + the day&apos;s conversations/orders into the
-            AI provider to auto-draft this.
+            Each evening, use this checklist with the day&apos;s conversations. The AI can pre-draft it
+            via the <code>daily_review</code> prompt when configured.
           </p>
         </div>
         <div className="card">
-          <h2 className="mb-2 text-sm font-semibold">Weekly improvement loop (§22)</h2>
+          <SectionTitle>Weekly improvement loop</SectionTitle>
           <ul className="list-disc pl-5 text-sm text-gray-700">
             {WEEKLY_SECTIONS.map((s) => <li key={s}>{s}</li>)}
           </ul>
+          <p className="mt-2 text-xs text-gray-500">
+            Run every Sunday. The VAT-ready CSV above feeds the monthly tax report.
+          </p>
         </div>
       </div>
-    </div>
-  );
-}
-
-function Snap({ label, v }: { label: string; v: number | string }) {
-  return (
-    <div className="card">
-      <div className="text-xl font-semibold">{v}</div>
-      <div className="text-xs text-gray-500">{label}</div>
     </div>
   );
 }
