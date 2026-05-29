@@ -1,41 +1,34 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+// Server-side Supabase client (App Router). Reads auth from cookies.
+import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { env, assertSupabaseEnv } from "@/lib/env";
 
-export function getServerSupabase() {
-  assertSupabaseEnv();
+export function createClient() {
   const cookieStore = cookies();
-  return createServerClient(env.supabaseUrl, env.supabaseAnonKey, {
-    cookies: {
-      get(name: string) {
-        return cookieStore.get(name)?.value;
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // Called from a Server Component — safe to ignore; middleware refreshes.
+          }
+        },
       },
-      set(name: string, value: string, options: CookieOptions) {
-        try {
-          cookieStore.set({ name, value, ...options });
-        } catch {
-          /* called from a Server Component – safe to ignore */
-        }
-      },
-      remove(name: string, options: CookieOptions) {
-        try {
-          cookieStore.set({ name, value: "", ...options });
-        } catch {
-          /* ignore */
-        }
-      }
     }
-  });
+  );
 }
 
-import { createClient } from "@supabase/supabase-js";
-
-/** Service-role client for trusted server work (extension API, internal jobs). */
-export function getServiceSupabase() {
-  if (!env.supabaseServiceKey) {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY not configured");
-  }
-  return createClient(env.supabaseUrl, env.supabaseServiceKey, {
-    auth: { persistSession: false, autoRefreshToken: false }
-  });
+export function hasSupabaseEnv(): boolean {
+  return !!(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
 }

@@ -1,96 +1,112 @@
-# Prompt Orchestrator
+# Beyond Style UAE — Customer Conversion & Order Control Agent
 
-A 100% free, multi-tenant SaaS that turns rough user ideas into polished,
-model-aware prompts. Built on **Next.js + Supabase + Ollama + Vercel** —
-zero hosting, database, and AI fees.
+A **human-approved sales operating console** for Beyond Style UAE
+(BEYOND CONNECT GENERAL TRADING L.L.C). This is **not** an auto-reply bot. It is
+a control tower for UAE social commerce: the agent **drafts** replies and order
+actions, the owner **approves**, the system **tracks**, and the dashboard
+**learns**. Automation comes later — only after the system proves it does not
+make pricing, delivery, stock, or privacy mistakes.
 
-## Features
+> The agent drafts → you approve → the system tracks → the dashboard learns → automation comes later.
 
-- Raw prompt intake with intent detection
-- Rule + LLM gap analysis → clarification questions
-- Multi-step Q&A session state
-- Final prompt reconstruction with rationale
-- Model-specific formatting for ChatGPT, Claude, Copilot, generic
-- Prompt history + versioning
-- Multi-tenant orgs with Postgres Row-Level Security
-- Chrome (Manifest V3) browser extension that injects into ChatGPT, Claude,
-  Copilot, and Gemini
+## Why this shape
 
-## Folder structure
+If you automate too early, you scale mistakes. This MVP scales *discipline*
+instead: every drafted customer reply is forced through a **guardrail engine**
+before an operator can approve and send it.
 
-```
-.
-├── extension/                  Chrome MV3 extension
-│   ├── manifest.json
-│   ├── background.js           service worker
-│   ├── content.js / content.css inject Enhance button
-│   ├── popup.html / popup.js / popup.css
-│   └── options.html / options.js
-├── supabase/
-│   ├── migrations/0001_init.sql full schema + RLS
-│   └── seed.sql                public templates
-├── src/
-│   ├── app/                    Next.js App Router
-│   │   ├── layout.tsx, page.tsx, globals.css
-│   │   ├── login/page.tsx
-│   │   ├── workspace/page.tsx
-│   │   ├── templates/page.tsx
-│   │   ├── history/page.tsx
-│   │   └── api/
-│   │       ├── health/
-│   │       ├── orgs/
-│   │       ├── templates/[id]/
-│   │       ├── sessions/[id]/answers/
-│   │       ├── sessions/[id]/finalize/
-│   │       └── extension/enhance/
-│   ├── components/
-│   │   └── Workspace.tsx
-│   └── lib/
-│       ├── env.ts, types.ts
-│       ├── supabase/{server,browser}.ts
-│       ├── llm/{ollama,prompts}.ts
-│       └── services/{orchestration,clarification,template,formatter,auth}.ts
-├── package.json, tsconfig.json, next.config.mjs
-├── tailwind.config.ts, postcss.config.mjs
-└── docs/
-    ├── API.md
-    └── DEPLOY.md
-```
+## Stack
+
+- **Next.js 14** (App Router) + **TypeScript**
+- **Tailwind CSS**
+- **Supabase** (Postgres + Auth + Storage)
+- **Configurable AI provider wrapper** — OpenAI / Anthropic (Claude) / Gemini /
+  `mock`. No API keys are hard-coded; everything is env-driven.
+- **Vitest** for the guardrail/logic test suite.
 
 ## Quick start
 
 ```bash
-# 1. Install
+cd beyond-style-uae
 npm install
-
-# 2. Configure
-cp .env.example .env.local
-# Fill in NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY,
-# SUPABASE_SERVICE_ROLE_KEY, and OLLAMA_BASE_URL.
-
-# 3. Run Ollama (in another terminal)
-ollama pull llama3
-ollama pull mistral
-ollama pull phi3
-ollama serve
-
-# 4. Apply Supabase schema
-#   psql "$SUPABASE_DB_URL" -f supabase/migrations/0001_init.sql
-# (or paste it into the Supabase SQL editor)
-
-# 5. Start the app
-npm run dev
-# open http://localhost:3000
+cp .env.example .env.local      # fill in Supabase + AI provider
+npm run test                    # 20 guardrail/logic tests
+npm run dev                     # http://localhost:3000
 ```
 
-## Browser extension
+The app runs **before** Supabase is configured (pages show a "connect Supabase"
+hint) and **before** an AI key is set (`AI_PROVIDER=mock` returns placeholder
+analysis so you can see the flow end-to-end).
 
-```bash
-# Chrome → chrome://extensions → Developer mode → "Load unpacked"
-# select the ./extension folder.
-# Then open the extension Options page and set:
-#   API base URL = your Vercel/localhost URL
-#   API key      = the EXTENSION_API_KEY value from .env.local
-```
+### Database
 
-See [docs/API.md](docs/API.md) and [docs/DEPLOY.md](docs/DEPLOY.md).
+In the Supabase SQL editor (or via the CLI), run in order:
+
+1. `supabase/migrations/0001_schema.sql` — all tables + RLS.
+2. `supabase/seed.sql` — default catalogue, offers, couriers, prompts,
+   settings, and the §30 test-scenario conversations.
+
+### Environment
+
+| Var | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase client |
+| `SUPABASE_SERVICE_ROLE_KEY` | server-side privileged writes |
+| `AI_PROVIDER` | `openai` \| `anthropic` \| `gemini` \| `mock` |
+| `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / `GEMINI_API_KEY` | provider keys |
+
+## The control tower (guardrail engine)
+
+`src/lib/guardrails.ts` runs every drafted reply through checks. A **fail**
+blocks the Approve button; a **warn** surfaces a caution; some findings force
+**owner approval**:
+
+| Guard | Rule |
+| --- | --- |
+| Claim (§7) | Blocks "real gold", waterproof, anti-tarnish, etc. without supplier evidence; auto-rewords to safe wording |
+| Privacy (§14) | Detects phone / address / payment data leaking into a reply |
+| Price (§6) | Requires an active, unexpired offer before quoting; price-first |
+| Stock (§8) | Blocks unverified in-stock promises |
+| Delivery (§10) | Blocks same-day-outside-Dubai without courier confirmation |
+| Payment (§9) | No courier dispatch until payment is confirmed |
+| VAT (§6/§9) | Flags missing VAT line when applicable |
+| Arabic name (§4) | Never blind-transliterates; falls back to أستاذة / أستاذ |
+| Length / answered / payment-step (§5/§29) | Keeps replies short, on-point, and converting |
+
+Plus: QC checklist (§11), human-approval matrix (§24), fraud screening (§23),
+and the journey-stage playbook (§16) live in `src/lib/operations.ts`.
+
+## Core flow (acceptance §31, §33)
+
+`/intake` → paste a customer message + known facts (+ optional screenshot) →
+`POST /api/analyze` → structured `AnalysisOutput` JSON + guardrail findings →
+operator reviews badges, copies the (possibly auto-corrected) reply, and
+**Approves to send**.
+
+## Review scorecard
+
+| Area | Where it lives |
+| --- | --- |
+| Customer intake | `/intake` (text + screenshot) |
+| AI analysis (intent/persona/product/risk/next action) | `src/lib/ai/analyze.ts` |
+| Arabic name handling | `src/lib/arabic-names.ts` (tested) |
+| Price / stock / delivery / payment control | `src/lib/guardrails.ts` (tested) |
+| Privacy detection | guardrails + intake pre-check |
+| QC checklist | `src/lib/operations.ts` (tested) |
+| Dashboard (conversion / payment / delivery) | `/` |
+| Daily & weekly improvement loops | `/reports` |
+
+## Tests
+
+`npm run test` covers the §30 business scenarios against the pure logic:
+real-gold claim, privacy leak, unverified stock, same-day Sharjah delivery,
+dispatch-before-payment, VAT math, Arabic name mapping (Rehab→رحاب, Kay kept
+as-is), QC gating, approval matrix, and fraud signals.
+
+## Pages (§26)
+
+Login · Dashboard · New Conversation (intake) · Customer Inbox · Customers ·
+Orders · Inventory · Offers · Payments · Courier Tracking · Suppliers · Reviews ·
+Reports & Reviews · Settings · Prompt Management · Audit Log.
+
+See `DEVELOPER_NOTES.md` for architecture details and `ROADMAP.md` for phases.
