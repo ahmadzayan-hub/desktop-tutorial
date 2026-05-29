@@ -1,17 +1,12 @@
 import { fetchKpis, fetchRows, formatAed } from "@/lib/data";
 import { DemoBanner, PageHeader, Kpi, SectionTitle } from "@/components/ui";
-import { OrdersBarChart, RevenueAreaChart, FunnelBarChart, TopProductsChart } from "@/components/charts";
+import { OrdersBarChart, RevenueAreaChart, FunnelBarChart, TopProductsChart } from "@/components/LazyCharts";
 import { revenueByDay, ordersByDay, conversionFunnel, topProducts } from "@/lib/analytics";
 import { buildVatCsv, type OrderForTax } from "@/lib/growth";
+import { computeDailyMetrics, deterministicNarrative } from "@/lib/daily-review";
 import VatExportButton from "./VatExportButton";
 
 export const dynamic = "force-dynamic";
-
-const DAILY_SECTIONS = [
-  "What went well", "What failed", "Lost sales reasons", "Pricing issues",
-  "Delivery issues", "Payment issues", "Stock issues", "Customer objections",
-  "Template improvements", "Product photo improvements", "Next-day action plan",
-];
 
 const WEEKLY_SECTIONS = [
   "Best selling products", "Best selling colours", "Best converting scripts",
@@ -33,6 +28,8 @@ export default async function ReportsPage() {
   const ordersTrend = ordersByDay(orders, 30);
   const funnel = conversionFunnel(conversations, orders);
   const top = topProducts(orders);
+  const metrics = computeDailyMetrics(orders, conversations);
+  const narrative = deterministicNarrative(metrics);
   const csv = buildVatCsv(
     orders
       .filter((o) => o.payment_status === "confirmed")
@@ -89,13 +86,25 @@ export default async function ReportsPage() {
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="card">
-          <SectionTitle>Daily operating review</SectionTitle>
-          <ul className="list-disc pl-5 text-sm text-gray-700">
-            {DAILY_SECTIONS.map((s) => <li key={s}>{s}</li>)}
-          </ul>
+          <SectionTitle action={<span className="muted text-xs">today, live</span>}>
+            Daily operating review
+          </SectionTitle>
+          <dl className="mb-3 grid grid-cols-2 gap-2 text-sm">
+            <Stat k="Conversations" v={metrics.todayConversations} />
+            <Stat k="Hot leads" v={metrics.todayHotLeads} />
+            <Stat k="Orders" v={metrics.todayOrders} />
+            <Stat k="Paid (AED)" v={formatAed(metrics.todayPaidAed)} />
+            <Stat k="Pending (AED)" v={formatAed(metrics.todayPendingAed)} />
+            <Stat k="Avg order (AED)" v={formatAed(metrics.avgOrderAed)} />
+            <Stat k="Conversion" v={`${metrics.conversionPercent}%`} />
+            <Stat k="Complaints" v={metrics.todayComplaints} />
+          </dl>
+          <h3 className="h2 mt-3 mb-1">Narrative — English</h3>
+          <pre className="whitespace-pre-wrap rounded-xl bg-gray-50 p-3 text-sm">{narrative.en}</pre>
+          <h3 className="h2 mt-3 mb-1">السرد — العربية</h3>
+          <pre className="rtl whitespace-pre-wrap rounded-xl bg-gray-50 p-3 text-sm" dir="rtl">{narrative.ar}</pre>
           <p className="mt-2 text-xs text-gray-500">
-            Each evening, use this checklist with the day&apos;s conversations. The AI can pre-draft it
-            via the <code>daily_review</code> prompt when configured.
+            Wire your AI provider (Settings) to polish this narrative every evening from the day&apos;s conversations.
           </p>
         </div>
         <div className="card">
@@ -108,6 +117,15 @@ export default async function ReportsPage() {
           </p>
         </div>
       </div>
+    </div>
+  );
+}
+
+function Stat({ k, v }: { k: string; v: string | number }) {
+  return (
+    <div className="rounded-lg bg-gray-50 px-3 py-2">
+      <div className="text-[10px] uppercase tracking-wide text-gray-400">{k}</div>
+      <div className="text-sm font-semibold">{v}</div>
     </div>
   );
 }

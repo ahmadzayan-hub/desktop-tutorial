@@ -2,7 +2,7 @@ import { fetchKpis, fetchRows, formatAed, formatRelative } from "@/lib/data";
 import { DemoBanner, Kpi, PageHeader, SectionTitle, OrderStatusPill, TempPill } from "@/components/ui";
 import {
   RevenueAreaChart, StackedStatusChart, FunnelBarChart, TopProductsChart, PlatformPie,
-} from "@/components/charts";
+} from "@/components/LazyCharts";
 import {
   revenueByDay, stackedStatusByDay, conversionFunnel, topProducts, platformMix,
   buildAttentionQueue,
