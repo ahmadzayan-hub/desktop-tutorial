@@ -77,12 +77,12 @@ export default function Cart() {
           </span>
           <span>{shipping.qualifies ? t("ship.unlocked") : fmt(shipping.shippingAed)}</span>
         </div>
-        <p className="text-xs text-cream/40">{t("ship.note")}</p>
+        <p className="text-sm text-cream/60">{t("ship.note")}</p>
         <div className="flex justify-between text-lg font-semibold">
           <span>{locale === "ar" ? "الإجمالي" : "Total"}</span>
           <span className="gold-text">{fmt(total)}</span>
         </div>
-        <p className="text-xs text-cream/40">{t("pay.note")}</p>
+        <p className="text-sm text-cream/60">{t("pay.note")}</p>
       </div>
 
       <Link to="/checkout" className="gold-cta mt-6 block text-center">

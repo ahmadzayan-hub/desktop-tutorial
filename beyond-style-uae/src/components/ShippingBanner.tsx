@@ -10,8 +10,8 @@ export function ShippingBanner() {
   const pct = Math.min(100, (subtotal / (subtotal + shipping.remaining || 1)) * 100);
 
   return (
-    <div className="border-b border-gold/20 bg-ink text-center text-sm">
-      <div className="mx-auto max-w-5xl px-4 py-2">
+    <div className="border-b border-gold/20 bg-ink text-center text-sm md:text-base">
+      <div className="mx-auto max-w-5xl px-4 py-2.5">
         <p className="gold-text font-medium">
           {shipping.qualifies
             ? t("ship.unlocked")

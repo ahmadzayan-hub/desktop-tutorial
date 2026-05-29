@@ -21,8 +21,8 @@ export function Footer() {
       <div className="mx-auto grid max-w-5xl gap-8 px-4 py-10 md:grid-cols-3">
         <div>
           <p className="font-display text-lg gold-text">Beyond Style UAE</p>
-          <p className="mt-2 text-sm">{t("brand.tagline")}</p>
-          <p className="mt-4 text-xs leading-relaxed">
+          <p className="mt-2 text-sm md:text-base">{t("brand.tagline")}</p>
+          <p className="mt-4 text-sm leading-relaxed text-cream/60">
             {t("footer.company")}
             <br />
             {t("footer.license")}
@@ -30,10 +30,10 @@ export function Footer() {
         </div>
 
         <div>
-          <p className="mb-2 text-xs uppercase tracking-wider text-cream/50">
+          <p className="mb-2 text-sm uppercase tracking-wider text-cream/50">
             {locale === "ar" ? "روابط" : "Information"}
           </p>
-          <ul className="space-y-1 text-sm">
+          <ul className="space-y-1.5 text-sm md:text-base">
             {links.map((l) => (
               <li key={l.to}>
                 <Link to={l.to} className="hover:text-gold transition-colors">
@@ -45,23 +45,23 @@ export function Footer() {
         </div>
 
         <div>
-          <p className="mb-2 text-xs uppercase tracking-wider text-cream/50">
+          <p className="mb-2 text-sm uppercase tracking-wider text-cream/50">
             {locale === "ar" ? "تواصل" : "Contact"}
           </p>
           <a
             href={whatsappLink(locale === "ar" ? "مرحباً" : "Hello")}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm hover:text-gold"
+            className="text-base hover:text-gold"
           >
             WhatsApp · {WHATSAPP_DISPLAY}
           </a>
-          <p className="mt-2 text-xs text-cream/50">
+          <p className="mt-2 text-sm text-cream/60">
             {locale === "ar" ? "دبي، الإمارات العربية المتحدة" : "Dubai, United Arab Emirates"}
           </p>
         </div>
       </div>
-      <p className="border-t border-white/5 py-4 text-center text-xs text-cream/40">
+      <p className="border-t border-white/5 py-4 text-center text-sm text-cream/50">
         © {new Date().getFullYear()} Beyond Style UAE
       </p>
     </footer>

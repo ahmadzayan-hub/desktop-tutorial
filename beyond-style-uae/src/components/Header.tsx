@@ -39,7 +39,7 @@ export function Header() {
             <Link to="/cart" className="relative text-cream/90 hover:text-gold transition-colors" aria-label={t("nav.cart")}>
               <ShoppingBag size={20} />
               {count > 0 && (
-                <span className="absolute -end-2 -top-2 grid h-4 min-w-4 place-items-center rounded-full bg-gold-gradient px-1 text-[10px] font-bold text-ink">
+                <span className="absolute -end-2 -top-2 grid h-4 min-w-4 place-items-center rounded-full bg-gold-gradient px-1 text-xs font-bold text-ink">
                   {count}
                 </span>
               )}

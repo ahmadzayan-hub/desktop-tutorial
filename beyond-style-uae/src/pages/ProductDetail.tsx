@@ -118,9 +118,9 @@ export default function ProductDetail() {
             </p>
           )}
 
-          <p className="mt-4 text-cream/75">{description}</p>
-          <p className="mt-2 text-sm text-gold/80">{product.material}</p>
-          <p className="mt-1 text-xs text-cream/50">{t("pay.note")}</p>
+          <p className="mt-4 text-base text-cream/80 leading-relaxed">{description}</p>
+          <p className="mt-3 text-sm text-gold/80">{product.material}</p>
+          <p className="mt-1 text-sm text-cream/55">{t("pay.note")}</p>
 
           <div className="mt-6 hidden gap-3 md:flex">
             <button className="gold-cta flex-1" onClick={() => add(cartItem)}>
@@ -151,7 +151,7 @@ export default function ProductDetail() {
 
 function Badge({ children }: { children: React.ReactNode }) {
   return (
-    <span className="rounded-full border border-gold/30 px-2 py-0.5 text-[10px] text-gold/90">
+    <span className="rounded-full border border-gold/30 px-2 py-0.5 text-xs text-gold/90">
       {children}
     </span>
   );

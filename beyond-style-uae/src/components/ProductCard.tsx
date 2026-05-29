@@ -34,7 +34,7 @@ export function ProductCard({ product }: { product: ProductDTO }) {
             className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
           />
           {offer && (
-            <span className="absolute start-2 top-2 rounded-full bg-gold-gradient px-2 py-0.5 text-[10px] font-semibold text-ink">
+            <span className="absolute start-2 top-2 rounded-full bg-gold-gradient px-2 py-0.5 text-xs font-semibold text-ink">
               {t("cart.pairOffer")}
             </span>
           )}
@@ -56,7 +56,7 @@ export function ProductCard({ product }: { product: ProductDTO }) {
 
 function Badge({ children }: { children: React.ReactNode }) {
   return (
-    <span className="rounded-full border border-gold/30 px-2 py-0.5 text-[10px] text-gold/90">
+    <span className="rounded-full border border-gold/30 px-2 py-0.5 text-xs text-gold/90">
       {children}
     </span>
   );

@@ -33,7 +33,9 @@ export default function Home() {
         <h1 className="font-display text-3xl md:text-5xl">
           <span className="gold-text">{t("hero.title")}</span>
         </h1>
-        <p className="mx-auto mt-3 max-w-xl text-cream/70">{t("hero.subtitle")}</p>
+        <p className="mx-auto mt-4 max-w-xl text-base md:text-lg text-cream/75 leading-relaxed">
+          {t("hero.subtitle")}
+        </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link to="/cart" className="gold-cta">{t("hero.cta.shop")}</Link>
           <a
