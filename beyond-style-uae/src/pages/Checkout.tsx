@@ -96,12 +96,14 @@ export default function Checkout() {
         <Field name="addressLine" label={locale === "ar" ? "العنوان" : "Address"} />
 
         <fieldset className="rounded-xl border border-gold/15 p-4">
-          <legend className="px-2 text-sm text-cream/70">{locale === "ar" ? "طريقة الدفع" : "Payment method"}</legend>
+          <legend className="px-2 text-sm text-cream/70">
+            {locale === "ar" ? "طريقة الدفع" : "Payment method"}
+          </legend>
           <label className="flex items-center gap-2 text-cream/90">
             <input type="radio" name="paymentMethod" value="cod" defaultChecked /> {t("pay.cod")}
           </label>
           <label className="mt-2 flex items-center gap-2 text-cream/90">
-            <input type="radio" name="paymentMethod" value="card" /> {locale === "ar" ? "بطاقة" : "Card"}
+            <input type="radio" name="paymentMethod" value="card" /> {t("pay.card")}
           </label>
           <p className="mt-2 text-xs text-cream/50">
             {locale === "ar"
@@ -109,6 +111,16 @@ export default function Checkout() {
               : "COD orders require WhatsApp confirmation before dispatch."}
           </p>
         </fieldset>
+
+        <label className="flex items-center gap-2 rounded-xl border border-gold/15 p-4 text-sm text-cream/90">
+          <input type="checkbox" name="giftWrap" />
+          {locale === "ar"
+            ? "تغليف هدية — متاح حسب المخزون"
+            : "Gift packaging — available subject to stock"}
+        </label>
+
+        <p className="text-xs text-cream/50">{t("ship.note")}</p>
+        <p className="text-xs text-cream/50">{t("pay.note")}</p>
 
         <div className="space-y-1 border-t border-gold/15 pt-4 text-sm">
           <Row label={t("cart.subtotal")} value={fmt(subtotal)} />
