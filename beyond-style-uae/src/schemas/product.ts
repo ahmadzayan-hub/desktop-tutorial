@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 /**
- * UAE advertising compliance: fashion jewelry is gold-tone *plated*, not
- * solid/hallmarked gold. Marketing copy must never imply precious-metal
- * content. We reject any term that suggests real karat gold and require the
- * approved "Gold-tone plated" phrasing on the material field.
+ * UAE advertising compliance for a fashion-accessory store. We never imply
+ * precious-metal content or unverifiable durability/origin claims. Marketing
+ * copy uses neutral wording — "gold-tone", "silver-tone", "stainless steel",
+ * "fashion accessory" — and material must say "stainless steel" or "plated".
  */
 const FORBIDDEN_PATTERNS: { label: string; re: RegExp }[] = [
   { label: "Real Gold", re: /\breal\s+gold\b/i },
@@ -12,8 +12,15 @@ const FORBIDDEN_PATTERNS: { label: string; re: RegExp }[] = [
   { label: "karat (e.g. 18k/24k)", re: /\b\d{1,2}\s?k(arat)?\b/i },
   { label: "Pure Gold", re: /\bpure\s+gold\b/i },
   { label: "Genuine Gold", re: /\bgenuine\s+gold\b/i },
+  { label: "Real Silver", re: /\breal\s+silver\b/i },
   { label: "Sterling Silver", re: /\bsterling\s+silver\b/i },
   { label: "Hallmarked", re: /\bhallmark(ed)?\b/i },
+  { label: "Anti-tarnish / Tarnish-free", re: /\b(anti[-\s]?tarnish|tarnish[-\s]?(free|proof))\b/i },
+  { label: "Waterproof", re: /\bwaterproof\b/i },
+  { label: "Handmade", re: /\bhand[-\s]?made\b/i },
+  { label: "Premium gold plating", re: /\bpremium\s+gold\s+plating\b/i },
+  { label: "Lifetime colour / guarantee", re: /\b(lifetime|guaranteed)\s+(colou?r|finish|plating|gold|warranty)\b/i },
+  { label: "Luxury jewellery / jewelry", re: /\bluxury\s+(jewell?ery|gold)\b/i },
 ];
 
 function findForbidden(text: string): string | null {
@@ -34,7 +41,11 @@ const compliantText = (field: string) =>
     }
   });
 
-export const REQUIRED_MATERIAL = "Gold-tone plated";
+export const REQUIRED_MATERIAL = "Stainless steel, gold-tone plating";
+
+// The material field must mention either stainless steel or "plated" so it
+// stays factual (a fashion accessory, not implied precious metal).
+const MATERIAL_OK = (m: string) => /stainless\s+steel|plated/i.test(m);
 
 export const productInputSchema = z
   .object({
@@ -49,9 +60,9 @@ export const productInputSchema = z
     cloudinaryIds: z.array(z.string().min(1)).min(1),
     stock: z.number().int().min(0).default(0),
   })
-  .refine((p) => p.material.toLowerCase().includes("plated"), {
+  .refine((p) => MATERIAL_OK(p.material), {
     path: ["material"],
-    message: `material must use approved plated terminology, e.g. "${REQUIRED_MATERIAL}".`,
+    message: `material must say "stainless steel" or "plated", e.g. "${REQUIRED_MATERIAL}".`,
   })
   .refine((p) => !p.compareAtAed || p.compareAtAed > p.priceAed, {
     path: ["compareAtAed"],
@@ -70,8 +81,8 @@ export const productUpdateSchema = z
     descriptionAr: compliantText("descriptionAr"),
     priceAed: z.number().positive(),
     compareAtAed: z.number().positive().nullable(),
-    material: z.string().refine((m) => m.toLowerCase().includes("plated"), {
-      message: `material must use approved plated terminology, e.g. "${REQUIRED_MATERIAL}".`,
+    material: z.string().refine(MATERIAL_OK, {
+      message: `material must say "stainless steel" or "plated", e.g. "${REQUIRED_MATERIAL}".`,
     }),
     stock: z.number().int().min(0),
     active: z.boolean(),

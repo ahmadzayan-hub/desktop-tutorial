@@ -1,8 +1,9 @@
 # Beyond Style UAE — Project Overview
 
-> Luxury bilingual (EN/AR) gold-tone plated fashion jewelry storefront for the UAE.
-> This document is the high-level handoff: what was built, how it fits together,
-> and what's needed to go live. For day-to-day commands see [`README.md`](./README.md).
+> Bilingual (EN/AR) UAE fashion-accessories storefront — gold-tone and
+> silver-tone stainless-steel bracelets (Masha'Allah lettering, hamsa, evil-eye,
+> Cuban link, crystal mesh). Premium-affordable, gift-ready, WhatsApp ordering.
+> For day-to-day commands see [`README.md`](./README.md).
 
 ---
 

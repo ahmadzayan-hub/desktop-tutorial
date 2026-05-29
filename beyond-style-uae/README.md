@@ -1,6 +1,7 @@
 # Beyond Style UAE
 
-Luxury bilingual (EN/AR) gold-tone plated fashion jewelry platform.
+Bilingual (EN/AR) UAE fashion-accessories storefront — gold-tone and silver-tone
+stainless-steel bracelets, gift-ready, WhatsApp ordering.
 
 **Stack:** React 19 · TypeScript · Vite · Tailwind · Framer Motion · Hono · Drizzle ORM · MySQL
 

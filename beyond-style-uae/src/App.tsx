@@ -3,9 +3,19 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
 import { I18nProvider } from "@/lib/i18n";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { WhatsAppFab } from "@/components/WhatsAppFab";
 import { useAbandonedCart } from "@/hooks/useAbandonedCart";
+import {
+  AboutPage,
+  ShippingPage,
+  ReturnsPage,
+  PaymentPage,
+  PrivacyPage,
+  TermsPage,
+  ContactPage,
+} from "@/pages/Policy";
 
-// Route-level code splitting → keeps the initial bundle tiny (<1s loads).
 const Home = lazy(() => import("@/pages/Home"));
 const ProductDetail = lazy(() => import("@/pages/ProductDetail"));
 const Cart = lazy(() => import("@/pages/Cart"));
@@ -30,7 +40,6 @@ function NotFound() {
   );
 }
 
-// Lives inside CartProvider so it can watch the cart for the 20-min timer.
 function AbandonedCartWatcher() {
   useAbandonedCart();
   return null;
@@ -52,13 +61,19 @@ export default function App() {
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/thank-you" element={<ThankYou />} />
                 <Route path="/admin" element={<Admin />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/shipping" element={<ShippingPage />} />
+                <Route path="/returns" element={<ReturnsPage />} />
+                <Route path="/payment-methods" element={<PaymentPage />} />
+                <Route path="/privacy" element={<PrivacyPage />} />
+                <Route path="/terms" element={<TermsPage />} />
+                <Route path="/contact" element={<ContactPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
           </main>
-          <footer className="border-t border-gold/15 py-8 text-center text-xs text-cream/40">
-            © {new Date().getFullYear()} Beyond Style UAE · Gold-tone plated fashion jewelry
-          </footer>
+          <WhatsAppFab />
+          <Footer />
         </BrowserRouter>
       </CartProvider>
     </I18nProvider>

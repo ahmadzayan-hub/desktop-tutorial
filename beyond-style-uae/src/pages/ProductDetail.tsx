@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { MessageCircle } from "lucide-react";
 import { api } from "@/lib/api";
-import { SAMPLE_PRODUCTS, SAMPLE_REVIEWS } from "@/lib/sample-data";
+import { SAMPLE_PRODUCTS, SAMPLE_REVIEWS, PAIR_OFFERS } from "@/lib/sample-data";
 import { cld, cldSrcSet } from "@/lib/cloudinary";
 import { formatAED } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
@@ -12,6 +13,7 @@ import { Reviews } from "@/components/Reviews";
 import { StickyAddToCart } from "@/components/StickyAddToCart";
 import { JsonLd, productJsonLd } from "@/components/JsonLd";
 import { FadeIn } from "@/components/motion";
+import { whatsappLink } from "@/components/WhatsAppFab";
 import type { ProductDTO, ReviewDTO } from "@/types";
 
 export default function ProductDetail() {
@@ -45,6 +47,10 @@ export default function ProductDetail() {
   const title = locale === "ar" ? product.titleAr : product.titleEn;
   const description = locale === "ar" ? product.descriptionAr : product.descriptionEn;
   const price = Number(product.priceAed);
+  const ratingCount = product.ratingCount ?? 0;
+  const ratingAvg = Number(product.ratingAvg ?? 0);
+  const offer = PAIR_OFFERS[product.id];
+
   const cartItem = {
     productId: product.id,
     slug: product.slug,
@@ -53,6 +59,11 @@ export default function ProductDetail() {
     priceAed: price,
     cloudinaryId: product.cloudinaryIds[0],
   };
+
+  const askMessage =
+    locale === "ar"
+      ? `مرحباً، أود الاستفسار عن: ${product.titleAr}`
+      : `Hi, I'd like to ask about: ${product.titleEn}`;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 pb-28 md:pb-10">
@@ -63,8 +74,8 @@ export default function ProductDetail() {
           image: cld(product.cloudinaryIds[0], { width: 1200 }),
           price,
           sku: product.id,
-          ratingValue: Number(product.ratingAvg),
-          reviewCount: product.ratingCount,
+          ratingValue: ratingCount > 0 ? ratingAvg : undefined,
+          reviewCount: ratingCount > 0 ? ratingCount : undefined,
         })}
       />
 
@@ -83,7 +94,14 @@ export default function ProductDetail() {
 
         <FadeIn delay={0.1}>
           <h1 className="font-display text-3xl text-cream">{title}</h1>
-          <div className="mt-2 flex items-baseline gap-3">
+
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            <Badge>{t("badge.new")}</Badge>
+            <Badge>{t("badge.gift")}</Badge>
+            <Badge>{t("badge.uae")}</Badge>
+          </div>
+
+          <div className="mt-4 flex items-baseline gap-3">
             <span className="gold-text text-2xl font-semibold">
               {formatAED(price, locale === "ar" ? "ar-AE" : "en-AE")}
             </span>
@@ -94,13 +112,29 @@ export default function ProductDetail() {
             )}
           </div>
 
+          {offer && (
+            <p className="mt-2 inline-block rounded-full bg-gold/15 px-3 py-1 text-xs text-gold">
+              {t("cart.pairOffer")}
+            </p>
+          )}
+
           <p className="mt-4 text-cream/75">{description}</p>
           <p className="mt-2 text-sm text-gold/80">{product.material}</p>
+          <p className="mt-1 text-xs text-cream/50">{t("pay.note")}</p>
 
-          {/* Inline CTA (desktop); sticky bar handles mobile */}
-          <button className="gold-cta mt-6 hidden w-full md:block" onClick={() => add(cartItem)}>
-            {t("cart.addToCart")}
-          </button>
+          <div className="mt-6 hidden gap-3 md:flex">
+            <button className="gold-cta flex-1" onClick={() => add(cartItem)}>
+              {t("cart.addToCart")}
+            </button>
+            <a
+              href={whatsappLink(askMessage)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-gold/30 px-5 py-3 text-sm text-gold hover:bg-gold/10"
+            >
+              <MessageCircle size={16} /> {t("cart.askWhatsApp")}
+            </a>
+          </div>
 
           <div className="mt-6">
             <JewelryCareBadge />
@@ -108,13 +142,17 @@ export default function ProductDetail() {
         </FadeIn>
       </div>
 
-      <Reviews
-        reviews={reviews}
-        ratingAvg={Number(product.ratingAvg)}
-        ratingCount={product.ratingCount}
-      />
+      <Reviews reviews={reviews} ratingAvg={ratingAvg} ratingCount={ratingCount} />
 
       <StickyAddToCart item={cartItem} price={price} />
     </div>
+  );
+}
+
+function Badge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="rounded-full border border-gold/30 px-2 py-0.5 text-[10px] text-gold/90">
+      {children}
+    </span>
   );
 }

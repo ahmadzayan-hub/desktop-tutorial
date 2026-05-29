@@ -11,25 +11,87 @@ export type Locale = "en" | "ar";
 
 type Dict = Record<string, { en: string; ar: string }>;
 
-// Central bilingual dictionary. Arabic renders in Alexandria via the RTL rule.
+// Bilingual dictionary. Arabic renders in Alexandria via the RTL rule and is
+// written in clean Arabic (no inline English words inside Arabic sentences).
 const DICT: Dict = {
-  "nav.shop": { en: "Shop", ar: "تسوّق" },
+  "brand.tagline": {
+    en: "Elegant fashion accessories and gift-ready pieces in UAE",
+    ar: "إكسسوارات وهدايا أنيقة في الإمارات",
+  },
+  "hero.title": {
+    en: "Elegant accessories, made for everyday and gifting",
+    ar: "إكسسوارات أنيقة للإطلالة اليومية والهدايا",
+  },
+  "hero.subtitle": {
+    en: "Soft Arabic-inspired designs, quick WhatsApp ordering, delivery across the UAE.",
+    ar: "تصاميم عربية ناعمة، طلب سريع عبر واتساب وتوصيل داخل الإمارات.",
+  },
+  "hero.cta.shop": { en: "Shop now", ar: "تسوّقي الآن" },
+  "hero.cta.whatsapp": { en: "Order on WhatsApp", ar: "اطلبي عبر واتساب" },
+
+  "nav.shop": { en: "Shop", ar: "تسوّقي" },
   "nav.cart": { en: "Cart", ar: "السلة" },
+  "nav.about": { en: "About", ar: "من نحن" },
+  "nav.contact": { en: "Contact", ar: "تواصل" },
+
   "cart.empty": { en: "Your cart is empty", ar: "سلتك فارغة" },
-  "cart.subtotal": { en: "Subtotal", ar: "المجموع الفرعي" },
+  "cart.subtotal": { en: "Subtotal", ar: "المجموع" },
   "cart.checkout": { en: "Checkout", ar: "إتمام الطلب" },
-  "cart.addToCart": { en: "Add to Cart", ar: "أضف إلى السلة" },
+  "cart.addToCart": { en: "Add to cart", ar: "أضيفي للسلة" },
+  "cart.askWhatsApp": { en: "Ask on WhatsApp", ar: "اسألي عبر واتساب" },
+  "cart.pairOffer": {
+    en: "2 bracelets for AED 129",
+    ar: "قطعتان بـ ١٢٩ درهماً",
+  },
+
   "ship.unlock": {
-    en: "Add {amount} to unlock Free Delivery",
-    ar: "أضف {amount} للحصول على توصيل مجاني",
+    en: "Add {amount} to unlock free delivery in Dubai",
+    ar: "أضيفي {amount} للحصول على توصيل مجاني داخل دبي",
   },
   "ship.unlocked": {
-    en: "You've unlocked Free Delivery!",
-    ar: "لقد حصلت على توصيل مجاني!",
+    en: "Free delivery in Dubai unlocked",
+    ar: "تم تفعيل التوصيل المجاني داخل دبي",
   },
-  "pdp.care": { en: "Jewelry Care", ar: "العناية بالمجوهرات" },
-  "pdp.reviews": { en: "Customer Reviews", ar: "آراء العملاء" },
+  "ship.note": {
+    en: "Free delivery in Dubai for orders above AED 200. Outside Dubai: shipping calculated by area.",
+    ar: "توصيل مجاني داخل دبي للطلبات فوق ٢٠٠ درهم. خارج دبي: يُحتسب التوصيل حسب المنطقة.",
+  },
+
+  "badge.new": { en: "New arrival", ar: "وصل حديثاً" },
+  "badge.gift": { en: "Gift ready", ar: "جاهز للإهداء" },
+  "badge.uae": { en: "Available in UAE", ar: "متوفر في الإمارات" },
+
+  "pdp.care": { en: "Care instructions", ar: "العناية بالقطعة" },
+  "pdp.care.text": {
+    en: "To keep the piece beautiful, avoid direct contact with water and perfume, and store away from humidity.",
+    ar: "للحفاظ على القطعة، تجنبي الماء والعطور المباشرة واحفظيها بعيداً عن الرطوبة.",
+  },
+  "pdp.reviews": { en: "Customer reviews", ar: "آراء العملاء" },
+  "pdp.reviewsEmpty": {
+    en: "No reviews yet — be the first to review.",
+    ar: "لا توجد تقييمات بعد — كوني أول من تقيّم.",
+  },
+
   "pay.cod": { en: "Cash on Delivery", ar: "الدفع عند الاستلام" },
+  "pay.card": { en: "Card", ar: "بطاقة" },
+  "pay.note": {
+    en: "Prices include VAT where applicable.",
+    ar: "الأسعار تشمل ضريبة القيمة المضافة عند الاقتضاء.",
+  },
+
+  "footer.company": {
+    en: "Beyond Style UAE is operated by BEYOND CONNECT GENERAL TRADING L.L.C",
+    ar: "Beyond Style UAE علامة تابعة لشركة بيوند كونكت للتجارة العامة ذ.م.م",
+  },
+  "footer.license": { en: "Trade License No. 1498624 — Dubai, UAE", ar: "رخصة تجارية رقم 1498624 — دبي، الإمارات" },
+
+  "page.about.title": { en: "About us", ar: "من نحن" },
+  "page.shipping.title": { en: "Shipping policy", ar: "سياسة التوصيل" },
+  "page.returns.title": { en: "Returns & exchange", ar: "الاستبدال والاسترجاع" },
+  "page.payment.title": { en: "Payment methods", ar: "طرق الدفع" },
+  "page.privacy.title": { en: "Privacy policy", ar: "سياسة الخصوصية" },
+  "page.terms.title": { en: "Terms & conditions", ar: "شروط الاستخدام" },
+  "page.contact.title": { en: "Contact us", ar: "تواصل معنا" },
 };
 
 interface I18nValue {
@@ -43,7 +105,7 @@ const I18nContext = createContext<I18nValue | null>(null);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocale] = useState<Locale>(
-    () => (localStorage.getItem("locale") as Locale) || "en",
+    () => (localStorage.getItem("locale") as Locale) || "ar",
   );
 
   const dir = locale === "ar" ? "rtl" : "ltr";

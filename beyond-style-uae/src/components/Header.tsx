@@ -18,23 +18,25 @@ export function Header() {
             <span className="ms-1 text-cream/70 text-sm">UAE</span>
           </Link>
 
-          <nav className="flex items-center gap-5">
-            <Link to="/" className="text-sm text-cream/80 hover:text-gold transition-colors">
+          <nav className="flex items-center gap-4 text-sm">
+            <Link to="/" className="text-cream/80 hover:text-gold transition-colors">
               {t("nav.shop")}
+            </Link>
+            <Link to="/about" className="hidden text-cream/80 hover:text-gold transition-colors sm:inline">
+              {t("nav.about")}
+            </Link>
+            <Link to="/contact" className="hidden text-cream/80 hover:text-gold transition-colors sm:inline">
+              {t("nav.contact")}
             </Link>
             <button
               onClick={() => setLocale(locale === "en" ? "ar" : "en")}
-              className="flex items-center gap-1 text-sm text-cream/80 hover:text-gold transition-colors"
+              className="flex items-center gap-1 text-cream/80 hover:text-gold transition-colors"
               aria-label="Toggle language"
             >
               <Globe size={16} />
               {locale === "en" ? "العربية" : "EN"}
             </button>
-            <Link
-              to="/cart"
-              className="relative text-cream/90 hover:text-gold transition-colors"
-              aria-label={t("nav.cart")}
-            >
+            <Link to="/cart" className="relative text-cream/90 hover:text-gold transition-colors" aria-label={t("nav.cart")}>
               <ShoppingBag size={20} />
               {count > 0 && (
                 <span className="absolute -end-2 -top-2 grid h-4 min-w-4 place-items-center rounded-full bg-gold-gradient px-1 text-[10px] font-bold text-ink">

@@ -6,7 +6,7 @@ import { formatAED } from "@/lib/utils";
 import { cld } from "@/lib/cloudinary";
 
 export default function Cart() {
-  const { items, subtotal, shipping, total, setQty, remove } = useCart();
+  const { items, subtotal, savings, shipping, total, setQty, remove } = useCart();
   const { t, locale } = useI18n();
   const fmt = (n: number) => formatAED(n, locale === "ar" ? "ar-AE" : "en-AE");
 
@@ -65,14 +65,24 @@ export default function Cart() {
           <span className="text-cream/70">{t("cart.subtotal")}</span>
           <span>{fmt(subtotal)}</span>
         </div>
+        {savings > 0 && (
+          <div className="flex justify-between text-gold">
+            <span>{t("cart.pairOffer")}</span>
+            <span>− {fmt(savings)}</span>
+          </div>
+        )}
         <div className="flex justify-between">
-          <span className="text-cream/70">Shipping</span>
+          <span className="text-cream/70">
+            {locale === "ar" ? "التوصيل" : "Shipping"}
+          </span>
           <span>{shipping.qualifies ? t("ship.unlocked") : fmt(shipping.shippingAed)}</span>
         </div>
+        <p className="text-xs text-cream/40">{t("ship.note")}</p>
         <div className="flex justify-between text-lg font-semibold">
-          <span>Total</span>
+          <span>{locale === "ar" ? "الإجمالي" : "Total"}</span>
           <span className="gold-text">{fmt(total)}</span>
         </div>
+        <p className="text-xs text-cream/40">{t("pay.note")}</p>
       </div>
 
       <Link to="/checkout" className="gold-cta mt-6 block text-center">
