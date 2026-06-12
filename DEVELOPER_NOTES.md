@@ -15,8 +15,14 @@ src/
       prompts.ts        # §28 default prompt library (DB-overridable)
       analyze.ts        # §17 pipeline: prompt build → model call → guardrails
     supabase/{client,server}.ts
+    integrations/
+      notebooklm.ts          # Google OAuth 2.0 flow helpers (pure, tested)
+      secure-store.ts        # AES-256-GCM encrypted cookie token store (tested)
+      notebooklm-session.ts  # status + auto-refresh glue (server-only)
   app/
     api/analyze/route.ts   # POST analysis endpoint
+    api/integrations/notebooklm/{authorize,callback,disconnect}/route.ts
+    integrations/          # Connect/disconnect NotebookLM UI
     intake/                # flagship: intake → analysis → approval
     <records pages>        # customers, orders, inventory, offers, ...
     reports/ settings/ prompts/ login/
@@ -26,7 +32,29 @@ supabase/
   migrations/0001_schema.sql   # §27 tables + RLS
   seed.sql                     # catalogue, offers, couriers, prompts, §30 cases
 tests/guardrails.test.ts       # §30 scenarios as unit tests
+tests/notebooklm-oauth.test.ts # OAuth URL/config + token crypto round-trip
 ```
+
+## NotebookLM (Google) OAuth integration
+
+Standard Google OAuth 2.0 authorization-code flow, mirroring the app's
+"no keys in code / works before Supabase" posture:
+
+- **Pure helpers** in `lib/integrations/notebooklm.ts` build the consent URL and
+  exchange/refresh/revoke tokens — no I/O coupling, fully unit-tested.
+- **Tokens are encrypted** (AES-256-GCM) and kept in an httpOnly cookie via
+  `secure-store.ts`, so refresh tokens never touch the browser and no DB table
+  is required to run the flow. Swap `readTokens`/`saveTokens` for a Supabase
+  store later without changing the routes.
+- **CSRF**: `authorize` mints a random `state` (httpOnly cookie); `callback`
+  re-checks it before exchanging the code.
+- **Config** comes only from env (`GOOGLE_OAUTH_CLIENT_ID/SECRET`, optional
+  `GOOGLE_OAUTH_REDIRECT_URI`, `NOTEBOOKLM_OAUTH_SCOPES`,
+  `INTEGRATION_TOKEN_SECRET`). The `/integrations` page degrades to a
+  "not configured" state when these are absent.
+- NotebookLM has no dedicated public API scope yet, so the default scopes are
+  `openid email profile` + Drive read-only (NotebookLM sources live in Drive);
+  override via `NOTEBOOKLM_OAUTH_SCOPES`.
 
 ## Design decisions
 

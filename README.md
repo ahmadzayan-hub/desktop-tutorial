@@ -107,6 +107,15 @@ as-is), QC gating, approval matrix, and fraud signals.
 
 Login · Dashboard · New Conversation (intake) · Customer Inbox · Customers ·
 Orders · Inventory · Offers · Payments · Courier Tracking · Suppliers · Reviews ·
-Reports & Reviews · Settings · Prompt Management · Audit Log.
+Reports & Reviews · Integrations · Settings · Prompt Management · Audit Log.
+
+### Integrations — NotebookLM (Google OAuth)
+
+`/integrations` connects the console to NotebookLM via Google OAuth 2.0
+(authorization-code flow). Set `GOOGLE_OAUTH_CLIENT_ID` / `GOOGLE_OAUTH_CLIENT_SECRET`
+(see `.env.example`), add `<origin>/api/integrations/notebooklm/callback` as an
+authorized redirect URI in Google Cloud Console, then click **Connect**. Tokens
+are AES-256-GCM-encrypted in an httpOnly cookie — no DB required, nothing exposed
+to the browser. The page shows a "not configured" state until the env is set.
 
 See `DEVELOPER_NOTES.md` for architecture details and `ROADMAP.md` for phases.
