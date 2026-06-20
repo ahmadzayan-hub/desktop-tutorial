@@ -24,6 +24,7 @@ const NAV: { href: string; label: string; group: string; icon: string; badgeKey?
   { href: "/suppliers", label: "Suppliers", group: "Records", icon: "⊕" },
   { href: "/reviews", label: "Reviews", group: "Records", icon: "★" },
   { href: "/reports", label: "Reports & Reviews", group: "Insight", icon: "▥" },
+  { href: "/integrations", label: "Integrations", group: "Admin", icon: "⇄" },
   { href: "/settings", label: "Settings", group: "Admin", icon: "⚙" },
   { href: "/prompts", label: "Prompt Management", group: "Admin", icon: "≡" },
   { href: "/audit", label: "Audit Log", group: "Admin", icon: "⌖" },
