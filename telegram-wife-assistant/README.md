@@ -130,10 +130,10 @@ npm start
 
 ```bash
 npm install -g pm2
-pm2 start index.js --name wife-assistant
-pm2 save                 # يحفظ القائمة
-pm2 startup              # يخلّيه يشتغل مع إقلاع الجهاز (نفّذ السطر اللي هيطلعلك)
-pm2 logs wife-assistant  # يتابع اللوجات
+pm2 start ecosystem.config.js   # إعداد جاهز (اسم + إعادة تشغيل تلقائي + لوجات)
+pm2 save                        # يحفظ القائمة
+pm2 startup                     # يخلّيه يشتغل مع إقلاع الجهاز (نفّذ السطر اللي هيطلعلك)
+pm2 logs wife-assistant         # يتابع اللوجات
 pm2 restart wife-assistant
 pm2 stop wife-assistant
 ```
