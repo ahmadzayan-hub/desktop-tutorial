@@ -31,11 +31,15 @@ function getTodaysOccasion() {
 
     if (occ.type === 'fixed') {
       // نتجاهل القيم اللي لسه placeholder.
-      if (occ.date === 'MM-DD') continue;
+      if (!occ.date || occ.date === 'MM-DD') continue;
       if (occ.date === mmdd) return { key, label: occ.label };
     } else if (occ.type === 'manual') {
-      if (occ.date === 'YYYY-MM-DD') continue;
-      if (occ.date === ymd) return { key, label: occ.label };
+      // بنقبل مصفوفة dates[] (سنين متعددة) أو date واحد للتوافق مع القديم.
+      const list = Array.isArray(occ.dates) ? occ.dates : occ.date ? [occ.date] : [];
+      for (const d of list) {
+        if (!d || d === 'YYYY-MM-DD') continue;
+        if (d === ymd) return { key, label: occ.label };
+      }
     }
   }
   return null;

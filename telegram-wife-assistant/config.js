@@ -36,21 +36,45 @@ module.exports = {
   avoidRecentThemeDays: 3,
 
   // ---- المناسبات ----
-  // عيد الجواز وعيد ميلاد الزوجة: تواريخ ثابتة بالميلادي بصيغة MM-DD.
-  // الأعياد الإسلامية: 'manual' — انت تدخّل التاريخ المؤكد كل سنة YYYY-MM-DD.
-  // بما إن الاقتراح بيوصل لك انت بس، فأي خطأ في التاريخ ما بيوصلش لزوجتك.
-  // ما نعتمدش على حساب أعمى للأعياد الإسلامية.
+  // أعياد ثابتة (ميلادي): صيغة MM-DD — تتكرر كل سنة بنفس اليوم.
+  // أعياد إسلامية: 'manual' بمصفوفة dates[] بصيغة YYYY-MM-DD — تتغيّر كل سنة
+  //   حسب رؤية الهلال، فحدّث/أضف السنين بإيدك من تقويم موثوق.
+  // بما إن الاقتراح بيوصل لك انت بس، أي خطأ في التاريخ ما بيوصلش لزوجتك.
+  // ما نعتمدش على حساب أعمى — التواريخ المؤكدة انت بتأكّدها.
   occasions: {
-    // املا التواريخ دي:
-    weddingAnniversary: { type: 'fixed', date: 'MM-DD', label: 'عيد جوازنا' },
-    wifeBirthday: { type: 'fixed', date: 'MM-DD', label: 'عيد ميلاد مراتي' },
+    // ---- أعياد ثابتة (ميلادي) MM-DD ----
+    weddingAnniversary: { type: 'fixed', date: 'MM-DD', label: 'عيد جوازنا' }, // ← املا تاريخك
+    wifeBirthday: { type: 'fixed', date: '08-24', label: 'عيد ميلاد مراتي' }, // 24 أغسطس
+    valentine: { type: 'fixed', date: '02-14', label: 'عيد الحب (الفلانتين)' }, // 14 فبراير (عالمي + مصر)
+    egyptianLoveDay: { type: 'fixed', date: '11-04', label: 'عيد الحب المصري' }, // 4 نوفمبر (عيد الحب في مصر)
 
-    // الأعياد الإسلامية — حدّث الـ YYYY-MM-DD كل سنة من تقويم موثوق:
-    hijriNewYear: { type: 'manual', date: 'YYYY-MM-DD', label: 'رأس السنة الهجرية' },
-    mawlid: { type: 'manual', date: 'YYYY-MM-DD', label: 'المولد النبوي' },
-    ramadanStart: { type: 'manual', date: 'YYYY-MM-DD', label: 'أول رمضان' },
-    eidFitr: { type: 'manual', date: 'YYYY-MM-DD', label: 'عيد الفطر' },
-    eidAdha: { type: 'manual', date: 'YYYY-MM-DD', label: 'عيد الأضحى' },
+    // ---- أعياد إسلامية (manual) — مصر/الإمارات. عرضة لرؤية الهلال ±يوم/يومين ----
+    // التواريخ دي محدّثة لـ 2026-2027. لازم تحدّثها/تزوّدها كل سنة.
+    hijriNewYear: {
+      type: 'manual',
+      dates: ['2027-06-06'], // 1 محرّم 1449 (تقديري — أكّده قرب الموعد)
+      label: 'رأس السنة الهجرية',
+    },
+    mawlid: {
+      type: 'manual',
+      dates: ['2026-08-25', '2027-08-14'], // 2026 مؤكد تقريباً · 2027 تقديري
+      label: 'المولد النبوي',
+    },
+    ramadanStart: {
+      type: 'manual',
+      dates: ['2027-02-08'], // 1 رمضان 1448
+      label: 'أول رمضان',
+    },
+    eidFitr: {
+      type: 'manual',
+      dates: ['2027-03-10'], // عيد الفطر 1448
+      label: 'عيد الفطر',
+    },
+    eidAdha: {
+      type: 'manual',
+      dates: ['2027-05-16'], // عيد الأضحى 1448
+      label: 'عيد الأضحى',
+    },
   },
 
   // ---- عقل الـ AI ----
