@@ -33,6 +33,15 @@
 
 ## التثبيت
 
+أسهل طريقة — سكربت التجهيز (بيعمل كل حاجة ويسألك عن التوكن والمفتاح):
+
+```bash
+cd telegram-wife-assistant
+chmod +x setup.sh && ./setup.sh
+```
+
+أو يدوياً:
+
 ```bash
 cd telegram-wife-assistant
 npm install
