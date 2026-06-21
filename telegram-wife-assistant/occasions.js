@@ -1,0 +1,44 @@
+// =====================================================================
+// occasions.js — تحديد مناسبة النهاردة من config.occasions.
+//
+// نوعين:
+//   - fixed:  تاريخ ثابت بصيغة MM-DD (عيد الجواز / عيد ميلاد الزوجة).
+//   - manual: تاريخ كامل YYYY-MM-DD انت بتدخّله كل سنة (الأعياد الإسلامية).
+//             ما نعتمدش على حساب أعمى — انت بتأكّد التاريخ.
+//
+// بما إن الاقتراح بيوصل لك انت بس، أي خطأ في التاريخ ما بيوصلش لزوجتك.
+// =====================================================================
+
+const config = require('./config');
+
+// تاريخ النهاردة بتوقيت الإعدادات.
+function todayParts() {
+  const ymd = new Date().toLocaleDateString('en-CA', { timeZone: config.timezone });
+  // en-CA بيدّي YYYY-MM-DD.
+  const [y, m, d] = ymd.split('-');
+  return { ymd, mmdd: `${m}-${d}` };
+}
+
+/**
+ * getTodaysOccasion — يرجّع مناسبة النهاردة لو فيه، وإلا null.
+ * @returns {{ key:string, label:string } | null}
+ */
+function getTodaysOccasion() {
+  const { ymd, mmdd } = todayParts();
+
+  for (const [key, occ] of Object.entries(config.occasions)) {
+    if (!occ || !occ.date) continue;
+
+    if (occ.type === 'fixed') {
+      // نتجاهل القيم اللي لسه placeholder.
+      if (occ.date === 'MM-DD') continue;
+      if (occ.date === mmdd) return { key, label: occ.label };
+    } else if (occ.type === 'manual') {
+      if (occ.date === 'YYYY-MM-DD') continue;
+      if (occ.date === ymd) return { key, label: occ.label };
+    }
+  }
+  return null;
+}
+
+module.exports = { getTodaysOccasion };

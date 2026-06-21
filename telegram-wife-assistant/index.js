@@ -1,0 +1,85 @@
+// =====================================================================
+// index.js — نقطة التشغيل.
+// بيشغّل البوت (long polling)، بيجدول الخانات (صباح/مساء)، بيفحص المناسبة
+// قبل اقتراح الصباح، وبيبعت التقرير الأسبوعي. وبيربط الدورة المغلقة كلها.
+//
+// تنبيه: لازم الجهاز يفضل شغّال عشان الجدولة وأزرار التغذية الراجعة تشتغل.
+// استخدم pm2 للتشغيل الدائم (شوف README).
+// =====================================================================
+
+require('dotenv').config();
+const cron = require('node-cron');
+const config = require('./config');
+const { setupHandlers, sendSuggestions, Telegraf } = require('./bot');
+const { getTodaysOccasion } = require('./occasions');
+const review = require('./review');
+
+// تأكيد وجود التوكن.
+if (!process.env.TELEGRAM_BOT_TOKEN) {
+  console.error('❌ TELEGRAM_BOT_TOKEN مش موجود في .env. خد توكن من @BotFather الأول.');
+  process.exit(1);
+}
+
+const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
+setupHandlers(bot);
+
+// ---- خانة الصباح: تفحص المناسبة الأول، لو فيه مناسبة تقترح لها ----
+async function runMorning() {
+  try {
+    const occasion = getTodaysOccasion();
+    if (occasion) {
+      console.log(`🎉 النهاردة مناسبة: ${occasion.label}`);
+      await sendSuggestions(bot, { slot: 'occasion', occasion });
+    } else {
+      await sendSuggestions(bot, { slot: 'morning' });
+    }
+  } catch (err) {
+    console.error('خطأ في اقتراح الصباح:', err.message);
+  }
+}
+
+// ---- خانة المساء ----
+async function runEvening() {
+  try {
+    await sendSuggestions(bot, { slot: 'evening' });
+  } catch (err) {
+    console.error('خطأ في اقتراح المساء:', err.message);
+  }
+}
+
+// ---- التقرير الأسبوعي ----
+async function runWeeklyReview() {
+  try {
+    const { text } = review.buildReport();
+    if (config.dryRun) {
+      console.log('\n[dryRun] التقرير الأسبوعي:\n' + text + '\n');
+      return;
+    }
+    if (config.chatId) {
+      await bot.telegram.sendMessage(config.chatId, text, { parse_mode: 'Markdown' });
+    }
+  } catch (err) {
+    console.error('خطأ في التقرير الأسبوعي:', err.message);
+  }
+}
+
+// ---- الجدولة بتوقيت Asia/Dubai ----
+const cronOpts = { timezone: config.timezone };
+cron.schedule(config.morningCron, runMorning, cronOpts);
+cron.schedule(config.eveningCron, runEvening, cronOpts);
+cron.schedule(config.weeklyReviewCron, runWeeklyReview, cronOpts);
+
+// ---- تشغيل البوت ----
+bot.launch().then(() => {
+  console.log('✅ البوت شغّال (long polling).');
+  console.log(`   التوقيت: ${config.timezone}`);
+  console.log(`   الصباح: ${config.morningCron} · المساء: ${config.eveningCron}`);
+  console.log(`   dryRun = ${config.dryRun}  ${config.dryRun ? '(هيطبع مش هيبعت)' : '(هيبعت فعلاً)'}`);
+  if (!config.chatId) {
+    console.log('ℹ️  chatId فاضي — ابعت /start للبوت عشان ياخد الـ id ويطبعه.');
+  }
+});
+
+// إغلاق نظيف.
+process.once('SIGINT', () => bot.stop('SIGINT'));
+process.once('SIGTERM', () => bot.stop('SIGTERM'));
