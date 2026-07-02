@@ -1,0 +1,28 @@
+# Netlify build config — deploys the Beyond Coffee Moments storefront.
+#
+# This repo is a monorepo: the root is the "Beyond Style UAE" Next.js console,
+# and beyond-coffee-moments/ is the Vite storefront. Netlify builds the root by
+# default, so we point `base` at the sub-app to publish the coffee app.
+#
+# To publish the root Next.js app on Netlify instead, remove this file (and use
+# the @netlify/plugin-nextjs plugin).
+
+[build]
+  base = "beyond-coffee-moments"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA fallback so client-side routes (/customize, /corporate, /console, …) work.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Long-cache immutable hashed assets.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
