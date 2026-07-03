@@ -97,7 +97,7 @@ async function generateSuggestions({ slot, occasion } = {}) {
   }
 
   const slotLabel =
-    slot === 'morning' ? 'الصبح' : slot === 'evening' ? 'بالليل' : 'مناسبة';
+    slot === 'morning' ? 'الصبح' : slot === 'evening' ? 'بالليل' : 'دلوقتي';
 
   // وصف الموقف للموديل.
   const situation = occasion

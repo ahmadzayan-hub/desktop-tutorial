@@ -12,6 +12,7 @@ const config = require('./config');
 const store = require('./store');
 const review = require('./review');
 const { generateSuggestions } = require('./generateSuggestion');
+const { getTodaysOccasion } = require('./occasions');
 
 // آخر اقتراحات اتبعتت (في الذاكرة) عشان نربط الزرار/الرد النصي بسياقه.
 // مستخدم واحد بس، فماب بسيط كفاية.
@@ -34,31 +35,46 @@ function formatMessage(items, slot, occasion) {
     '',
     `2️⃣ ${items[1].text}`,
     '',
-    '— اختار، أو ابعتلي نسختك المعدّلة كنص حر.',
+    '— اختار، أو انسخ بضغطة 📋، أو ابعتلي نسختك المعدّلة كنص حر.',
   ].join('\n');
 }
 
-// أزرار التفاعل تحت الرسالة.
-function buildKeyboard() {
-  return Markup.inlineKeyboard([
+// أزرار التفاعل تحت الرسالة + زراير "نسخ" بضغطة واحدة.
+function buildKeyboard(items) {
+  const rows = [
     [
       Markup.button.callback('1️⃣ اختار الأول', 'pick1'),
       Markup.button.callback('2️⃣ اختار الثاني', 'pick2'),
     ],
-    [
-      Markup.button.callback('🔄 جديد', 'regen'),
-      Markup.button.callback('🙈 تجاهل', 'ignore'),
-    ],
+  ];
+
+  // زراير نسخ تنسخ النص للـ clipboard على طول (Bot API copy_text).
+  // الحد الأقصى لنص الزرار 256 حرف، فبنضيفه بس لو الاقتراح قصير كفاية.
+  const copyRow = [];
+  if (items?.[0] && items[0].text.length <= 256) {
+    copyRow.push({ text: '📋 انسخ الأول', copy_text: { text: items[0].text } });
+  }
+  if (items?.[1] && items[1].text.length <= 256) {
+    copyRow.push({ text: '📋 انسخ التاني', copy_text: { text: items[1].text } });
+  }
+  if (copyRow.length) rows.push(copyRow);
+
+  rows.push([
+    Markup.button.callback('🔄 جديد', 'regen'),
+    Markup.button.callback('🙈 تجاهل', 'ignore'),
   ]);
+
+  return Markup.inlineKeyboard(rows);
 }
 
 /**
  * sendSuggestions — يولّد ويبعت اقتراحين للخانة دي.
  * بيحترم dryRun (يطبع بدل ما يبعت) وثبات الحالة (مش نفس الخانة مرتين/يوم).
  * @param {Telegraf} bot
- * @param {object} opts { slot, occasion, force }
+ * @param {object} opts { slot, occasion, force, target }
+ *   target: chat id اختياري (للأوامر الفورية)؛ الافتراضي config.chatId.
  */
-async function sendSuggestions(bot, { slot, occasion, force = false } = {}) {
+async function sendSuggestions(bot, { slot, occasion, force = false, target } = {}) {
   // ثبات الحالة: ما نبعتش نفس الخانة مرتين في نفس اليوم (إلا بالـ force).
   if (!force && store.wasSlotSentToday(slot)) {
     console.log(`⏭️  الخانة (${slot}) اتبعتت النهاردة قبل كده — تخطّي.`);
@@ -78,12 +94,13 @@ async function sendSuggestions(bot, { slot, occasion, force = false } = {}) {
     return;
   }
 
-  if (!config.chatId) {
+  const chatId = target || config.chatId;
+  if (!chatId) {
     console.error('⚠️ chatId فاضي في config.js — مش عارف أبعت لمين. ابعت /start للبوت.');
     return;
   }
 
-  await bot.telegram.sendMessage(config.chatId, text, buildKeyboard());
+  await bot.telegram.sendMessage(chatId, text, buildKeyboard(result.items));
   store.markSlotSentToday(slot);
 }
 
@@ -141,6 +158,24 @@ function learnFromIgnore() {
  * @param {Telegraf} bot
  */
 function setupHandlers(bot) {
+  // حارس المالك: قبل ضبط chatId (مرحلة الإعداد) نسمح للكل عشان تجرّب،
+  // وبعد ضبطه نرد على المالك بس — تطبيقاً لقاعدة "يكلّمني أنا فقط".
+  const isOwner = (ctx) => {
+    if (!config.chatId) return true;
+    return String(ctx.chat?.id) === String(config.chatId);
+  };
+
+  // اقتراح فوري مشترك بين الأوامر (مع التقاط الأخطاء).
+  const requestSuggestion = async (ctx, { slot, occasion }) => {
+    if (!isOwner(ctx)) return;
+    try {
+      await sendSuggestions(bot, { slot, occasion, force: true, target: ctx.chat.id });
+    } catch (err) {
+      console.error('خطأ في اقتراح فوري:', err.message);
+      await ctx.reply('⚠️ حصل خطأ وأنا بولّد. جرّب تاني كمان شوية.');
+    }
+  };
+
   // /start — يرحّب ويطبع chat_id عشان تحطه في config.
   bot.start((ctx) => {
     const id = ctx.chat.id;
@@ -149,39 +184,70 @@ function setupHandlers(bot) {
       `أهلاً 👋 أنا مساعدك الشخصي لاقتراح رسايل لزوجتك.\n` +
         `الـ chat_id بتاعك: ${id}\n` +
         `حطه في config.js وأعد التشغيل.\n\n` +
-        `أوامر: /stats للملخّص · /reset لتصفير التعلّم`
+        `الأوامر:\n` +
+        `/suggest — اقتراح فوري\n` +
+        `/occasion — اقتراح مناسبة (أو /occasion عيد جوازنا)\n` +
+        `/morning · /evening — اقتراح صباحي/مسائي فوري\n` +
+        `/stats — ملخّص · /reset — تصفير التعلّم`
     );
   });
 
   // /stats — يطبع الملخّص وقت ما تطلبه.
   bot.command('stats', (ctx) => {
+    if (!isOwner(ctx)) return;
     const { text } = review.buildReport();
     ctx.reply(text, { parse_mode: 'Markdown' });
   });
 
   // /reset — يصفّر التعلّم لو حسّيت إن الأسلوب انحرف.
   bot.command('reset', (ctx) => {
+    if (!isOwner(ctx)) return;
     store.resetLearning();
     pending = null;
     ctx.reply('🔄 اتصفّر التعلّم بالكامل: أمثلة الأسلوب والأوزان رجعت من جديد.');
   });
 
-  // ضغط الأزرار (callback_query).
+  // ---- أوامر الاقتراح الفوري ----
+  // /suggest — اقتراح فوري عام (موضوع بالترجيح).
+  bot.command('suggest', (ctx) => requestSuggestion(ctx, { slot: 'manual' }));
+
+  // /occasion [نص] — اقتراح مناسبة فوري. لو كتبت نص بعد الأمر بيبقى هو المناسبة،
+  // وإلا بياخد مناسبة النهاردة لو فيه، وإلا لمسة حب عامة.
+  bot.command('occasion', (ctx) => {
+    const arg = ctx.message.text.replace(/^\/occasion(@\S+)?\s*/, '').trim();
+    const occasion = arg
+      ? { key: 'manual', label: arg }
+      : getTodaysOccasion() || { key: 'manual', label: 'لمسة حب من القلب' };
+    return requestSuggestion(ctx, { slot: 'occasion', occasion });
+  });
+
+  // /morning و /evening — اقتراح فوري بنبرة الخانة دي.
+  bot.command('morning', (ctx) => requestSuggestion(ctx, { slot: 'morning' }));
+  bot.command('evening', (ctx) => requestSuggestion(ctx, { slot: 'evening' }));
+
+  // ضغط الأزرار (callback_query). بنبعت النص المختار لوحده عشان النسخ يبقى أسهل.
   bot.action('pick1', async (ctx) => {
+    if (!isOwner(ctx)) return ctx.answerCbQuery();
+    const chosen = pending?.items?.[0]?.text;
     learnFromPick(0);
-    await ctx.answerCbQuery('اتسجّل ✅ — انسخه وابعته بإيدك');
+    await ctx.answerCbQuery('اتسجّل ✅');
     await ctx.editMessageReplyMarkup(); // نشيل الأزرار بعد الاختيار
-    await ctx.reply('تمام، حفظت أسلوبك من الاختيار ده 👌');
+    if (chosen) await ctx.reply(chosen); // النص لوحده = سهل تنسخه/تعمله forward
+    await ctx.reply('👆 ده اختيارك — انسخه وابعته بإيدك. حفظت أسلوبك منه 👌');
   });
 
   bot.action('pick2', async (ctx) => {
+    if (!isOwner(ctx)) return ctx.answerCbQuery();
+    const chosen = pending?.items?.[1]?.text;
     learnFromPick(1);
-    await ctx.answerCbQuery('اتسجّل ✅ — انسخه وابعته بإيدك');
+    await ctx.answerCbQuery('اتسجّل ✅');
     await ctx.editMessageReplyMarkup();
-    await ctx.reply('تمام، حفظت أسلوبك من الاختيار ده 👌');
+    if (chosen) await ctx.reply(chosen);
+    await ctx.reply('👆 ده اختيارك — انسخه وابعته بإيدك. حفظت أسلوبك منه 👌');
   });
 
   bot.action('regen', async (ctx) => {
+    if (!isOwner(ctx)) return ctx.answerCbQuery();
     if (!pending) return ctx.answerCbQuery('مفيش اقتراح حالي');
     // نسجّل إن المجموعة الأولى ما عجبتنيش.
     store.addFeedback({
@@ -197,6 +263,7 @@ function setupHandlers(bot) {
   });
 
   bot.action('ignore', async (ctx) => {
+    if (!isOwner(ctx)) return ctx.answerCbQuery();
     learnFromIgnore();
     await ctx.answerCbQuery('اتسجّل التجاهل');
     await ctx.editMessageReplyMarkup();
@@ -205,6 +272,7 @@ function setupHandlers(bot) {
 
   // أي رد نصي حر = نسختك المعدّلة (الاختيار النهائي).
   bot.on('text', (ctx) => {
+    if (!isOwner(ctx)) return;
     const txt = ctx.message.text.trim();
     if (txt.startsWith('/')) return; // أوامر اتعاملنا معاها فوق
     if (!pending) {

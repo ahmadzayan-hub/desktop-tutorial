@@ -69,8 +69,22 @@ cron.schedule(config.morningCron, runMorning, cronOpts);
 cron.schedule(config.eveningCron, runEvening, cronOpts);
 cron.schedule(config.weeklyReviewCron, runWeeklyReview, cronOpts);
 
+// قائمة الأوامر اللي بتظهر في تيليجرام لما تدوس /.
+const BOT_COMMANDS = [
+  { command: 'suggest', description: 'اقتراح فوري' },
+  { command: 'occasion', description: 'اقتراح مناسبة (أو /occasion عيد جوازنا)' },
+  { command: 'morning', description: 'اقتراح صباحي فوري' },
+  { command: 'evening', description: 'اقتراح مسائي فوري' },
+  { command: 'stats', description: 'ملخّص الأداء' },
+  { command: 'reset', description: 'تصفير التعلّم' },
+];
+
 // ---- تشغيل البوت ----
 bot.launch().then(() => {
+  // نسجّل قائمة الأوامر (مش بلوكنج — لو فشلت بسبب النت مش هتوقف البوت).
+  bot.telegram.setMyCommands(BOT_COMMANDS).catch((e) =>
+    console.warn('⚠️ تعذّر ضبط قائمة الأوامر:', e.message)
+  );
   console.log('✅ البوت شغّال (long polling).');
   console.log(`   التوقيت: ${config.timezone}`);
   console.log(`   الصباح: ${config.morningCron} · المساء: ${config.eveningCron}`);
