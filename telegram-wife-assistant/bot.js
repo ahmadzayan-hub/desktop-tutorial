@@ -258,8 +258,18 @@ function setupHandlers(bot) {
     });
     await ctx.answerCbQuery('بولّد اقتراحين جداد...');
     await ctx.editMessageReplyMarkup();
-    // نفس الخانة، نعيد التوليد بالـ force.
-    await sendSuggestions(bot, { slot: pending.slot, occasion: pending.occasion, force: true });
+    // نفس الخانة، نعيد التوليد بالـ force، ونبعت لنفس الشات.
+    try {
+      await sendSuggestions(bot, {
+        slot: pending.slot,
+        occasion: pending.occasion,
+        force: true,
+        target: ctx.chat.id,
+      });
+    } catch (err) {
+      console.error('خطأ في إعادة التوليد:', err.message);
+      await ctx.reply('⚠️ حصل خطأ وأنا بولّد. جرّب تاني كمان شوية.');
+    }
   });
 
   bot.action('ignore', async (ctx) => {

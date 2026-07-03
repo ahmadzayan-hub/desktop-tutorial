@@ -4,6 +4,9 @@
   "private": true,
   "description": "مساعد شخصي على تيليجرام يقترح لي رسائل دافئة لزوجتي. مساعد ليا أنا فقط — مفيش إرسال تلقائي لأي حد.",
   "main": "index.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "start": "node index.js",
     "test": "node test.js"

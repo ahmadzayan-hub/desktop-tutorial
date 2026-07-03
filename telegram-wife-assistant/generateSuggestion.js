@@ -136,16 +136,26 @@ function parseTwo(raw, themes) {
     .map((l) => l.trim())
     .filter(Boolean);
 
-  const cleaned = [];
+  // الأفضلية للأسطر اللي فيها ترقيم فعلي (١- / ٢- / 1. / 2)) عشان أي كلام
+  // تمهيدي زيادة من الموديل ما يتحسبش كأنه اقتراح.
+  const numbered = [];
   for (const line of lines) {
-    // نشيل أي ترقيم في أول السطر.
-    const m = line.replace(/^\s*[١٢12][-.)]\s*/, '').trim();
-    if (m) cleaned.push(m);
+    const m = line.match(/^\s*[١٢12]\s*[-.)]\s*(.+)$/);
+    if (m) numbered.push(m[1].trim());
   }
 
-  // لو ملقيناش سطرين واضحين، ناخد أول سطرين غير فاضيين.
-  const first = cleaned[0] || raw.trim();
-  const second = cleaned[1] || cleaned[0] || raw.trim();
+  let first;
+  let second;
+  if (numbered.length >= 2) {
+    [first, second] = numbered;
+  } else {
+    // احتياطي: أول سطرين غير فاضيين بعد إزالة أي ترقيم.
+    const cleaned = lines
+      .map((l) => l.replace(/^\s*[١٢12]\s*[-.)]\s*/, '').trim())
+      .filter(Boolean);
+    first = cleaned[0] || raw.trim();
+    second = cleaned[1] || cleaned[0] || raw.trim();
+  }
 
   return [
     { text: first, theme: themes[0] },

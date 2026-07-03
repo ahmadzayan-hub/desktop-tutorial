@@ -92,6 +92,11 @@ bot.launch().then(() => {
   if (!config.chatId) {
     console.log('ℹ️  chatId فاضي — ابعت /start للبوت عشان ياخد الـ id ويطبعه.');
   }
+}).catch((err) => {
+  // فشل التشغيل (غالباً توكن غلط أو النت محجوب) — رسالة واضحة بدل ما يقع فجأة.
+  console.error('❌ تعذّر تشغيل البوت:', err.message);
+  console.error('   اتأكد إن TELEGRAM_BOT_TOKEN صح وإن الجهاز بيوصل لـ api.telegram.org.');
+  process.exit(1);
 });
 
 // إغلاق نظيف.
