@@ -325,7 +325,7 @@ export default function Admin() {
         <Input label="Description (EN)" value={form.descriptionEn} onChange={(v) => setForm({ ...form, descriptionEn: v })} />
         <Input label="Description (AR)" value={form.descriptionAr} onChange={(v) => setForm({ ...form, descriptionAr: v })} />
         <p className="text-xs text-cream/50">
-          Compliance: terms like "Real Gold" or "18k" are rejected; material must say "plated".
+          Compliance: terms like &ldquo;Real Gold&rdquo; or &ldquo;18k&rdquo; are rejected; material must say &ldquo;plated&rdquo;.
         </p>
         {error && <p className="text-sm text-red-400">{error}</p>}
         {notice && <p className="text-sm text-green-400">{notice}</p>}
