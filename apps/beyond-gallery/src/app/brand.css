@@ -216,8 +216,141 @@
   display: inline-flex; align-items: center; gap: 8px;
 }
 
+/* -------- Design-system polish additions (v2) -------- */
+
+/* Premium tile chrome: subtle paper grain, hover lift, diagonal sheen sweep */
+.beyond-grain-soft {
+  background-image:
+    radial-gradient(rgba(120,90,40,0.045) 1px, transparent 1px),
+    radial-gradient(rgba(120,90,40,0.03) 1px, transparent 1px);
+  background-size: 3px 3px, 5px 5px;
+  background-position: 0 0, 1px 1px;
+  mix-blend-mode: multiply;
+}
+.beyond-tile { will-change: transform; }
+.beyond-tile-sheen {
+  position: absolute; inset: 0;
+  background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.55) 48%, transparent 62%);
+  transform: translateX(-120%);
+  transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: 0;
+}
+.group:hover .beyond-tile-sheen,
+.beyond-tilt:hover .beyond-tile-sheen {
+  transform: translateX(120%);
+  opacity: 1;
+}
+
+/* Glass card — a subtle frosted panel for editorial callouts */
+.beyond-glass {
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(14px) saturate(1.05);
+  -webkit-backdrop-filter: blur(14px) saturate(1.05);
+  border: 1px solid rgba(231,226,211,0.9);
+  box-shadow:
+    0 1px 2px rgba(31,41,51,0.04),
+    0 24px 60px -32px rgba(31,41,51,0.22);
+}
+.beyond-glass-dark {
+  background: linear-gradient(180deg, rgba(31,41,51,0.94), rgba(31,41,51,0.88));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--beyond-ivory);
+}
+
+/* Section kicker — small uppercase gold label that anchors editorial titles */
+.beyond-kicker {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--beyond-gold);
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.28em; text-transform: uppercase;
+}
+.beyond-kicker::before {
+  content: ""; width: 22px; height: 1px; background: var(--beyond-gold);
+}
+[dir="rtl"] .beyond-kicker { letter-spacing: 0.06em; }
+
+/* Delivery timeline (Full delivery story) */
+.beyond-timeline {
+  position: relative;
+}
+.beyond-timeline-track {
+  position: absolute; top: 34px; left: 8%; right: 8%;
+  height: 2px;
+  background: linear-gradient(90deg,
+    rgba(182,138,53,0.15),
+    rgba(182,138,53,0.55),
+    rgba(31,111,91,0.55),
+    rgba(31,111,91,0.15));
+  border-radius: 2px;
+}
+[dir="rtl"] .beyond-timeline-track {
+  background: linear-gradient(-90deg,
+    rgba(182,138,53,0.15),
+    rgba(182,138,53,0.55),
+    rgba(31,111,91,0.55),
+    rgba(31,111,91,0.15));
+}
+.beyond-timeline-step {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; gap: 8px;
+}
+.beyond-timeline-dot {
+  width: 68px; height: 68px; border-radius: 999px;
+  background: #fff; border: 1px solid var(--beyond-line);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 26px -10px rgba(31,41,51,0.18);
+  transition: transform .35s cubic-bezier(.22,1,.36,1), border-color .35s ease, box-shadow .35s ease;
+}
+.beyond-timeline-step:hover .beyond-timeline-dot {
+  transform: translateY(-3px);
+  border-color: var(--beyond-gold);
+  box-shadow: 0 14px 32px -12px rgba(182,138,53,0.35);
+}
+
+/* Refined shadow scale */
+.beyond-shadow-sm { box-shadow: 0 1px 2px rgba(31,41,51,0.04); }
+.beyond-shadow    { box-shadow: 0 1px 2px rgba(31,41,51,0.04), 0 12px 30px -14px rgba(31,41,51,0.14); }
+.beyond-shadow-lg { box-shadow: 0 2px 6px rgba(31,41,51,0.06), 0 22px 50px -20px rgba(31,41,51,0.22); }
+
+/* Editorial pull-quote */
+.beyond-quote {
+  position: relative;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(20px, 3vw, 30px);
+  line-height: 1.35;
+  color: var(--beyond-charcoal);
+}
+.beyond-quote::before {
+  content: "\201C"; position: absolute; top: -22px; inset-inline-start: -10px;
+  color: var(--beyond-gold); font-family: "Fraunces", Georgia, serif;
+  font-size: 72px; line-height: 1; opacity: .5;
+}
+
+/* Featured-on badge row */
+.beyond-featured-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--beyond-line);
+  color: var(--beyond-charcoal);
+  font-weight: 600; font-size: 12px;
+  letter-spacing: 0.08em;
+  transition: transform .35s cubic-bezier(.22,1,.36,1), border-color .35s ease;
+}
+.beyond-featured-badge:hover {
+  transform: translateY(-2px);
+  border-color: var(--beyond-gold);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .beyond-float, .beyond-sparkle, .beyond-halo, .beyond-shimmer, .beyond-wa-pulse {
+  .beyond-float, .beyond-sparkle, .beyond-halo, .beyond-shimmer, .beyond-wa-pulse,
+  .beyond-tile-sheen {
     animation: none !important;
+    transition: none !important;
   }
 }
+

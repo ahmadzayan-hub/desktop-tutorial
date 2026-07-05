@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { BackToTop, FloatingWhatsApp, ScrollProgress, StatCounter } from "./_components/Bits";
 import HeroArt from "./_components/HeroArt";
 import Marquee from "./_components/Marquee";
-import ProductTile, { type Variant } from "./_components/ProductTile";
+import ProductTile, { type Ribbon, type Variant } from "./_components/ProductTile";
 import QuickView, { type QuickViewProduct } from "./_components/QuickView";
 import { Reveal, Stagger, StaggerItem } from "./_components/Reveal";
 import Spotlight from "./_components/Spotlight";
@@ -131,6 +131,7 @@ export default function BeyondGalleryLanding() {
           <CorporateOrders lang={lang} />
           <SupplyDesk lang={lang} />
           <AboutBrand lang={lang} />
+          <DeliveryTimeline lang={lang} />
           <PaymentMethods lang={lang} />
           <CatalogueCapture lang={lang} />
           <FAQ lang={lang} />
@@ -1091,20 +1092,21 @@ type Product = QuickViewProduct & {
   category: Category;
   stock: Stock;
   leadDays?: string;
+  ribbon?: Ribbon;
 };
 
 const FEATURED: Product[] = [
-  { id: "arabic-charm", name: "Arabic Charm Bracelet", nameAr: "إسوارة بأحرف عربية", benefit: "Personalise with Arabic letters or name.", benefitAr: "خصّصها بأحرف أو اسم عربي.", price: "AED 65", variant: "arabic-bracelet", category: "accessories", stock: "in" },
-  { id: "name-bracelet", name: "Personalised Name Bracelet", nameAr: "إسوارة الاسم", benefit: "Custom name in English or Arabic.", benefitAr: "اسم مخصّص بالعربية أو الإنجليزية.", price: "AED 75", variant: "name-bracelet", category: "gifts", stock: "made_to_order", leadDays: "3 to 5 days" },
+  { id: "arabic-charm", name: "Arabic Charm Bracelet", nameAr: "إسوارة بأحرف عربية", benefit: "Personalise with Arabic letters or name.", benefitAr: "خصّصها بأحرف أو اسم عربي.", price: "AED 65", variant: "arabic-bracelet", category: "accessories", stock: "in", ribbon: "bestseller" },
+  { id: "name-bracelet", name: "Personalised Name Bracelet", nameAr: "إسوارة الاسم", benefit: "Custom name in English or Arabic.", benefitAr: "اسم مخصّص بالعربية أو الإنجليزية.", price: "AED 75", variant: "name-bracelet", category: "gifts", stock: "made_to_order", leadDays: "3 to 5 days", ribbon: "custom" },
   { id: "hamsa", name: "Hamsa and Evil Eye Bracelet", nameAr: "إسوارة الكف والعين", benefit: "Symbolic everyday wear.", benefitAr: "رمزية للارتداء اليومي.", price: "AED 55", variant: "hamsa", category: "accessories", stock: "in" },
-  { id: "necklace", name: "Premium Necklace Set", nameAr: "طقم قلائد فاخر", benefit: "Elegant pendant and chain set.", benefitAr: "طقم قلادة بسلسلة أنيقة.", price: "AED 145", variant: "necklace", category: "accessories", stock: "in" },
-  { id: "gift-box", name: "Elegant Gift Box Set", nameAr: "طقم صندوق هدية أنيق", benefit: "Ready to gift packaging.", benefitAr: "تغليف جاهز للإهداء.", price: "AED 120", variant: "gift-box", category: "gifts", stock: "in" },
+  { id: "necklace", name: "Premium Necklace Set", nameAr: "طقم قلائد فاخر", benefit: "Elegant pendant and chain set.", benefitAr: "طقم قلادة بسلسلة أنيقة.", price: "AED 145", variant: "necklace", category: "accessories", stock: "in", ribbon: "new" },
+  { id: "gift-box", name: "Elegant Gift Box Set", nameAr: "طقم صندوق هدية أنيق", benefit: "Ready to gift packaging.", benefitAr: "تغليف جاهز للإهداء.", price: "AED 120", variant: "gift-box", category: "gifts", stock: "in", ribbon: "bestseller" },
   { id: "drawing-board", name: "Creative Drawing Board", nameAr: "لوحة رسم إبداعية", benefit: "Reusable, ideal for kids and students.", benefitAr: "قابلة لإعادة الاستخدام للأطفال والطلاب.", price: "AED 89", variant: "drawing-board", category: "boards", stock: "in" },
-  { id: "notebook", name: "A5 Branded Notebook", nameAr: "دفتر A5 مع الشعار", benefit: "Hardcover with brand printing option.", benefitAr: "غلاف فاخر مع خيار طباعة الشعار.", price: "AED 35", variant: "notebook", category: "corporate", stock: "made_to_order", leadDays: "5 to 7 days" },
+  { id: "notebook", name: "A5 Branded Notebook", nameAr: "دفتر A5 مع الشعار", benefit: "Hardcover with brand printing option.", benefitAr: "غلاف فاخر مع خيار طباعة الشعار.", price: "AED 35", variant: "notebook", category: "corporate", stock: "made_to_order", leadDays: "5 to 7 days", ribbon: "custom" },
   { id: "pen", name: "Metal Gift Pen", nameAr: "قلم معدني للهدايا", benefit: "Smooth writing, gift ready.", benefitAr: "كتابة سلسة وجاهز للإهداء.", price: "AED 25", variant: "pen", category: "corporate", stock: "in" },
   { id: "tote", name: "Canvas Gift Tote Bag", nameAr: "حقيبة قماشية", benefit: "Reusable canvas tote with logo option.", benefitAr: "حقيبة قابلة لإعادة الاستخدام مع خيار الشعار.", price: "AED 30", variant: "tote", category: "corporate", stock: "in" },
-  { id: "mug", name: "Ceramic Gift Mug", nameAr: "كوب سيراميك", benefit: "Ideal for offices and giveaways.", benefitAr: "مناسب للمكاتب والفعاليات.", price: "AED 28", variant: "mug", category: "corporate", stock: "in" },
-  { id: "vip-box", name: "Corporate VIP Gift Pack", nameAr: "طقم هدايا مميّز للشركات", benefit: "Curated executive presentation.", benefitAr: "تشكيلة تنفيذية مختارة.", price: "AED 250", variant: "vip-box", category: "corporate", stock: "bespoke", leadDays: "7 to 10 days" },
+  { id: "mug", name: "Ceramic Gift Mug", nameAr: "كوب سيراميك", benefit: "Ideal for offices and giveaways.", benefitAr: "مناسب للمكاتب والفعاليات.", price: "AED 28", variant: "mug", category: "corporate", stock: "in", ribbon: "new" },
+  { id: "vip-box", name: "Corporate VIP Gift Pack", nameAr: "طقم هدايا مميّز للشركات", benefit: "Curated executive presentation.", benefitAr: "تشكيلة تنفيذية مختارة.", price: "AED 250", variant: "vip-box", category: "corporate", stock: "bespoke", leadDays: "7 to 10 days", ribbon: "limited" },
   { id: "desk-decor", name: "Lifestyle Desk Decor", nameAr: "ديكور مكتب", benefit: "Charming desk accents.", benefitAr: "لمسات أنيقة للمكتب.", price: "AED 95", variant: "desk-decor", category: "lifestyle", stock: "in" },
 ];
 
@@ -1249,7 +1251,7 @@ function FeaturedProducts({
               <StaggerItem key={p.id}>
                 <article className="beyond-tilt rounded-2xl bg-white border border-beyond-line overflow-hidden beyond-card-shadow hover:beyond-card-shadow-hover transition-shadow group h-full flex flex-col">
                   <div className="relative">
-                    <ProductTile variant={p.variant} />
+                    <ProductTile variant={p.variant} ribbon={p.ribbon} lang={lang} />
                     <div className="absolute top-3 end-3 flex items-center gap-1">
                       <StockBadge stock={p.stock} leadDays={p.leadDays} lang={lang} />
                     </div>
@@ -1326,7 +1328,7 @@ function RecentlyViewed({ lang, onQuickView }: { lang: "en" | "ar"; onQuickView:
               onClick={() => onQuickView(p)}
               className="shrink-0 w-40 text-start rounded-2xl bg-beyond-ivory border border-beyond-line beyond-lift hover:border-beyond-gold overflow-hidden"
             >
-              <ProductTile variant={p.variant} />
+              <ProductTile variant={p.variant} ribbon={p.ribbon} lang={lang} />
               <div className="p-3">
                 <div className={`font-display text-[13px] font-semibold text-beyond-charcoal line-clamp-1 ${lang === "ar" ? "font-arabic-display" : ""}`}>
                   {lang === "en" ? p.name : p.nameAr}
@@ -2134,6 +2136,136 @@ function SupplyRFQ({ lang }: { lang: "en" | "ar" }) {
         {t.cta}
       </button>
     </form>
+  );
+}
+
+// Delivery Timeline — the full delivery story a UAE buyer wants to see
+// before they commit: confirm → prepare → dispatch (Halan / Careem) → arrive.
+function DeliveryTimeline({ lang }: { lang: "en" | "ar" }) {
+  const steps = [
+    {
+      en: { title: "Order Confirmed", meta: "Within 10 minutes", body: "You receive a WhatsApp confirmation with your order number, total in AED including 5% VAT and expected dispatch date." },
+      ar: { title: "تم تأكيد الطلب", meta: "خلال 10 دقائق", body: "تستلم رسالة تأكيد على واتساب برقم الطلب، الإجمالي بالدرهم شاملة ضريبة القيمة المضافة 5%، وتاريخ الشحن المتوقع." },
+      Icon: FileTextIcon,
+      tone: "gold" as const,
+    },
+    {
+      en: { title: "Prepared with Care", meta: "In stock: same day · Made to order: 3 to 7 days", body: "Your item is checked, personalised where needed, and packaged in our signature ivory box." },
+      ar: { title: "تحضير بعناية", meta: "المتوفر: نفس اليوم · تحت الطلب: 3 إلى 7 أيام", body: "نفحص المنتج، ونضيف التخصيص عند الطلب، ونعبّئه داخل صندوق العاج الخاص بنا." },
+      Icon: BoxIcon,
+      tone: "emerald" as const,
+    },
+    {
+      en: { title: "Dispatched", meta: "Halan or Careem last-mile", body: "The driver receives your address, Google Maps pin and phone. You get a live tracking link on WhatsApp." },
+      ar: { title: "الإرسال", meta: "شراكة حلان أو كريم للتوصيل", body: "يستلم السائق عنوانك ودبوس خرائط جوجل والهاتف، ويصلك رابط تتبّع حي عبر واتساب." },
+      Icon: SparkleIcon,
+      tone: "navy" as const,
+    },
+    {
+      en: { title: "Delivered", meta: "1 to 2 days across the UAE", body: "Delivered to your door. Free delivery for orders 300 AED and above, or 25 AED flat rate. Cash on delivery available." },
+      ar: { title: "التسليم", meta: "1 إلى 2 يوم في كل الإمارات", body: "توصيل حتى الباب. توصيل مجاني للطلبات 300 درهم فأكثر، أو 25 درهم للطلبات الأقل. الدفع عند الاستلام متاح." },
+      Icon: GiftIcon,
+      tone: "charcoal" as const,
+    },
+  ];
+
+  return (
+    <section className="bg-beyond-ivory border-y border-beyond-line">
+      <div className="max-w-7xl mx-auto px-4 py-16 sm:py-24">
+        <Reveal className="text-center mb-10 sm:mb-14">
+          <div className="beyond-kicker justify-center mb-3">
+            {lang === "en" ? "Delivery Promise" : "وعد التوصيل"}
+          </div>
+          <h2 className={`font-display text-3xl sm:text-4xl font-semibold text-beyond-charcoal beyond-ornament ${lang === "ar" ? "font-arabic-display" : ""}`}>
+            {lang === "en" ? (
+              <>How your order <span className="beyond-gold-gradient">reaches you</span></>
+            ) : (
+              <>كيف تصل <span className="beyond-gold-gradient">طلبيتك إليك</span></>
+            )}
+          </h2>
+          <p className={`mt-4 text-[15px] leading-relaxed text-beyond-charcoal/75 max-w-2xl mx-auto ${lang === "ar" ? "font-arabic" : ""}`}>
+            {lang === "en"
+              ? "Four transparent steps, one WhatsApp thread. You know where your order is at every stage, from confirmation to your doorstep."
+              : "أربع مراحل واضحة، محادثة واتساب واحدة. تعرف مكان طلبيتك في كل مرحلة، من التأكيد وحتى بابك."}
+          </p>
+        </Reveal>
+
+        <div className="beyond-timeline relative">
+          {/* Horizontal gradient rail behind the dots on desktop */}
+          <div className="beyond-timeline-track hidden md:block" />
+
+          <Stagger className="grid gap-8 md:gap-5 md:grid-cols-4 relative">
+            {steps.map((s, i) => {
+              const c = lang === "en" ? s.en : s.ar;
+              const toneClass =
+                s.tone === "gold"    ? "text-beyond-gold"
+                : s.tone === "emerald" ? "text-beyond-emerald"
+                : s.tone === "navy"    ? "text-beyond-navy"
+                : "text-beyond-charcoal";
+              return (
+                <StaggerItem key={i}>
+                  <div className="beyond-timeline-step">
+                    <div className="relative">
+                      <div className="beyond-timeline-dot">
+                        <s.Icon className={`w-7 h-7 ${toneClass}`} />
+                      </div>
+                      <span className={`absolute -top-1 -end-1 w-6 h-6 rounded-full bg-beyond-charcoal text-beyond-ivory text-[10px] font-semibold flex items-center justify-center ring-2 ring-beyond-ivory ${lang === "ar" ? "font-arabic" : ""}`}>
+                        {i + 1}
+                      </span>
+                    </div>
+                    <h3 className={`mt-2 font-display text-[17px] font-semibold text-beyond-charcoal ${lang === "ar" ? "font-arabic-display" : ""}`}>
+                      {c.title}
+                    </h3>
+                    <div className={`text-[11.5px] font-semibold uppercase tracking-wider text-beyond-gold ${lang === "ar" ? "font-arabic tracking-normal" : ""}`}>
+                      {c.meta}
+                    </div>
+                    <p className={`text-[13px] leading-relaxed text-beyond-charcoal/72 max-w-[24ch] ${lang === "ar" ? "font-arabic max-w-[26ch]" : ""}`}>
+                      {c.body}
+                    </p>
+                  </div>
+                </StaggerItem>
+              );
+            })}
+          </Stagger>
+        </div>
+
+        {/* Delivery guarantees strip */}
+        <Reveal delay={0.15}>
+          <div className={`mt-12 grid sm:grid-cols-3 gap-3 ${lang === "ar" ? "font-arabic" : ""}`}>
+            {[
+              {
+                en: { t: "Free over AED 300", s: "Otherwise 25 AED flat, all emirates" },
+                ar: { t: "مجاني فوق 300 درهم", s: "أو 25 درهم ثابتة في كل الإمارات" },
+                Icon: TagIcon,
+              },
+              {
+                en: { t: "Cash on delivery", s: "Verified on WhatsApp before dispatch" },
+                ar: { t: "الدفع عند الاستلام", s: "نؤكّده عبر واتساب قبل الإرسال" },
+                Icon: CashMark,
+              },
+              {
+                en: { t: "Live tracking", s: "Halan or Careem driver, real time link" },
+                ar: { t: "تتبّع حي", s: "سائق حلان أو كريم، برابط لحظي" },
+                Icon: PinIcon,
+              },
+            ].map((g, i) => {
+              const c = lang === "en" ? g.en : g.ar;
+              return (
+                <div key={i} className="beyond-glass rounded-2xl px-4 py-4 flex items-start gap-3">
+                  <div className="shrink-0 w-10 h-10 rounded-full bg-beyond-ivory border border-beyond-line flex items-center justify-center">
+                    <g.Icon className="w-4 h-4 text-beyond-gold" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-[13.5px] text-beyond-charcoal">{c.t}</div>
+                    <div className="text-[12px] text-beyond-charcoal/65 mt-0.5">{c.s}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Reveal>
+      </div>
+    </section>
   );
 }
 
