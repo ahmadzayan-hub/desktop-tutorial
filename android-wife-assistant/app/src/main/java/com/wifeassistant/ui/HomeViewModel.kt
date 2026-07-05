@@ -32,7 +32,7 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
     private val settings = Settings(app)
     private val store = Store(app)
     private val occasions = Occasions(settings)
-    private val engine = SuggestionEngine(store, GroqClient(settings))
+    private val engine = SuggestionEngine(store, GroqClient(settings), settings)
 
     private val _state = MutableStateFlow(HomeState())
     val state: StateFlow<HomeState> = _state.asStateFlow()

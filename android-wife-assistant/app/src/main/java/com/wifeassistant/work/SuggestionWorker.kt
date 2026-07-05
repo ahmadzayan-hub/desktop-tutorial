@@ -27,7 +27,7 @@ class SuggestionWorker(context: Context, params: WorkerParameters) :
         if (store.wasSlotSentToday(effectiveSlot)) return Result.success()
 
         return try {
-            val engine = SuggestionEngine(store, GroqClient(settings))
+            val engine = SuggestionEngine(store, GroqClient(settings), settings)
             val res = engine.generate(effectiveSlot, occasion)
             // نحفظ الجولة عشان الواجهة تفتح على نفس الاقتراحين لما تدوس الإشعار.
             store.setPending(PendingRound(res.slot, res.themesShown, res.items, occasion?.label))

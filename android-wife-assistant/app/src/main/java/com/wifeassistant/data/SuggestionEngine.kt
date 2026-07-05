@@ -7,6 +7,7 @@ import kotlin.random.Random
 class SuggestionEngine(
     private val store: Store,
     private val groq: GroqClient,
+    private val settings: Settings,
 ) {
     suspend fun generate(slot: String, occasion: Occasion? = null): GenerationResult {
         val themes = if (occasion != null) listOf(occasion.label, occasion.label) else pickThemes(2)
@@ -48,16 +49,38 @@ class SuggestionEngine(
     }
 
     // مرساة الصوت الثابتة — بتحافظ على النبرة الأساسية عشان الأسلوب ما ينحرفش.
-    private fun buildSystemPrompt(): String = listOf(
-        "انت مساعد بيكتب لي رسايل قصيرة لزوجتي باللهجة المصرية العامية.",
-        "النبرة: ${AppConstants.TONE}.",
-        "قواعد ثابتة لا تتغيّر:",
-        "- الرسالة من سطر لـ 3 أسطر بحد أقصى.",
-        "- لهجة مصرية طبيعية، كأني أنا اللي بكتبها، مش فصحى ولا كلام رسمي.",
-        "- صدق وبساطة، من غير مبالغة ولا كلام مصنوع ولا شِعر متكلّف.",
-        "- من غير إيموجي كتير (إيموجي واحد على الأكثر، أو من غير خالص).",
-        "هدفك: اقتراح أكتبه أنا وأبعته بنفسي. انت بتساعدني بس.",
-    ).joinToString("\n")
+    private fun buildSystemPrompt(): String {
+        val lines = mutableListOf(
+            "انت بتساعد راجل مصري يكتب رسايل قصيرة لمراته باللهجة المصرية العامية.",
+            "اكتب كإنسان حقيقي بيحبها بجد — بإحساس صادق ودفء إنساني، مش كلام آلة.",
+            "النبرة: ${AppConstants.TONE}.",
+            "قواعد ثابتة لا تتغيّر:",
+            "- الرسالة من سطر لـ 3 أسطر بحد أقصى.",
+            "- لهجة مصرية طبيعية، كأنه هو اللي كتبها، مش فصحى ولا كلام رسمي.",
+            "- صدق وبساطة، من غير مبالغة ولا كلام مصنوع ولا شِعر متكلّف.",
+            "- من غير إيموجي كتير (إيموجي واحد على الأكثر، أو من غير خالص).",
+        )
+        if (settings.humor) {
+            lines.add("- حطّ لمسة خفيفة من الدُعابة الحلوة اللطيفة، من غير سخافة ولا مبالغة.")
+        }
+        lines.add("هدفك: اقتراح هو يبعته بنفسه لمراته. انت بتساعده بس.")
+        return lines.joinToString("\n")
+    }
+
+    // بلوك التخصيص — بيخلّي الرسالة ليها هي بالذات ومنّه هو (شخصنة إنسانية).
+    private fun buildPersonaBlock(): String {
+        val parts = mutableListOf<String>()
+        if (settings.myName.isNotBlank()) parts.add("اسمه: ${settings.myName.trim()}.")
+        if (settings.wifeName.isNotBlank()) {
+            parts.add("اسم مراته: ${settings.wifeName.trim()} — نادِها باسمها أو دلعه بشكل طبيعي.")
+        }
+        if (settings.relationshipNotes.isNotBlank()) {
+            parts.add("حاجات عنها تخصّص بيها الرسالة: ${settings.relationshipNotes.trim()}.")
+        }
+        if (parts.isEmpty()) return ""
+        return ("تخصيص (خلّي التفاصيل دي محسوسة في الرسالة، بس من غير ما تسردها صريحة):\n" +
+            parts.joinToString("\n"))
+    }
 
     // حقن أمثلة الأسلوب (few-shot) من اختياراتي السابقة.
     private fun buildStyleBlock(): String {
@@ -88,14 +111,20 @@ class SuggestionEngine(
         else
             "الاقتراح الأول موضوعه: ${themes[0]}. الاقتراح التاني موضوعه: ${themes[1]}."
 
-        return listOf(
-            buildStyleBlock(), "",
-            situation, "",
-            "اكتب لي اقتراحين مختلفين تماماً عن بعض.", themeLine, "",
-            "رجّع الرد بالظبط بالصيغة دي ومن غير أي كلام زيادة:",
-            "١- <نص الاقتراح الأول>",
-            "٢- <نص الاقتراح التاني>",
-        ).joinToString("\n")
+        val persona = buildPersonaBlock()
+        val blocks = mutableListOf(buildStyleBlock())
+        if (persona.isNotBlank()) { blocks.add(""); blocks.add(persona) }
+        blocks.addAll(
+            listOf(
+                "",
+                situation, "",
+                "اكتب اقتراحين مختلفين تماماً عن بعض، وكإنهم من قلبه هو.", themeLine, "",
+                "رجّع الرد بالظبط بالصيغة دي ومن غير أي كلام زيادة:",
+                "١- <نص الاقتراح الأول>",
+                "٢- <نص الاقتراح التاني>",
+            )
+        )
+        return blocks.joinToString("\n")
     }
 
     companion object {

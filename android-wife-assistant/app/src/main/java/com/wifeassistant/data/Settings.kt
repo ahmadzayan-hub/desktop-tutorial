@@ -4,8 +4,8 @@ import android.content.Context
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-// الإعدادات (المفتاح + رقم الواتساب + المواعيد + المناسبات) في SharedPreferences.
-// المفتاح سر — بيتخزّن على الجهاز بس، مش بيتبعت لأي حد غير Groq.
+// الإعدادات (المفتاح + رقم الواتساب + التخصيص + المواعيد + المناسبات).
+// كله على الجهاز بس (SharedPreferences) — مفيش سر بيتبعت لأي حد غير Groq.
 class Settings(context: Context) {
     private val prefs = context.getSharedPreferences("wife_assistant_settings", Context.MODE_PRIVATE)
     private val json = Json { ignoreUnknownKeys = true }
@@ -23,6 +23,26 @@ class Settings(context: Context) {
         get() = prefs.getString("model", AppConstants.DEFAULT_MODEL) ?: AppConstants.DEFAULT_MODEL
         set(v) = prefs.edit().putString("model", v).apply()
 
+    // ---- التخصيص والإنسانية ----
+    var myName: String // اسم المُرسِل (انت)
+        get() = prefs.getString("myName", "").orEmpty()
+        set(v) = prefs.edit().putString("myName", v).apply()
+
+    var wifeName: String // اسم/دلع مراتك
+        get() = prefs.getString("wifeName", "").orEmpty()
+        set(v) = prefs.edit().putString("wifeName", v).apply()
+
+    // تفاصيل شخصية عنها (حاجات بتحبها، دلع، نكت بينكم) عشان الرسالة تبقى ليها هي بالذات.
+    var relationshipNotes: String
+        get() = prefs.getString("relationshipNotes", "").orEmpty()
+        set(v) = prefs.edit().putString("relationshipNotes", v).apply()
+
+    // لمسة دُعابة خفيفة في الاقتراحات؟
+    var humor: Boolean
+        get() = prefs.getBoolean("humor", false)
+        set(v) = prefs.edit().putBoolean("humor", v).apply()
+
+    // ---- المواعيد ----
     var morningTime: String
         get() = prefs.getString("morningTime", "07:00") ?: "07:00"
         set(v) = prefs.edit().putString("morningTime", v).apply()
