@@ -22,6 +22,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # نرفع السر لمتغيّر بيئة لأن سياق secrets مش متاح في شرط if.
+    env:
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
     defaults:
       run:
         working-directory: android-wife-assistant
@@ -52,9 +55,7 @@ jobs:
       # 2) توقيع اختياري: لو ضفت الأسرار بيتوقّع release حقيقي، غير كده debug.
       - name: Decode keystore (optional signing)
         id: keystore
-        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        if: ${{ env.KEYSTORE_BASE64 != '' }}
         run: |
           echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.keystore"
           echo "path=$RUNNER_TEMP/release.keystore" >> "$GITHUB_OUTPUT"
