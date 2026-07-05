@@ -13,18 +13,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -81,21 +75,10 @@ fun HomeScreen(
         snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
             TopAppBar(
-                title = { Text("مساعد الرسايل", fontWeight = FontWeight.Bold) },
+                title = { Text("رسايل القلب 💗", fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
                 ),
-                actions = {
-                    IconButton(onClick = onOpenHistory) {
-                        Icon(Icons.Filled.History, contentDescription = "السجل")
-                    }
-                    IconButton(onClick = onOpenStats) {
-                        Icon(Icons.Filled.BarChart, contentDescription = "الإحصائيات")
-                    }
-                    IconButton(onClick = onOpenSettings) {
-                        Icon(Icons.Filled.Settings, contentDescription = "الإعدادات")
-                    }
-                },
             )
         },
     ) { padding ->
@@ -191,9 +174,9 @@ private fun RecipientBar(onOpenPeople: () -> Unit) {
     val context = LocalContext.current
     val r = remember { Settings(context).currentRecipient() }
     val who = when {
-        r == null -> "محدّش لسه"
-        r.name.isNotBlank() -> "${r.name} · ${Relations.labelOf(r.relation)}"
-        else -> Relations.labelOf(r.relation)
+        r == null -> "محدّش لسه — ضيف شخص"
+        r.name.isNotBlank() -> "${Relations.emojiOf(r.relation)} ${r.name} · ${Relations.labelOf(r.relation)}"
+        else -> "${Relations.emojiOf(r.relation)} ${Relations.labelOf(r.relation)}"
     }
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,

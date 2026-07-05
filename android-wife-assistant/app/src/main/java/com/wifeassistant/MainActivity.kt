@@ -7,12 +7,26 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.content.ContextCompat
@@ -61,22 +75,49 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+private data class NavItem(val key: String, val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector)
+
 @Composable
 private fun AppRoot() {
     var screen by remember { mutableStateOf("home") }
     val vm: HomeViewModel = viewModel()
 
-    when (screen) {
-        "settings" -> SettingsScreen(onBack = { screen = "home" })
-        "stats" -> StatsScreen(onBack = { screen = "home" })
-        "history" -> HistoryScreen(onBack = { screen = "home" })
-        "people" -> PeopleScreen(onBack = { screen = "home" })
-        else -> HomeScreen(
-            vm = vm,
-            onOpenSettings = { screen = "settings" },
-            onOpenStats = { screen = "stats" },
-            onOpenHistory = { screen = "history" },
-            onOpenPeople = { screen = "people" },
-        )
+    val items = listOf(
+        NavItem("home", "الرئيسية", Icons.Filled.Home),
+        NavItem("people", "الأشخاص", Icons.Filled.People),
+        NavItem("history", "السجل", Icons.Filled.History),
+        NavItem("stats", "إحصائيات", Icons.Filled.BarChart),
+        NavItem("settings", "إعدادات", Icons.Filled.Settings),
+    )
+
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                items.forEach { item ->
+                    NavigationBarItem(
+                        selected = screen == item.key,
+                        onClick = { screen = item.key },
+                        icon = { Icon(item.icon, contentDescription = item.label) },
+                        label = { Text(item.label) },
+                    )
+                }
+            }
+        },
+    ) { pad ->
+        Box(modifier = Modifier.padding(pad)) {
+            when (screen) {
+                "settings" -> SettingsScreen(onBack = { screen = "home" })
+                "stats" -> StatsScreen(onBack = { screen = "home" })
+                "history" -> HistoryScreen(onBack = { screen = "home" })
+                "people" -> PeopleScreen(onBack = { screen = "home" })
+                else -> HomeScreen(
+                    vm = vm,
+                    onOpenSettings = { screen = "settings" },
+                    onOpenStats = { screen = "stats" },
+                    onOpenHistory = { screen = "history" },
+                    onOpenPeople = { screen = "people" },
+                )
+            }
+        }
     }
 }

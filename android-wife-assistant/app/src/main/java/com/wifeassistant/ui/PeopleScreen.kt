@@ -167,7 +167,7 @@ fun PeopleScreen(onBack: () -> Unit) {
                         verticalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
                         Text(
-                            (if (selected) "✅ " else "") +
+                            (if (selected) "✅ " else "") + Relations.emojiOf(p.relation) + " " +
                                 (p.name.ifBlank { "(بدون اسم)" }) + " · " + Relations.labelOf(p.relation),
                             style = MaterialTheme.typography.titleSmall,
                         )
