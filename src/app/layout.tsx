@@ -25,10 +25,10 @@ export const metadata: Metadata = {
     default: "Beyond Style UAE — Order Control Console",
     template: "%s · Beyond Style UAE",
   },
-  description: "UAE social-commerce sales operating console — AI drafts, owner approves. Conversion, payment, delivery and margin in one tower.",
+  description: "UAE social-commerce sales operating console — AI drafts, owner approves.",
   applicationName: "Beyond Style UAE",
   authors: [{ name: "Beyond Connect General Trading L.L.C." }],
-  keywords: ["Beyond Style UAE", "social commerce", "UAE", "AI sales", "order control"],
+  keywords: ["Beyond Style UAE", "social commerce", "UAE", "AI sales"],
   openGraph: {
     title: "Beyond Style UAE — Order Control Console",
     description: "AI drafts, owner approves. Track every lead, payment, delivery and review in one place.",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     locale: "en_AE",
   },
   twitter: { card: "summary_large_image" },
-  robots: { index: false, follow: false }, // internal ops tool
+  robots: { index: false, follow: false },
 };
 
 export const viewport: Viewport = {
@@ -44,8 +44,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fef3f9" },
-    { media: "(prefers-color-scheme: dark)",  color: "#1f2937" },
+    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
+    { media: "(prefers-color-scheme: dark)",  color: "#020617" },
   ],
 };
 
@@ -54,16 +54,23 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" dir="ltr">
       <body>
-        <div className="flex min-h-screen">
-          <aside className="hidden w-64 shrink-0 border-r border-gray-200 bg-white md:block">
+        <div className="flex h-screen overflow-hidden">
+          {/* Desktop sidebar */}
+          <aside className="hidden w-64 shrink-0 md:flex md:flex-col overflow-y-auto">
             <Nav badges={badges} />
           </aside>
-          <main className="flex-1 p-4 md:p-8">
-            <div className="md:hidden mb-3">
+
+          {/* Main content */}
+          <div className="flex flex-1 flex-col overflow-hidden">
+            {/* Mobile header */}
+            <div className="md:hidden px-4 pt-4 pb-2">
               <Nav mobile badges={badges} />
             </div>
-            {children}
-          </main>
+
+            <main className="flex-1 overflow-y-auto px-4 py-4 md:px-8 md:py-6">
+              {children}
+            </main>
+          </div>
         </div>
       </body>
     </html>

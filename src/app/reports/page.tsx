@@ -1,5 +1,5 @@
 import { fetchKpis, fetchRows, formatAed } from "@/lib/data";
-import { DemoBanner, PageHeader, Kpi, SectionTitle } from "@/components/ui";
+import { DemoBanner, PageHeader, Kpi, SectionTitle, Stat } from "@/components/ui";
 import { OrdersBarChart, RevenueAreaChart, FunnelBarChart, TopProductsChart } from "@/components/LazyCharts";
 import { revenueByDay, ordersByDay, conversionFunnel, topProducts } from "@/lib/analytics";
 import { buildVatCsv, type OrderForTax } from "@/lib/growth";
@@ -89,30 +89,30 @@ export default async function ReportsPage() {
           <SectionTitle action={<span className="muted text-xs">today, live</span>}>
             Daily operating review
           </SectionTitle>
-          <dl className="mb-3 grid grid-cols-2 gap-2 text-sm">
-            <Stat k="Conversations" v={metrics.todayConversations} />
-            <Stat k="Hot leads" v={metrics.todayHotLeads} />
-            <Stat k="Orders" v={metrics.todayOrders} />
-            <Stat k="Paid (AED)" v={formatAed(metrics.todayPaidAed)} />
-            <Stat k="Pending (AED)" v={formatAed(metrics.todayPendingAed)} />
-            <Stat k="Avg order (AED)" v={formatAed(metrics.avgOrderAed)} />
-            <Stat k="Conversion" v={`${metrics.conversionPercent}%`} />
-            <Stat k="Complaints" v={metrics.todayComplaints} />
-          </dl>
+          <div className="mb-3 grid grid-cols-2 gap-2">
+            <Stat label="Conversations"   value={metrics.todayConversations} />
+            <Stat label="Hot leads"       value={metrics.todayHotLeads} />
+            <Stat label="Orders"          value={metrics.todayOrders} />
+            <Stat label="Paid (AED)"      value={formatAed(metrics.todayPaidAed)} />
+            <Stat label="Pending (AED)"   value={formatAed(metrics.todayPendingAed)} />
+            <Stat label="Avg order (AED)" value={formatAed(metrics.avgOrderAed)} />
+            <Stat label="Conversion"      value={`${metrics.conversionPercent}%`} />
+            <Stat label="Complaints"      value={metrics.todayComplaints} />
+          </div>
           <h3 className="h2 mt-3 mb-1">Narrative — English</h3>
-          <pre className="whitespace-pre-wrap rounded-xl bg-gray-50 p-3 text-sm">{narrative.en}</pre>
+          <pre className="whitespace-pre-wrap rounded-xl bg-slate-50 p-3 text-sm text-slate-700">{narrative.en}</pre>
           <h3 className="h2 mt-3 mb-1">السرد — العربية</h3>
-          <pre className="rtl whitespace-pre-wrap rounded-xl bg-gray-50 p-3 text-sm" dir="rtl">{narrative.ar}</pre>
-          <p className="mt-2 text-xs text-gray-500">
+          <pre className="rtl whitespace-pre-wrap rounded-xl bg-slate-50 p-3 text-sm text-slate-700" dir="rtl">{narrative.ar}</pre>
+          <p className="mt-2 text-xs text-slate-500">
             Wire your AI provider (Settings) to polish this narrative every evening from the day&apos;s conversations.
           </p>
         </div>
         <div className="card">
           <SectionTitle>Weekly improvement loop</SectionTitle>
-          <ul className="list-disc pl-5 text-sm text-gray-700">
+          <ul className="list-disc pl-5 text-sm text-slate-700 space-y-1">
             {WEEKLY_SECTIONS.map((s) => <li key={s}>{s}</li>)}
           </ul>
-          <p className="mt-2 text-xs text-gray-500">
+          <p className="mt-3 text-xs text-slate-500">
             Run every Sunday. The VAT-ready CSV above feeds the monthly tax report.
           </p>
         </div>
@@ -121,11 +121,3 @@ export default async function ReportsPage() {
   );
 }
 
-function Stat({ k, v }: { k: string; v: string | number }) {
-  return (
-    <div className="rounded-lg bg-gray-50 px-3 py-2">
-      <div className="text-[10px] uppercase tracking-wide text-gray-400">{k}</div>
-      <div className="text-sm font-semibold">{v}</div>
-    </div>
-  );
-}
