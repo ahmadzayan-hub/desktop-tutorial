@@ -22,7 +22,6 @@ export const SLIDE_H_IN = 7.5;
 
 export type Pptx = any;
 export async function loadPptxGen(): Promise<any> {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const mod: any = await import("pptxgenjs");
   return mod.default ?? mod;
 }
