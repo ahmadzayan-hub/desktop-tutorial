@@ -19,12 +19,12 @@ const EMIRATES = [
 
 export default function Checkout() {
   const { items, total, shipping, subtotal, clear } = useCart();
-  const { t, locale } = useI18n();
+  const { t, locale, fmtLocale } = useI18n();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const fmt = (n: number) => formatAED(n, locale === "ar" ? "ar-AE" : "en-AE");
+  const fmt = (n: number) => formatAED(n, fmtLocale);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

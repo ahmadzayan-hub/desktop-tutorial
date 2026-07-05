@@ -5,7 +5,7 @@ import { formatAED } from "@/lib/utils";
 /** Dubai free-shipping progress banner — explicit about the area. */
 export function ShippingBanner() {
   const { shipping, subtotal } = useCart();
-  const { t, locale } = useI18n();
+  const { t, fmtLocale } = useI18n();
 
   const pct = Math.min(100, (subtotal / (subtotal + shipping.remaining || 1)) * 100);
 
@@ -16,7 +16,7 @@ export function ShippingBanner() {
           {shipping.qualifies
             ? t("ship.unlocked")
             : t("ship.unlock", {
-                amount: formatAED(shipping.remaining, locale === "ar" ? "ar-AE" : "en-AE"),
+                amount: formatAED(shipping.remaining, fmtLocale),
               })}
         </p>
         <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-white/10">

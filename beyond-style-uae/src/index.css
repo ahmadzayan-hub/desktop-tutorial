@@ -4,21 +4,14 @@
 
 :root {
   --ink: #0a0a0a;
+  --ink-2: #141414;
   --gold: #c9a96e;
   --gold-light: #e4cfa1;
   --gold-dark: #a6864b;
 }
 
-/* Slight base-size bump for mobile readability; scales every rem unit
-   downstream without touching individual classes. */
 html {
-  font-size: 17px;
   scroll-behavior: smooth;
-}
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
 }
 
 body {
@@ -26,43 +19,43 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Arabic / RTL — Alexandria is heavier per-em than Inter, so we bump it
-   slightly and use a roomier line-height for comfortable reading. */
+/* Arabic / RTL uses the Alexandria display face with a roomier line-height
+   because Arabic script reads better with more vertical breathing room. */
 html[dir="rtl"] body {
-  font-family: "Alexandria", "Inter", sans-serif;
-  font-size: 1.0625rem; /* ~18px desktop, ~18px mobile */
-  line-height: 1.85;
-  letter-spacing: 0;
-  word-spacing: 0.02em;
-}
-
-html[dir="rtl"] h1,
-html[dir="rtl"] h2,
-html[dir="rtl"] h3 {
-  line-height: 1.45;
-  font-weight: 600;
-}
-
-/* Force the form controls to use the body font so Arabic stays in
-   Alexandria everywhere (some browsers fall back to system sans). */
-html[dir="rtl"] input,
-html[dir="rtl"] select,
-html[dir="rtl"] textarea,
-html[dir="rtl"] button {
-  font-family: inherit;
+  font-family: "Alexandria", Inter, sans-serif;
+  line-height: 1.75;
 }
 
 @layer components {
+  /* Gold-gradient utility for borders and CTAs */
   .gold-text {
     @apply bg-gold-gradient bg-clip-text text-transparent;
   }
 
   .gold-cta {
     @apply bg-gold-gradient text-ink font-semibold rounded-full px-6 py-3
-      text-base transition-shadow duration-300 hover:shadow-glow
+      transition-shadow duration-300 hover:shadow-glow focus:outline-none
+      focus-visible:ring-2 focus-visible:ring-gold;
+  }
+
+  /* Ghost / secondary button — used for WhatsApp CTAs and side actions. */
+  .btn-outline {
+    @apply rounded-full border border-gold/30 text-gold
+      transition-colors duration-200 hover:bg-gold/10
       focus:outline-none focus-visible:ring-2 focus-visible:ring-gold;
   }
 
+  /* Uniform card surface used across the storefront. */
+  .surface-card {
+    @apply rounded-2xl border border-gold/15 bg-ink;
+  }
+
+  /* Reusable section title so headings stay consistent everywhere. */
+  .section-title {
+    @apply mb-4 font-display text-xl gold-text md:text-2xl;
+  }
+
+  /* 1px gold gradient border via padding trick */
   .gold-border {
     @apply relative rounded-2xl bg-gold-gradient p-px;
   }

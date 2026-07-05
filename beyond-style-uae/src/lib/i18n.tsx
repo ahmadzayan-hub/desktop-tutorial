@@ -101,6 +101,8 @@ const DICT: Dict = {
 interface I18nValue {
   locale: Locale;
   dir: "ltr" | "rtl";
+  /** BCP-47 tag suitable for Intl.NumberFormat / Intl.DateTimeFormat (e.g. "ar-AE"). */
+  fmtLocale: "ar-AE" | "en-AE";
   setLocale: (l: Locale) => void;
   t: (key: keyof typeof DICT, vars?: Record<string, string>) => string;
 }
@@ -124,6 +126,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     () => ({
       locale,
       dir,
+      fmtLocale: locale === "ar" ? "ar-AE" : "en-AE",
       setLocale,
       t: (key, vars) => {
         let s = DICT[key]?.[locale] ?? String(key);

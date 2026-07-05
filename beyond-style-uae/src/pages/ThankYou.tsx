@@ -1,7 +1,7 @@
 import { Link, useSearchParams } from "react-router-dom";
-import { CheckCircle2, MessageCircle } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { whatsappLink } from "@/components/WhatsAppFab";
+import { AskOnWhatsApp } from "@/components/ui/AskOnWhatsApp";
 
 export default function ThankYou() {
   const [params] = useSearchParams();
@@ -19,13 +19,13 @@ export default function ThankYou() {
       <h1 className="mt-4 font-display text-2xl gold-text">
         {locale === "ar" ? "شكراً لطلبك!" : "Thank you for your order!"}
       </h1>
-      <p className="mt-3 text-cream/70">
+      <p className="mt-3 text-cream/75">
         {locale === "ar"
           ? "تم استلام طلبك. لطلبات الدفع عند الاستلام سنؤكد عبر واتساب قبل الشحن."
           : "Your order is received. For Cash on Delivery, we'll confirm by WhatsApp before dispatch."}
       </p>
       {order && (
-        <p className="mt-3 inline-block rounded-full border border-gold/30 px-3 py-1 font-mono text-xs text-cream/60">
+        <p className="btn-outline mt-3 inline-block px-3 py-1 font-mono text-xs text-cream/60">
           #{order}
         </p>
       )}
@@ -34,15 +34,10 @@ export default function ThankYou() {
         <Link to="/" className="gold-cta">
           {locale === "ar" ? "متابعة التسوق" : "Continue shopping"}
         </Link>
-        <a
-          href={whatsappLink(trackingMessage)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-full border border-gold/30 px-5 py-3 text-sm text-gold hover:bg-gold/10"
-        >
-          <MessageCircle size={16} />
-          {locale === "ar" ? "تتبع الطلب عبر واتساب" : "Track on WhatsApp"}
-        </a>
+        <AskOnWhatsApp
+          message={trackingMessage}
+          label={locale === "ar" ? "تتبع الطلب عبر واتساب" : "Track on WhatsApp"}
+        />
       </div>
     </div>
   );

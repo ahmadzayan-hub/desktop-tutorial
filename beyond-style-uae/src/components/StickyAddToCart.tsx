@@ -15,7 +15,7 @@ export function StickyAddToCart({
   price: number;
 }) {
   const { add } = useCart();
-  const { t, locale } = useI18n();
+  const { t, fmtLocale } = useI18n();
 
   return (
     <motion.div
@@ -26,7 +26,7 @@ export function StickyAddToCart({
     >
       <div className="mx-auto flex max-w-5xl items-center gap-3">
         <span className="font-display text-lg gold-text">
-          {formatAED(price, locale === "ar" ? "ar-AE" : "en-AE")}
+          {formatAED(price, fmtLocale)}
         </span>
         <button className="gold-cta flex-1" onClick={() => add(item)}>
           {t("cart.addToCart")}

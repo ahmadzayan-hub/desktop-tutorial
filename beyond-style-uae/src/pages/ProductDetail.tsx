@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { MessageCircle } from "lucide-react";
 import { api } from "@/lib/api";
 import { SAMPLE_PRODUCTS, SAMPLE_REVIEWS, PAIR_OFFERS } from "@/lib/sample-data";
 import { cld, cldSrcSet } from "@/lib/cloudinary";
@@ -13,12 +12,13 @@ import { Reviews } from "@/components/Reviews";
 import { StickyAddToCart } from "@/components/StickyAddToCart";
 import { JsonLd, productJsonLd } from "@/components/JsonLd";
 import { FadeIn } from "@/components/motion";
-import { whatsappLink } from "@/components/WhatsAppFab";
+import { Badge } from "@/components/ui/Badge";
+import { AskOnWhatsApp } from "@/components/ui/AskOnWhatsApp";
 import type { ProductDTO, ReviewDTO } from "@/types";
 
 export default function ProductDetail() {
   const { slug = "" } = useParams();
-  const { locale, t } = useI18n();
+  const { locale, t, fmtLocale } = useI18n();
   const { add } = useCart();
 
   const [product, setProduct] = useState<ProductDTO | null>(
@@ -103,11 +103,11 @@ export default function ProductDetail() {
 
           <div className="mt-4 flex items-baseline gap-3">
             <span className="gold-text text-2xl font-semibold">
-              {formatAED(price, locale === "ar" ? "ar-AE" : "en-AE")}
+              {formatAED(price, fmtLocale)}
             </span>
             {product.compareAtAed && (
               <span className="text-cream/40 line-through">
-                {formatAED(Number(product.compareAtAed), locale === "ar" ? "ar-AE" : "en-AE")}
+                {formatAED(Number(product.compareAtAed), fmtLocale)}
               </span>
             )}
           </div>
@@ -118,22 +118,15 @@ export default function ProductDetail() {
             </p>
           )}
 
-          <p className="mt-4 text-base text-cream/80 leading-relaxed">{description}</p>
-          <p className="mt-3 text-sm text-gold/80">{product.material}</p>
-          <p className="mt-1 text-sm text-cream/55">{t("pay.note")}</p>
+          <p className="mt-4 text-cream/75">{description}</p>
+          <p className="mt-2 text-sm text-gold/80">{product.material}</p>
+          <p className="mt-1 text-xs text-cream/50">{t("pay.note")}</p>
 
           <div className="mt-6 hidden gap-3 md:flex">
             <button className="gold-cta flex-1" onClick={() => add(cartItem)}>
               {t("cart.addToCart")}
             </button>
-            <a
-              href={whatsappLink(askMessage)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-gold/30 px-5 py-3 text-sm text-gold hover:bg-gold/10"
-            >
-              <MessageCircle size={16} /> {t("cart.askWhatsApp")}
-            </a>
+            <AskOnWhatsApp message={askMessage} />
           </div>
 
           <div className="mt-6">
@@ -146,13 +139,5 @@ export default function ProductDetail() {
 
       <StickyAddToCart item={cartItem} price={price} />
     </div>
-  );
-}
-
-function Badge({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="rounded-full border border-gold/30 px-2 py-0.5 text-xs text-gold/90">
-      {children}
-    </span>
   );
 }

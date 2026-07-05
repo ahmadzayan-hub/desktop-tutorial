@@ -7,8 +7,8 @@ import { cld } from "@/lib/cloudinary";
 
 export default function Cart() {
   const { items, subtotal, savings, shipping, total, setQty, remove } = useCart();
-  const { t, locale } = useI18n();
-  const fmt = (n: number) => formatAED(n, locale === "ar" ? "ar-AE" : "en-AE");
+  const { t, locale, fmtLocale } = useI18n();
+  const fmt = (n: number) => formatAED(n, fmtLocale);
 
   if (items.length === 0) {
     return (
@@ -23,13 +23,13 @@ export default function Cart() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="mb-6 font-display text-2xl gold-text">{t("nav.cart")}</h1>
+      <h1 className="section-title">{t("nav.cart")}</h1>
 
       <ul className="space-y-4">
         {items.map((i) => (
           <li
             key={i.productId}
-            className="flex items-center gap-4 rounded-xl border border-gold/15 p-3"
+            className="flex items-center gap-4 surface-card rounded-xl p-3"
           >
             <img
               src={cld(i.cloudinaryId, { width: 120, crop: "fill" })}
