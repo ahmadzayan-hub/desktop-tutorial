@@ -123,6 +123,62 @@ export function Pricing() {
         })}
       </Reveal>
 
+      {/* ── Feature comparison — what's in each plan side-by-side ─ */}
+      <Reveal variant="single">
+        <div className="pq-compare">
+          <div className="pq-compare-head">
+            <div className="pq-section-eyebrow">
+              {lang === "ar" ? "المقارنة" : "Compare"}
+            </div>
+            <h2 className="pq-section-title" style={{ marginTop: "0.6rem" }}>
+              {lang === "ar" ? "ماذا يشمل كل باقة" : "What's in each plan"}
+            </h2>
+          </div>
+          <div className="pq-compare-table-wrap" role="region" aria-label={lang === "ar" ? "مقارنة الميّزات" : "Feature comparison"}>
+            <table className="pq-compare-table">
+              <thead>
+                <tr>
+                  <th scope="col">{lang === "ar" ? "الميزة" : "Feature"}</th>
+                  <th scope="col">{lang === "ar" ? "التجربة" : "Trial"}</th>
+                  <th scope="col" className="is-featured">{lang === "ar" ? "الاحترافي" : "Pro"}</th>
+                  <th scope="col">{lang === "ar" ? "الأعمال" : "Business"}</th>
+                  <th scope="col">{lang === "ar" ? "المؤسّسة" : "Enterprise"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { f: lang === "ar" ? "عروض شهرياً" : "Decks per month",           v: ["3", "50", "250", "∞"] },
+                  { f: lang === "ar" ? "هويّات علامة" : "Brand kits",                  v: ["1", "3", "25", "∞"] },
+                  { f: lang === "ar" ? "تصدير PPTX قابل للتحرير" : "Editable PPTX export", v: [true, true, true, true] },
+                  { f: lang === "ar" ? "دعم عربي RTL" : "Arabic RTL support",         v: [true, true, true, true] },
+                  { f: lang === "ar" ? "تقييم الجاهزية (١٠ أبعاد)" : "Readiness score (10 dims)", v: [true, true, true, true] },
+                  { f: lang === "ar" ? "حوكمة الهويّة" : "Brand governance",           v: [false, true, true, true] },
+                  { f: lang === "ar" ? "سير عمل الاعتماد" : "Approval workflow",       v: [false, false, true, true] },
+                  { f: lang === "ar" ? "سجلّ التدقيق" : "Audit log export",             v: [false, false, true, true] },
+                  { f: lang === "ar" ? "تسجيل دخول موحّد (SSO)" : "SSO integration",   v: [false, false, false, true] },
+                  { f: lang === "ar" ? "مدير حساب مخصّص" : "Named CSM",                v: [false, false, false, true] },
+                ].map((row, i) => (
+                  <tr key={i}>
+                    <th scope="row">{row.f}</th>
+                    {row.v.map((val, j) => (
+                      <td key={j} className={j === 1 ? "is-featured" : ""}>
+                        {val === true ? (
+                          <Check size={16} strokeWidth={2.4} aria-label={lang === "ar" ? "متضمّن" : "Included"} />
+                        ) : val === false ? (
+                          <span className="pq-compare-dash" aria-label={lang === "ar" ? "غير متضمّن" : "Not included"}>—</span>
+                        ) : (
+                          <span>{val}</span>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </Reveal>
+
       <Reveal variant="single">
         <Frame4D variant="pine" className="p-8" interactive={false}>
           <div className="flex flex-wrap items-center justify-between gap-4">
@@ -147,7 +203,18 @@ export function Pricing() {
         </Frame4D>
       </Reveal>
 
-      <Reveal variant="stagger" className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <Reveal variant="single">
+        <div className="pq-section-head" style={{ textAlign: "center" }}>
+          <div className="pq-section-eyebrow">
+            {lang === "ar" ? "الأسئلة" : "FAQ"}
+          </div>
+          <h2 className="pq-section-title" style={{ marginTop: "0.6rem" }}>
+            {lang === "ar" ? "أسئلة عن الفوترة والأمان" : "Billing & security questions"}
+          </h2>
+        </div>
+      </Reveal>
+
+      <Reveal variant="stagger" className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {[
           {
             q: lang === "ar" ? "هل يمكنني الإلغاء في أي وقت؟" : "Can I cancel anytime?",
@@ -161,11 +228,26 @@ export function Pricing() {
             q: lang === "ar" ? "كم تستغرق الترقية؟" : "How fast is the upgrade?",
             a: lang === "ar" ? "فوريّ. الفوترة من Stripe، والميزات تُفعّل في ثوانٍ بعد الدفع." : "Instant. Stripe-billed; features unlock seconds after payment.",
           },
+          {
+            q: lang === "ar" ? "ما وسائل الدفع المقبولة؟" : "What payment methods do you accept?",
+            a: lang === "ar" ? "بطاقات فيزا وماستركارد وأميكس عبر Stripe. المؤسّسة تدفع بالحوالة البنكية أو أوامر الشراء." : "Visa, Mastercard, and Amex via Stripe. Enterprise plans can pay by bank transfer or PO.",
+          },
+          {
+            q: lang === "ar" ? "هل يوجد ضمان استرداد؟" : "Is there a money-back guarantee?",
+            a: lang === "ar" ? "نعم. استرداد كامل خلال ١٤ يوماً على أي باقة مدفوعة، بلا أسئلة." : "Yes. Full refund within 14 days on any paid plan, no questions asked.",
+          },
+          {
+            q: lang === "ar" ? "هل يمكنني الترقية أو التخفيض لاحقاً؟" : "Can I change plans later?",
+            a: lang === "ar" ? "نعم. الترقية فوريّة والتخفيض يسري في دورة الفوترة التالية." : "Yes. Upgrades apply immediately; downgrades take effect at the next billing cycle.",
+          },
         ].map((item, i) => (
-          <Frame4D key={i} className="p-6" interactive={false}>
-            <h4 className="font-semibold" style={{ color: "var(--pq-text-main)" }}>{item.q}</h4>
-            <p className="mt-2 text-sm" style={{ color: "var(--pq-text-secondary)", lineHeight: 1.55 }}>{item.a}</p>
-          </Frame4D>
+          <details key={i} className="pq-faq-item">
+            <summary>
+              <span>{item.q}</span>
+              <span className="pq-faq-mark" aria-hidden>+</span>
+            </summary>
+            <p>{item.a}</p>
+          </details>
         ))}
       </Reveal>
     </div>

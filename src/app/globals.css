@@ -2088,6 +2088,21 @@ html.dark {
 }
 .pq-tpl-card-title { font-size: 0.92rem; font-weight: 600; color: var(--pq-text-main); }
 .pq-tpl-card-sub   { font-size: 0.74rem; color: var(--pq-primary); margin-top: 0.15rem; }
+
+/* Detailed-grid modifier for the /presentiq/templates gallery. The
+   standard .pq-tpl-card is locked to aspect-ratio: 4/5 with
+   overflow: hidden — perfect for the compact landing grid, but on
+   the full gallery each card has description + numbered outline +
+   2 CTA buttons that overflow that ratio and get chopped. This
+   modifier releases the ratio so cards grow with content. */
+.pq-tpl-grid-detailed .pq-tpl-card {
+  aspect-ratio: auto;
+  grid-template-rows: auto 1fr;
+  overflow: visible;
+}
+.pq-tpl-grid-detailed .pq-tpl-card-cover {
+  min-height: 8.5rem;
+}
 .pq-hero-eyebrow {
   display: inline-flex;
   align-items: center;
@@ -2989,5 +3004,134 @@ html.dark {
 .pq-footer-bottom-social {
   display: flex;
   gap: 0.5rem;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   Round 3 — pricing feature comparison table
+   ══════════════════════════════════════════════════════════════════ */
+
+.pq-compare-head {
+  text-align: center;
+  max-width: 40rem;
+  margin: 0 auto 1.5rem;
+}
+.pq-compare-table-wrap {
+  overflow-x: auto;
+  border-radius: 1.25rem;
+  border: 1px solid var(--pq-border-soft);
+  background: rgba(22,29,68,0.4);
+}
+.pq-compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 40rem;
+}
+.pq-compare-table th,
+.pq-compare-table td {
+  padding: 0.85rem 1rem;
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--pq-text-secondary);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.pq-compare-table th[scope="col"] {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--pq-text-main);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 1.1rem 1rem;
+  background: rgba(30,38,84,0.55);
+  border-bottom: 1px solid var(--pq-border-soft);
+}
+.pq-compare-table th[scope="col"].is-featured,
+.pq-compare-table td.is-featured {
+  background: rgba(99,102,241,0.14);
+}
+.pq-compare-table th[scope="col"].is-featured {
+  color: var(--pq-primary);
+}
+.pq-compare-table th[scope="row"] {
+  text-align: start;
+  font-weight: 500;
+  color: var(--pq-text-main);
+  background: rgba(10,14,42,0.55);
+  border-inline-end: 1px solid var(--pq-border-soft);
+}
+.pq-compare-table tr:last-child th,
+.pq-compare-table tr:last-child td {
+  border-bottom: none;
+}
+.pq-compare-table td svg {
+  color: var(--pq-primary);
+}
+.pq-compare-dash {
+  color: var(--pq-text-muted);
+  opacity: 0.5;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   Round 3 — about page milestone timeline
+   ══════════════════════════════════════════════════════════════════ */
+
+.pq-timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.pq-timeline::before {
+  content: "";
+  position: absolute;
+  top: 0.55rem;
+  bottom: 0.55rem;
+  inset-inline-start: 0.5rem;
+  width: 1px;
+  background: linear-gradient(180deg,
+    var(--pq-primary) 0%,
+    rgba(99,102,241,0.4) 50%,
+    rgba(99,102,241,0.1) 100%);
+}
+.pq-timeline li {
+  position: relative;
+  padding-inline-start: 1.75rem;
+}
+.pq-timeline-dot {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0.35rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 999px;
+  background: rgba(30,38,84,0.85);
+  border: 2px solid var(--pq-primary);
+  box-shadow: 0 0 0 4px rgba(99,102,241,0.14);
+}
+.pq-timeline li.is-next .pq-timeline-dot {
+  background: transparent;
+  border-color: rgba(129,140,248,0.55);
+  border-style: dashed;
+  box-shadow: none;
+}
+.pq-timeline-when {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pq-primary);
+  margin-bottom: 0.15rem;
+}
+.pq-timeline li.is-next .pq-timeline-when {
+  color: var(--pq-text-muted);
+}
+.pq-timeline-what {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--pq-text-secondary);
 }
 

@@ -54,7 +54,7 @@ export function TemplatesGallery() {
         })}
       </div>
 
-      <div className="pq-tpl-grid">
+      <div className="pq-tpl-grid pq-tpl-grid-detailed">
         {visible.map((tp, i) => (
           <TemplateCard
             key={tp.code}
