@@ -48,12 +48,13 @@ class SuggestionEngine(
         return items.last()
     }
 
-    // مرساة الصوت الثابتة — بتحافظ على النبرة الأساسية عشان الأسلوب ما ينحرفش.
+    // مرساة الصوت — النبرة الأساسية حسب نوع العلاقة (شريك/ابن/أم/أخ...).
     private fun buildSystemPrompt(): String {
+        val rel = Relations.byId(settings.currentRecipient()?.relation ?: "partner_wife")
         val lines = mutableListOf(
-            "انت بتساعد راجل مصري يكتب رسايل قصيرة لمراته باللهجة المصرية العامية.",
-            "اكتب كإنسان حقيقي بيحبها بجد — بإحساس صادق ودفء إنساني، مش كلام آلة.",
-            "النبرة: ${AppConstants.TONE}.",
+            "انت بتساعد شخص مصري يكتب رسالة قصيرة ${rel.toAddr} (${rel.label}) باللهجة المصرية العامية.",
+            "النبرة المناسبة للعلاقة دي: ${rel.tone}.",
+            "اكتب كإنسان حقيقي بمشاعر صادقة ودفء إنساني — مش كلام آلة.",
             "قواعد ثابتة لا تتغيّر:",
             if (settings.messageLength == "medium")
                 "- الرسالة من سطرين لـ 3 أسطر."
@@ -66,28 +67,30 @@ class SuggestionEngine(
         if (settings.humor) {
             lines.add("- حطّ لمسة خفيفة من الدُعابة الحلوة اللطيفة، من غير سخافة ولا مبالغة.")
         }
-        lines.add("هدفك: اقتراح هو يبعته بنفسه لمراته. انت بتساعده بس.")
+        lines.add("هدفك: اقتراح هو يبعته بنفسه ${rel.toAddr} عشان يقرّب ويقوّي الترابط.")
         return lines.joinToString("\n")
     }
 
-    // بلوك التخصيص — بيخلّي الرسالة ليها هي بالذات ومنّه هو (شخصنة إنسانية).
+    // بلوك التخصيص — بيخلّي الرسالة للشخص ده بالذات ومنّه هو (شخصنة إنسانية).
     private fun buildPersonaBlock(): String {
+        val r = settings.currentRecipient()
         val parts = mutableListOf<String>()
-        if (settings.myName.isNotBlank()) parts.add("اسمه: ${settings.myName.trim()}.")
-        if (settings.wifeName.isNotBlank()) {
-            parts.add("اسم مراته: ${settings.wifeName.trim()} — نادِها باسمها أو دلعه بشكل طبيعي.")
+        if (settings.myName.isNotBlank()) parts.add("اسم اللي بيبعت: ${settings.myName.trim()}.")
+        if (r != null && r.name.isNotBlank()) {
+            parts.add("اسم اللي بيتبعتله: ${r.name.trim()} — نادِه باسمه أو دلعه بشكل طبيعي.")
         }
-        if (settings.relationshipNotes.isNotBlank()) {
-            parts.add("حاجات عنها تخصّص بيها الرسالة: ${settings.relationshipNotes.trim()}.")
+        if (r != null && r.notes.isNotBlank()) {
+            parts.add("حاجات عنه تخصّص بيها الرسالة: ${r.notes.trim()}.")
         }
         if (parts.isEmpty()) return ""
         return ("تخصيص (خلّي التفاصيل دي محسوسة في الرسالة، بس من غير ما تسردها صريحة):\n" +
             parts.joinToString("\n"))
     }
 
-    // حقن أمثلة الأسلوب (few-shot) من اختياراتي السابقة.
+    // حقن أمثلة الأسلوب (few-shot) من اختياراتي السابقة للشخص ده.
     private fun buildStyleBlock(): String {
-        val examples = store.styleExamples()
+        val rid = settings.currentRecipient()?.id ?: ""
+        val examples = store.styleExamples(rid)
         if (examples.isEmpty()) return "لسه مفيش أمثلة من أسلوبي. اكتب بنبرة دافئة بسيطة طبيعية."
         val lines = examples.takeLast(AppConstants.STYLE_EXAMPLES_MAX)
             .mapIndexed { i, e -> "${i + 1}) ${e.text}" }

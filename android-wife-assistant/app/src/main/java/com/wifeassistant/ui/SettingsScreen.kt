@@ -45,10 +45,7 @@ fun SettingsScreen(onBack: () -> Unit) {
     val settings = remember { Settings(context) }
 
     var groqKey by remember { mutableStateOf(settings.groqKey) }
-    var wifeNumber by remember { mutableStateOf(settings.wifeNumber) }
     var myName by remember { mutableStateOf(settings.myName) }
-    var wifeName by remember { mutableStateOf(settings.wifeName) }
-    var notes by remember { mutableStateOf(settings.relationshipNotes) }
     var humor by remember { mutableStateOf(settings.humor) }
     var messageLength by remember { mutableStateOf(settings.messageLength) }
     var model by remember { mutableStateOf(settings.model) }
@@ -84,15 +81,8 @@ fun SettingsScreen(onBack: () -> Unit) {
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
-            OutlinedTextField(
-                value = wifeNumber,
-                onValueChange = { wifeNumber = it },
-                label = { Text("رقم واتساب مراتك (دولي بأرقام، مثال 2010xxxxxxxx)") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-            )
 
-            Section("التخصيص — خلّي الرسالة ليها هي بالذات")
+            Section("عنك")
             OutlinedTextField(
                 value = myName,
                 onValueChange = { myName = it },
@@ -100,20 +90,13 @@ fun SettingsScreen(onBack: () -> Unit) {
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
-            OutlinedTextField(
-                value = wifeName,
-                onValueChange = { wifeName = it },
-                label = { Text("اسم مراتك أو دلعها") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
+            Text(
+                "الأشخاص وأرقامهم بتتظبط من شاشة \"الأشخاص\" في الصفحة الرئيسية.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            OutlinedTextField(
-                value = notes,
-                onValueChange = { notes = it },
-                label = { Text("حاجات عنها (بتحب إيه، نكت بينكم، ذكريات)") },
-                minLines = 3,
-                modifier = Modifier.fillMaxWidth(),
-            )
+
+            Section("نبرة الرسالة")
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("لمسة دُعابة خفيفة", modifier = Modifier.weight(1f))
                 Switch(checked = humor, onCheckedChange = { humor = it })
@@ -163,10 +146,7 @@ fun SettingsScreen(onBack: () -> Unit) {
             Button(
                 onClick = {
                     settings.groqKey = groqKey.trim()
-                    settings.wifeNumber = wifeNumber.trim()
                     settings.myName = myName.trim()
-                    settings.wifeName = wifeName.trim()
-                    settings.relationshipNotes = notes.trim()
                     settings.humor = humor
                     settings.messageLength = messageLength
                     settings.model = model

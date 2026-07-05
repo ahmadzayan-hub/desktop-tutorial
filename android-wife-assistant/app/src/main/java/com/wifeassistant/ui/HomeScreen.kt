@@ -33,6 +33,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -51,6 +52,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.wifeassistant.data.Relations
 import com.wifeassistant.data.Settings
 import com.wifeassistant.data.Suggestion
 import com.wifeassistant.util.Share
@@ -63,6 +65,7 @@ fun HomeScreen(
     onOpenSettings: () -> Unit,
     onOpenStats: () -> Unit,
     onOpenHistory: () -> Unit,
+    onOpenPeople: () -> Unit,
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -105,6 +108,7 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             HeaderBanner()
+            RecipientBar(onOpenPeople = onOpenPeople)
 
             // أزرار التوليد
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -147,7 +151,9 @@ fun HomeScreen(
                     onChoose = { vm.choose(idx) },
                     onCopy = { clipboard.setText(AnnotatedString(item.text)) },
                     onShare = { Share.text(context, item.text) },
-                    onWhatsApp = { WhatsApp.send(context, Settings(context).wifeNumber, item.text) },
+                    onWhatsApp = {
+                        WhatsApp.send(context, Settings(context).currentRecipient()?.number.orEmpty(), item.text)
+                    },
                 )
             }
 
@@ -176,6 +182,30 @@ fun HomeScreen(
             }
 
             Spacer(Modifier.height(24.dp))
+        }
+    }
+}
+
+@Composable
+private fun RecipientBar(onOpenPeople: () -> Unit) {
+    val context = LocalContext.current
+    val r = remember { Settings(context).currentRecipient() }
+    val who = when {
+        r == null -> "محدّش لسه"
+        r.name.isNotBlank() -> "${r.name} · ${Relations.labelOf(r.relation)}"
+        else -> Relations.labelOf(r.relation)
+    }
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text("✍️ بتكتب لـ: $who", modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+            TextButton(onClick = onOpenPeople) { Text("تغيير") }
         }
     }
 }

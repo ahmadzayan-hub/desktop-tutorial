@@ -13,7 +13,7 @@ data class ReviewReport(
 )
 
 class Review(private val store: Store) {
-    fun build(): ReviewReport = compute(store.feedback(), store.styleExamples().size)
+    fun build(): ReviewReport = compute(store.feedback(), store.styleExamplesCount())
 
     companion object {
         private fun isAccepted(choice: String) =

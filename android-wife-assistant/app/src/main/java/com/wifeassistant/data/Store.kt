@@ -24,14 +24,21 @@ class Store(context: Context) {
         return AppData(themeWeights = weights)
     }
 
-    // ---- ملف الأسلوب (آخر 30) ----
-    fun styleExamples(): List<StyleExample> = read().styleExamples
+    // ---- ملف الأسلوب (آخر 30 لكل شخص على حدة) ----
+    fun styleExamples(recipientId: String): List<StyleExample> =
+        read().styleExamples.filter { it.recipientId == recipientId }
+
+    fun styleExamplesCount(): Int = read().styleExamples.size
 
     @Synchronized
-    fun addStyleExample(text: String, theme: String?) {
+    fun addStyleExample(text: String, theme: String?, recipientId: String) {
         val d = read()
-        d.styleExamples.add(StyleExample(text.trim(), theme, DateUtil.todayISO()))
-        while (d.styleExamples.size > AppConstants.STYLE_EXAMPLES_MAX) d.styleExamples.removeAt(0)
+        d.styleExamples.add(StyleExample(text.trim(), theme, DateUtil.todayISO(), recipientId))
+        // السقف لكل شخص لوحده (الأقدم لنفس الشخص يخرج).
+        while (d.styleExamples.count { it.recipientId == recipientId } > AppConstants.STYLE_EXAMPLES_MAX) {
+            val idx = d.styleExamples.indexOfFirst { it.recipientId == recipientId }
+            if (idx >= 0) d.styleExamples.removeAt(idx) else break
+        }
         write(d)
     }
 

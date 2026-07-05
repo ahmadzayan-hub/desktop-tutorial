@@ -17,9 +17,11 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.wifeassistant.data.Settings
 import com.wifeassistant.ui.HistoryScreen
 import com.wifeassistant.ui.HomeScreen
 import com.wifeassistant.ui.HomeViewModel
+import com.wifeassistant.ui.PeopleScreen
 import com.wifeassistant.ui.SettingsScreen
 import com.wifeassistant.ui.StatsScreen
 import com.wifeassistant.ui.theme.WifeAssistantTheme
@@ -35,6 +37,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         Notifications.ensureChannel(this)
+        Settings(this).ensureSeed() // أول تشغيل: يجهّز أول شخص افتراضي
         requestNotificationPermissionIfNeeded()
         Scheduler.scheduleDaily(this) // جدولة إشعارات الصباح/المساء
 
@@ -67,11 +70,13 @@ private fun AppRoot() {
         "settings" -> SettingsScreen(onBack = { screen = "home" })
         "stats" -> StatsScreen(onBack = { screen = "home" })
         "history" -> HistoryScreen(onBack = { screen = "home" })
+        "people" -> PeopleScreen(onBack = { screen = "home" })
         else -> HomeScreen(
             vm = vm,
             onOpenSettings = { screen = "settings" },
             onOpenStats = { screen = "stats" },
             onOpenHistory = { screen = "history" },
+            onOpenPeople = { screen = "people" },
         )
     }
 }

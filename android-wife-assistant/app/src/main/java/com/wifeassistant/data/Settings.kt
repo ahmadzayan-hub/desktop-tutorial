@@ -63,4 +63,35 @@ class Settings(context: Context) {
                 .getOrDefault(AppConstants.DEFAULT_OCCASIONS)
         }
         set(v) = prefs.edit().putString("occasions", json.encodeToString(v)).apply()
+
+    // ---- الأشخاص (الترابط الأسري) ----
+    var recipients: List<Recipient>
+        get() {
+            val raw = prefs.getString("recipients", null) ?: return emptyList()
+            return runCatching { json.decodeFromString<List<Recipient>>(raw) }.getOrDefault(emptyList())
+        }
+        set(v) = prefs.edit().putString("recipients", json.encodeToString(v)).apply()
+
+    var selectedRecipientId: String
+        get() = prefs.getString("selectedRecipientId", "").orEmpty()
+        set(v) = prefs.edit().putString("selectedRecipientId", v).apply()
+
+    fun currentRecipient(): Recipient? {
+        val list = recipients
+        return list.firstOrNull { it.id == selectedRecipientId } ?: list.firstOrNull()
+    }
+
+    // أول تشغيل: لو مفيش أشخاص، اعمل واحد افتراضي (من بيانات الزوجة القديمة لو موجودة).
+    fun ensureSeed() {
+        if (recipients.isNotEmpty()) return
+        val seed = Recipient(
+            id = "seed-1",
+            name = wifeName,
+            relation = "partner_wife",
+            number = wifeNumber,
+            notes = relationshipNotes,
+        )
+        recipients = listOf(seed)
+        selectedRecipientId = seed.id
+    }
 }
