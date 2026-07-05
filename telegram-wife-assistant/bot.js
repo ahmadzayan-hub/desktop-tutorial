@@ -104,53 +104,45 @@ async function sendSuggestions(bot, { slot, occasion, force = false, target } = 
   store.markSlotSentToday(slot);
 }
 
-// ---- التعلّم: لما تختار اقتراح ----
+// تسجيل تغذية راجعة للجولة الحالية (مصدر واحد بدل ما نكرّر نفس الشكل).
+function recordFeedback(choice, finalText) {
+  store.addFeedback({
+    slot: pending.slot,
+    themesShown: pending.themesShown,
+    choice,
+    finalText,
+  });
+}
+
+// ---- التعلّم: لما تختار اقتراح (الأول idx=0 أو التاني idx=1) ----
 function learnFromPick(idx) {
   if (!pending) return;
   const chosen = pending.items[idx];
   const theme = pending.themesShown[idx] || pending.themesShown[0];
 
-  // النص المختار يدخل ملف الأسلوب.
+  // النص المختار يدخل ملف الأسلوب، وموضوعه يزيد وزنه، والتاني يقل شوية (ترجيح).
   store.addStyleExample(chosen.text, theme);
-  // الموضoع المختار يزيد وزنه، والتاني يقل شوية (ترجيح).
   store.bumpThemeWeight(theme, +0.3);
   const otherTheme = pending.themesShown[idx === 0 ? 1 : 0];
   if (otherTheme && otherTheme !== theme) store.bumpThemeWeight(otherTheme, -0.1);
 
-  store.addFeedback({
-    slot: pending.slot,
-    themesShown: pending.themesShown,
-    choice: idx === 0 ? 'pick1' : 'pick2',
-    finalText: chosen.text,
-  });
+  recordFeedback(idx === 0 ? 'pick1' : 'pick2', chosen.text);
 }
 
-// ---- التعلّم: لما تبعت نسخة معدّلة كنص حر ----
+// ---- التعلّم: لما تبعت نسخة معدّلة كنص حر (الاختيار النهائي) ----
 function learnFromEdit(editedText) {
   if (!pending) return;
   const theme = pending.themesShown[0];
-  // نسختك المعدّلة هي الاختيار النهائي — تدخل ملف الأسلوب.
   store.addStyleExample(editedText, theme);
   store.bumpThemeWeight(theme, +0.3);
-  store.addFeedback({
-    slot: pending.slot,
-    themesShown: pending.themesShown,
-    choice: 'edited',
-    finalText: editedText,
-  });
+  recordFeedback('edited', editedText);
 }
 
-// ---- التعلّم: تجاهل ----
+// ---- التعلّم: تجاهل (المواضيع المعروضة يقل وزنها بدون أمثلة أسلوب) ----
 function learnFromIgnore() {
   if (!pending) return;
-  // المواضيع المعروضة يقل وزنها (من غير أمثلة أسلوب).
   for (const t of pending.themesShown) store.bumpThemeWeight(t, -0.2);
-  store.addFeedback({
-    slot: pending.slot,
-    themesShown: pending.themesShown,
-    choice: 'ignore',
-    finalText: null,
-  });
+  recordFeedback('ignore', null);
 }
 
 /**
@@ -225,26 +217,19 @@ function setupHandlers(bot) {
   bot.command('morning', (ctx) => requestSuggestion(ctx, { slot: 'morning' }));
   bot.command('evening', (ctx) => requestSuggestion(ctx, { slot: 'evening' }));
 
-  // ضغط الأزرار (callback_query). بنبعت النص المختار لوحده عشان النسخ يبقى أسهل.
-  bot.action('pick1', async (ctx) => {
+  // ضغط زر الاختيار (الأول/التاني) — معالج واحد للاتنين بدل التكرار.
+  // بنبعت النص المختار لوحده في رسالة عشان النسخ/الـ forward يبقى أسهل.
+  const handlePick = (idx) => async (ctx) => {
     if (!isOwner(ctx)) return ctx.answerCbQuery();
-    const chosen = pending?.items?.[0]?.text;
-    learnFromPick(0);
+    const chosen = pending?.items?.[idx]?.text;
+    learnFromPick(idx);
     await ctx.answerCbQuery('اتسجّل ✅');
     await ctx.editMessageReplyMarkup(); // نشيل الأزرار بعد الاختيار
-    if (chosen) await ctx.reply(chosen); // النص لوحده = سهل تنسخه/تعمله forward
-    await ctx.reply('👆 ده اختيارك — انسخه وابعته بإيدك. حفظت أسلوبك منه 👌');
-  });
-
-  bot.action('pick2', async (ctx) => {
-    if (!isOwner(ctx)) return ctx.answerCbQuery();
-    const chosen = pending?.items?.[1]?.text;
-    learnFromPick(1);
-    await ctx.answerCbQuery('اتسجّل ✅');
-    await ctx.editMessageReplyMarkup();
     if (chosen) await ctx.reply(chosen);
     await ctx.reply('👆 ده اختيارك — انسخه وابعته بإيدك. حفظت أسلوبك منه 👌');
-  });
+  };
+  bot.action('pick1', handlePick(0));
+  bot.action('pick2', handlePick(1));
 
   bot.action('regen', async (ctx) => {
     if (!isOwner(ctx)) return ctx.answerCbQuery();

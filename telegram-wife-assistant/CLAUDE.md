@@ -21,8 +21,13 @@
 - `llm.js` — تجريد Groq (متوافق OpenAI). المزوّد معزول هنا بس.
 - `store.js` — JSON: feedback / styleExamples (≤30) / themeWeights / lastSentPerSlot.
 - `review.js` — التقرير: نسبة القبول، أعلى المواضيع، الخانة المتجاهَلة.
+- `util.js` — أدوات مشتركة (تاريخ النهاردة/todayParts) — مصدر واحد يمنع التكرار.
 - `config.js` — كل الإعدادات (مفيش أسرار).
 - `test.js` — يطبع اقتراحات بدون إرسال (mock لو مفيش مفتاح).
+
+## تجنّب التكرار (DRY)
+- حساب التاريخ في `util.js` بس؛ `store.js` و`occasions.js` بيستوردوا منه.
+- `bot.js`: معالج pick واحد بمصنع `handlePick(idx)`، و`recordFeedback()` موحّد.
 
 ## ثبات الحالة
 `store.lastSentPerSlot[slot] = today` يمنع إرسال نفس الخانة مرتين في نفس اليوم

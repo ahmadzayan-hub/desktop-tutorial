@@ -10,14 +10,7 @@
 // =====================================================================
 
 const config = require('./config');
-
-// تاريخ النهاردة بتوقيت الإعدادات.
-function todayParts() {
-  const ymd = new Date().toLocaleDateString('en-CA', { timeZone: config.timezone });
-  // en-CA بيدّي YYYY-MM-DD.
-  const [y, m, d] = ymd.split('-');
-  return { ymd, mmdd: `${m}-${d}` };
-}
+const { todayParts } = require('./util'); // مصدر موحّد لتاريخ النهاردة
 
 /**
  * getTodaysOccasion — يرجّع مناسبة النهاردة لو فيه، وإلا null.

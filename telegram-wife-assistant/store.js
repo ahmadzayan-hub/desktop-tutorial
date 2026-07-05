@@ -12,6 +12,7 @@
 const fs = require('fs');
 const path = require('path');
 const config = require('./config');
+const { todayISO, daysAgoISO } = require('./util');
 
 const DATA_DIR = path.join(__dirname, 'data');
 const STORE_PATH = path.join(DATA_DIR, 'store.json');
@@ -49,10 +50,8 @@ function write(store) {
   fs.writeFileSync(STORE_PATH, JSON.stringify(store, null, 2), 'utf8');
 }
 
-// تاريخ النهاردة YYYY-MM-DD بتوقيت الإعدادات (للمقارنة بثبات).
-function today() {
-  return new Date().toLocaleDateString('en-CA', { timeZone: config.timezone });
-}
+// تاريخ النهاردة YYYY-MM-DD (مصدره util عشان يبقى موحّد مع باقي المشروع).
+const today = todayISO;
 
 // ---- ثبات الحالة: هل اتبعت الخانة دي النهاردة قبل كده؟ ----
 function wasSlotSentToday(slot) {
@@ -102,9 +101,7 @@ function getThemeWeights() {
 // ---- المواضيع المستخدمة في آخر N يوم (للتنويع) ----
 function recentThemes(days) {
   const store = read();
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - days);
-  const cutoffStr = cutoff.toLocaleDateString('en-CA', { timeZone: config.timezone });
+  const cutoffStr = daysAgoISO(days);
   const themes = new Set();
   for (const fb of store.feedback) {
     if (fb.date >= cutoffStr && Array.isArray(fb.themesShown)) {
