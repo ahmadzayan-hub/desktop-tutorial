@@ -1,6 +1,6 @@
 # Beyond Gallery — Standalone Storefront
 
-This is a self-contained Next.js 14 app for **Beyond Gallery by Beyond Jewellery**, the flagship storefront running on the **GiftMajlis** platform (UAE).
+This is a self-contained Next.js 14 app for **Beyond Gallery by Beyond Jewellery**, the flagship storefront running on the **GiftMajlis** platform (UAE). It deploys as its own Vercel project, fully independent from the main `desktop-tutorial` app.
 
 It is intentionally separated from the rest of the monorepo and is meant to be deployed as its **own Vercel project** so it has its own URL, its own build pipeline, and its own deployment protection settings — fully independent from the main `desktop-tutorial` project.
 
