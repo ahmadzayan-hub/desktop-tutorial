@@ -17,6 +17,12 @@ object AppConstants {
         "llama-3.1-8b-instant" to "لاما 3.1 (8B) — أسرع",
     )
 
+    // طول الرسالة (id -> اسم).
+    val LENGTHS = listOf(
+        "short" to "قصيرة",
+        "medium" to "متوسطة",
+    )
+
     // مناسبات افتراضية — نفس اللي في بوت التيليجرام. المستخدم يقدر يعدّلها.
     val DEFAULT_OCCASIONS = listOf(
         OccasionConfig("fixed", date = "08-24", label = "عيد ميلاد مراتي"),

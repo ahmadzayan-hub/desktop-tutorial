@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -52,11 +53,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.wifeassistant.data.Settings
 import com.wifeassistant.data.Suggestion
+import com.wifeassistant.util.Share
 import com.wifeassistant.util.WhatsApp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(vm: HomeViewModel, onOpenSettings: () -> Unit, onOpenStats: () -> Unit) {
+fun HomeScreen(
+    vm: HomeViewModel,
+    onOpenSettings: () -> Unit,
+    onOpenStats: () -> Unit,
+    onOpenHistory: () -> Unit,
+) {
     val state by vm.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
@@ -76,6 +83,9 @@ fun HomeScreen(vm: HomeViewModel, onOpenSettings: () -> Unit, onOpenStats: () ->
                     containerColor = MaterialTheme.colorScheme.background,
                 ),
                 actions = {
+                    IconButton(onClick = onOpenHistory) {
+                        Icon(Icons.Filled.History, contentDescription = "السجل")
+                    }
                     IconButton(onClick = onOpenStats) {
                         Icon(Icons.Filled.BarChart, contentDescription = "الإحصائيات")
                     }
@@ -136,6 +146,7 @@ fun HomeScreen(vm: HomeViewModel, onOpenSettings: () -> Unit, onOpenStats: () ->
                     item = item,
                     onChoose = { vm.choose(idx) },
                     onCopy = { clipboard.setText(AnnotatedString(item.text)) },
+                    onShare = { Share.text(context, item.text) },
                     onWhatsApp = { WhatsApp.send(context, Settings(context).wifeNumber, item.text) },
                 )
             }
@@ -207,6 +218,7 @@ private fun SuggestionCard(
     item: Suggestion,
     onChoose: () -> Unit,
     onCopy: () -> Unit,
+    onShare: () -> Unit,
     onWhatsApp: () -> Unit,
 ) {
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
@@ -240,8 +252,11 @@ private fun SuggestionCard(
                 OutlinedButton(onClick = onCopy, modifier = Modifier.weight(1f)) {
                     Text("📋 نسخ")
                 }
+                OutlinedButton(onClick = onShare, modifier = Modifier.weight(1f)) {
+                    Text("🔗 مشاركة")
+                }
                 FilledTonalButton(onClick = onChoose, modifier = Modifier.weight(1f)) {
-                    Text("👍 اختار ده")
+                    Text("👍 اختار")
                 }
             }
         }

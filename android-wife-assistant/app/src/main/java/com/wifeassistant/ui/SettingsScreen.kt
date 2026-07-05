@@ -50,6 +50,7 @@ fun SettingsScreen(onBack: () -> Unit) {
     var wifeName by remember { mutableStateOf(settings.wifeName) }
     var notes by remember { mutableStateOf(settings.relationshipNotes) }
     var humor by remember { mutableStateOf(settings.humor) }
+    var messageLength by remember { mutableStateOf(settings.messageLength) }
     var model by remember { mutableStateOf(settings.model) }
     var morning by remember { mutableStateOf(settings.morningTime) }
     var evening by remember { mutableStateOf(settings.eveningTime) }
@@ -117,6 +118,17 @@ fun SettingsScreen(onBack: () -> Unit) {
                 Text("لمسة دُعابة خفيفة", modifier = Modifier.weight(1f))
                 Switch(checked = humor, onCheckedChange = { humor = it })
             }
+            Text("طول الرسالة", style = MaterialTheme.typography.bodyMedium)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                AppConstants.LENGTHS.forEach { (id, label) ->
+                    FilterChip(
+                        selected = messageLength == id,
+                        onClick = { messageLength = id },
+                        label = { Text(label) },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            }
 
             Section("موديل الذكاء (Groq مجاني)")
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -156,6 +168,7 @@ fun SettingsScreen(onBack: () -> Unit) {
                     settings.wifeName = wifeName.trim()
                     settings.relationshipNotes = notes.trim()
                     settings.humor = humor
+                    settings.messageLength = messageLength
                     settings.model = model
                     settings.morningTime = morning.trim()
                     settings.eveningTime = evening.trim()
