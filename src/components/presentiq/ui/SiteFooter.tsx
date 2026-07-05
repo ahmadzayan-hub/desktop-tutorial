@@ -19,47 +19,93 @@ const XGlyph = () => (
 );
 
 /**
- * Slim site footer (v0.4.2).
+ * Expanded site footer (Round-2 redesign, v0.6).
  *
- * Replaces the previous full-sitemap footer (Product / Solutions / Company /
- * Legal columns + newsletter form) with a single compact band: brand mark,
- * a one-line tagline, the trust pills, social row, and the copyright. Every
- * route is still discoverable through the top nav and the in-product menus,
- * so the long sitemap was redundant and made every page scroll forever.
+ * The previous slim footer worked for in-app pages, but on the marketing
+ * landing it left users nowhere to go once they scrolled to the bottom.
+ * This layout keeps the brand + trust marks + social row (proven from
+ * v0.4.2) and adds four sitemap columns (Product / Company / Resources /
+ * Legal) so the landing has a proper closing chapter.
  */
 export function SiteFooter() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const trustParts = String(t("foot.trust")).split(" · ").filter(Boolean);
+
+  const columns: Array<{ title: string; links: Array<{ label: string; href: string }> }> = [
+    {
+      title: lang === "ar" ? "المنتج" : "Product",
+      links: [
+        { label: lang === "ar" ? "القوالب" : "Templates",   href: "/presentiq/templates" },
+        { label: lang === "ar" ? "الأسعار" : "Pricing",     href: "/presentiq/pricing" },
+        { label: lang === "ar" ? "لوحة التحكم" : "Dashboard", href: "/presentiq/dashboard" },
+        { label: lang === "ar" ? "هويات العلامة" : "Brand kits", href: "/presentiq/brand-kits" },
+      ],
+    },
+    {
+      title: lang === "ar" ? "الشركة" : "Company",
+      links: [
+        { label: lang === "ar" ? "من نحن" : "About",         href: "/presentiq/about" },
+        { label: lang === "ar" ? "الجديد" : "Changelog",     href: "/presentiq/changelog" },
+        { label: lang === "ar" ? "تواصل" : "Contact",        href: "/presentiq/contact" },
+      ],
+    },
+    {
+      title: lang === "ar" ? "المصادر" : "Resources",
+      links: [
+        { label: lang === "ar" ? "كيف يعمل" : "How it works", href: "/how-it-works" },
+        { label: lang === "ar" ? "المميزات" : "Features",    href: "/features" },
+        { label: lang === "ar" ? "الأسئلة" : "FAQ",           href: "/faq" },
+      ],
+    },
+    {
+      title: lang === "ar" ? "قانوني" : "Legal",
+      links: [
+        { label: lang === "ar" ? "الخصوصية" : "Privacy",     href: "/privacy" },
+        { label: lang === "ar" ? "الشروط" : "Terms",         href: "/terms" },
+      ],
+    },
+  ];
 
   return (
     <footer className="pq-footer-slim mt-16" role="contentinfo">
-      <div className="pq-footer-slim-inner">
-        <div className="pq-footer-slim-brand">
+      <div className="pq-footer-columns">
+        <div className="pq-footer-brand-col">
           <Link href="/presentiq" aria-label="Pitchora home">
-            <Logo variant="horizontal" height={22} />
+            <Logo variant="horizontal" height={24} />
           </Link>
-          <p className="pq-footer-slim-tag">{t("foot.tagline")}</p>
+          <p>{t("foot.tagline")}</p>
+          <ul className="pq-footer-slim-trust" aria-label="Trust marks" style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+            {trustParts.map((label, i) => {
+              const Icon = i === 0 ? ShieldCheck : i === 1 ? Star : Check;
+              return (
+                <li key={i} className="pq-footer-slim-pill">
+                  <Icon aria-hidden size={13} strokeWidth={2.2} />
+                  {label}
+                </li>
+              );
+            })}
+          </ul>
         </div>
-
-        <ul className="pq-footer-slim-trust" aria-label="Trust marks">
-          {trustParts.map((label, i) => {
-            const Icon = i === 0 ? ShieldCheck : i === 1 ? Star : Check;
-            return (
-              <li key={i} className="pq-footer-slim-pill">
-                <Icon aria-hidden size={14} strokeWidth={2.2} />
-                {label}
-              </li>
-            );
-          })}
-        </ul>
-
-        <div className="pq-footer-slim-meta">
-          <div className="pq-footer-slim-social" aria-label="Social links">
-            <a href="https://www.linkedin.com/company/tweenz" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="pq-social"><LinkedInGlyph /></a>
-            <a href="https://x.com/tweenzAI" target="_blank" rel="noopener noreferrer" aria-label="X (formerly Twitter)" className="pq-social"><XGlyph /></a>
-            <a href={`mailto:${PQ_CONTACT_EMAIL}`} aria-label="Email founder" className="pq-social"><Mail size={15} strokeWidth={2} /></a>
+        {columns.map((col) => (
+          <div key={col.title}>
+            <h3 className="pq-footer-col-title">{col.title}</h3>
+            <ul className="pq-footer-col-list">
+              {col.links.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href}>{l.label}</Link>
+                </li>
+              ))}
+            </ul>
           </div>
-          <div className="pq-footer-slim-copy">{t("foot.copyright")}</div>
+        ))}
+      </div>
+
+      <div className="pq-footer-bottom">
+        <div className="pq-footer-bottom-copy">{t("foot.copyright")}</div>
+        <div className="pq-footer-bottom-social" aria-label="Social links">
+          <a href="https://www.linkedin.com/company/tweenz" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="pq-social"><LinkedInGlyph /></a>
+          <a href="https://x.com/tweenzAI" target="_blank" rel="noopener noreferrer" aria-label="X (formerly Twitter)" className="pq-social"><XGlyph /></a>
+          <a href={`mailto:${PQ_CONTACT_EMAIL}`} aria-label="Email founder" className="pq-social"><Mail size={15} strokeWidth={2} /></a>
         </div>
       </div>
     </footer>

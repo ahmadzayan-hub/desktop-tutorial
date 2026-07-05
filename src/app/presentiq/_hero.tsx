@@ -21,7 +21,6 @@ import { useI18n } from "@/lib/presentiq/i18n/context";
 import { Frame4D } from "@/components/presentiq/ui/Frame4D";
 import { TEMPLATES } from "@/lib/presentiq/templates/registry";
 import {
-  AuroraWord,
   Magnetic,
   ParallaxMesh,
   Reveal,
@@ -99,10 +98,6 @@ export function Hero() {
     tplCat === "all" ? true : TPL_CATEGORY[tp.code] === tplCat,
   );
 
-  const brandName = lang === "ar" ? "بِتشورا" : "Pitchora";
-  // For Arabic, the headline is shorter so we use a smaller letter step.
-  const letterStep = lang === "ar" ? 70 : 55;
-
   // Trust marquee items, duplicated twice for an unbroken loop.
   const TRUST = lang === "ar"
     ? ["مجالس الإدارة", "اللجان الحكومية", "الشركاء الاستشاريون", "لجان التوجيه", "حالات العمل", "فِرَق العلاقات الحكومية", "مديرو المنتجات"]
@@ -116,14 +111,17 @@ export function Hero() {
         <ParallaxMesh intensity={28} />
 
         <div className="relative" style={{ zIndex: 1 }}>
-          {/* Animated Pitchora wordmark — letter-by-letter aurora */}
-          <div className="pq-rise" style={{ textAlign: "center", marginBottom: "0.5rem" }}>
-            <AuroraWord
-              text={brandName}
-              className="block"
-              start={120}
-              step={letterStep}
-            />
+          {/* Marketing pill — replaces the earlier AuroraWord wordmark
+              (which repeated the brand already shown in the header and
+              rendered nearly invisibly on dark). This pill is a scannable
+              value-prop instead. */}
+          <div className="pq-rise" style={{ textAlign: "center", marginBottom: "1rem" }}>
+            <span className="pq-hero-pill">
+              <Sparkles aria-hidden size={12} strokeWidth={2.4} />
+              <span>{t("brand.promise")}</span>
+              <span className="pq-hero-pill-dot" aria-hidden />
+              <span className="pq-hero-pill-meta">v0.5</span>
+            </span>
           </div>
 
           {/* Mode tabs */}
@@ -237,6 +235,26 @@ export function Hero() {
               {t("land.cta.dashboard")}
             </Magnetic>
           </div>
+
+          {/* Trust chips row — reassurance under the CTAs */}
+          <ul className="pq-hero-trust pq-rise pq-rise-5" aria-label={lang === "ar" ? "شهادات الثقة" : "Trust marks"}>
+            <li>
+              <ShieldCheck aria-hidden size={13} strokeWidth={2.2} />
+              <span>{lang === "ar" ? "عمليّة ISO-9001" : "ISO-9001 process"}</span>
+            </li>
+            <li>
+              <BadgeCheck aria-hidden size={13} strokeWidth={2.2} />
+              <span>{lang === "ar" ? "استضافة داخل الإمارات" : "UAE data residency"}</span>
+            </li>
+            <li>
+              <Languages aria-hidden size={13} strokeWidth={2.2} />
+              <span>{lang === "ar" ? "عربيّة RTL أصيلة" : "Arabic RTL native"}</span>
+            </li>
+            <li>
+              <Gauge aria-hidden size={13} strokeWidth={2.2} />
+              <span>{lang === "ar" ? "WCAG-AA" : "WCAG-AA accessible"}</span>
+            </li>
+          </ul>
         </div>
       </section>
 

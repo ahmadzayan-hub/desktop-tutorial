@@ -2063,15 +2063,19 @@ html.dark {
   padding: 1rem;
   text-align: center;
 }
-.pq-tpl-card-cover[data-tone="orange"] { background: linear-gradient(135deg, #6E4017, #C97D2C 80%); }
-.pq-tpl-card-cover[data-tone="green"]  { background: linear-gradient(135deg, #08381F, #1F8E5E 80%); }
-.pq-tpl-card-cover[data-tone="purple"] { background: linear-gradient(135deg, #2E1A55, #7C3AED 80%); }
-.pq-tpl-card-cover[data-tone="blue"]   { background: linear-gradient(135deg, #0E1F4A, #1A2E64 80%); }
-.pq-tpl-card-cover[data-tone="ink"]    { background: linear-gradient(135deg, #0E0B1A, #1F1A2E 80%); }
-.pq-tpl-card-cover[data-tone="lime"]   { background: linear-gradient(135deg, #1B2E0E, #7BB94A 110%); }
-.pq-tpl-card-cover[data-tone="steel"]  { background: linear-gradient(135deg, #1A2E64, #D81E05 130%); }
+/* Unified template covers — Pitchora indigo/violet family. Each tone
+   still reads as distinct but every card belongs to the same product
+   palette instead of a random rainbow. Same tone tokens as before so
+   the registry doesn't need to change. */
+.pq-tpl-card-cover[data-tone="orange"] { background: linear-gradient(135deg, #2A1245, #8A4CC9 90%); }
+.pq-tpl-card-cover[data-tone="green"]  { background: linear-gradient(135deg, #101A44, #3F5FE0 95%); }
+.pq-tpl-card-cover[data-tone="purple"] { background: linear-gradient(135deg, #241A55, #7C6CF7 90%); }
+.pq-tpl-card-cover[data-tone="blue"]   { background: linear-gradient(135deg, #0E1D48, #2A3FA0 90%); }
+.pq-tpl-card-cover[data-tone="ink"]    { background: linear-gradient(135deg, #0A0E2A, #1E2654 90%); }
+.pq-tpl-card-cover[data-tone="lime"]   { background: linear-gradient(135deg, #101A44, #4A5FD0 100%); }
+.pq-tpl-card-cover[data-tone="steel"]  { background: linear-gradient(135deg, #12183A, #5566E8 100%); }
 .pq-tpl-card-cover[data-tone="violet"] { background: linear-gradient(135deg, #2B1A55, #8A6CF7 110%); }
-.pq-tpl-card-cover[data-tone="cyan"]   { background: linear-gradient(135deg, #0E2C3A, #4DC9E6 110%); }
+.pq-tpl-card-cover[data-tone="cyan"]   { background: linear-gradient(135deg, #0F2450, #4E7DE8 100%); }
 .pq-tpl-card-blank {
   background: rgba(255,255,255,0.03);
   border: 1px dashed rgba(255,255,255,0.18) !important;
@@ -2844,3 +2848,146 @@ html.dark {
 @media (prefers-reduced-motion: reduce) {
   .pq-final-cta::before { display: none; }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   Round 2 — hero pill, hero trust chips, expanded footer
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Hero eyebrow pill — replaces the older AuroraWord wordmark that
+   duplicated the header logo and was nearly invisible on dark. This
+   pill is a scannable value-prop that also acts as a version stamp. */
+.pq-hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.36rem 0.85rem 0.36rem 0.75rem;
+  border-radius: 999px;
+  background:
+    linear-gradient(135deg,
+      rgba(99,102,241,0.14) 0%,
+      rgba(138,108,247,0.10) 100%);
+  border: 1px solid rgba(129,140,248,0.35);
+  color: #E6E7FF;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  box-shadow:
+    0 6px 16px -6px rgba(99,102,241,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.pq-hero-pill svg { color: var(--pq-primary); }
+.pq-hero-pill-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.35);
+}
+.pq-hero-pill-meta {
+  color: var(--pq-text-muted);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* Trust chip row directly under the hero CTAs */
+.pq-hero-trust {
+  margin: 1.5rem auto 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem;
+  max-width: 42rem;
+}
+.pq-hero-trust li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.32rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--pq-border-soft);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--pq-text-secondary);
+  letter-spacing: 0.01em;
+}
+.pq-hero-trust li svg { color: var(--pq-primary); }
+
+/* ── Expanded site footer — proper sitemap columns ─────────────── */
+.pq-footer-columns {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(4, 1fr);
+  gap: 2.5rem 1.5rem;
+  padding: 3rem 1.5rem 2rem;
+  max-width: 84rem;
+  margin: 0 auto;
+  border-top: 1px solid var(--pq-border-soft);
+}
+@media (max-width: 900px) {
+  .pq-footer-columns {
+    grid-template-columns: 1fr 1fr;
+    padding: 2.25rem 1.25rem 1.5rem;
+  }
+}
+@media (max-width: 520px) {
+  .pq-footer-columns { grid-template-columns: 1fr; }
+}
+.pq-footer-brand-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 20rem;
+}
+.pq-footer-brand-col p {
+  font-size: 0.85rem;
+  color: var(--pq-text-secondary);
+  line-height: 1.55;
+  margin: 0;
+}
+.pq-footer-col-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--pq-text-muted);
+  margin: 0 0 0.85rem;
+}
+.pq-footer-col-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.pq-footer-col-list a {
+  font-size: 0.88rem;
+  color: var(--pq-text-secondary);
+  text-decoration: none;
+  transition: color 120ms ease;
+}
+.pq-footer-col-list a:hover {
+  color: var(--pq-text-main);
+}
+.pq-footer-bottom {
+  max-width: 84rem;
+  margin: 0 auto;
+  padding: 1rem 1.5rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--pq-border-soft);
+}
+.pq-footer-bottom-copy {
+  font-size: 0.78rem;
+  color: var(--pq-text-muted);
+}
+.pq-footer-bottom-social {
+  display: flex;
+  gap: 0.5rem;
+}
+
