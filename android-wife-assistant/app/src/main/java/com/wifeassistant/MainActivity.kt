@@ -20,6 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wifeassistant.ui.HomeScreen
 import com.wifeassistant.ui.HomeViewModel
 import com.wifeassistant.ui.SettingsScreen
+import com.wifeassistant.ui.StatsScreen
 import com.wifeassistant.ui.theme.WifeAssistantTheme
 import com.wifeassistant.util.Notifications
 import com.wifeassistant.work.Scheduler
@@ -63,6 +64,11 @@ private fun AppRoot() {
 
     when (screen) {
         "settings" -> SettingsScreen(onBack = { screen = "home" })
-        else -> HomeScreen(vm = vm, onOpenSettings = { screen = "settings" })
+        "stats" -> StatsScreen(onBack = { screen = "home" })
+        else -> HomeScreen(
+            vm = vm,
+            onOpenSettings = { screen = "settings" },
+            onOpenStats = { screen = "stats" },
+        )
     }
 }

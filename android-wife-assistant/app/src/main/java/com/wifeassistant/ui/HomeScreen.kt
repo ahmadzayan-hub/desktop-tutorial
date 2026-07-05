@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -42,7 +43,7 @@ import com.wifeassistant.util.WhatsApp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(vm: HomeViewModel, onOpenSettings: () -> Unit) {
+fun HomeScreen(vm: HomeViewModel, onOpenSettings: () -> Unit, onOpenStats: () -> Unit) {
     val state by vm.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
@@ -53,6 +54,9 @@ fun HomeScreen(vm: HomeViewModel, onOpenSettings: () -> Unit) {
             TopAppBar(
                 title = { Text("مساعد الرسايل 💌") },
                 actions = {
+                    IconButton(onClick = onOpenStats) {
+                        Icon(Icons.Filled.BarChart, contentDescription = "الإحصائيات")
+                    }
                     IconButton(onClick = onOpenSettings) {
                         Icon(Icons.Filled.Settings, contentDescription = "الإعدادات")
                     }
