@@ -1,0 +1,68 @@
+{
+  "app": {
+    "name": "VERTEX",
+    "tagline": "Contract & Project Intelligence",
+    "skipToMain": "Skip to main content"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "upload": "Upload",
+    "kpi": "KPI Tracker",
+    "projects": "Projects",
+    "reports": "Reports",
+    "analytics": "Analytics",
+    "logout": "Logout",
+    "main": "Main navigation",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "status": {
+    "green": "Good",
+    "amber": "Caution",
+    "red": "Alert"
+  },
+  "auth": {
+    "email": "Email Address",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "Minimum 8 characters",
+    "login": "Log In",
+    "loggingIn": "Logging in…",
+    "signup": "Sign Up",
+    "forgot": "Forgot Password?",
+    "welcome": "Welcome back",
+    "welcomeSubtitle": "Sign in to your VERTEX workspace",
+    "passwordHint": "At least 8 characters, with one uppercase letter and one number",
+    "loggedOut": "You have been logged out."
+  },
+  "errors": {
+    "invalidEmail": "Please enter a valid email address.",
+    "passwordTooShort": "Password must be at least 8 characters.",
+    "passwordWeak": "Password must contain at least 1 uppercase letter and 1 number.",
+    "loginFailed": "Invalid email or password. Please try again.",
+    "generic": "Something went wrong. Please try again.",
+    "notFoundTitle": "Page not found",
+    "notFoundSubtitle": "The page you are looking for does not exist.",
+    "goHome": "Go to dashboard"
+  },
+  "user": {
+    "menu": "User menu",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
+  "language": {
+    "label": "Language",
+    "english": "English",
+    "arabic": "العربية",
+    "switchToArabic": "Switch to Arabic",
+    "switchToEnglish": "Switch to English"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "placeholder": "Your contract intelligence dashboard will appear here in Session 2."
+  },
+  "footer": {
+    "copyright": "© {{year}} VERTEX. All rights reserved.",
+    "version": "Version {{version}}"
+  }
+}
