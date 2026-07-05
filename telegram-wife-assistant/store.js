@@ -14,8 +14,13 @@ const path = require('path');
 const config = require('./config');
 const { todayISO, daysAgoISO } = require('./util');
 
-const DATA_DIR = path.join(__dirname, 'data');
-const STORE_PATH = path.join(DATA_DIR, 'store.json');
+// مسار المخزن. افتراضياً data/store.json جنب المشروع، ويمكن تغييره عبر
+// متغيّر البيئة WIFE_ASSISTANT_STORE_FILE (بنستخدمه في الاختبارات عشان ما
+// نلمسش بياناتك الحقيقية).
+const STORE_PATH = process.env.WIFE_ASSISTANT_STORE_FILE
+  ? path.resolve(process.env.WIFE_ASSISTANT_STORE_FILE)
+  : path.join(__dirname, 'data', 'store.json');
+const DATA_DIR = path.dirname(STORE_PATH);
 
 // الشكل الافتراضي لأول تشغيل.
 function defaultStore() {

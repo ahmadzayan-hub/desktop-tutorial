@@ -20,7 +20,9 @@ function getTodaysOccasion() {
   const { ymd, mmdd } = todayParts();
 
   for (const [key, occ] of Object.entries(config.occasions)) {
-    if (!occ || !occ.date) continue;
+    // ملاحظة: ما نفلترش على occ.date هنا، لأن المناسبات اليدوية بتستخدم
+    // dates[] (مصفوفة) ومش عندها occ.date — كل فرع بيتأكد من بياناته بنفسه.
+    if (!occ) continue;
 
     if (occ.type === 'fixed') {
       // نتجاهل القيم اللي لسه placeholder.

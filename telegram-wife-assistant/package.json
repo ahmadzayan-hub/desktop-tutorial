@@ -9,7 +9,8 @@
   },
   "scripts": {
     "start": "node index.js",
-    "test": "node test.js"
+    "test": "node --test \"test/*.test.js\"",
+    "demo": "node test.js"
   },
   "license": "MIT",
   "dependencies": {
