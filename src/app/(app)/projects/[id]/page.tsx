@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getProject } from "@/lib/store/mock-store";
+import { getProject } from "@/lib/store/projects";
 import { ProjectDetailView } from "./project-detail-view";
 
 export const dynamic = "force-dynamic";

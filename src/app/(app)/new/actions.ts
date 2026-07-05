@@ -7,7 +7,7 @@ import {
   createProject,
   deleteProject,
   seedDemoProjects,
-} from "@/lib/store/mock-store";
+} from "@/lib/store/projects";
 import { themeOrder } from "@/lib/themes";
 import type { Subject } from "@/types/database";
 import type { ThemeId } from "@/lib/themes/types";

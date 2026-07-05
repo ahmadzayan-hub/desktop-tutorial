@@ -1,5 +1,5 @@
 import { ProjectsView } from "./projects-view";
-import { listProjects } from "@/lib/store/mock-store";
+import { listProjects } from "@/lib/store/projects";
 
 export const dynamic = "force-dynamic";
 

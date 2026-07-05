@@ -129,12 +129,9 @@ export function isTextLike(mime: string, filename: string): boolean {
   return /\.(txt|md|csv|json|log)$/i.test(filename);
 }
 
-export function newId(prefix = "id"): string {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-    return `${prefix}_${crypto.randomUUID()}`;
-  }
-  return `${prefix}_${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`;
-}
+// Re-export so existing callers keep working; the implementation now
+// lives in @/lib/utils/ids for reuse across store, extraction, brief.
+export { newId } from "@/lib/utils/ids";
 
 export async function readFilePreview(file: File): Promise<string | null> {
   if (!isTextLike(file.type, file.name)) return null;

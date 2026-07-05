@@ -3,9 +3,10 @@ import { createSupabaseServerClient, getServerUser } from "@/lib/supabase/server
 import type { DbProject, Subject } from "@/types/database";
 import type { ThemeId } from "@/lib/themes/types";
 
-// Supabase-backed project CRUD. Mirrors the mock-store API so callers can
-// be switched without ceremony. RLS enforces owner-only access at the
-// database layer; we rely on the authenticated session for filtering.
+// Supabase-backed project CRUD. Mirrors the in-memory / cookie fallback
+// API in ./projects.ts so callers can switch without ceremony. RLS
+// enforces owner-only access at the database layer; we rely on the
+// authenticated session for filtering.
 
 export interface CreateProjectInput {
   name: string;

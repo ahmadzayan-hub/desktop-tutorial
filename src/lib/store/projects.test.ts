@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isValidProject, newProject, sortProjects } from "./mock-store";
+import { isValidProject, newProject, sortProjects } from "./projects";
 
 describe("mock-store · pure logic", () => {
   it("newProject builds a draft project with timestamps", () => {

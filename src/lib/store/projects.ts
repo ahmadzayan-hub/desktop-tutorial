@@ -4,6 +4,7 @@ import type { DbProject, Subject } from "@/types/database";
 import type { ThemeId } from "@/lib/themes/types";
 import { mockSession } from "./session";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { newId } from "@/lib/utils/ids";
 import {
   sbCreateProject,
   sbDeleteProject,
@@ -38,13 +39,6 @@ export interface CreateProjectInput {
 
 // --- Pure functions (no I/O) — safe for unit tests --------------------------
 
-function newId(): string {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-    return crypto.randomUUID();
-  }
-  return `p_${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`;
-}
-
 function nowIso(): string {
   return new Date().toISOString();
 }
@@ -52,7 +46,7 @@ function nowIso(): string {
 export function newProject(input: CreateProjectInput): DbProject {
   const now = nowIso();
   return {
-    id: newId(),
+    id: newId("proj"),
     owner_id: mockSession.user.id,
     name: input.name,
     subject: input.subject,
