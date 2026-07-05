@@ -122,7 +122,7 @@ export function runGuardrails(input: GuardrailInput): GuardrailResult {
         message: "Customer asked about price but the reply does not state a clear AED figure. Answer price directly first (§5).",
       });
     }
-    const hasActiveOffer = context.activeOffers.some(
+    const hasActiveOffer = (context.activeOffers ?? []).some(
       (o) => o.active && new Date(o.end_at).getTime() > Date.now()
     );
     if (context.quotedPrice != null && !hasActiveOffer) {

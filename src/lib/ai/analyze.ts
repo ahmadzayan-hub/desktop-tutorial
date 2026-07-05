@@ -69,14 +69,14 @@ export async function analyzeConversation(input: AnalyzeInput): Promise<AnalyzeR
   const styleKey: PromptKey =
     context.language === "ar" ? "arabic_reply_style" : "english_reply_style";
 
-  const offerLines = context.activeOffers
+  const offerLines = (context.activeOffers ?? [])
     .map(
       (o) =>
         `- ${o.name}: AED ${o.price} | delivery=${o.delivery_rule} | vat=${o.vat_rule} | active=${o.active} | ends=${o.end_at}`
     )
     .join("\n") || "- (no active offers loaded — you must NOT quote a price)";
 
-  const inventoryLines = context.inventory
+  const inventoryLines = (context.inventory ?? [])
     .map((i) => `- ${i.product_id} ${i.colour}/${i.finish}: ${i.quantity_available} available`)
     .join("\n") || "- (no inventory loaded — say you will confirm availability)";
 
