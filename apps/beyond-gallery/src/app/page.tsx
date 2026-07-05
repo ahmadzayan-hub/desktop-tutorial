@@ -129,8 +129,10 @@ export default function BeyondGalleryLanding() {
           <ShopWithConfidence lang={lang} />
           <Marketplace lang={lang} />
           <CorporateOrders lang={lang} />
+          <CorporatePacks lang={lang} />
           <SupplyDesk lang={lang} />
           <AboutBrand lang={lang} />
+          <Testimonials lang={lang} />
           <DeliveryTimeline lang={lang} />
           <PaymentMethods lang={lang} />
           <CatalogueCapture lang={lang} />
@@ -158,16 +160,69 @@ export default function BeyondGalleryLanding() {
 // 1. Announcement Bar
 
 function AnnouncementBar({ lang }: { lang: "en" | "ar" }) {
+  // Rotating announcements. Cross-fade every 3.5s. Pauses on hover so a reader
+  // can finish a line, and respects prefers-reduced-motion (no cross-fade).
+  const messages = [
+    {
+      en: "Free delivery on orders 300 AED and above, all seven emirates.",
+      ar: "توصيل مجاني للطلبات 300 درهم فأكثر في جميع الإمارات السبع.",
+    },
+    {
+      en: "All prices in AED, inclusive of 5% VAT. No hidden fees.",
+      ar: "جميع الأسعار بالدرهم، شاملة ضريبة القيمة المضافة 5%. بدون رسوم خفية.",
+    },
+    {
+      en: "Same-day dispatch on in-stock items ordered before 4pm UAE time.",
+      ar: "شحن في نفس اليوم للطلبات المتوفرة قبل الساعة 4 عصراً بتوقيت الإمارات.",
+    },
+    {
+      en: "WhatsApp support open every day 9am to 11pm.",
+      ar: "دعم واتساب متاح كل يوم من 9 صباحاً حتى 11 مساءً.",
+    },
+  ];
+  const [i, setI] = useState(0);
+  const [paused, setPaused] = useState(false);
+  useEffect(() => {
+    if (paused) return;
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = setInterval(() => setI((v) => (v + 1) % messages.length), 3500);
+    return () => clearInterval(id);
+  }, [paused, messages.length]);
   return (
-    <div className="bg-beyond-navy text-beyond-ivory">
+    <div
+      className="bg-beyond-navy text-beyond-ivory relative overflow-hidden"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onTouchStart={() => setPaused(true)}
+      onTouchEnd={() => setPaused(false)}
+    >
       <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-center gap-2 text-[12px] sm:text-[13px]">
         <SparkleIcon className="w-3.5 h-3.5 text-beyond-gold shrink-0" />
-        <span className="text-center">
-          {lang === "en"
-            ? "New arrivals in accessories, gifts, drawing boards, corporate gifts and selected UAE supply items."
-            : "وصلنا جديد الإكسسوارات والهدايا ولوحات الرسم وهدايا الشركات ومستلزمات التوريد المختارة في الإمارات."}
-        </span>
+        <div className="relative h-[18px] overflow-hidden max-w-[86%]">
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              className={`absolute inset-0 text-center whitespace-nowrap overflow-hidden text-ellipsis ${lang === "ar" ? "font-arabic" : ""}`}
+            >
+              {lang === "en" ? messages[i].en : messages[i].ar}
+            </motion.span>
+          </AnimatePresence>
+        </div>
         <SparkleIcon className="w-3.5 h-3.5 text-beyond-gold shrink-0" />
+      </div>
+      {/* Progress hairline */}
+      <div className="absolute left-0 right-0 bottom-0 h-[2px] bg-white/5">
+        <motion.div
+          key={`p-${i}-${paused ? "pause" : "run"}`}
+          className="h-full bg-beyond-gold origin-left"
+          initial={{ scaleX: 0 }}
+          animate={paused ? { scaleX: 0 } : { scaleX: 1 }}
+          transition={{ duration: 3.5, ease: "linear" }}
+        />
       </div>
     </div>
   );
@@ -2136,6 +2191,329 @@ function SupplyRFQ({ lang }: { lang: "en" | "ar" }) {
         {t.cta}
       </button>
     </form>
+  );
+}
+
+// Testimonials — UAE customer voices, high-signal trust cards.
+// Bilingual, five-star ratings, gold quote mark, framed on paper.
+function Testimonials({ lang }: { lang: "en" | "ar" }) {
+  const quotes = [
+    {
+      en: {
+        quote: "Bought two Arabic charm bracelets for my sisters. The Kufic engraving was crisp, the ivory box felt genuinely premium, and delivery landed the next afternoon.",
+        name: "Fatima Al Marzooqi",
+        role: "Dubai · Personal gifting",
+      },
+      ar: {
+        quote: "طلبت إسوارتين بأحرف عربية لأخواتي. النقش الكوفي كان دقيقاً، الصندوق العاجي فاخر فعلاً، والتوصيل وصل في اليوم التالي بعد الظهر.",
+        name: "فاطمة المرزوقي",
+        role: "دبي · هدايا شخصية",
+      },
+      stars: 5,
+      tone: "gold" as const,
+    },
+    {
+      en: {
+        quote: "Ordered 40 VIP boxes for our leadership offsite. Rashid handled it end-to-end on WhatsApp, produced logo mock-ups the same evening, and delivered to Abu Dhabi on time.",
+        name: "Rashid Ali",
+        role: "Abu Dhabi · HR, Financial Services",
+      },
+      ar: {
+        quote: "طلبت 40 صندوق VIP لاجتماع القيادة. تولّى راشد كل شيء عبر واتساب، أرسل تصاميم الشعار في نفس المساء، وسلّم الطلب في أبوظبي في الموعد.",
+        name: "راشد علي",
+        role: "أبوظبي · موارد بشرية، قطاع مالي",
+      },
+      stars: 5,
+      tone: "emerald" as const,
+    },
+    {
+      en: {
+        quote: "The drawing board arrived within a day, packaging was clean, and the reusable surface has kept our kids busy for weeks. Genuinely useful gift.",
+        name: "Ayesha Khan",
+        role: "Sharjah · Parent",
+      },
+      ar: {
+        quote: "وصلت لوحة الرسم خلال يوم، والتغليف نظيف، والسطح قابل لإعادة الاستخدام شغل أولادنا لأسابيع. هدية مفيدة فعلاً.",
+        name: "عائشة خان",
+        role: "الشارقة · ولية أمر",
+      },
+      stars: 5,
+      tone: "navy" as const,
+    },
+    {
+      en: {
+        quote: "Sent a bridal bracelet with her name in Arabic script for our henna night. The team suggested a font that matched the invitation, and the whole thing felt effortless.",
+        name: "Mariam Al Nuaimi",
+        role: "Ajman · Bridal party",
+      },
+      ar: {
+        quote: "أهديت إسوارة العروس باسمها بالخط العربي لليلة الحنّاء. الفريق اقترح خطاً مطابقاً للدعوة، والتجربة كلها كانت سلسة جداً.",
+        name: "مريم النعيمي",
+        role: "عجمان · حفلات زفاف",
+      },
+      stars: 5,
+      tone: "charcoal" as const,
+    },
+  ];
+
+  return (
+    <section className="bg-beyond-white border-y border-beyond-line">
+      <div className="max-w-7xl mx-auto px-4 py-16 sm:py-24">
+        <Reveal className="text-center mb-10 sm:mb-14">
+          <div className="beyond-kicker justify-center mb-3">
+            {lang === "en" ? "Customer Voices" : "آراء العملاء"}
+          </div>
+          <h2 className={`font-display text-3xl sm:text-4xl font-semibold text-beyond-charcoal beyond-ornament ${lang === "ar" ? "font-arabic-display" : ""}`}>
+            {lang === "en" ? (
+              <>Real orders, <span className="beyond-gold-gradient">real stories.</span></>
+            ) : (
+              <>طلبات حقيقية، <span className="beyond-gold-gradient">قصص حقيقية.</span></>
+            )}
+          </h2>
+          <p className={`mt-4 text-[15px] leading-relaxed text-beyond-charcoal/75 max-w-2xl mx-auto ${lang === "ar" ? "font-arabic" : ""}`}>
+            {lang === "en"
+              ? "A small sample of customer feedback collected on WhatsApp and Instagram DMs, published with permission."
+              : "عيّنة صغيرة من آراء العملاء المستلمة عبر واتساب والرسائل الخاصة على إنستقرام، مُنشورة بعد أخذ الإذن."}
+          </p>
+        </Reveal>
+
+        <Stagger className="grid gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-4">
+          {quotes.map((q, i) => {
+            const c = lang === "en" ? q.en : q.ar;
+            const toneClass =
+              q.tone === "gold"    ? "text-beyond-gold"
+              : q.tone === "emerald" ? "text-beyond-emerald"
+              : q.tone === "navy"    ? "text-beyond-navy"
+              : "text-beyond-charcoal";
+            return (
+              <StaggerItem key={i}>
+                <article className="beyond-lift h-full rounded-2xl bg-beyond-ivory border border-beyond-line beyond-card-shadow hover:beyond-card-shadow-hover p-5 sm:p-6 flex flex-col">
+                  <div className={`text-[42px] leading-none font-display ${toneClass} opacity-70`} aria-hidden>
+                    &ldquo;
+                  </div>
+                  <p className={`mt-1 text-[13.5px] leading-relaxed text-beyond-charcoal/85 flex-1 ${lang === "ar" ? "font-arabic" : ""}`}>
+                    {c.quote}
+                  </p>
+                  <div className="mt-4 flex items-center gap-0.5" aria-label={`${q.stars} stars`}>
+                    {Array.from({ length: q.stars }).map((_, j) => (
+                      <StarSpark key={j} className="w-3.5 h-3.5 text-beyond-gold" />
+                    ))}
+                  </div>
+                  <div className={`mt-3 pt-3 border-t border-beyond-line/70 ${lang === "ar" ? "font-arabic" : ""}`}>
+                    <div className="text-[13px] font-semibold text-beyond-charcoal">{c.name}</div>
+                    <div className="text-[11.5px] text-beyond-charcoal/60 mt-0.5">{c.role}</div>
+                  </div>
+                </article>
+              </StaggerItem>
+            );
+          })}
+        </Stagger>
+      </div>
+    </section>
+  );
+}
+
+// Corporate Gift Packs — three tiers with a Most-Popular highlight.
+// Turns "which pack should I buy" from a WhatsApp question into an on-page answer.
+function CorporatePacks({ lang }: { lang: "en" | "ar" }) {
+  const tiers = [
+    {
+      key: "starter",
+      en: {
+        name: "Starter Pack",
+        pill: "From 25 pieces",
+        priceHint: "From AED 32 / piece",
+        summary: "Reliable, affordable branded pack for teams under 50 people. Standard packaging, single-side logo printing, delivered inside one week.",
+        features: [
+          "25 to 49 pieces per order",
+          "Standard kraft or ivory packaging",
+          "Single-side logo, one colour",
+          "Delivery: 5 to 7 business days",
+          "PDF proof before production",
+          "Standard invoice",
+        ],
+      },
+      ar: {
+        name: "الباقة الأساسية",
+        pill: "من 25 قطعة",
+        priceHint: "من 32 درهم للقطعة",
+        summary: "باقة موثوقة بسعر مناسب للفرق أقل من 50 موظفاً. تغليف قياسي، طباعة شعار وجه واحد، توصيل خلال أسبوع.",
+        features: [
+          "من 25 إلى 49 قطعة للطلب",
+          "تغليف كرافت أو عاجي قياسي",
+          "طباعة شعار وجه واحد بلون",
+          "توصيل: 5 إلى 7 أيام عمل",
+          "معاينة PDF قبل الإنتاج",
+          "فاتورة نظامية",
+        ],
+      },
+      tone: "line" as const,
+      popular: false,
+    },
+    {
+      key: "premium",
+      en: {
+        name: "Premium Pack",
+        pill: "From 50 pieces",
+        priceHint: "From AED 55 / piece",
+        summary: "Our most requested pack. Signature ivory gift boxes, dual-side logo, per-person personalisation and same-week dispatch.",
+        features: [
+          "50 to 99 pieces per order",
+          "Signature ivory gift boxes",
+          "Dual-side logo, up to two colours",
+          "Per-person name personalisation",
+          "Delivery: 3 to 5 business days",
+          "Physical sample on request",
+          "Corporate VAT invoice",
+        ],
+      },
+      ar: {
+        name: "الباقة المميّزة",
+        pill: "من 50 قطعة",
+        priceHint: "من 55 درهم للقطعة",
+        summary: "الأكثر طلباً. صناديق الهدايا العاجية الخاصة بنا، شعار وجهين، تخصيص لكل شخص، وشحن خلال نفس الأسبوع.",
+        features: [
+          "من 50 إلى 99 قطعة للطلب",
+          "صناديق هدايا عاجية مميّزة",
+          "شعار وجهين حتى لونين",
+          "تخصيص اسم لكل شخص",
+          "توصيل: 3 إلى 5 أيام عمل",
+          "عيّنة فعلية عند الطلب",
+          "فاتورة ضريبية للشركات",
+        ],
+      },
+      tone: "gold" as const,
+      popular: true,
+    },
+    {
+      key: "vip",
+      en: {
+        name: "VIP Pack",
+        pill: "100+ pieces",
+        priceHint: "Custom quote",
+        summary: "For leadership, key clients, and government appreciation. Full personalisation, presentation boxes, dedicated account manager.",
+        features: [
+          "100 pieces or more per order",
+          "Presentation ivory + gold boxes",
+          "Full-colour logo, foil options",
+          "Handwritten thank-you card",
+          "Delivery: 7 to 10 business days",
+          "PO number on invoice, payment on terms",
+          "Dedicated account manager",
+        ],
+      },
+      ar: {
+        name: "باقة VIP",
+        pill: "100 قطعة أو أكثر",
+        priceHint: "عرض سعر مخصّص",
+        summary: "لهدايا القيادة، والعملاء الرئيسيين، وتقدير الجهات الحكومية. تخصيص كامل، صناديق تقديم، ومدير حساب مخصّص.",
+        features: [
+          "100 قطعة أو أكثر للطلب",
+          "صناديق تقديم عاجية مع لمسات ذهبية",
+          "شعار بالألوان الكاملة، خيارات فويل",
+          "بطاقة شكر مكتوبة بخط اليد",
+          "توصيل: 7 إلى 10 أيام عمل",
+          "رقم أمر شراء على الفاتورة ودفع بشروط",
+          "مدير حساب مخصّص",
+        ],
+      },
+      tone: "charcoal" as const,
+      popular: false,
+    },
+  ];
+
+  return (
+    <section id="corporate-packs" className="bg-beyond-ivory border-y border-beyond-line">
+      <div className="max-w-7xl mx-auto px-4 py-16 sm:py-24">
+        <Reveal className="text-center mb-10 sm:mb-14">
+          <div className="beyond-kicker justify-center mb-3">
+            {lang === "en" ? "Corporate Packs" : "باقات الشركات"}
+          </div>
+          <h2 className={`font-display text-3xl sm:text-4xl font-semibold text-beyond-charcoal beyond-ornament ${lang === "ar" ? "font-arabic-display" : ""}`}>
+            {lang === "en" ? (
+              <>Pick a pack, <span className="beyond-gold-gradient">get a quote in an hour.</span></>
+            ) : (
+              <>اختر الباقة، <span className="beyond-gold-gradient">استلم عرض السعر خلال ساعة.</span></>
+            )}
+          </h2>
+          <p className={`mt-4 text-[15px] leading-relaxed text-beyond-charcoal/75 max-w-2xl mx-auto ${lang === "ar" ? "font-arabic" : ""}`}>
+            {lang === "en"
+              ? "Three fixed tiers so procurement teams can decide fast. All prices in AED including 5% VAT. Custom mixes always available on WhatsApp."
+              : "ثلاث باقات ثابتة ليقرّر فريق المشتريات بسرعة. جميع الأسعار بالدرهم شاملة ضريبة القيمة المضافة 5%. المزيج المخصّص دائماً متاح عبر واتساب."}
+          </p>
+        </Reveal>
+
+        <Stagger className="grid gap-5 md:grid-cols-3 items-stretch">
+          {tiers.map((t) => {
+            const c = lang === "en" ? t.en : t.ar;
+            const msg =
+              lang === "en"
+                ? `Hello Beyond Gallery, I would like a quote for the ${t.en.name}.\nCompany: \nContact person: \nEstimated quantity: \nDelivery emirate: \nPreferred logo colours: \nDeadline: \nAny personalisation notes: `
+                : `مرحباً بيوند جاليري، أرغب في عرض سعر لباقة ${t.ar.name}.\nالشركة: \nالشخص المسؤول: \nالكمية المتوقعة: \nإمارة التوصيل: \nألوان الشعار المفضّلة: \nالموعد النهائي: \nملاحظات التخصيص: `;
+            const waHref = buildWALink(msg);
+            const popular = t.popular;
+            return (
+              <StaggerItem key={t.key}>
+                <div
+                  className={`relative h-full rounded-3xl bg-white border overflow-hidden flex flex-col ${
+                    popular
+                      ? "border-beyond-gold beyond-shadow-lg md:-translate-y-2"
+                      : "border-beyond-line beyond-shadow"
+                  }`}
+                >
+                  {popular && (
+                    <div className={`bg-beyond-gold text-white text-center text-[11.5px] font-semibold py-1.5 tracking-wider ${lang === "ar" ? "font-arabic tracking-normal" : "uppercase"}`}>
+                      {lang === "en" ? "Most popular" : "الأكثر طلباً"}
+                    </div>
+                  )}
+                  <div className="p-6 sm:p-7 flex-1 flex flex-col">
+                    <div className={`text-[11.5px] font-semibold uppercase tracking-wider text-beyond-gold ${lang === "ar" ? "font-arabic tracking-normal" : ""}`}>
+                      {c.pill}
+                    </div>
+                    <h3 className={`mt-2 font-display text-2xl font-semibold text-beyond-charcoal ${lang === "ar" ? "font-arabic-display" : ""}`}>
+                      {c.name}
+                    </h3>
+                    <div className={`mt-2 text-[15px] text-beyond-charcoal ${lang === "ar" ? "font-arabic" : ""}`}>
+                      <span className="font-display font-semibold beyond-gold-gradient">{c.priceHint}</span>
+                    </div>
+                    <p className={`mt-3 text-[13.5px] leading-relaxed text-beyond-charcoal/75 ${lang === "ar" ? "font-arabic" : ""}`}>
+                      {c.summary}
+                    </p>
+                    <ul className={`mt-5 space-y-2.5 text-[13px] text-beyond-charcoal/85 flex-1 ${lang === "ar" ? "font-arabic" : ""}`}>
+                      {c.features.map((f, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <StarSpark className={`w-3.5 h-3.5 mt-1 shrink-0 ${popular ? "text-beyond-gold" : "text-beyond-emerald"}`} />
+                          <span>{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <a
+                      href={waHref}
+                      className={`mt-6 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-full text-[13.5px] font-semibold transition-colors ${
+                        popular
+                          ? "bg-beyond-gold text-white hover:bg-beyond-gold/90"
+                          : "bg-beyond-charcoal text-beyond-ivory hover:bg-beyond-charcoal/90"
+                      } ${lang === "ar" ? "font-arabic" : ""}`}
+                    >
+                      <WhatsAppIcon className="w-4 h-4" />
+                      {lang === "en" ? "Get a quote on WhatsApp" : "احصل على عرض السعر عبر واتساب"}
+                    </a>
+                  </div>
+                </div>
+              </StaggerItem>
+            );
+          })}
+        </Stagger>
+
+        <Reveal delay={0.15}>
+          <div className={`mt-8 text-center text-[12.5px] text-beyond-charcoal/65 ${lang === "ar" ? "font-arabic" : ""}`}>
+            {lang === "en"
+              ? "All packs ship free across the UAE. PO / VAT invoicing available for registered businesses. Not what you need? Ask on WhatsApp for a fully custom quote."
+              : "جميع الباقات توصيل مجاني في كل الإمارات. فوترة ضريبية / بأمر شراء للشركات المسجّلة. لم تجد ما يناسبك؟ اسأل عبر واتساب لعرض سعر مخصّص بالكامل."}
+          </div>
+        </Reveal>
+      </div>
+    </section>
   );
 }
 
