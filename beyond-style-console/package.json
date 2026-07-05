@@ -1,8 +1,8 @@
 {
-  "name": "beyond-style-uae",
+  "name": "beyond-style-console",
   "version": "0.1.0",
   "private": true,
-  "description": "Beyond Style UAE — Customer Conversion & Order Control Agent (human-approved sales operating console)",
+  "description": "Beyond Style UAE — Customer Conversion & Order Control Agent (human-approved sales operating console; Next.js)",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
