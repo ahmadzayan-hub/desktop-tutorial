@@ -216,3 +216,58 @@ export function buildAttentionQueue(args: {
     .sort((a, b) => (a.severity === b.severity ? 0 : a.severity === "high" ? -1 : 1))
     .slice(0, 8);
 }
+
+// ── Guardrail activity ───────────────────────────────────────────────
+// Aggregates guardrail engine hits across drafted AI replies so the
+// dashboard can show that the "discipline before automation" promise
+// is actually being enforced.
+
+type AiOutput = Record<string, unknown> & {
+  created_at: string;
+  guardrails_json?:
+    | {
+        worstStatus?: "pass" | "warn" | "fail";
+        findings?: Array<{ code: string; status: "pass" | "warn" | "fail" }>;
+      }
+    | null;
+};
+
+const CODE_LABELS: Record<string, string> = {
+  claim:   "Product claim",
+  privacy: "Privacy leak",
+  price:   "Price clarity",
+  vat:     "VAT missing",
+  stock:   "Unverified stock",
+  courier: "Delivery promise",
+};
+
+export function guardrailStats(aiOutputs: AiOutput[], days = 7) {
+  const cutoff = Date.now() - (days - 1) * DAY;
+  const recent = aiOutputs.filter((o) => new Date(o.created_at).getTime() >= cutoff);
+
+  let pass = 0, warn = 0, fail = 0;
+  const codeCounts = new Map<string, number>();
+
+  for (const o of recent) {
+    const worst = o.guardrails_json?.worstStatus ?? "pass";
+    if (worst === "fail") fail += 1;
+    else if (worst === "warn") warn += 1;
+    else pass += 1;
+
+    for (const f of o.guardrails_json?.findings ?? []) {
+      if (f.status === "pass") continue;
+      codeCounts.set(f.code, (codeCounts.get(f.code) ?? 0) + 1);
+    }
+  }
+
+  const total = recent.length;
+  const caught = warn + fail;
+  const passRate = total ? Math.round((pass / total) * 100) : 100;
+
+  const byCode = [...codeCounts.entries()]
+    .map(([code, count]) => ({ code, label: CODE_LABELS[code] ?? code, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+
+  return { total, pass, warn, fail, caught, passRate, byCode, days };
+}

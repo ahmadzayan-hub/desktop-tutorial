@@ -3,9 +3,10 @@ import { DemoBanner, Kpi, PageHeader, SectionTitle, OrderStatusPill, TempPill } 
 import {
   RevenueAreaChart, StackedStatusChart, FunnelBarChart, TopProductsChart, PlatformPie,
 } from "@/components/LazyCharts";
+import GuardrailActivity from "@/components/GuardrailActivity";
 import {
   revenueByDay, stackedStatusByDay, conversionFunnel, topProducts, platformMix,
-  buildAttentionQueue,
+  buildAttentionQueue, guardrailStats,
 } from "@/lib/analytics";
 import Link from "next/link";
 import clsx from "clsx";
@@ -13,7 +14,7 @@ import clsx from "clsx";
 export const dynamic = "force-dynamic";
 
 export default async function Dashboard() {
-  const [{ kpis, demoMode }, ordersRes, convsRes, paymentsRes, disputesRes, inventoryRes, reviewsRes] =
+  const [{ kpis, demoMode }, ordersRes, convsRes, paymentsRes, disputesRes, inventoryRes, reviewsRes, aiOutRes] =
     await Promise.all([
       fetchKpis(),
       fetchRows("orders", { order: "created_at" }),
@@ -22,6 +23,7 @@ export default async function Dashboard() {
       fetchRows("disputes", { order: "created_at" }),
       fetchRows("inventory", { order: "last_updated" }),
       fetchRows("reviews", { order: "created_at", limit: 4 }),
+      fetchRows("ai_outputs", { order: "created_at" }),
     ]);
 
   const orders = ordersRes.rows as Array<Record<string, unknown> & { created_at: string }>;
@@ -38,6 +40,9 @@ export default async function Dashboard() {
     inventory: inventoryRes.rows,
     conversations,
   });
+  const grStats = guardrailStats(
+    aiOutRes.rows as Array<{ created_at: string; guardrails_json?: { worstStatus?: "pass" | "warn" | "fail"; findings?: Array<{ code: string; status: "pass" | "warn" | "fail" }> } | null }>,
+  );
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -101,8 +106,9 @@ export default async function Dashboard() {
         </div>
       </div>
 
-      {/* Status + Funnel */}
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+      {/* Guardrail activity + Order status + Funnel */}
+      <div className="mt-4 grid gap-4 lg:grid-cols-3">
+        <GuardrailActivity stats={grStats} />
         <div className="card">
           <SectionTitle>Order status (14 days)</SectionTitle>
           <StackedStatusChart data={statusSeries} />

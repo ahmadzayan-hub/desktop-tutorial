@@ -502,26 +502,53 @@ function generateAuditLogs(rng: () => number, orders: Record<string, unknown>[])
   }).sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
 
+// Realistic distribution of guardrail hits per 18 drafted replies:
+// most drafts pass; a minority warn on price/vat; a few fail on claim/privacy/stock.
+// Codes stay aligned with those emitted by src/lib/guardrails.ts.
+const GUARDRAIL_SAMPLES: Array<{ worstStatus: "pass" | "warn" | "fail"; findings: Array<{ code: string; status: "pass" | "warn" | "fail" }> }> = [
+  { worstStatus: "pass", findings: [] },
+  { worstStatus: "pass", findings: [] },
+  { worstStatus: "warn", findings: [{ code: "price", status: "warn" }] },
+  { worstStatus: "pass", findings: [] },
+  { worstStatus: "fail", findings: [{ code: "claim", status: "fail" }] },
+  { worstStatus: "pass", findings: [] },
+  { worstStatus: "warn", findings: [{ code: "vat",   status: "warn" }] },
+  { worstStatus: "pass", findings: [] },
+  { worstStatus: "fail", findings: [{ code: "privacy", status: "fail" }] },
+  { worstStatus: "pass", findings: [] },
+  { worstStatus: "warn", findings: [{ code: "price", status: "warn" }, { code: "vat", status: "warn" }] },
+  { worstStatus: "pass", findings: [] },
+  { worstStatus: "fail", findings: [{ code: "stock", status: "fail" }] },
+  { worstStatus: "pass", findings: [] },
+  { worstStatus: "warn", findings: [{ code: "price", status: "warn" }] },
+  { worstStatus: "pass", findings: [] },
+  { worstStatus: "pass", findings: [] },
+  { worstStatus: "warn", findings: [{ code: "vat",   status: "warn" }] },
+];
+
 function generateAiOutputs(rng: () => number, conversations: Record<string, unknown>[]) {
-  return conversations.slice(0, 18).map((c, i) => ({
-    id: uid("aio", i + 1),
-    conversation_id: c.id,
-    analysis_json: {
-      customer_intent: c.intent,
-      lead_temperature: c.lead_temperature,
-      customer_persona: c.persona,
-      confidence_score: 0.7 + ((i * 13) % 30) / 100,
-    },
-    guardrails_json: { worstStatus: i % 5 === 0 ? "warn" : "pass" },
-    reply_draft:
-      c.message_language === "ar"
-        ? "أهلاً 🤍 سعر السلسلة بالاسم AED 220 شامل الضريبة. تحبين أزرق ذهبي أو فضي؟"
-        : "Hello 🤍 The custom name necklace is AED 220 incl. VAT. Would you like gold-tone or silver-tone?",
-    confidence_score: 0.7 + (i % 3) * 0.1,
-    approved: i % 3 !== 0,
-    approved_by: i % 3 !== 0 ? "owner@beyondstyle.ae" : null,
-    created_at: c.created_at,
-  }));
+  return conversations.slice(0, 18).map((c, i) => {
+    const g = GUARDRAIL_SAMPLES[i % GUARDRAIL_SAMPLES.length];
+    return {
+      id: uid("aio", i + 1),
+      conversation_id: c.id,
+      analysis_json: {
+        customer_intent: c.intent,
+        lead_temperature: c.lead_temperature,
+        customer_persona: c.persona,
+        confidence_score: 0.7 + ((i * 13) % 30) / 100,
+      },
+      guardrails_json: { worstStatus: g.worstStatus, findings: g.findings },
+      reply_draft:
+        c.message_language === "ar"
+          ? "أهلاً 🤍 سعر السلسلة بالاسم AED 220 شامل الضريبة. تحبين أزرق ذهبي أو فضي؟"
+          : "Hello 🤍 The custom name necklace is AED 220 incl. VAT. Would you like gold-tone or silver-tone?",
+      confidence_score: 0.7 + (i % 3) * 0.1,
+      approved: i % 3 !== 0,
+      approved_by: i % 3 !== 0 ? "owner@beyondstyle.ae" : null,
+      created_at: c.created_at,
+    };
+  });
 }
 
 function generateSettings(): Record<string, unknown>[] {
