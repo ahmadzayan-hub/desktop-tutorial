@@ -11,6 +11,18 @@ object AppConstants {
     const val TONE = "دافئة، صادقة، بسيطة، من غير مبالغة ولا كلام مصنوع"
     const val DEFAULT_MODEL = "llama-3.3-70b-versatile"
 
+    // موديلات Groq المجانية (id -> اسم للعرض). الأولانية الأفضل للعربي.
+    val MODELS = listOf(
+        "llama-3.3-70b-versatile" to "لاما 3.3 (70B) — الأفضل للعربي",
+        "llama-3.1-8b-instant" to "لاما 3.1 (8B) — أسرع",
+    )
+
+    // طول الرسالة (id -> اسم).
+    val LENGTHS = listOf(
+        "short" to "قصيرة",
+        "medium" to "متوسطة",
+    )
+
     // مناسبات افتراضية — نفس اللي في بوت التيليجرام. المستخدم يقدر يعدّلها.
     val DEFAULT_OCCASIONS = listOf(
         OccasionConfig("fixed", date = "08-24", label = "عيد ميلاد مراتي"),
