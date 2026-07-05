@@ -361,38 +361,47 @@ export function Hero() {
       </Reveal>
 
       {/* ── Differentiator features ───────────────────────────────── */}
-      <Reveal
-        as="section"
-        variant="stagger"
-        className="grid grid-cols-1 md:grid-cols-3 gap-5"
-      >
-        {FEATURES.map((f) => {
-          const Icon = f.Icon;
-          return (
-            <Tilt key={String(f.titleKey)} max={4}>
-              <Frame4D className="p-6">
-                <div
-                  className="grid place-items-center w-10 h-10 rounded-xl mb-3"
-                  style={{
-                    background: "rgba(159,205,99,0.14)",
-                    color: "var(--pq-primary)",
-                    border: "1px solid rgba(159,205,99,0.32)",
-                  }}
-                  aria-hidden
-                >
-                  <Icon size={20} strokeWidth={2} />
-                </div>
-                <h3 className="text-base font-semibold" style={{ color: "var(--pq-text-main)" }}>
-                  {t(f.titleKey)}
-                </h3>
-                <p className="text-sm mt-2" style={{ color: "var(--pq-text-secondary)", lineHeight: 1.55 }}>
-                  {t(f.bodyKey)}
-                </p>
-              </Frame4D>
-            </Tilt>
-          );
-        })}
-      </Reveal>
+      <section className="pq-section">
+        <div className="pq-section-head">
+          <div className="pq-section-eyebrow">
+            {lang === "ar" ? "الحوكمة أولاً" : "Governance first"}
+          </div>
+          <h2 className="pq-section-title">
+            {lang === "ar"
+              ? "كل ما يحتاجه مجلس الإدارة"
+              : "Everything a boardroom needs"}
+          </h2>
+          <p className="pq-section-sub">
+            {lang === "ar"
+              ? "منصّة وكلاء تلتزم بهويّتك، وتضبط أدلّتك، وتنتج مخرجات قابلة للتحرير."
+              : "An agent platform that respects your brand, controls your evidence, and produces truly editable output."}
+          </p>
+        </div>
+        <Reveal
+          as="div"
+          variant="stagger"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+        >
+          {FEATURES.map((f) => {
+            const Icon = f.Icon;
+            return (
+              <Tilt key={String(f.titleKey)} max={4}>
+                <Frame4D className="p-6 h-full">
+                  <div className="pq-feat-icon" aria-hidden>
+                    <Icon size={20} strokeWidth={2} />
+                  </div>
+                  <h3 className="text-base font-semibold mt-4" style={{ color: "var(--pq-text-main)" }}>
+                    {t(f.titleKey)}
+                  </h3>
+                  <p className="text-sm mt-2" style={{ color: "var(--pq-text-secondary)", lineHeight: 1.55 }}>
+                    {t(f.bodyKey)}
+                  </p>
+                </Frame4D>
+              </Tilt>
+            );
+          })}
+        </Reveal>
+      </section>
 
       {/* ── What's new in v0.5 ────────────────────────────────────── */}
       <Reveal as="section" variant="single">
@@ -427,6 +436,208 @@ export function Hero() {
           </ul>
         </Frame4D>
       </Reveal>
+
+      {/* ── Testimonials ─────────────────────────────────────────── */}
+      <section className="pq-section">
+        <div className="pq-section-head">
+          <div className="pq-section-eyebrow">
+            {lang === "ar" ? "الميدان" : "In the room"}
+          </div>
+          <h2 className="pq-section-title">
+            {lang === "ar"
+              ? "ما يقوله فرقٌ يستخدمون بِتشورا"
+              : "What teams using Pitchora say"}
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {[
+            {
+              q: lang === "ar"
+                ? "أختصر ٤ ساعات من الإعداد قبل كل اجتماع لجنة. المخرج يحترم قواعد هويّتنا حرفياً."
+                : "Cuts four hours off every committee-prep. The output actually respects our brand rules.",
+              a: lang === "ar" ? "مديرة استراتيجية" : "Head of Strategy",
+              w: lang === "ar" ? "شركة استشارات" : "Consulting firm",
+              i: "S",
+            },
+            {
+              q: lang === "ar"
+                ? "أول أداة تُصدر عربية RTL أصيلة تصلح مباشرة لمجلس الإدارة، بدون مراجعة يدوية."
+                : "First tool where the Arabic RTL export is actually usable in front of a board — no manual rework.",
+              a: lang === "ar" ? "مسؤول علاقات حكومية" : "GR Lead",
+              w: lang === "ar" ? "هيئة اتحادية" : "Federal authority",
+              i: "H",
+            },
+            {
+              q: lang === "ar"
+                ? "التحقّق من الأدلّة يمنعنا من نشر أرقامٍ نتراجع عنها لاحقاً. الفرق يشعرون بالأمان."
+                : "Evidence controls stop us shipping numbers we'd have to walk back. My team feels safe again.",
+              a: lang === "ar" ? "قائد منتج" : "Product Lead",
+              w: lang === "ar" ? "شركة تقنية مالية" : "Fintech scale-up",
+              i: "P",
+            },
+          ].map((tst, i) => (
+            <Frame4D key={i} className="p-6 h-full" interactive={false}>
+              <div className="pq-quote-mark" aria-hidden>&ldquo;</div>
+              <p className="text-sm mt-2" style={{ color: "var(--pq-text-main)", lineHeight: 1.6 }}>
+                {tst.q}
+              </p>
+              <div className="mt-5 flex items-center gap-3">
+                <div className="pq-quote-avatar" aria-hidden>{tst.i}</div>
+                <div>
+                  <div className="text-sm font-semibold" style={{ color: "var(--pq-text-main)" }}>{tst.a}</div>
+                  <div className="text-xs" style={{ color: "var(--pq-text-muted)" }}>{tst.w}</div>
+                </div>
+              </div>
+            </Frame4D>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Pricing preview ──────────────────────────────────────── */}
+      <section className="pq-section">
+        <div className="pq-section-head">
+          <div className="pq-section-eyebrow">
+            {lang === "ar" ? "الأسعار" : "Pricing"}
+          </div>
+          <h2 className="pq-section-title">
+            {lang === "ar" ? "خطط تنمو معك" : "Plans that grow with you"}
+          </h2>
+          <p className="pq-section-sub">
+            {lang === "ar"
+              ? "ابدأ مجّاناً. رقّي الاشتراك عندما يتطلّب مجلس الإدارة ذلك."
+              : "Start free. Upgrade when the boardroom asks for it."}
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {[
+            {
+              tier: lang === "ar" ? "التجربة" : "Trial",
+              price: lang === "ar" ? "مجّاني" : "Free",
+              sub: lang === "ar" ? "دون بطاقة ائتمان" : "No credit card",
+              feats: lang === "ar"
+                ? ["٣ عروض شهرياً", "قوالب أساسية", "تصدير PPTX"]
+                : ["3 decks / month", "Core templates", "PPTX export"],
+              cta: lang === "ar" ? "جرّب الآن" : "Try free",
+              highlight: false,
+            },
+            {
+              tier: lang === "ar" ? "الفريق" : "Team",
+              price: lang === "ar" ? "٤٩$ / شهر" : "$49/mo",
+              sub: lang === "ar" ? "لكل مقعد" : "per seat",
+              feats: lang === "ar"
+                ? ["عروض غير محدودة", "حوكمة الهويّة", "دعم عربي RTL", "لوحة الجودة"]
+                : ["Unlimited decks", "Brand governance", "Arabic RTL", "Quality board"],
+              cta: lang === "ar" ? "ابدأ الفريق" : "Start Team",
+              highlight: true,
+            },
+            {
+              tier: lang === "ar" ? "المؤسّسة" : "Enterprise",
+              price: lang === "ar" ? "تواصل معنا" : "Talk to us",
+              sub: lang === "ar" ? "SSO · SLA · مقيمة داخل الإمارات" : "SSO · SLA · UAE-resident",
+              feats: lang === "ar"
+                ? ["استضافة مخصّصة", "تدقيق كامل", "تكامل SSO", "مدير حساب"]
+                : ["Dedicated hosting", "Full audit trail", "SSO integration", "Named CSM"],
+              cta: lang === "ar" ? "تواصل" : "Contact sales",
+              highlight: false,
+            },
+          ].map((p, i) => (
+            <div key={i} className={`pq-price-card ${p.highlight ? "is-featured" : ""}`}>
+              {p.highlight && (
+                <div className="pq-price-badge">{lang === "ar" ? "الأكثر شعبيّة" : "Most popular"}</div>
+              )}
+              <div className="pq-price-tier">{p.tier}</div>
+              <div className="pq-price-num">{p.price}</div>
+              <div className="pq-price-sub">{p.sub}</div>
+              <ul className="pq-price-list">
+                {p.feats.map((f, j) => (
+                  <li key={j}>
+                    <BadgeCheck size={14} strokeWidth={2.4} aria-hidden />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href={p.highlight ? "/presentiq/projects/new" : "/presentiq/pricing"}
+                className={`pq-price-cta ${p.highlight ? "is-primary" : ""}`}
+              >
+                {p.cta}
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── FAQ preview ──────────────────────────────────────────── */}
+      <section className="pq-section">
+        <div className="pq-section-head">
+          <div className="pq-section-eyebrow">
+            {lang === "ar" ? "الأسئلة" : "FAQ"}
+          </div>
+          <h2 className="pq-section-title">
+            {lang === "ar" ? "أسئلة تُطرح كثيراً" : "Frequently asked"}
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            {
+              q: lang === "ar" ? "هل مخرج PPTX قابل للتحرير فعلاً؟" : "Is the PPTX really editable?",
+              a: lang === "ar"
+                ? "نعم. مربّعات نص، أشكال، جداول، ورسوم بيانية حقيقية — لا صور."
+                : "Yes. Real text boxes, shapes, tables and charts — never screenshots.",
+            },
+            {
+              q: lang === "ar" ? "هل تدعمون العربية RTL؟" : "Do you support Arabic RTL?",
+              a: lang === "ar"
+                ? "دعم أصيل: تخطيطات معكوسة، خطوط عربية، ومصطلحات مؤسّسية."
+                : "Native: mirrored layouts, Arabic typefaces, and formal corporate terminology.",
+            },
+            {
+              q: lang === "ar" ? "أين تُخزَّن بياناتنا؟" : "Where is our data stored?",
+              a: lang === "ar"
+                ? "الخيار الافتراضي: مراكز بيانات مقيمة داخل الإمارات. متاح أيضاً استضافة مخصّصة."
+                : "Default: UAE-resident data centres. Dedicated hosting is available on Enterprise.",
+            },
+            {
+              q: lang === "ar" ? "كيف تتعاملون مع الأدلّة؟" : "How do you handle evidence?",
+              a: lang === "ar"
+                ? "كلّ عبارة مصنّفة (حقيقة / تقدير / مطلوب مُدخل) ولا نختلق أرقاماً."
+                : "Every claim is classified (fact / assessment / input required); we never fabricate figures.",
+            },
+          ].map((f, i) => (
+            <details key={i} className="pq-faq-item">
+              <summary>
+                <span>{f.q}</span>
+                <span className="pq-faq-mark" aria-hidden>+</span>
+              </summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Final CTA banner ─────────────────────────────────────── */}
+      <section className="pq-final-cta">
+        <div className="pq-final-cta-inner">
+          <h2 className="pq-final-cta-title">
+            {lang === "ar"
+              ? "من الفكرة إلى مجلس الإدارة، خلال دقائق."
+              : "From spark to boardroom, in minutes."}
+          </h2>
+          <p className="pq-final-cta-sub">
+            {lang === "ar"
+              ? "ابدأ عرضك الأول مجّاناً — دون بطاقة ائتمان."
+              : "Start your first deck free — no credit card required."}
+          </p>
+          <div className="pq-final-cta-row">
+            <Link href="/presentiq/projects/new" className="pq-btn pq-btn-liquid pq-btn-liquid-primary pq-btn-liquid-pill">
+              {t("land.cta.start")} <span aria-hidden>→</span>
+            </Link>
+            <Link href="/presentiq/pricing" className="pq-btn pq-btn-liquid pq-btn-liquid-pill">
+              {lang === "ar" ? "شاهد الأسعار" : "See pricing"}
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

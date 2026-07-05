@@ -2555,3 +2555,292 @@ html.dark {
     color: #1A2E64 !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   Pitchora landing v0.6 — new marketing sections
+   (feature grid heading, testimonials, pricing preview,
+    FAQ, final CTA banner)
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Section shell — vertical rhythm + optional eyebrow/title/sub */
+.pq-section { display: block; }
+.pq-section-head {
+  text-align: center;
+  max-width: 40rem;
+  margin: 0 auto 2.25rem;
+}
+.pq-section-eyebrow {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pq-primary);
+  background: rgba(99,102,241,0.10);
+  border: 1px solid rgba(99,102,241,0.24);
+  border-radius: 999px;
+  padding: 0.28rem 0.85rem;
+  margin-bottom: 0.9rem;
+}
+.pq-section-title {
+  font-size: clamp(1.6rem, 3.6vw, 2.4rem);
+  font-weight: 700;
+  color: var(--pq-text-main);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0 0 0.6rem;
+}
+.pq-section-sub {
+  font-size: 1rem;
+  color: var(--pq-text-secondary);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Feature icon chip — normalised across the 6 cards */
+.pq-feat-icon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.85rem;
+  background: linear-gradient(135deg,
+    rgba(99,102,241,0.22) 0%,
+    rgba(138,108,247,0.16) 100%);
+  color: #C7C4FF;
+  border: 1px solid rgba(99,102,241,0.32);
+  box-shadow: 0 6px 18px -8px rgba(99,102,241,0.55);
+}
+
+/* ── Testimonials ─────────────────────────────────────────────── */
+.pq-quote-mark {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 3rem;
+  line-height: 0.7;
+  color: var(--pq-primary);
+  opacity: 0.55;
+}
+.pq-quote-avatar {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #fff;
+  background: linear-gradient(135deg, var(--pq-primary) 0%, var(--pq-accent-violet) 100%);
+  box-shadow: 0 6px 16px -6px rgba(99,102,241,0.6);
+}
+
+/* ── Pricing preview ─────────────────────────────────────────── */
+.pq-price-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1.75rem 1.5rem;
+  border-radius: 1.25rem;
+  background: linear-gradient(180deg,
+    rgba(22,29,68,0.75) 0%,
+    rgba(18,24,56,0.55) 100%);
+  border: 1px solid var(--pq-border-soft);
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+.pq-price-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(99,102,241,0.4);
+}
+.pq-price-card.is-featured {
+  background: linear-gradient(180deg,
+    rgba(99,102,241,0.22) 0%,
+    rgba(30,38,84,0.85) 60%);
+  border-color: rgba(129,140,248,0.55);
+  box-shadow:
+    0 20px 40px -20px rgba(99,102,241,0.35),
+    0 0 0 1px rgba(129,140,248,0.25) inset;
+}
+.pq-price-badge {
+  position: absolute;
+  top: -0.75rem;
+  inset-inline-start: 1.5rem;
+  padding: 0.28rem 0.75rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(135deg, var(--pq-primary) 0%, var(--pq-accent-violet) 100%);
+  border-radius: 999px;
+  box-shadow: 0 6px 14px -4px rgba(99,102,241,0.6);
+}
+.pq-price-tier {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--pq-text-secondary);
+  letter-spacing: 0.02em;
+}
+.pq-price-num {
+  margin-top: 0.35rem;
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: var(--pq-text-main);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.pq-price-sub {
+  margin-top: 0.15rem;
+  font-size: 0.85rem;
+  color: var(--pq-text-muted);
+}
+.pq-price-list {
+  margin: 1.15rem 0 1.5rem;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  flex: 1;
+}
+.pq-price-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  font-size: 0.9rem;
+  color: var(--pq-text-secondary);
+  line-height: 1.5;
+}
+.pq-price-list li svg {
+  color: var(--pq-primary);
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+.pq-price-cta {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--pq-text-main);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--pq-border-soft);
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+  text-decoration: none;
+}
+.pq-price-cta:hover {
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(255,255,255,0.20);
+  transform: translateY(-1px);
+}
+.pq-price-cta.is-primary {
+  background: linear-gradient(135deg, var(--pq-primary) 0%, var(--pq-accent-violet) 100%);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 10px 24px -10px rgba(99,102,241,0.75);
+}
+.pq-price-cta.is-primary:hover {
+  filter: brightness(1.05);
+}
+
+/* ── FAQ preview ──────────────────────────────────────────────── */
+.pq-faq-item {
+  border: 1px solid var(--pq-border-soft);
+  border-radius: 1rem;
+  background: rgba(22,29,68,0.55);
+  overflow: hidden;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+.pq-faq-item[open] {
+  border-color: rgba(99,102,241,0.5);
+  background: rgba(30,38,84,0.75);
+}
+.pq-faq-item > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--pq-text-main);
+}
+.pq-faq-item > summary::-webkit-details-marker { display: none; }
+.pq-faq-mark {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--pq-border-soft);
+  color: var(--pq-primary);
+  font-weight: 700;
+  font-size: 1rem;
+  transition: transform 200ms ease;
+}
+.pq-faq-item[open] .pq-faq-mark {
+  transform: rotate(45deg);
+}
+.pq-faq-item > p {
+  margin: 0;
+  padding: 0 1.25rem 1.15rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--pq-text-secondary);
+}
+
+/* ── Final CTA banner ─────────────────────────────────────────── */
+.pq-final-cta {
+  position: relative;
+  isolation: isolate;
+  padding: 3.5rem 1.5rem;
+  border-radius: 1.75rem;
+  overflow: hidden;
+  background:
+    radial-gradient(80% 120% at 20% 30%, rgba(99,102,241,0.35) 0%, transparent 55%),
+    radial-gradient(60% 100% at 80% 80%, rgba(138,108,247,0.30) 0%, transparent 55%),
+    linear-gradient(180deg, #161D44 0%, #0A0E2A 100%);
+  border: 1px solid rgba(129,140,248,0.35);
+  box-shadow: 0 30px 60px -25px rgba(99,102,241,0.35);
+}
+.pq-final-cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.05) 50%, transparent 60%);
+  pointer-events: none;
+}
+.pq-final-cta-inner {
+  position: relative;
+  max-width: 44rem;
+  margin: 0 auto;
+  text-align: center;
+}
+.pq-final-cta-title {
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  font-weight: 700;
+  color: var(--pq-text-main);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0 0 0.75rem;
+}
+.pq-final-cta-sub {
+  font-size: 1rem;
+  color: var(--pq-text-secondary);
+  line-height: 1.55;
+  margin: 0 0 1.75rem;
+}
+.pq-final-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+/* Reduced-motion — kill the shimmer overlay */
+@media (prefers-reduced-motion: reduce) {
+  .pq-final-cta::before { display: none; }
+}

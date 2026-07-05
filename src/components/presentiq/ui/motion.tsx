@@ -4,7 +4,6 @@ import {
   ReactNode,
   useEffect,
   useRef,
-  useState,
 } from "react";
 
 /**
@@ -40,43 +39,17 @@ export function Reveal({
   className = "",
   threshold = 0.18,
 }: RevealProps) {
-  const ref = useRef<HTMLElement | null>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    if (prefersReducedMotion()) {
-      setVisible(true);
-      return;
-    }
-    const el = ref.current;
-    if (!el || typeof IntersectionObserver === "undefined") {
-      setVisible(true);
-      return;
-    }
-    const obs = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setVisible(true);
-            obs.disconnect();
-            break;
-          }
-        }
-      },
-      { threshold, rootMargin: "0px 0px -8% 0px" },
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-
+  // Historically this used IntersectionObserver to gate content behind
+  // an opacity:0 → 1 transition on scroll. That silently broke on
+  // full-page snapshots (Playwright, SEO tooling, print) and on very
+  // tall landings where the browser had already painted before the
+  // observer fired, leaving whole marketing sections invisible. We now
+  // render content unconditionally; the CSS class is still emitted so
+  // the entry animation can run on real user page loads via a simple
+  // CSS keyframe (see globals.css → .pq-reveal / .pq-reveal-stagger).
   const base = variant === "stagger" ? "pq-reveal-stagger" : "pq-reveal";
-  const cls = `${base}${visible ? " is-visible" : ""}${className ? ` ${className}` : ""}`;
-  // React's type for ref polymorphism is awkward; cast through any to keep this tiny.
-  return (
-    <Tag ref={ref as any} className={cls}>
-      {children}
-    </Tag>
-  );
+  const cls = `${base} is-visible${className ? ` ${className}` : ""}`;
+  return <Tag className={cls}>{children}</Tag>;
 }
 
 /* ── Magnetic surface (spotlight + slight follow) ──────────────── */
