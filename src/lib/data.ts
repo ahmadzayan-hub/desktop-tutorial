@@ -3,6 +3,7 @@
 // immediately. When Supabase is configured, it queries live tables.
 import { createClient, hasSupabaseEnv } from "./supabase/server";
 import { buildDemoUniverse, getDemoTable } from "./demo/seed";
+import { sumBy, countBy, inWindow, dayWindows, type Row } from "./agg";
 
 export interface FetchOpts {
   limit?: number;
@@ -12,7 +13,7 @@ export interface FetchOpts {
 }
 
 export interface FetchResult {
-  rows: Record<string, unknown>[];
+  rows: Row[];
   connected: boolean;
   demoMode: boolean;
   error?: string;
@@ -63,7 +64,6 @@ export interface Kpis {
   lostLeads: number;
   complaints: number;
   leadToPayment: number; // %
-  /** Live AED totals derived in demo mode for richer dashboards. */
   revenueAedToday: number;
   revenueAed7d: number;
   revenueAed30d: number;
@@ -71,48 +71,58 @@ export interface Kpis {
   openDisputes: number;
 }
 
-const EMPTY_KPIS: Kpis = {
-  totalLeads: 0, newToday: 0, priceInquiries: 0, hotLeads: 0,
-  paymentLinksSent: 0, paidOrders: 0, deliveredOrders: 0, lostLeads: 0,
-  complaints: 0, leadToPayment: 0,
-  revenueAedToday: 0, revenueAed7d: 0, revenueAed30d: 0, pendingPaymentAed: 0, openDisputes: 0,
-};
+/**
+ * Single source of truth for KPI derivation — used by both the demo and the
+ * live Supabase paths so we don't repeat the same reducer twice.
+ *
+ * Live tables select a narrow projection; that projection still matches every
+ * field this function reads, so the same code works for both shapes.
+ */
+export function computeKpis(input: {
+  conversations: Row[];
+  orders: Row[];
+  disputes: Row[];
+}): Kpis {
+  const { conversations: c, orders: o, disputes: d } = input;
+  const { today, d7, d30 } = dayWindows();
+
+  const paid = o.filter((x) => x.payment_status === "confirmed" || x.order_status === "paid");
+  const paidToday = paid.filter((x) => inWindow(x.created_at, today));
+  const paid7 = paid.filter((x) => inWindow(x.created_at, d7));
+  const paid30 = paid.filter((x) => inWindow(x.created_at, d30));
+
+  return {
+    totalLeads: c.length,
+    newToday: countBy(c, (x) => inWindow(x.created_at, today)),
+    priceInquiries: countBy(c, (x) => x.stage === "price_lead"),
+    hotLeads: countBy(c, (x) => x.lead_temperature === "hot"),
+    paymentLinksSent: countBy(o, (x) => x.payment_status === "link_sent"),
+    paidOrders: paid.length,
+    deliveredOrders: countBy(o, (x) => x.order_status === "delivered"),
+    lostLeads: countBy(c, (x) => x.stage === "lost_lead"),
+    complaints: countBy(o, (x) => x.order_status === "complaint"),
+    leadToPayment: c.length ? Math.round((paid.length / c.length) * 100) : 0,
+    revenueAedToday: Math.round(sumBy(paidToday, (r) => Number(r.total_amount))),
+    revenueAed7d: Math.round(sumBy(paid7, (r) => Number(r.total_amount))),
+    revenueAed30d: Math.round(sumBy(paid30, (r) => Number(r.total_amount))),
+    pendingPaymentAed: Math.round(
+      sumBy(
+        o.filter((x) => x.payment_status === "link_sent" || x.payment_status === "needs_verification"),
+        (r) => Number(r.total_amount),
+      ),
+    ),
+    openDisputes: countBy(d, (x) => x.status === "open" || x.status === "in_review"),
+  };
+}
 
 export async function fetchKpis(): Promise<{ kpis: Kpis; connected: boolean; demoMode: boolean }> {
-  const today = new Date(); today.setHours(0, 0, 0, 0);
-  const day7 = Date.now() - 7 * 86_400_000;
-  const day30 = Date.now() - 30 * 86_400_000;
-
   if (!hasSupabaseEnv()) {
     const u = buildDemoUniverse();
-    const c = u.conversations as Array<Record<string, unknown>>;
-    const o = u.orders as Array<Record<string, unknown>>;
-    const d = u.disputes as Array<Record<string, unknown>>;
-    const paid = o.filter((x) => x.payment_status === "confirmed");
-    const inWindow = (iso: unknown, from: number) =>
-      typeof iso === "string" && new Date(iso).getTime() >= from;
-    const sumTotal = (rows: Array<Record<string, unknown>>) =>
-      rows.reduce((s, r) => s + (Number(r.total_amount) || 0), 0);
-    const kpis: Kpis = {
-      totalLeads: c.length,
-      newToday: c.filter((x) => inWindow(x.created_at, today.getTime())).length,
-      priceInquiries: c.filter((x) => x.stage === "price_lead").length,
-      hotLeads: c.filter((x) => x.lead_temperature === "hot").length,
-      paymentLinksSent: o.filter((x) => x.payment_status === "link_sent").length,
-      paidOrders: paid.length,
-      deliveredOrders: o.filter((x) => x.order_status === "delivered").length,
-      lostLeads: c.filter((x) => x.stage === "lost_lead").length,
-      complaints: o.filter((x) => x.order_status === "complaint").length,
-      leadToPayment: c.length ? Math.round((paid.length / c.length) * 100) : 0,
-      revenueAedToday: Math.round(sumTotal(paid.filter((x) => inWindow(x.created_at, today.getTime())))),
-      revenueAed7d: Math.round(sumTotal(paid.filter((x) => inWindow(x.created_at, day7)))),
-      revenueAed30d: Math.round(sumTotal(paid.filter((x) => inWindow(x.created_at, day30)))),
-      pendingPaymentAed: Math.round(
-        o.filter((x) => x.payment_status === "link_sent" || x.payment_status === "needs_verification")
-          .reduce((s, r) => s + (Number(r.total_amount) || 0), 0)
-      ),
-      openDisputes: d.filter((x) => x.status === "open" || x.status === "in_review").length,
-    };
+    const kpis = computeKpis({
+      conversations: u.conversations as Row[],
+      orders: u.orders as Row[],
+      disputes: u.disputes as Row[],
+    });
     return { kpis, connected: false, demoMode: true };
   }
 
@@ -122,36 +132,11 @@ export async function fetchKpis(): Promise<{ kpis: Kpis; connected: boolean; dem
     supabase.from("orders").select("order_status,payment_status,total_amount,created_at"),
     supabase.from("disputes").select("status"),
   ]);
-  const c = convs.data ?? [];
-  const o = (orders.data ?? []) as Array<Record<string, unknown>>;
-  const d = disputes.data ?? [];
-  const paid = o.filter((x) => x.payment_status === "confirmed" || x.order_status === "paid");
-  const sumTotal = (rows: Array<Record<string, unknown>>) =>
-    rows.reduce((s, r) => s + (Number(r.total_amount) || 0), 0);
-  const inWindow = (iso: unknown, from: number) =>
-    typeof iso === "string" && new Date(iso).getTime() >= from;
-
-  const kpis: Kpis = {
-    ...EMPTY_KPIS,
-    totalLeads: c.length,
-    newToday: c.filter((x) => inWindow(x.created_at, today.getTime())).length,
-    priceInquiries: c.filter((x) => x.stage === "price_lead").length,
-    hotLeads: c.filter((x) => x.lead_temperature === "hot").length,
-    paymentLinksSent: o.filter((x) => x.payment_status === "link_sent").length,
-    paidOrders: paid.length,
-    deliveredOrders: o.filter((x) => x.order_status === "delivered").length,
-    lostLeads: c.filter((x) => x.stage === "lost_lead").length,
-    complaints: o.filter((x) => x.order_status === "complaint").length,
-    leadToPayment: c.length ? Math.round((paid.length / c.length) * 100) : 0,
-    revenueAedToday: Math.round(sumTotal(paid.filter((x) => inWindow(x.created_at, today.getTime())))),
-    revenueAed7d: Math.round(sumTotal(paid.filter((x) => inWindow(x.created_at, day7)))),
-    revenueAed30d: Math.round(sumTotal(paid.filter((x) => inWindow(x.created_at, day30)))),
-    pendingPaymentAed: Math.round(
-      o.filter((x) => x.payment_status === "link_sent" || x.payment_status === "needs_verification")
-        .reduce((s, r) => s + (Number(r.total_amount) || 0), 0)
-    ),
-    openDisputes: d.filter((x) => x.status === "open" || x.status === "in_review").length,
-  };
+  const kpis = computeKpis({
+    conversations: (convs.data ?? []) as Row[],
+    orders: (orders.data ?? []) as Row[],
+    disputes: (disputes.data ?? []) as Row[],
+  });
   return { kpis, connected: true, demoMode: false };
 }
 

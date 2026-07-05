@@ -44,8 +44,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fef3f9" },
-    { media: "(prefers-color-scheme: dark)",  color: "#1f2937" },
+    { media: "(prefers-color-scheme: light)", color: "#fafafb" },
+    { media: "(prefers-color-scheme: dark)",  color: "#111118" },
   ],
 };
 
@@ -55,14 +55,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en" dir="ltr">
       <body>
         <div className="flex min-h-screen">
-          <aside className="hidden w-64 shrink-0 border-r border-gray-200 bg-white md:block">
+          <aside className="hidden w-64 shrink-0 border-r border-[color:rgb(var(--line))] bg-[color:rgb(var(--surface))] md:block">
             <Nav badges={badges} />
           </aside>
           <main className="flex-1 p-4 md:p-8">
             <div className="md:hidden mb-3">
               <Nav mobile badges={badges} />
             </div>
-            {children}
+            <div className="page-enter">{children}</div>
           </main>
         </div>
       </body>

@@ -2,6 +2,8 @@
 // Works on the demo universe by default; pages that fetch from Supabase pass in
 // rows of the same shape.
 
+import { tallyBy, tallyToArray, dayKey, inWindow } from "./agg";
+
 const DAY = 86_400_000;
 
 type Order = Record<string, unknown> & {
@@ -20,54 +22,49 @@ type Conversation = Record<string, unknown> & {
   platform?: string;
 };
 
-function dayKey(iso: string) { return iso.slice(0, 10); }
 function shortDay(iso: string) {
   const d = new Date(iso);
   return d.toLocaleDateString("en-AE", { day: "2-digit", month: "short" });
 }
 
-export function revenueByDay(orders: Order[], days = 14) {
-  const cutoff = Date.now() - (days - 1) * DAY;
-  const out = new Map<string, number>();
+/** Empty `days`-long day-by-day series, keyed by yyyy-mm-dd. */
+function emptySeries<V>(days: number, init: () => V): Map<string, V> {
+  const out = new Map<string, V>();
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(Date.now() - i * DAY);
-    out.set(d.toISOString().slice(0, 10), 0);
+    out.set(d.toISOString().slice(0, 10), init());
   }
+  return out;
+}
+
+export function revenueByDay(orders: Order[], days = 14) {
+  const cutoff = Date.now() - (days - 1) * DAY;
+  const out = emptySeries<number>(days, () => 0);
   for (const o of orders) {
     if (o.payment_status !== "confirmed") continue;
-    const t = new Date(o.created_at).getTime();
-    if (t < cutoff) continue;
+    if (!inWindow(o.created_at, cutoff)) continue;
     const k = dayKey(o.created_at);
     if (!out.has(k)) continue;
     out.set(k, (out.get(k) ?? 0) + (Number(o.total_amount) || 0));
   }
-  return Array.from(out.entries()).map(([d, aed]) => ({
-    day: shortDay(d), aed: Math.round(aed),
-  }));
+  return Array.from(out.entries()).map(([d, aed]) => ({ day: shortDay(d), aed: Math.round(aed) }));
 }
 
 export function ordersByDay(orders: Order[], days = 14) {
-  const out = new Map<string, number>();
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(Date.now() - i * DAY);
-    out.set(d.toISOString().slice(0, 10), 0);
-  }
+  const out = emptySeries<number>(days, () => 0);
   for (const o of orders) {
     const k = dayKey(o.created_at);
     if (out.has(k)) out.set(k, (out.get(k) ?? 0) + 1);
   }
-  return Array.from(out.entries()).map(([d, orders]) => ({ day: shortDay(d), orders }));
+  return Array.from(out.entries()).map(([d, ordersN]) => ({ day: shortDay(d), orders: ordersN }));
 }
 
 export function stackedStatusByDay(orders: Order[], days = 14) {
-  const init = new Map<string, { paid: number; pending: number; complaints: number }>();
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(Date.now() - i * DAY);
-    init.set(d.toISOString().slice(0, 10), { paid: 0, pending: 0, complaints: 0 });
-  }
+  const init = emptySeries<{ paid: number; pending: number; complaints: number }>(days, () => ({
+    paid: 0, pending: 0, complaints: 0,
+  }));
   for (const o of orders) {
-    const k = dayKey(o.created_at);
-    const cell = init.get(k);
+    const cell = init.get(dayKey(o.created_at));
     if (!cell) continue;
     if (o.order_status === "complaint") cell.complaints += 1;
     else if (o.payment_status === "confirmed") cell.paid += 1;
@@ -93,37 +90,27 @@ export function conversionFunnel(conversations: Conversation[], orders: Order[])
 }
 
 export function topProducts(orders: Order[], n = 6) {
-  const tally = new Map<string, number>();
-  for (const o of orders) {
-    if (o.payment_status !== "confirmed") continue;
-    const name = (o.product_name as string) ?? "(unknown)";
-    tally.set(name, (tally.get(name) ?? 0) + (Number(o.quantity) || 1));
-  }
-  return Array.from(tally.entries())
-    .map(([name, orders]) => ({ name, orders }))
+  const tally = tallyBy(
+    orders.filter((o) => o.payment_status === "confirmed"),
+    (o) => (o.product_name as string) ?? "(unknown)",
+    (o) => Number(o.quantity) || 1,
+  );
+  return tallyToArray(tally, "name", "orders")
     .sort((a, b) => b.orders - a.orders)
     .slice(0, n);
 }
 
 export function platformMix(conversations: Conversation[]) {
-  const tally = new Map<string, number>();
-  for (const c of conversations) {
-    const p = (c.platform as string) ?? "other";
-    tally.set(p, (tally.get(p) ?? 0) + 1);
-  }
-  return Array.from(tally.entries()).map(([name, value]) => ({ name, value }));
+  const tally = tallyBy(conversations, (c) => (c.platform as string) ?? "other");
+  return tallyToArray(tally);
 }
 
 export function emirateMix(orders: Order[]) {
-  const tally = new Map<string, number>();
-  for (const o of orders) {
-    if (o.payment_status !== "confirmed") continue;
-    const k = (o.delivery_area as string) ?? "(unknown)";
-    tally.set(k, (tally.get(k) ?? 0) + 1);
-  }
-  return Array.from(tally.entries())
-    .map(([name, value]) => ({ name, value }))
-    .sort((a, b) => b.value - a.value);
+  const tally = tallyBy(
+    orders.filter((o) => o.payment_status === "confirmed"),
+    (o) => (o.delivery_area as string) ?? "(unknown)",
+  );
+  return tallyToArray(tally).sort((a, b) => b.value - a.value);
 }
 
 export interface AttentionItem {

@@ -1,5 +1,5 @@
 import { fetchRows, formatAed, formatDate } from "@/lib/data";
-import { DemoBanner, PageHeader, SectionTitle } from "@/components/ui";
+import { DemoBanner, PageHeader, SectionTitle, KV } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -26,10 +26,10 @@ export default async function SettingsPage() {
       <div className="card mb-4">
         <SectionTitle>AI provider</SectionTitle>
         <dl className="grid grid-cols-1 gap-1 text-sm md:grid-cols-2">
-          <Row k="Provider" v={PROVIDER} />
-          <Row k="Model" v={MODEL} />
-          <Row k="Owner approval matrix" v="14 actions blocked from auto-approval" />
-          <Row k="Mock fallback" v="Safe placeholder when no API key is set" />
+          <KV k="Provider" v={PROVIDER} />
+          <KV k="Model" v={MODEL} />
+          <KV k="Owner approval matrix" v="14 actions blocked from auto-approval" />
+          <KV k="Mock fallback" v="Safe placeholder when no API key is set" />
         </dl>
         <p className="mt-2 text-xs text-gray-500">
           Change provider by setting <code>AI_PROVIDER</code> (one of: <code>openai</code>, <code>anthropic</code>, <code>gemini</code>, <code>groq</code>, <code>together</code>, <code>openai_compatible</code>) and the matching API key on the host.
@@ -75,10 +75,6 @@ export default async function SettingsPage() {
       </div>
     </div>
   );
-}
-
-function Row({ k, v }: { k: string; v: string }) {
-  return (<div className="flex gap-2"><dt className="w-44 shrink-0 text-gray-500">{k}</dt><dd>{v}</dd></div>);
 }
 
 function prettyValue(key: string, value: unknown): string {

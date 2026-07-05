@@ -2,72 +2,303 @@
 @tailwind components;
 @tailwind utilities;
 
+/* --------------------------------------------------------------------------
+   Design tokens
+   Single source of truth for colour, spacing and elevation. All components
+   read from these so a brand tweak is one file edit, not a repo-wide sweep.
+   -------------------------------------------------------------------------- */
 :root {
   color-scheme: light;
-  --brand: 24 24 27;       /* zinc-900 */
-  --accent: 244 114 182;   /* pink-400 — soft fashion accent */
-  --pearl: 250 245 240;    /* warm off-white */
-  --sand: 245 240 235;
+
+  /* Neutrals — cool, near-white base for a modern console feel */
+  --bg:        250 250 251;    /* page */
+  --surface:   255 255 255;    /* cards, panels */
+  --surface-2: 246 246 248;    /* subtle wells (stats, table rows) */
+  --line:      229 229 234;    /* hairline borders */
+  --line-2:    241 241 244;
+
+  /* Ink */
+  --ink:      17 17 24;
+  --ink-2:    88 88 100;       /* labels, muted */
+  --ink-3:   140 140 155;
+
+  /* Brand — rose, restrained */
+  --brand:    244 63 116;      /* rose-500-ish */
+  --brand-2:  253 232 240;     /* soft rose surface */
+  --brand-ink: 122  32  58;
+
+  /* Semantics */
+  --success:   16 129  71;
+  --success-2:220 252 231;
+  --warn:      146  64   14;
+  --warn-2:   254 249 195;
+  --danger:   159  18  57;
+  --danger-2: 254 226 226;
+  --info:      30  64 175;
+  --info-2:   219 234 254;
+
+  /* Elevation & radii */
+  --r-sm:  8px;
+  --r-md:  14px;
+  --r-lg:  20px;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.04), 0 1px 1px rgb(0 0 0 / 0.03);
+  --shadow-2: 0 4px 20px -6px rgb(0 0 0 / 0.08), 0 2px 6px -2px rgb(0 0 0 / 0.04);
+  --focus:    0 0 0 3px rgb(244 63 116 / 0.25);
 }
 
 html, body { height: 100%; }
 body {
-  @apply bg-[color:var(--pearl)] text-gray-900 antialiased;
+  background: rgb(var(--bg));
+  color: rgb(var(--ink));
+  @apply antialiased;
   font-feature-settings: "ss01", "cv11";
 }
 
-/* ---- Cards ---- */
-.card { @apply rounded-2xl border border-gray-200 bg-white p-4 shadow-sm; }
-.card-tight { @apply rounded-xl border border-gray-200 bg-white p-3 shadow-sm; }
-.card-accent { @apply rounded-2xl border border-pink-200 bg-pink-50 p-4 shadow-sm; }
+/* Focus rings — a single, cohesive style everywhere. */
+:where(a, button, [role="button"], input, select, textarea, summary):focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+  border-radius: var(--r-sm);
+}
 
-/* ---- Badges / pills ---- */
-.badge { @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium; }
-.badge-pass { @apply bg-green-100 text-green-800; }
-.badge-warn { @apply bg-amber-100 text-amber-900; }
-.badge-fail { @apply bg-red-100 text-red-800; }
-.badge-info { @apply bg-blue-100 text-blue-800; }
-.badge-neutral { @apply bg-gray-100 text-gray-700; }
-.badge-vip { @apply bg-gradient-to-r from-pink-500 to-rose-500 text-white; }
-.badge-hot { @apply bg-red-100 text-red-700; }
-.badge-warm { @apply bg-amber-100 text-amber-800; }
-.badge-cold { @apply bg-sky-100 text-sky-800; }
+/* --------------------------------------------------------------------------
+   Cards & surfaces
+   -------------------------------------------------------------------------- */
+.card {
+  background: rgb(var(--surface));
+  border: 1px solid rgb(var(--line));
+  border-radius: var(--r-lg);
+  padding: 1.1rem;
+  box-shadow: var(--shadow-1);
+  transition: box-shadow .18s ease, border-color .18s ease, transform .18s ease;
+}
+.card:hover { border-color: rgb(var(--line) / .85); }
+.card-tight {
+  background: rgb(var(--surface));
+  border: 1px solid rgb(var(--line));
+  border-radius: var(--r-md);
+  padding: .8rem;
+  box-shadow: var(--shadow-1);
+  transition: box-shadow .18s ease, transform .18s ease;
+}
+.card-tight:hover { box-shadow: var(--shadow-2); transform: translateY(-1px); }
+.card-accent {
+  background: rgb(var(--brand-2));
+  border: 1px solid rgb(var(--brand) / .3);
+  border-radius: var(--r-lg);
+  padding: 1.1rem;
+  color: rgb(var(--brand-ink));
+}
+
+/* --------------------------------------------------------------------------
+   KPI tiles
+   -------------------------------------------------------------------------- */
+.kpi { padding: .95rem 1rem; }
+.kpi .kpi-v {
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  color: rgb(var(--ink));
+  font-variant-numeric: tabular-nums;
+}
+.kpi .kpi-l { margin-top: .25rem; font-size: .72rem; color: rgb(var(--ink-2)); text-transform: uppercase; letter-spacing: .04em; }
+.kpi .kpi-h { margin-top: .35rem; font-size: .7rem;  color: rgb(var(--ink-3)); }
+
+/* --------------------------------------------------------------------------
+   Stat mini-tile (labelled value, dense grid usage)
+   -------------------------------------------------------------------------- */
+.stat {
+  background: rgb(var(--surface-2));
+  border-radius: var(--r-sm);
+  padding: .35rem .55rem;
+  min-width: 0;
+}
+.stat-danger { background: rgb(var(--danger-2)); color: rgb(var(--danger)); }
+.stat .stat-k { font-size: .625rem; text-transform: uppercase; letter-spacing: .06em; color: rgb(var(--ink-3)); }
+.stat-danger .stat-k { color: rgb(var(--danger) / .85); }
+.stat .stat-v { font-size: .8rem; font-weight: 500; word-break: break-word; }
+
+/* --------------------------------------------------------------------------
+   Badges
+   -------------------------------------------------------------------------- */
+.badge {
+  @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium;
+  border: 1px solid transparent;
+}
+.badge-pass    { background: rgb(var(--success-2)); color: rgb(var(--success)); border-color: rgb(var(--success) / .18); }
+.badge-warn    { background: rgb(var(--warn-2));    color: rgb(var(--warn));    border-color: rgb(var(--warn)    / .18); }
+.badge-fail    { background: rgb(var(--danger-2));  color: rgb(var(--danger));  border-color: rgb(var(--danger)  / .2); }
+.badge-info    { background: rgb(var(--info-2));    color: rgb(var(--info));    border-color: rgb(var(--info)    / .18); }
+.badge-neutral { background: rgb(var(--line-2));    color: rgb(var(--ink-2));   border-color: rgb(var(--line)); }
+.badge-vip     { background: linear-gradient(90deg, rgb(var(--brand)), #e11d48); color: #fff; border: none; }
+.badge-hot     { background: rgb(var(--danger-2));  color: rgb(var(--danger)); }
+.badge-warm    { background: rgb(var(--warn-2));    color: rgb(var(--warn)); }
+.badge-cold    { background: rgb(var(--info-2));    color: rgb(var(--info)); }
 .badge-dot::before {
   content: "";
   @apply mr-1 inline-block h-1.5 w-1.5 rounded-full bg-current;
 }
 
-/* ---- Buttons ---- */
-.btn { @apply inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition; }
-.btn-primary { @apply bg-gray-900 text-white hover:bg-gray-700; }
-.btn-accent { @apply bg-pink-500 text-white hover:bg-pink-600; }
-.btn-ghost { @apply border border-gray-300 bg-white hover:bg-gray-100; }
-.btn-soft { @apply bg-gray-100 hover:bg-gray-200 text-gray-900; }
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease, transform .1s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: rgb(var(--ink)); color: white; }
+.btn-primary:hover { background: rgb(var(--ink) / .88); }
+.btn-accent  { background: rgb(var(--brand)); color: white; }
+.btn-accent:hover { background: rgb(var(--brand) / .9); }
+.btn-ghost   { background: rgb(var(--surface)); color: rgb(var(--ink)); border: 1px solid rgb(var(--line)); }
+.btn-ghost:hover { background: rgb(var(--surface-2)); }
+.btn-soft    { background: rgb(var(--surface-2)); color: rgb(var(--ink)); }
+.btn-soft:hover { background: rgb(var(--line-2)); }
 .btn-sm { @apply px-2 py-1 text-xs; }
 
-/* ---- Inputs ---- */
-.input { @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-gray-900 focus:outline-none; }
-.label { @apply block text-xs font-medium text-gray-600 mb-1; }
+/* --------------------------------------------------------------------------
+   Inputs
+   -------------------------------------------------------------------------- */
+.input {
+  @apply w-full rounded-lg px-3 py-2 text-sm;
+  background: rgb(var(--surface));
+  color: rgb(var(--ink));
+  border: 1px solid rgb(var(--line));
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.input:focus { border-color: rgb(var(--ink)); outline: none; }
+.label { @apply block text-xs font-medium mb-1; color: rgb(var(--ink-2)); }
 
-/* ---- Section headers ---- */
-.h1 { @apply text-2xl font-semibold tracking-tight; }
-.h2 { @apply text-sm font-semibold uppercase tracking-wide text-gray-500; }
-.muted { @apply text-sm text-gray-500; }
+/* --------------------------------------------------------------------------
+   Typography
+   -------------------------------------------------------------------------- */
+.h1 { @apply text-[1.6rem] font-semibold tracking-tight; letter-spacing: -0.01em; }
+.h2 { @apply text-xs font-semibold uppercase; letter-spacing: .06em; color: rgb(var(--ink-2)); }
+.muted { color: rgb(var(--ink-2)); font-size: .875rem; }
 
-/* ---- Table polish ---- */
+/* --------------------------------------------------------------------------
+   Tables
+   -------------------------------------------------------------------------- */
 .tbl { @apply w-full text-sm; }
-.tbl thead tr { @apply border-b border-gray-200 text-left text-xs uppercase tracking-wide text-gray-500; }
-.tbl tbody tr { @apply border-b border-gray-100 hover:bg-gray-50; }
+.tbl thead tr {
+  text-align: left;
+  color: rgb(var(--ink-3));
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  border-bottom: 1px solid rgb(var(--line));
+}
+.tbl tbody tr { border-bottom: 1px solid rgb(var(--line-2)); }
+.tbl tbody tr:hover { background: rgb(var(--surface-2)); }
 .tbl th, .tbl td { @apply px-3 py-2 align-top; }
 
-/* ---- Kanban column ---- */
-.kanban { @apply flex min-w-[260px] flex-col gap-2 rounded-2xl bg-white/60 p-3; }
+/* --------------------------------------------------------------------------
+   Kanban
+   -------------------------------------------------------------------------- */
+.kanban {
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  padding: .75rem;
+  border-radius: var(--r-lg);
+  background: rgb(var(--surface-2));
+  border: 1px solid rgb(var(--line));
+}
 
-/* ---- RTL helper ---- */
+/* --------------------------------------------------------------------------
+   Banner (demo notice etc.)
+   -------------------------------------------------------------------------- */
+.banner {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  padding: .75rem 1rem;
+  border-radius: var(--r-md);
+  font-size: .875rem;
+  border: 1px solid transparent;
+}
+.banner-demo {
+  background: rgb(var(--brand-2));
+  color: rgb(var(--brand-ink));
+  border-color: rgb(var(--brand) / .25);
+}
+
+/* --------------------------------------------------------------------------
+   Empty state
+   -------------------------------------------------------------------------- */
+.empty {
+  border: 1px dashed rgb(var(--line));
+  background: rgb(var(--surface));
+  border-radius: var(--r-lg);
+  padding: 1.5rem;
+  text-align: center;
+  font-size: .875rem;
+  color: rgb(var(--ink-3));
+}
+
+/* --------------------------------------------------------------------------
+   Navigation shell
+   -------------------------------------------------------------------------- */
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .4rem .55rem;
+  border-radius: var(--r-sm);
+  color: rgb(var(--ink-2));
+  font-size: .875rem;
+  transition: background-color .12s ease, color .12s ease;
+}
+.nav-link:hover { background: rgb(var(--surface-2)); color: rgb(var(--ink)); }
+.nav-link[data-active="true"] {
+  background: rgb(var(--ink));
+  color: rgb(var(--surface));
+}
+.nav-link[data-active="true"] .nav-icon { color: rgb(var(--surface) / .75); }
+.nav-icon { width: 1rem; text-align: center; color: rgb(var(--ink-3)); font-size: .75rem; }
+.nav-group-heading {
+  padding: .3rem .5rem 0;
+  font-size: .625rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: rgb(var(--ink-3));
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Motion helpers
+   Subtle by default; disabled when the user prefers reduced motion.
+   -------------------------------------------------------------------------- */
+.page-enter { animation: page-in .28s ease-out both; }
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* --------------------------------------------------------------------------
+   RTL helper
+   -------------------------------------------------------------------------- */
 .rtl { direction: rtl; text-align: right; }
 .ltr { direction: ltr; }
 
-/* ---- Recharts axis tweak ---- */
-.recharts-text { fill: #6b7280; font-size: 11px; }
-.recharts-cartesian-axis-tick-line { stroke: #e5e7eb; }
-.recharts-cartesian-grid-horizontal line { stroke: #f3f4f6; }
+/* --------------------------------------------------------------------------
+   Recharts axis tweak
+   -------------------------------------------------------------------------- */
+.recharts-text { fill: rgb(var(--ink-3)); font-size: 11px; }
+.recharts-cartesian-axis-tick-line { stroke: rgb(var(--line)); }
+.recharts-cartesian-grid-horizontal line { stroke: rgb(var(--line-2)); }
+
+/* --------------------------------------------------------------------------
+   Reduced motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .card-tight:hover { transform: none; }
+}

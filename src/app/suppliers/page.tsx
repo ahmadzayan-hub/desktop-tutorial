@@ -1,5 +1,5 @@
 import { fetchRows, formatAed } from "@/lib/data";
-import { DemoBanner, PageHeader, Kpi, SectionTitle } from "@/components/ui";
+import { DemoBanner, PageHeader, Kpi, SectionTitle, Stat } from "@/components/ui";
 import clsx from "clsx";
 
 export const dynamic = "force-dynamic";
@@ -46,12 +46,12 @@ export default async function SuppliersPage() {
                 </div>
                 <div className="text-xs text-gray-500">{(s.country as string)} · {(s.platform as string)} · MOQ {s.moq as number}</div>
                 <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
-                  <Cell label="Unit cost" v={formatAed(Number(s.unit_cost))} />
-                  <Cell label="Shipping" v={formatAed(Number(s.shipping_cost))} />
-                  <Cell label="Production" v={s.production_time as string} />
-                  <Cell label="Sample" v={s.sample_status as string} />
-                  <Cell label="Real video" v={(s.real_video_received as boolean) ? "yes" : "missing"} highlight={!s.real_video_received} />
-                  <Cell label="Material proof" v={s.material_proof as string} highlight={(s.material_proof as string) === "missing"} />
+                  <Stat k="Unit cost" v={formatAed(Number(s.unit_cost))} />
+                  <Stat k="Shipping" v={formatAed(Number(s.shipping_cost))} />
+                  <Stat k="Production" v={s.production_time as string} />
+                  <Stat k="Sample" v={s.sample_status as string} />
+                  <Stat k="Real video" v={(s.real_video_received as boolean) ? "yes" : "missing"} tone={!s.real_video_received ? "danger" : "neutral"} />
+                  <Stat k="Material proof" v={s.material_proof as string} tone={(s.material_proof as string) === "missing" ? "danger" : "neutral"} />
                 </div>
                 {s.notes ? <p className="mt-2 text-xs italic text-gray-500">{s.notes as string}</p> : null}
               </div>
@@ -63,11 +63,3 @@ export default async function SuppliersPage() {
   );
 }
 
-function Cell({ label, v, highlight }: { label: string; v: string; highlight?: boolean }) {
-  return (
-    <div className={clsx("rounded-lg bg-gray-50 px-2 py-1", highlight && "bg-red-50 text-red-700")}>
-      <div className="text-[10px] uppercase tracking-wide text-gray-400">{label}</div>
-      <div>{v}</div>
-    </div>
-  );
-}

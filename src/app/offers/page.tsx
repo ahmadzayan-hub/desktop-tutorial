@@ -1,5 +1,5 @@
 import { fetchRows, formatAed, formatDate } from "@/lib/data";
-import { DemoBanner, PageHeader, Kpi, SectionTitle } from "@/components/ui";
+import { DemoBanner, PageHeader, Kpi, SectionTitle, Stat } from "@/components/ui";
 import clsx from "clsx";
 
 export const dynamic = "force-dynamic";
@@ -57,10 +57,10 @@ function OfferCard({ o, muted }: { o: Record<string, unknown>; muted?: boolean }
       </div>
       <p className="mt-1 text-sm">{o.description as string}</p>
       <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
-        <Item label="Delivery" v={(o.delivery_rule as string).replace(/_/g, " ")} />
-        <Item label="VAT" v={o.vat_rule as string} />
-        <Item label="Ends" v={formatDate(o.end_at as string)} />
-        <Item label="Status" v={o.active ? "active" : "inactive"} />
+        <Stat k="Delivery" v={(o.delivery_rule as string).replace(/_/g, " ")} />
+        <Stat k="VAT" v={o.vat_rule as string} />
+        <Stat k="Ends" v={formatDate(o.end_at as string)} />
+        <Stat k="Status" v={o.active ? "active" : "inactive"} />
       </div>
       {Array.isArray(o.products_included) && o.products_included.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1 text-[11px]">
@@ -71,6 +71,3 @@ function OfferCard({ o, muted }: { o: Record<string, unknown>; muted?: boolean }
   );
 }
 
-function Item({ label, v }: { label: string; v: string }) {
-  return <div className="rounded-lg bg-white/60 px-2 py-1"><div className="text-[10px] uppercase tracking-wide text-gray-400">{label}</div><div>{v}</div></div>;
-}

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PageHeader, SectionTitle } from "@/components/ui";
+import { PageHeader, SectionTitle, KV } from "@/components/ui";
 import { getNotebookLmStatus } from "@/lib/integrations/notebooklm-session";
 import { DEFAULT_NOTEBOOKLM_SCOPES } from "@/lib/integrations/notebooklm";
 
@@ -69,17 +69,17 @@ export default function IntegrationsPage({
         </p>
 
         <dl className="mt-3 grid grid-cols-1 gap-1 text-sm md:grid-cols-2">
-          <Row k="Provider" v="Google OAuth 2.0 (authorization code)" />
-          <Row
+          <KV k="Provider" v="Google OAuth 2.0 (authorization code)" />
+          <KV
             k="Scopes"
             v={(status.scopes.length ? status.scopes : DEFAULT_NOTEBOOKLM_SCOPES)
               .map(shortScope)
               .join(", ")}
           />
           {status.connected && status.expiresAt && (
-            <Row k="Access token expires" v={new Date(status.expiresAt).toLocaleString("en-AE")} />
+            <KV k="Access token expires" v={new Date(status.expiresAt).toLocaleString("en-AE")} />
           )}
-          <Row k="Token storage" v="Encrypted, httpOnly cookie (AES-256-GCM)" />
+          <KV k="Token storage" v="Encrypted, httpOnly cookie (AES-256-GCM)" />
         </dl>
 
         {!status.configured && (
@@ -113,15 +113,6 @@ export default function IntegrationsPage({
           )}
         </div>
       </div>
-    </div>
-  );
-}
-
-function Row({ k, v }: { k: string; v: string }) {
-  return (
-    <div className="flex gap-2">
-      <dt className="w-44 shrink-0 text-gray-500">{k}</dt>
-      <dd className="break-words">{v}</dd>
     </div>
   );
 }

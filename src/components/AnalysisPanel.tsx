@@ -2,6 +2,7 @@
 import { useState } from "react";
 import clsx from "clsx";
 import type { AnalysisOutput, GuardrailResult } from "@/lib/types";
+import { KV } from "@/components/ui";
 
 interface Result {
   analysis: AnalysisOutput;
@@ -37,16 +38,16 @@ export default function AnalysisPanel({ result }: { result: Result }) {
         <div className="card">
           <h3 className="mb-2 text-sm font-semibold">Analysis</h3>
           <dl className="grid grid-cols-1 gap-1 text-sm">
-            <Row k="Intent" v={analysis.customer_intent} />
-            <Row k="Lead temperature" v={analysis.lead_temperature} />
-            <Row k="Persona" v={analysis.customer_persona} />
-            <Row k="Product" v={analysis.product_identified} />
-            <Row k="Name check" v={analysis.name_check} />
-            <Row k="Arabic name" v={analysis.correct_arabic_name ?? "—"} />
-            <Row k="Missing info" v={analysis.missing_information.join(", ") || "—"} />
-            <Row k="Next action" v={analysis.next_action} />
-            <Row k="Follow-up" v={analysis.follow_up_timing} />
-            <Row k="Confidence" v={`${Math.round(analysis.confidence_score * 100)}%`} />
+            <KV w="w-28" k="Intent" v={analysis.customer_intent} />
+            <KV w="w-28" k="Lead temperature" v={analysis.lead_temperature} />
+            <KV w="w-28" k="Persona" v={analysis.customer_persona} />
+            <KV w="w-28" k="Product" v={analysis.product_identified} />
+            <KV w="w-28" k="Name check" v={analysis.name_check} />
+            <KV w="w-28" k="Arabic name" v={analysis.correct_arabic_name ?? "—"} />
+            <KV w="w-28" k="Missing info" v={analysis.missing_information.join(", ") || "—"} />
+            <KV w="w-28" k="Next action" v={analysis.next_action} />
+            <KV w="w-28" k="Follow-up" v={analysis.follow_up_timing} />
+            <KV w="w-28" k="Confidence" v={`${Math.round(analysis.confidence_score * 100)}%`} />
           </dl>
           {analysis.risk_or_caution.length > 0 && (
             <div className="mt-2 text-xs text-red-700">
@@ -112,11 +113,3 @@ export default function AnalysisPanel({ result }: { result: Result }) {
   );
 }
 
-function Row({ k, v }: { k: string; v: string }) {
-  return (
-    <div className="flex gap-2">
-      <dt className="w-28 shrink-0 text-gray-500">{k}</dt>
-      <dd className="text-gray-900">{v}</dd>
-    </div>
-  );
-}

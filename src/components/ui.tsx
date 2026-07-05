@@ -1,15 +1,26 @@
 import clsx from "clsx";
 
+// ---------- Layout primitives ----------
+
 export function PageHeader({
   title, subtitle, action,
 }: { title: string; subtitle?: string; action?: React.ReactNode }) {
   return (
-    <div className="mb-4 flex items-end justify-between gap-4">
+    <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <h1 className="h1">{title}</h1>
-        {subtitle && <p className="muted mt-0.5">{subtitle}</p>}
+        {subtitle && <p className="muted mt-1 max-w-2xl">{subtitle}</p>}
       </div>
-      {action && <div>{action}</div>}
+      {action && <div className="shrink-0">{action}</div>}
+    </div>
+  );
+}
+
+export function SectionTitle({ children, action }: { children: React.ReactNode; action?: React.ReactNode }) {
+  return (
+    <div className="mb-3 flex items-center justify-between gap-2">
+      <h2 className="h2">{children}</h2>
+      {action && <div className="shrink-0">{action}</div>}
     </div>
   );
 }
@@ -17,13 +28,44 @@ export function PageHeader({
 export function DemoBanner({ demoMode }: { demoMode: boolean }) {
   if (!demoMode) return null;
   return (
-    <div className="mb-4 flex items-start gap-3 rounded-2xl border border-pink-200 bg-pink-50/70 p-3 text-sm">
+    <div className="banner banner-demo mb-4">
       <span className="badge badge-vip">DEMO</span>
-      <div className="flex-1 text-pink-900">
-        <strong>Demo mode</strong> — these are sample customers, orders, payments &amp; reviews so you can
-        explore every feature instantly. Connect Supabase (see <code>README</code>) to switch to live data, or just keep
-        playing.
+      <div className="flex-1">
+        <strong>Demo mode</strong> — sample customers, orders, payments &amp; reviews. Connect Supabase (see <code>README</code>) to switch to live data.
       </div>
+    </div>
+  );
+}
+
+export function EmptyState({ title, hint }: { title: string; hint?: string }) {
+  return (
+    <div className="empty">
+      <div className="font-medium text-gray-700">{title}</div>
+      {hint && <div className="muted mt-1">{hint}</div>}
+    </div>
+  );
+}
+
+// ---------- Data primitives (dedup) ----------
+
+/** A single dt/dd row used inside detail cards. Replaces the 5 private `Row` copies. */
+export function KV({ k, v, w = "w-40" }: { k: string; v: React.ReactNode; w?: string }) {
+  return (
+    <div className="flex gap-2">
+      <dt className={clsx("shrink-0 text-gray-500", w)}>{k}</dt>
+      <dd className="min-w-0 break-words">{v}</dd>
+    </div>
+  );
+}
+
+/** Compact label-on-top tile used in offer/supplier cards and daily-review grid. */
+export function Stat({ k, v, tone = "neutral" }: {
+  k: string; v: React.ReactNode; tone?: "neutral" | "danger";
+}) {
+  return (
+    <div className={clsx("stat", tone === "danger" && "stat-danger")}>
+      <div className="stat-k">{k}</div>
+      <div className="stat-v">{v}</div>
     </div>
   );
 }
@@ -32,20 +74,25 @@ export function Kpi({
   label, value, hint, trend,
 }: { label: string; value: string | number; hint?: string; trend?: { up?: boolean; text: string } }) {
   return (
-    <div className="card">
+    <div className="card kpi">
       <div className="flex items-baseline justify-between gap-2">
-        <div className="text-2xl font-semibold tracking-tight">{value}</div>
+        <div className="kpi-v">{value}</div>
         {trend && (
-          <span className={clsx("text-xs font-medium", trend.up ? "text-green-700" : "text-red-700")}>
+          <span className={clsx("text-xs font-medium", trend.up ? "text-emerald-700" : "text-rose-700")}>
             {trend.up ? "▲" : "▼"} {trend.text}
           </span>
         )}
       </div>
-      <div className="mt-0.5 text-xs text-gray-500">{label}</div>
-      {hint && <div className="mt-1 text-[11px] text-gray-400">{hint}</div>}
+      <div className="kpi-l">{label}</div>
+      {hint && <div className="kpi-h">{hint}</div>}
     </div>
   );
 }
+
+// ---------- Status pill registry ----------
+//
+// Single source of truth for all status → badge-class maps. Adding a new status
+// only requires one edit here instead of hunting across pages.
 
 const STAGE_LABEL: Record<string, string> = {
   cold_lead: "Cold", information_lead: "Info", price_lead: "Price",
@@ -70,9 +117,12 @@ const COURIER_STATUS_BADGE: Record<string, string> = {
   picked_up: "badge-info", in_transit: "badge-info", delivered: "badge-pass", failed: "badge-fail",
 };
 
+const DISPUTE_STATUS_BADGE: Record<string, string> = {
+  open: "badge-fail", in_review: "badge-warn", resolved: "badge-pass",
+};
+
 export function StagePill({ stage }: { stage: string }) {
-  const label = STAGE_LABEL[stage] ?? stage;
-  return <span className="badge badge-neutral">{label}</span>;
+  return <span className="badge badge-neutral">{STAGE_LABEL[stage] ?? stage}</span>;
 }
 
 export function TempPill({ temp }: { temp: string }) {
@@ -89,21 +139,6 @@ export function PaymentStatusPill({ status }: { status: string }) {
 export function CourierStatusPill({ status }: { status: string }) {
   return <span className={clsx("badge", COURIER_STATUS_BADGE[status] ?? "badge-neutral")}>{status.replace(/_/g, " ")}</span>;
 }
-
-export function SectionTitle({ children, action }: { children: React.ReactNode; action?: React.ReactNode }) {
-  return (
-    <div className="mb-2 flex items-center justify-between">
-      <h2 className="h2">{children}</h2>
-      {action}
-    </div>
-  );
-}
-
-export function EmptyState({ title, hint }: { title: string; hint?: string }) {
-  return (
-    <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-6 text-center text-sm text-gray-500">
-      <div className="font-medium text-gray-700">{title}</div>
-      {hint && <div className="mt-1">{hint}</div>}
-    </div>
-  );
+export function DisputeStatusPill({ status }: { status: string }) {
+  return <span className={clsx("badge", DISPUTE_STATUS_BADGE[status] ?? "badge-neutral")}>{status.replace(/_/g, " ")}</span>;
 }

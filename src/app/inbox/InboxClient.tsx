@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import clsx from "clsx";
-import { StagePill, TempPill } from "@/components/ui";
+import { StagePill, TempPill, KV } from "@/components/ui";
 
 type Row = Record<string, unknown>;
 
@@ -191,12 +191,12 @@ export default function InboxClient({
                 <h3 className="h2 mb-2">Customer record</h3>
                 {customer ? (
                   <dl className="grid grid-cols-1 gap-1 text-sm">
-                    <Row k="Display name" v={(customer.name_display as string) ?? "—"} />
-                    <Row k="Arabic verified" v={(customer.name_arabic_verified as string) ?? "—"} />
-                    <Row k="Language" v={customer.language as string} />
-                    <Row k="Segment" v={customer.segment as string} />
-                    <Row k="Purchases" v={String(customer.purchase_count ?? 0)} />
-                    <Row k="Consent" v={customer.consent_status as string} />
+                    <KV w="w-32" k="Display name" v={(customer.name_display as string) ?? "—"} />
+                    <KV w="w-32" k="Arabic verified" v={(customer.name_arabic_verified as string) ?? "—"} />
+                    <KV w="w-32" k="Language" v={customer.language as string} />
+                    <KV w="w-32" k="Segment" v={customer.segment as string} />
+                    <KV w="w-32" k="Purchases" v={String(customer.purchase_count ?? 0)} />
+                    <KV w="w-32" k="Consent" v={customer.consent_status as string} />
                   </dl>
                 ) : (
                   <p className="text-sm text-gray-500">No linked customer.</p>
@@ -281,8 +281,3 @@ function LiveAnalysis({ result }: { result: Row }) {
   );
 }
 
-function Row({ k, v }: { k: string; v: string }) {
-  return (
-    <div className="flex gap-2"><dt className="w-32 shrink-0 text-gray-500">{k}</dt><dd>{v}</dd></div>
-  );
-}

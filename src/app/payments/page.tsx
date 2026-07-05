@@ -1,5 +1,5 @@
 import { fetchRows, formatAed, formatRelative } from "@/lib/data";
-import { DemoBanner, PageHeader, Kpi, PaymentStatusPill, SectionTitle } from "@/components/ui";
+import { DemoBanner, PageHeader, Kpi, PaymentStatusPill, DisputeStatusPill, SectionTitle } from "@/components/ui";
 import { RESOLUTION_TEMPLATES, type DisputeReason } from "@/lib/growth";
 
 export const dynamic = "force-dynamic";
@@ -110,11 +110,7 @@ export default async function PaymentsPage() {
                     <td>{d.customer_name as string}</td>
                     <td className="font-mono text-xs">{(d.order_id as string).slice(-6).toUpperCase()}</td>
                     <td>{(d.reason as string).replace(/_/g, " ")}</td>
-                    <td>
-                      <span className={`badge ${d.status === "open" ? "badge-fail" : d.status === "in_review" ? "badge-warn" : "badge-pass"}`}>
-                        {d.status as string}
-                      </span>
-                    </td>
+                    <td><DisputeStatusPill status={d.status as string} /></td>
                     <td className="max-w-[24rem] text-xs text-gray-700">
                       {RESOLUTION_TEMPLATES[d.reason as DisputeReason]?.en ?? "—"}
                     </td>
