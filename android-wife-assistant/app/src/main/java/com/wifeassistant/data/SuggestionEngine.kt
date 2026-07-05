@@ -98,24 +98,27 @@ class SuggestionEngine(
         ).joinToString("\n")
     }
 
-    // تحليل رد الموديل لاقتراحين — يفضّل الأسطر المرقّمة فعلاً ويتجاهل التمهيد.
-    private fun parseTwo(raw: String, themes: List<String>): List<Suggestion> {
-        val lines = raw.split("\n").map { it.trim() }.filter { it.isNotEmpty() }
-        val numberedRe = Regex("^\\s*[١٢12]\\s*[-.)]\\s*(.+)$")
-        val numbered = lines.mapNotNull { numberedRe.find(it)?.groupValues?.get(1)?.trim() }
+    companion object {
+        // تحليل رد الموديل لاقتراحين — يفضّل الأسطر المرقّمة فعلاً ويتجاهل التمهيد.
+        // دالة نقية (بدون I/O) عشان تتختبر بسهولة.
+        internal fun parseTwo(raw: String, themes: List<String>): List<Suggestion> {
+            val lines = raw.split("\n").map { it.trim() }.filter { it.isNotEmpty() }
+            val numberedRe = Regex("^\\s*[١٢12]\\s*[-.)]\\s*(.+)$")
+            val numbered = lines.mapNotNull { numberedRe.find(it)?.groupValues?.get(1)?.trim() }
 
-        val first: String
-        val second: String
-        if (numbered.size >= 2) {
-            first = numbered[0]; second = numbered[1]
-        } else {
-            val stripRe = Regex("^\\s*[١٢12]\\s*[-.)]\\s*")
-            val cleaned = lines.map { it.replace(stripRe, "").trim() }.filter { it.isNotEmpty() }
-            first = cleaned.getOrNull(0) ?: raw.trim()
-            second = cleaned.getOrNull(1) ?: cleaned.getOrNull(0) ?: raw.trim()
+            val first: String
+            val second: String
+            if (numbered.size >= 2) {
+                first = numbered[0]; second = numbered[1]
+            } else {
+                val stripRe = Regex("^\\s*[١٢12]\\s*[-.)]\\s*")
+                val cleaned = lines.map { it.replace(stripRe, "").trim() }.filter { it.isNotEmpty() }
+                first = cleaned.getOrNull(0) ?: raw.trim()
+                second = cleaned.getOrNull(1) ?: cleaned.getOrNull(0) ?: raw.trim()
+            }
+            val t0 = themes.getOrElse(0) { "" }
+            val t1 = themes.getOrElse(1) { t0 }
+            return listOf(Suggestion(first, t0), Suggestion(second, t1))
         }
-        val t0 = themes.getOrElse(0) { "" }
-        val t1 = themes.getOrElse(1) { t0 }
-        return listOf(Suggestion(first, t0), Suggestion(second, t1))
     }
 }

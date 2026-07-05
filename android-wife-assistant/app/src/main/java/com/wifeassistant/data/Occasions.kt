@@ -4,26 +4,29 @@ package com.wifeassistant.data
 // fixed = MM-DD ثابت، manual = YYYY-MM-DD (أعياد إسلامية بتتغيّر كل سنة).
 class Occasions(private val settings: Settings) {
 
-    fun todaysOccasion(): Occasion? {
-        val ymd = DateUtil.todayISO()
-        val mmdd = DateUtil.todayMMDD()
+    fun todaysOccasion(): Occasion? =
+        match(settings.occasions, DateUtil.todayISO(), DateUtil.todayMMDD())
 
-        for (occ in settings.occasions) {
-            if (!occ.enabled) continue
-            when (occ.type) {
-                "fixed" -> {
-                    val d = occ.date ?: continue
-                    if (d == "MM-DD") continue
-                    if (d == mmdd) return Occasion(occ.label, occ.label)
-                }
-                "manual" -> {
-                    for (d in occ.dates) {
-                        if (d.isBlank() || d == "YYYY-MM-DD") continue
-                        if (d == ymd) return Occasion(occ.label, occ.label)
+    companion object {
+        // مطابقة نقية (بدون I/O) عشان تتختبر مباشرة.
+        internal fun match(configs: List<OccasionConfig>, ymd: String, mmdd: String): Occasion? {
+            for (occ in configs) {
+                if (!occ.enabled) continue
+                when (occ.type) {
+                    "fixed" -> {
+                        val d = occ.date ?: continue
+                        if (d == "MM-DD") continue
+                        if (d == mmdd) return Occasion(occ.label, occ.label)
+                    }
+                    "manual" -> {
+                        for (d in occ.dates) {
+                            if (d.isBlank() || d == "YYYY-MM-DD") continue
+                            if (d == ymd) return Occasion(occ.label, occ.label)
+                        }
                     }
                 }
             }
+            return null
         }
-        return null
     }
 }
