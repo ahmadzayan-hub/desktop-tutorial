@@ -6,6 +6,9 @@ import { RTLWrapper } from '@/components/common/RTLWrapper';
 
 import Login from '@/pages/Login';
 import Dashboard from '@/pages/Dashboard';
+import Upload from '@/pages/Upload';
+import SubmissionDetail from '@/pages/SubmissionDetail';
+import ProjectDetail from '@/pages/ProjectDetail';
 import NotFound from '@/pages/NotFound';
 
 export default function App() {
@@ -24,15 +27,31 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-            {/* Session 2 placeholders */}
             <Route
               path="/upload"
               element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <Upload />
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/submissions/:id"
+              element={
+                <ProtectedRoute>
+                  <SubmissionDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/projects/:id"
+              element={
+                <ProtectedRoute>
+                  <ProjectDetail />
+                </ProtectedRoute>
+              }
+            />
+            {/* Session 3 placeholders — reuse Dashboard until wired */}
             <Route
               path="/kpi"
               element={

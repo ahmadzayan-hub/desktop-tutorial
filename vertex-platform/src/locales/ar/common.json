@@ -30,20 +30,25 @@
     "loggingIn": "جارٍ تسجيل الدخول…",
     "signup": "إنشاء حساب",
     "forgot": "هل نسيت كلمة المرور؟",
-    "welcome": "مرحبًا بعودتك",
-    "welcomeSubtitle": "سجّل الدخول إلى مساحة عملك في VERTEX",
-    "passwordHint": "8 أحرف على الأقل، مع حرف كبير ورقم واحد",
+    "welcome": "مرحباً بعودتك",
+    "welcomeSubtitle": "سجّل الدخول إلى مساحة عمل VERTEX الخاصة بك",
+    "passwordHint": "8 أحرف على الأقل مع حرف كبير واحد ورقم واحد",
     "loggedOut": "تم تسجيل خروجك."
   },
   "errors": {
-    "invalidEmail": "يرجى إدخال عنوان بريد إلكتروني صالح.",
+    "invalidEmail": "الرجاء إدخال بريد إلكتروني صحيح.",
     "passwordTooShort": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.",
-    "passwordWeak": "يجب أن تحتوي كلمة المرور على حرف كبير ورقم واحد على الأقل.",
+    "passwordWeak": "يجب أن تحتوي كلمة المرور على حرف كبير واحد ورقم واحد على الأقل.",
     "loginFailed": "بريد إلكتروني أو كلمة مرور غير صحيحة. حاول مرة أخرى.",
-    "generic": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+    "generic": "حدث خطأ. يرجى المحاولة مرة أخرى.",
     "notFoundTitle": "الصفحة غير موجودة",
     "notFoundSubtitle": "الصفحة التي تبحث عنها غير موجودة.",
-    "goHome": "العودة إلى لوحة التحكم"
+    "goHome": "العودة إلى لوحة التحكم",
+    "loadFailed": "فشل التحميل. حاول مرة أخرى.",
+    "uploadFailed": "فشل الرفع: {{reason}}",
+    "fileTooLarge": "حجم الملف كبير جداً. الحد الأقصى 25 ميغابايت.",
+    "fileTypeUnsupported": "نوع الملف غير مدعوم.",
+    "noProjects": "لا توجد مشاريع بعد. اطلب من المسؤول إضافتك كمالك."
   },
   "user": {
     "menu": "قائمة المستخدم",
@@ -59,7 +64,196 @@
   },
   "dashboard": {
     "title": "لوحة التحكم",
-    "placeholder": "ستظهر لوحة ذكاء العقود الخاصة بك هنا في الجلسة الثانية."
+    "welcome": "مرحباً بعودتك",
+    "subtitle": "نظرة مباشرة على عقودك ومستنداتك والمخاطر.",
+    "widgets": {
+      "submissionsPending": "المستندات قيد المراجعة",
+      "submissionsPendingHint": "بانتظار تحليل الذكاء الاصطناعي أو موافقة المراجع",
+      "obligationsAtRisk": "الالتزامات المعرضة للخطر",
+      "obligationsAtRiskHint": "معرضة للخطر أو متأخرة عن الجداول التعاقدية",
+      "insuranceExpiring": "تأمينات توشك على الانتهاء",
+      "insuranceExpiringHint": "بوالص تنتهي خلال 30 يوماً",
+      "kpiPenalties": "غرامات مؤشرات الأداء (الشهر الحالي)",
+      "kpiPenaltiesHint": "إجمالي الخصومات المستحقة هذا الشهر",
+      "complianceScore": "نقاط الامتثال",
+      "complianceScoreHint": "متوسط آخر 30 يوماً لكل المستندات",
+      "recentActivity": "النشاط الأخير",
+      "recentActivityEmpty": "لا يوجد نشاط بعد. ارفع مستنداً للبدء.",
+      "alerts": "التنبيهات",
+      "alertsEmpty": "لا توجد تنبيهات نشطة.",
+      "complianceTrend": "اتجاه الامتثال",
+      "submissionsByStatus": "المستندات حسب الحالة"
+    },
+    "activity": {
+      "submission_uploaded": "تم رفع مستند",
+      "finding_created": "نتيجة تحليل جديدة",
+      "comment_added": "تعليق جديد"
+    }
+  },
+  "upload": {
+    "title": "مستند جديد",
+    "subtitle": "ارفع مستنداً وشغّل تحليل الامتثال.",
+    "step": "الخطوة {{current}} من {{total}}",
+    "steps": {
+      "project": "اختر المشروع",
+      "type": "اختر النوع",
+      "file": "رفع الملف",
+      "confirm": "تأكيد"
+    },
+    "project": {
+      "label": "المشروع",
+      "placeholder": "اختر مشروعاً…",
+      "help": "يمكنك الرفع فقط على المشاريع التي تملكها."
+    },
+    "type": {
+      "label": "نوع المستند",
+      "invoice": "فاتورة",
+      "timesheet": "جدول ساعات عمل",
+      "technical_doc": "وثيقة فنية",
+      "progress_update": "تقرير تقدم",
+      "other": "أخرى"
+    },
+    "file": {
+      "label": "الملف",
+      "drop": "أفلت الملف هنا أو اضغط للاستعراض",
+      "allowed": "PDF، PNG، JPG، TXT، CSV، JSON، XLS/XLSX — بحد أقصى 25 ميغابايت",
+      "selected": "المحدد: {{name}} ({{size}})",
+      "remove": "إزالة الملف",
+      "name": "اسم المستند",
+      "namePlaceholder": "اختياري — يستخدم اسم الملف افتراضياً"
+    },
+    "confirm": {
+      "title": "جاهز للرفع",
+      "project": "المشروع",
+      "type": "النوع",
+      "file": "الملف",
+      "size": "الحجم",
+      "submit": "رفع وتحليل",
+      "submitting": "جارٍ الرفع والتحليل…"
+    },
+    "actions": {
+      "back": "السابق",
+      "next": "التالي",
+      "cancel": "إلغاء"
+    }
+  },
+  "submission": {
+    "title": "المستند",
+    "backToProject": "العودة للمشروع",
+    "meta": {
+      "project": "المشروع",
+      "uploaded": "تاريخ الرفع",
+      "uploader": "رفعه",
+      "type": "النوع",
+      "size": "الحجم",
+      "processing": "المعالجة",
+      "approval": "الموافقة",
+      "compliance": "الامتثال",
+      "confidence": "الثقة"
+    },
+    "processingStatus": {
+      "pending": "التحليل قيد الانتظار",
+      "processing": "جارٍ التحليل…",
+      "complete": "اكتمل التحليل",
+      "error": "خطأ في التحليل"
+    },
+    "approvalStatus": {
+      "pending": "بانتظار الموافقة",
+      "approved": "معتمد",
+      "conditional": "مشروط",
+      "rejected": "مرفوض"
+    },
+    "tabs": {
+      "findings": "النتائج",
+      "preview": "معاينة",
+      "comments": "التعليقات",
+      "history": "السجل"
+    },
+    "findings": {
+      "empty": "لا توجد نتائج بعد — شغّل التحليل لتوليدها.",
+      "runAnalysis": "تشغيل التحليل"
+    },
+    "preview": {
+      "notSupported": "المعاينة غير متوفرة لهذا النوع. حمّل الملف لعرضه.",
+      "download": "تنزيل الملف",
+      "loading": "جارٍ تحميل المعاينة…"
+    },
+    "history": {
+      "empty": "لا يوجد سجل تدقيق لهذا المستند بعد."
+    }
+  },
+  "severity": {
+    "critical": "حرج",
+    "high": "مرتفع",
+    "medium": "متوسط",
+    "low": "منخفض",
+    "info": "معلوماتي"
+  },
+  "findingType": {
+    "compliance_pass": "امتثال",
+    "compliance_fail": "عدم امتثال",
+    "alert": "تنبيه",
+    "insight": "استنتاج",
+    "recommendation": "توصية"
+  },
+  "evidence": {
+    "level": {
+      "verified_source": "مصدر مؤكد",
+      "saved_rule": "قاعدة محفوظة",
+      "working_assumption": "افتراض عملي",
+      "pending_confirmation": "بانتظار التأكيد",
+      "unknown": "غير معروف"
+    },
+    "quote": "الدليل",
+    "citation": "المصدر",
+    "confidence": "الثقة",
+    "clause": "البند"
+  },
+  "approval": {
+    "title": "الموافقة",
+    "help": "الموافقة تقفل المستند وتسجّل إدخالاً في سجل التدقيق.",
+    "reason": "السبب",
+    "reasonPlaceholder": "أضف ملاحظة (اختياري)",
+    "actions": {
+      "approve": "موافقة",
+      "conditional": "موافقة بشروط",
+      "reject": "رفض"
+    },
+    "approvedBy": "اعتمده {{name}} · {{time}}",
+    "confirm": "هل أنت متأكد؟ الإجراء قابل للتدقيق."
+  },
+  "comments": {
+    "title": "التعليقات",
+    "empty": "لا توجد تعليقات بعد — ابدأ النقاش.",
+    "placeholder": "اكتب تعليقاً…",
+    "send": "إرسال",
+    "sending": "جارٍ الإرسال…",
+    "resolve": "وضع علامة \"محلول\"",
+    "resolved": "محلول",
+    "unresolve": "إلغاء الحل"
+  },
+  "project": {
+    "title": "المشروع",
+    "meta": {
+      "contract_ref": "رقم العقد",
+      "value": "قيمة العقد",
+      "commencement": "تاريخ البدء",
+      "completion": "تاريخ الانتهاء",
+      "status": "الحالة",
+      "kpi_cap": "سقف مؤشرات الأداء"
+    },
+    "submissionsTitle": "المستندات",
+    "submissionsEmpty": "لا توجد مستندات على هذا المشروع بعد.",
+    "upload": "رفع مستند"
+  },
+  "common": {
+    "loading": "جارٍ التحميل…",
+    "retry": "إعادة المحاولة",
+    "cancel": "إلغاء",
+    "close": "إغلاق",
+    "save": "حفظ",
+    "search": "بحث",
+    "unknown": "غير معروف"
   },
   "footer": {
     "copyright": "© {{year}} VERTEX. جميع الحقوق محفوظة.",

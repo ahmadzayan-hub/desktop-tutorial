@@ -43,7 +43,12 @@
     "generic": "Something went wrong. Please try again.",
     "notFoundTitle": "Page not found",
     "notFoundSubtitle": "The page you are looking for does not exist.",
-    "goHome": "Go to dashboard"
+    "goHome": "Go to dashboard",
+    "loadFailed": "Failed to load. Please try again.",
+    "uploadFailed": "Upload failed: {{reason}}",
+    "fileTooLarge": "File is too large. Maximum size is 25 MB.",
+    "fileTypeUnsupported": "File type not supported.",
+    "noProjects": "You do not have any projects yet. Ask an admin to add you as owner."
   },
   "user": {
     "menu": "User menu",
@@ -59,7 +64,196 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "placeholder": "Your contract intelligence dashboard will appear here in Session 2."
+    "welcome": "Welcome back",
+    "subtitle": "Live view of your contracts, submissions, and risks.",
+    "widgets": {
+      "submissionsPending": "Submissions Pending",
+      "submissionsPendingHint": "Awaiting AI analysis or reviewer approval",
+      "obligationsAtRisk": "Obligations at Risk",
+      "obligationsAtRiskHint": "At-risk or overdue against contract deadlines",
+      "insuranceExpiring": "Insurance Expiring",
+      "insuranceExpiringHint": "Policies expiring within 30 days",
+      "kpiPenalties": "KPI Penalties (this month)",
+      "kpiPenaltiesHint": "Cumulative deductions triggered this month",
+      "complianceScore": "Compliance Score",
+      "complianceScoreHint": "30-day average across all submissions",
+      "recentActivity": "Recent Activity",
+      "recentActivityEmpty": "No recent activity yet. Upload a submission to get started.",
+      "alerts": "Alerts",
+      "alertsEmpty": "No active alerts.",
+      "complianceTrend": "Compliance Trend",
+      "submissionsByStatus": "Submissions by Status"
+    },
+    "activity": {
+      "submission_uploaded": "Submission uploaded",
+      "finding_created": "New AI finding",
+      "comment_added": "New comment"
+    }
+  },
+  "upload": {
+    "title": "New submission",
+    "subtitle": "Upload a document and run compliance analysis.",
+    "step": "Step {{current}} of {{total}}",
+    "steps": {
+      "project": "Choose project",
+      "type": "Choose type",
+      "file": "Upload file",
+      "confirm": "Confirm"
+    },
+    "project": {
+      "label": "Project",
+      "placeholder": "Select a project…",
+      "help": "You can only upload against projects you own."
+    },
+    "type": {
+      "label": "Submission type",
+      "invoice": "Invoice",
+      "timesheet": "Timesheet",
+      "technical_doc": "Technical document",
+      "progress_update": "Progress update",
+      "other": "Other"
+    },
+    "file": {
+      "label": "File",
+      "drop": "Drop a file here or click to browse",
+      "allowed": "PDF, PNG, JPG, TXT, CSV, JSON, XLS/XLSX — up to 25 MB",
+      "selected": "Selected: {{name}} ({{size}})",
+      "remove": "Remove file",
+      "name": "Document name",
+      "namePlaceholder": "Optional — defaults to file name"
+    },
+    "confirm": {
+      "title": "Ready to upload",
+      "project": "Project",
+      "type": "Type",
+      "file": "File",
+      "size": "Size",
+      "submit": "Upload & Analyze",
+      "submitting": "Uploading and analyzing…"
+    },
+    "actions": {
+      "back": "Back",
+      "next": "Next",
+      "cancel": "Cancel"
+    }
+  },
+  "submission": {
+    "title": "Submission",
+    "backToProject": "Back to project",
+    "meta": {
+      "project": "Project",
+      "uploaded": "Uploaded",
+      "uploader": "Uploaded by",
+      "type": "Type",
+      "size": "Size",
+      "processing": "Processing",
+      "approval": "Approval",
+      "compliance": "Compliance",
+      "confidence": "Confidence"
+    },
+    "processingStatus": {
+      "pending": "Analysis pending",
+      "processing": "Analyzing…",
+      "complete": "Analysis complete",
+      "error": "Analysis error"
+    },
+    "approvalStatus": {
+      "pending": "Pending approval",
+      "approved": "Approved",
+      "conditional": "Conditional",
+      "rejected": "Rejected"
+    },
+    "tabs": {
+      "findings": "Findings",
+      "preview": "Preview",
+      "comments": "Comments",
+      "history": "History"
+    },
+    "findings": {
+      "empty": "No AI findings yet — run analysis to generate.",
+      "runAnalysis": "Run analysis"
+    },
+    "preview": {
+      "notSupported": "Preview not available for this file type. Download to view.",
+      "download": "Download file",
+      "loading": "Loading preview…"
+    },
+    "history": {
+      "empty": "No audit history for this submission yet."
+    }
+  },
+  "severity": {
+    "critical": "Critical",
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low",
+    "info": "Info"
+  },
+  "findingType": {
+    "compliance_pass": "Compliance Pass",
+    "compliance_fail": "Compliance Fail",
+    "alert": "Alert",
+    "insight": "Insight",
+    "recommendation": "Recommendation"
+  },
+  "evidence": {
+    "level": {
+      "verified_source": "Verified source",
+      "saved_rule": "Saved rule",
+      "working_assumption": "Working assumption",
+      "pending_confirmation": "Pending confirmation",
+      "unknown": "Unknown"
+    },
+    "quote": "Evidence",
+    "citation": "Source",
+    "confidence": "Confidence",
+    "clause": "Clause"
+  },
+  "approval": {
+    "title": "Approval",
+    "help": "Approving locks the submission and writes an audit log entry.",
+    "reason": "Reason",
+    "reasonPlaceholder": "Add a note (optional)",
+    "actions": {
+      "approve": "Approve",
+      "conditional": "Approve with conditions",
+      "reject": "Reject"
+    },
+    "approvedBy": "Approved by {{name}} · {{time}}",
+    "confirm": "Are you sure? This action is auditable."
+  },
+  "comments": {
+    "title": "Comments",
+    "empty": "No comments yet — start the conversation.",
+    "placeholder": "Write a comment…",
+    "send": "Send",
+    "sending": "Sending…",
+    "resolve": "Mark resolved",
+    "resolved": "Resolved",
+    "unresolve": "Unresolve"
+  },
+  "project": {
+    "title": "Project",
+    "meta": {
+      "contract_ref": "Contract ref",
+      "value": "Contract value",
+      "commencement": "Commencement",
+      "completion": "Completion",
+      "status": "Status",
+      "kpi_cap": "KPI cap"
+    },
+    "submissionsTitle": "Submissions",
+    "submissionsEmpty": "No submissions on this project yet.",
+    "upload": "Upload submission"
+  },
+  "common": {
+    "loading": "Loading…",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "close": "Close",
+    "save": "Save",
+    "search": "Search",
+    "unknown": "Unknown"
   },
   "footer": {
     "copyright": "© {{year}} VERTEX. All rights reserved.",
