@@ -10,9 +10,24 @@
 
 html, body { height: 100%; }
 
+/* Arabic-optimised font stack: Noto Naskh gives authentic Gulf-script rendering */
+@supports (font-family: "Noto Naskh Arabic") {
+  :lang(ar) { font-family: "Noto Naskh Arabic", "Geeza Pro", "Arabic Typesetting", sans-serif; }
+}
+
 body {
   @apply bg-slate-50 text-slate-900 antialiased;
   font-feature-settings: "ss01", "cv11";
+  /* Minimum touch-target baseline */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Ensure minimum 44px touch targets on mobile */
+@media (pointer: coarse) {
+  .btn       { @apply min-h-[44px]; }
+  .sidebar-item { @apply min-h-[40px]; }
+  a, button  { min-height: 36px; }
 }
 
 /* ── Sidebar ───────────────────────────────────────────────────────── */
@@ -91,9 +106,16 @@ body {
   @apply flex min-w-[240px] flex-col gap-2 rounded-2xl bg-slate-50 border border-slate-200 p-3;
 }
 
+/* ── Overflow helpers ────────────────────────────────────────────────── */
+.scroll-x { @apply overflow-x-auto; -webkit-overflow-scrolling: touch; }
+
 /* ── RTL ───────────────────────────────────────────────────────────── */
 .rtl { direction: rtl; text-align: right; }
 .ltr { direction: ltr; }
+
+/* ── Safe-area padding for notch / home-indicator devices ────────────── */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+main { padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); }
 
 /* ── Recharts polish ────────────────────────────────────────────────── */
 .recharts-text { fill: #94a3b8; font-size: 11px; }

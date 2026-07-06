@@ -8,6 +8,7 @@ import {
   CreditCard, Truck, Package, Tag, Factory, Star, BarChart3,
   Plug, Settings, FileText, Shield, Menu, X, ChevronRight,
 } from "lucide-react";
+import { LogoMark } from "@/components/Logo";
 
 export interface NavBadges {
   inbox: number;
@@ -46,8 +47,8 @@ export default function Nav({ mobile, badges = DEFAULT_BADGES }: { mobile?: bool
       <div className="md:hidden">
         <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
           <div>
-            <div className="text-sm font-semibold tracking-tight text-slate-900">Beyond Style UAE</div>
-            <div className="text-[11px] text-slate-500">Order Control Console</div>
+            <div className="text-sm font-bold tracking-tight text-slate-900" dir="rtl" lang="ar">مسار</div>
+            <div className="text-[11px] text-slate-500">لوحة تحكم المبيعات</div>
           </div>
           <div className="flex items-center gap-2">
             {badges.attention > 0 && (
@@ -76,12 +77,10 @@ export default function Nav({ mobile, badges = DEFAULT_BADGES }: { mobile?: bool
     <nav className="sidebar flex h-full flex-col">
       {/* Brand */}
       <Link href="/" className="flex items-center gap-3 px-5 py-5 border-b border-slate-800/60">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500 text-slate-950 font-bold text-sm shrink-0">
-          BS
-        </div>
+        <LogoMark size={34} variant="amber" className="shrink-0" />
         <div>
-          <div className="text-sm font-semibold text-white tracking-tight">Beyond Style UAE</div>
-          <div className="text-[11px] text-slate-500">Order Control Console</div>
+          <div className="text-sm font-bold text-white tracking-tight" dir="rtl" lang="ar">مسار</div>
+          <div className="text-[11px] text-slate-500">لوحة تحكم المبيعات</div>
         </div>
       </Link>
 
@@ -91,10 +90,10 @@ export default function Nav({ mobile, badges = DEFAULT_BADGES }: { mobile?: bool
       </div>
 
       {/* Footer callout */}
-      <div className="m-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
-        <div className="text-xs font-semibold text-amber-400">AI drafts. You approve.</div>
+      <div className="m-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-3" dir="rtl" lang="ar">
+        <div className="text-xs font-semibold text-amber-400">الذكاء يصيغ — أنت تعتمد</div>
         <div className="mt-1 text-[11px] text-slate-500">
-          Every reply is guardrail-checked. Owner approval gates money, dispatch, and claims.
+          كل رد يمر عبر ضوابط حماية. صاحب العمل يوافق على كل ما يخص المال والتوصيل والشكاوى.
         </div>
       </div>
     </nav>
