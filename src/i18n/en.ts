@@ -1,4 +1,4 @@
-// English (LTR) — source-of-truth dictionary. ar.ts mirrors this exact shape.
+// English (LTR), source-of-truth dictionary. ar.ts mirrors this exact shape.
 export const en = {
   meta: {
     langName: "English",
@@ -51,7 +51,7 @@ export const en = {
     titleA: "Turn Every Coffee into a",
     titleHighlight: "Personal Moment",
     subtitle:
-      "Upload your memories and we turn them into luxury personalised coffee gift boxes, live interactive event stations, and premium corporate appreciation campaigns — delivered across every Emirate.",
+      "Upload your memories and we turn them into luxury personalised coffee gift boxes, live interactive event stations, and premium corporate appreciation campaigns, delivered across every Emirate.",
     ctaPrimary: "Start Customising",
     ctaSecondary: "Browse the Gallery",
     trustDelivery: "Same-day in Dubai · Next-day UAE-wide",
@@ -64,7 +64,7 @@ export const en = {
     sub: "Three simple ways to give something unforgettable.",
     personal: {
       title: "Personal Gift",
-      desc: "A photo, a name, a message — printed on coffee and packed into a keepsake box.",
+      desc: "A photo, a name, a message, printed on coffee and packed into a keepsake box.",
       cta: "Customise a gift",
       price: "From AED 89",
     },
@@ -113,13 +113,13 @@ export const en = {
 
   gallery: {
     title: "Product Gallery",
-    subtitle: "Personalised cups, sleeves, gift boxes and cards — a look at what you can create.",
+    subtitle: "Personalised cups, sleeves, gift boxes and cards, a look at what you can create.",
     filterAll: "All",
     filterPersonal: "Personal",
     filterCorporate: "Corporate",
     filterEvents: "Events",
     ctaHeading: "See something you like?",
-    ctaSub: "Start with your own photo — the studio does the rest.",
+    ctaSub: "Start with your own photo, the studio does the rest.",
   },
 
   customize: {
@@ -144,7 +144,7 @@ export const en = {
       consent:
         "I confirm I have the right to use this photo and I consent to Beyond Connect General Trading L.L.C processing it to produce my order. Source photos are auto-deleted {days} days after fulfilment.",
       qualityChecking: "Checking image quality…",
-      qualityGood: "Great quality — this will print beautifully.",
+      qualityGood: "Great quality, this will print beautifully.",
       qualityWarn: "This image is a little low-resolution. It may look soft when printed.",
       qualityBad: "This image is too small to print well. Please choose a higher-resolution photo.",
       moderationBad: "This image can't be used. Please choose another photo.",
@@ -162,7 +162,7 @@ export const en = {
     },
     message: {
       heading: "Add your gift message",
-      sub: "Written in Arabic or English — printed on the gift card.",
+      sub: "Written in Arabic or English, printed on the gift card.",
       langLabel: "Message language",
       placeholder: "e.g. Happy anniversary, habibi",
       recipient: "Recipient name (optional)",
@@ -190,7 +190,7 @@ export const en = {
       areaPlaceholder: "e.g. Dubai Marina, Al Barsha",
       date: "Delivery date",
       slot: "Preferred time",
-      slots: { morning: "Morning (9am–12pm)", afternoon: "Afternoon (12pm–4pm)", evening: "Evening (4pm–9pm)" },
+      slots: { morning: "Morning (9am-12pm)", afternoon: "Afternoon (12pm-4pm)", evening: "Evening (4pm-9pm)" },
       recipientName: "Recipient name",
       recipientPhone: "Recipient phone",
       giftNote: "Leave at door / surprise delivery",
@@ -200,7 +200,7 @@ export const en = {
     },
     review: {
       heading: "Confirm your moment",
-      sub: "Please review everything below — personalised items can't be returned unless faulty.",
+      sub: "Please review everything below, personalised items can't be returned unless faulty.",
       item: "Item",
       giftMessage: "Gift message",
       deliverTo: "Deliver to",
@@ -237,7 +237,7 @@ export const en = {
   corporate: {
     title: "Corporate & Event Coffee",
     subtitle:
-      "Live latte-art stations, branded cups and appreciation campaigns for launches, conferences, weddings and staff milestones — across the UAE.",
+      "Live latte-art stations, branded cups and appreciation campaigns for launches, conferences, weddings and staff milestones, across the UAE.",
     useCasesHeading: "What we power",
     useCases: {
       activation: { title: "Brand activations", desc: "Selfie-coffee stations that put your logo (and your guests' faces) in every cup." },
@@ -246,7 +246,7 @@ export const en = {
       conference: { title: "Conferences", desc: "High-throughput stations that keep queues short and brand recall high." },
     },
     packagesHeading: "Event station packages",
-    packagesSub: "Transparent day-rate packages — a rare thing in this market. All prices exclude VAT for B2B; a full tax invoice is issued.",
+    packagesSub: "Transparent day-rate packages, a rare thing in this market. All prices exclude VAT for B2B; a full tax invoice is issued.",
     perEvent: "per event",
     cupsIncluded: "cups included",
     quoteHeading: "Request a quotation",
@@ -301,7 +301,7 @@ export const en = {
 
   pricing: {
     title: "Pricing",
-    subtitle: "Clear, VAT-inclusive prices for gifts — and transparent day-rates for events.",
+    subtitle: "Clear, VAT-inclusive prices for gifts, and transparent day-rates for events.",
     giftsHeading: "Personalised gift packages",
     eventsHeading: "Event station day-rates",
     bulkHeading: "Bulk & corporate tiers",
@@ -315,14 +315,14 @@ export const en = {
 
   howItWorks: {
     title: "How It Works",
-    subtitle: "Beautifully simple — whether it's one gift or a thousand.",
+    subtitle: "Beautifully simple, whether it's one gift or a thousand.",
     personalHeading: "For personal gifts",
     corporateHeading: "For corporate & events",
     steps: {
       s1: { title: "Upload a memory", desc: "Add your favourite photo. Our AI checks the quality and tidies it up." },
       s2: { title: "Preview it live", desc: "See it on the cup, sleeve, box and gift card before you buy." },
       s3: { title: "Personalise & choose", desc: "Add an Arabic or English message, pick a package, date and Emirate." },
-      s4: { title: "We craft & deliver", desc: "We print, hand-wrap and deliver — same-day in Dubai, next-day UAE-wide." },
+      s4: { title: "We craft & deliver", desc: "We print, hand-wrap and deliver, same-day in Dubai, next-day UAE-wide." },
       c1: { title: "Tell us your brief", desc: "Share your event type, date, guest count and branding needs." },
       c2: { title: "Get a PDF quote", desc: "Receive a tailored, VAT-ready quotation within one business day." },
       c3: { title: "Approve the design", desc: "We prepare branded cups and a design proof for your sign-off." },
@@ -341,7 +341,7 @@ export const en = {
     policyHeading: "Delivery policy",
     policy: [
       "Orders are delivered within the timeframe shown per Emirate; the statutory maximum is 30 days.",
-      "Personalised items require a short production window before dispatch — usually 24–48 hours.",
+      "Personalised items require a short production window before dispatch, usually 24-48 hours.",
       "You'll receive WhatsApp updates at confirmation, dispatch and delivery.",
       "If we can't deliver a personalised order, you're entitled to a full refund under UAE Consumer Protection Law.",
     ],
@@ -351,20 +351,20 @@ export const en = {
     title: "Frequently Asked Questions",
     subtitle: "Everything about gifts, events, delivery, payment and your photos.",
     items: [
-      { q: "How is my photo printed on the coffee?", a: "We use food-safe, edible printing for latte art and high-resolution printing for cups, sleeves, boxes and cards — depending on the package you choose." },
+      { q: "How is my photo printed on the coffee?", a: "We use food-safe, edible printing for latte art and high-resolution printing for cups, sleeves, boxes and cards, depending on the package you choose." },
       { q: "Can I write my message in Arabic?", a: "Yes. You can add a message in Arabic or English, and our Arabic name assistant helps you get names spelled correctly." },
-      { q: "Are personalised gifts returnable?", a: "Personalised, made-to-order items are non-returnable except if they arrive faulty — this is standard under UAE Consumer Protection Law. Faulty items are replaced or refunded." },
+      { q: "Are personalised gifts returnable?", a: "Personalised, made-to-order items are non-returnable except if they arrive faulty, this is standard under UAE Consumer Protection Law. Faulty items are replaced or refunded." },
       { q: "Which Emirates do you deliver to?", a: "All seven. Same-day is available in Dubai for orders placed before 1pm; other Emirates are next-day." },
       { q: "What payment methods can I use?", a: "Cards, Apple Pay, Google Pay, Tabby and Tamara instalments, and cash on delivery. Corporate clients can pay by bank transfer or secure payment link." },
       { q: "Do prices include VAT?", a: "Consumer prices are shown inclusive of 5% VAT and standard delivery. Corporate and event prices are quoted excluding VAT, which is added on your tax invoice." },
       { q: "What happens to my uploaded photos?", a: "Photos are used only to produce your order. Source images are automatically deleted 30 days after fulfilment, and you can request deletion at any time." },
-      { q: "Can you run a live coffee station at our event?", a: "Yes — we offer half-day and full-day event stations with branded cups and live selfie-coffee printing across the UAE. Request a quotation to get started." },
+      { q: "Can you run a live coffee station at our event?", a: "Yes, we offer half-day and full-day event stations with branded cups and live selfie-coffee printing across the UAE. Request a quotation to get started." },
     ],
   },
 
   contact: {
     title: "Contact Us",
-    subtitle: "We reply fast — on WhatsApp, email or the form below.",
+    subtitle: "We reply fast, on WhatsApp, email or the form below.",
     whatsappCta: "Chat on WhatsApp",
     emailCta: "Email us",
     formHeading: "Send a message",
@@ -374,9 +374,9 @@ export const en = {
     subject: "Subject",
     message: "Message",
     send: "Send message",
-    sent: "Thank you — we'll be in touch shortly.",
+    sent: "Thank you, we'll be in touch shortly.",
     hoursHeading: "Support hours",
-    hours: "Every day, 9am – 9pm (GST)",
+    hours: "Every day, 9am - 9pm (GST)",
     identityHeading: "Seller identity",
   },
 
@@ -392,7 +392,7 @@ export const en = {
         { h: "How we use your data", b: "To produce and deliver your order, provide customer support, prepare quotations and invoices, and meet our legal and tax obligations. We do not sell your data." },
         { h: "Photo consent & processing", b: "We process uploaded photos only to fulfil your order, on the basis of your explicit consent and contract performance. If we use AI to enhance or moderate an image, this is automated processing to prepare your product; a human reviews any borderline case." },
         { h: "Photo retention & deletion", b: "Source photos are automatically deleted 30 days after your order is fulfilled. Rendered product proofs may be kept longer for reprints and disputes. You can request deletion of your photos or account at any time." },
-        { h: "Sharing", b: "We share data only with processors needed to deliver your order — our cloud host, print partners and couriers — under confidentiality obligations, and with authorities where legally required." },
+        { h: "Sharing", b: "We share data only with processors needed to deliver your order, our cloud host, print partners and couriers, under confidentiality obligations, and with authorities where legally required." },
         { h: "Cross-border transfers", b: "Where data is processed outside the UAE, we apply contractual safeguards and prefer in-region hosting. Invoice data is stored within the UAE." },
         { h: "Children", b: "Our service is intended for adults. If a gift involves a child's photo, the uploading adult confirms they hold parental authority. We do not knowingly process children's data for advertising." },
         { h: "Your rights", b: "You may access, correct, delete, restrict, port or object to the processing of your data. Email care@beyondcoffeemoments.ae and we will respond promptly." },
@@ -423,7 +423,7 @@ export const en = {
         { h: "Faulty or incorrect items", b: "If your item arrives damaged, defective or different from your approved design, we will replace it or issue a full refund, including delivery, at no cost to you." },
         { h: "Non-personalised & stock items", b: "Standard, non-personalised items may be returned unused, in original packaging, within 14 days for a refund." },
         { h: "Events & corporate services", b: "Event bookings require a 50% deposit. Cancellations more than 7 days before the event are refunded in full less any third-party costs incurred; within 7 days the deposit is retained. If a service is not delivered to standard, you are entitled to re-performance or a proportionate refund." },
-        { h: "How refunds are paid", b: "Refunds are issued to your original payment method within 7–14 business days. COD orders are refunded via bank transfer." },
+        { h: "How refunds are paid", b: "Refunds are issued to your original payment method within 7-14 business days. COD orders are refunded via bank transfer." },
         { h: "Price adjustments", b: "If we reduce the price of an item within 7 days of your purchase, contact us within 30 days to claim the difference." },
       ],
     },

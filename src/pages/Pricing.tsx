@@ -17,7 +17,7 @@ export default function Pricing() {
       position: i + 1,
       item: {
         "@type": "Product",
-        name: `${p.name.en} — personalised coffee gift`,
+        name: `${p.name.en} · personalised coffee gift`,
         brand: "Beyond Coffee Moments",
         offers: {
           "@type": "Offer",
@@ -113,7 +113,7 @@ export default function Pricing() {
               {BULK_TIERS.map((tier) => (
                 <tr key={tier.min}>
                   <td className="px-5 py-3 font-medium text-coffee-900">
-                    {tier.max ? `${tier.min}–${tier.max}` : `${tier.min}+`}
+                    {tier.max ? `${tier.min}-${tier.max}` : `${tier.min}+`}
                   </td>
                   <td className="px-5 py-3 text-coffee-700">{formatAed(tier.price, lang)} <span className="text-xs text-coffee-400">+VAT</span></td>
                 </tr>

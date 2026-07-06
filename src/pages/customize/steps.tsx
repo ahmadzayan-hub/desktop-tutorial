@@ -429,11 +429,11 @@ export function ReviewStep({ draft, update, onEditDesign }: StepProps & { onEdit
 
       <div>
         <div className="rounded-2xl border border-coffee-100 bg-white p-5 shadow-soft">
-          <Row label={t("customize.review.item")} value={pkg ? pick(pkg.name) : "—"} />
+          <Row label={t("customize.review.item")} value={pkg ? pick(pkg.name) : "-"} />
           {draft.message && <Row label={t("customize.review.giftMessage")} value={draft.message} />}
           <Row
             label={t("customize.review.deliverTo")}
-            value={`${draft.deliverName || "—"} · ${emirate ? pick({ en: emirate.en, ar: emirate.ar }) : ""} · ${draft.date || "—"}`}
+            value={`${draft.deliverName || "-"} · ${emirate ? pick({ en: emirate.en, ar: emirate.ar }) : ""} · ${draft.date || "-"}`}
           />
           <div className="my-3 border-t border-coffee-100" />
           <Row label={t("customize.review.subtotal")} value={formatAed(subtotal, lang)} />

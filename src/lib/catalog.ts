@@ -10,7 +10,7 @@ export interface GiftPackage {
   includes: L[];
 }
 
-// Consumer prices sit in the benchmarked AED 75–250 band, VAT-inclusive.
+// Consumer prices sit in the benchmarked AED 75-250 band, VAT-inclusive.
 export const GIFT_PACKAGES: GiftPackage[] = [
   {
     id: "moment",
@@ -164,8 +164,8 @@ export const REVIEWS: Review[] = [
     location: { en: "Abu Dhabi", ar: "أبوظبي" },
     rating: 5,
     text: {
-      en: "We booked the full-day station for a product launch. The selfie-coffee had a queue all day — guests loved it and our logo was in every cup.",
-      ar: "حجزنا ركن اليوم الكامل لإطلاق منتج. قهوة السيلفي كان عليها طابور طوال اليوم — الضيوف أحبّوها وشعارنا في كل كوب.",
+      en: "We booked the full-day station for a product launch. The selfie-coffee had a queue all day, guests loved it and our logo was in every cup.",
+      ar: "حجزنا ركن اليوم الكامل لإطلاق منتج. قهوة السيلفي كان عليها طابور طوال اليوم، الضيوف أحبّوها وشعارنا في كل كوب.",
     },
   },
   {

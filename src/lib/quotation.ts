@@ -22,7 +22,7 @@ const EXTRA_CUP_RATE = 12; // AED per extra printed cup beyond the package allow
 export function buildQuotation(ref: string, pkg: EventPackage, guests: number): Quotation {
   const lines: QuoteLine[] = [
     {
-      description: { en: `${pkg.name.en} — event coffee station`, ar: `${pkg.name.ar} — ركن قهوة للفعاليات` },
+      description: { en: `${pkg.name.en} · event coffee station`, ar: `${pkg.name.ar} · ركن قهوة للفعاليات` },
       qty: 1,
       unit: pkg.price,
     },
