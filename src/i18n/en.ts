@@ -206,7 +206,7 @@ export const en = {
       deliverTo: "Deliver to",
       subtotal: "Subtotal",
       deliveryFee: "Delivery",
-      vat: "VAT (5%)",
+      vat: "Includes VAT (5%)",
       total: "Total (VAT incl.)",
       nonReturnable:
         "I understand this is a personalised, made-to-order item and is non-returnable except in case of a defect (UAE Consumer Protection Law).",
@@ -286,7 +286,7 @@ export const en = {
       unit: "Unit (AED)",
       amount: "Amount (AED)",
       subtotal: "Subtotal",
-      vat: "VAT (5%)",
+      vat: "Includes VAT (5%)",
       total: "Total (AED)",
       notes: "Notes",
       notesBody:
