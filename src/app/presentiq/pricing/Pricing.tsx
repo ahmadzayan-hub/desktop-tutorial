@@ -165,7 +165,7 @@ export function Pricing() {
                         {val === true ? (
                           <Check size={16} strokeWidth={2.4} aria-label={lang === "ar" ? "متضمّن" : "Included"} />
                         ) : val === false ? (
-                          <span className="pq-compare-dash" aria-label={lang === "ar" ? "غير متضمّن" : "Not included"}>—</span>
+                          <span className="pq-compare-dash" aria-label={lang === "ar" ? "غير متضمّن" : "Not included"}>·</span>
                         ) : (
                           <span>{val}</span>
                         )}
@@ -218,7 +218,7 @@ export function Pricing() {
         {[
           {
             q: lang === "ar" ? "هل يمكنني الإلغاء في أي وقت؟" : "Can I cancel anytime?",
-            a: lang === "ar" ? "نعم — لا عقود طويلة. تُلغي اشتراكك في أي وقت من بوّابة الفوترة." : "Yes — no long-term contracts. Cancel anytime in the billing portal.",
+            a: lang === "ar" ? "نعم. لا عقود طويلة. تُلغي اشتراكك في أي وقت من بوّابة الفوترة." : "Yes. No long-term contracts. Cancel anytime in the billing portal.",
           },
           {
             q: lang === "ar" ? "هل المحتوى آمن؟" : "Is my content secure?",

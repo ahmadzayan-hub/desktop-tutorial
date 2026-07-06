@@ -33,22 +33,22 @@ export function About() {
             Icon: AlertTriangle,
             title: lang === "ar" ? "المشكلة" : "The problem",
             body: lang === "ar"
-              ? "تستهلك الفِرَق التنفيذية ساعات لتحويل ملاحظات متفرّقة إلى عرضٍ موحَّد ومحوكَم وموثَّق بالأدلّة — ثم تكرّر العملية لكل اجتماع."
-              : "Executive teams burn hours turning rough notes into a coherent, governed, evidence-backed deck — then repeat it for every meeting.",
+              ? "تستهلك الفِرَق التنفيذية ساعات لتحويل ملاحظات متفرّقة إلى عرضٍ موحَّد ومحوكَم وموثَّق بالأدلّة، ثم تكرّر العملية لكل اجتماع."
+              : "Executive teams burn hours turning rough notes into a coherent, governed, evidence-backed deck. Then repeat the whole process for every meeting.",
           },
           {
             Icon: Cpu,
             title: lang === "ar" ? "الحل" : "The solution",
             body: lang === "ar"
-              ? "استوديو وكلاء ذكاء اصطناعي يستلم الفكرة، يجمع الأدلّة، يصوغ السرد، يُطبِّق الهويّة، يبني الشرائح، ويقيس الجاهزية على عشرة أبعاد — كلّ ذلك تلقائياً."
-              : "An agent studio that takes the idea, gathers evidence, drafts the narrative, applies the brand, builds the slides, and scores readiness on 10 dimensions — automatically.",
+              ? "استوديو وكلاء ذكاء اصطناعي يستلم الفكرة، يجمع الأدلّة، يصوغ السرد، يُطبِّق الهويّة، يبني الشرائح، ويقيس الجاهزية على عشرة أبعاد. كلّ ذلك تلقائياً."
+              : "An agent studio that takes the idea, gathers evidence, drafts the narrative, applies the brand, builds the slides, and scores readiness on 10 dimensions. All of it automatically.",
           },
           {
             Icon: Award,
             title: lang === "ar" ? "النتيجة" : "The outcome",
             body: lang === "ar"
-              ? "ملف PPTX قابل للتحرير، ثنائي اللغة، محكوم بالهويّة، ومُقيَّم على عشرة أبعاد للجاهزية — جاهز للعرض على الرئيس التنفيذي."
-              : "An editable PPTX, bilingual, brand-governed, scored on 10 boardroom dimensions — ready for the CEO.",
+              ? "ملف PPTX قابل للتحرير، ثنائي اللغة، محكوم بالهويّة، ومُقيَّم على عشرة أبعاد للجاهزية. جاهز للعرض على الرئيس التنفيذي."
+              : "An editable PPTX, bilingual, brand-governed, and scored on 10 boardroom dimensions. Ready for the CEO.",
           },
         ].map((item, i) => {
           const Icon = item.Icon;
@@ -90,8 +90,8 @@ export function About() {
               Icon: ShieldCheck,
               title: lang === "ar" ? "الحوكمة أولاً" : "Governance first",
               body: lang === "ar"
-                ? "الهويّة والخطوط والألوان والمصطلحات تُطبَّق قبل توليد أي عنصر مرئي — لا بعد أن تصبح كارثة."
-                : "Brand, fonts, colors, and terminology apply before any visual is generated — not after it's already a mess.",
+                ? "الهويّة والخطوط والألوان والمصطلحات تُطبَّق قبل توليد أي عنصر مرئي. لا بعد أن يقع الخطأ."
+                : "Brand, fonts, colors, and terminology apply before any visual is generated. Not after it becomes a mess.",
             },
             {
               Icon: BadgeCheck,
@@ -104,15 +104,15 @@ export function About() {
               Icon: Languages,
               title: lang === "ar" ? "عربيّة أصيلة، لا مترجمة" : "Native Arabic, not translated",
               body: lang === "ar"
-                ? "تخطيط RTL أصلي، خطوط مصمّمة للعربية، ومصطلحات مؤسّسية — لا نسخة معكوسة من الإنجليزية."
-                : "Real RTL layouts, purpose-built Arabic typefaces, formal corporate register — not English flipped.",
+                ? "تخطيط RTL أصلي، خطوط مصمّمة للعربية، ومصطلحات مؤسّسية. لا نسخة معكوسة من الإنجليزية."
+                : "Real RTL layouts, purpose-built Arabic typefaces, and a formal corporate register. Not English flipped in the other direction.",
             },
             {
               Icon: FileSliders,
               title: lang === "ar" ? "قابل للتحرير دائماً" : "Editable, always",
               body: lang === "ar"
-                ? "مربّعات نص، أشكال، جداول، ورسوم بيانية حقيقية في PPTX — لا صور مسطّحة تحبس التعديل."
-                : "Real PPTX text boxes, shapes, tables, and charts — never screenshots that lock you out of the edit.",
+                ? "مربّعات نص، أشكال، جداول، ورسوم بيانية حقيقية في PPTX. لا صور مسطّحة تحبس التعديل."
+                : "Real PPTX text boxes, shapes, tables, and charts. Never screenshots that lock you out of the edit.",
             },
           ].map((p, i) => {
             const Icon = p.Icon;
@@ -155,10 +155,10 @@ export function About() {
             {/* Milestone timeline — fills the empty right half of the banner */}
             <ol className="pq-timeline" aria-label={lang === "ar" ? "أبرز محطات المنتج" : "Product milestones"}>
               {[
-                { when: "Q4 2025", en: "Studio prototype — first bilingual PPTX out",              ar: "نموذج الاستوديو — أول PPTX ثنائي اللغة" },
+                { when: "Q4 2025", en: "Studio prototype. First bilingual PPTX out.",              ar: "نموذج الاستوديو. أوّل PPTX ثنائي اللغة." },
                 { when: "Q1 2026", en: "10-dimension readiness score + brand governance shipped", ar: "درجة الجاهزية بعشرة أبعاد + حوكمة الهويّة" },
                 { when: "Q2 2026", en: "Templates library + slide-level regeneration",             ar: "مكتبة القوالب + إعادة توليد شريحة بشريحة" },
-                { when: "Q2 2026", en: "Public v0.5 — Aurora composer + Studio mode",              ar: "الإصدار العام ٠٫٥ — مؤلّف Aurora + وضع Studio" },
+                { when: "Q2 2026", en: "Public v0.5: Aurora composer and Studio mode",             ar: "الإصدار العام ٠٫٥: مؤلّف Aurora ووضع Studio" },
                 { when: lang === "ar" ? "قريباً" : "Next", en: "SSO, audit-log export, private UAE deployment", ar: "تسجيل الدخول الموحّد، تصدير سجل التدقيق، النشر الخاص" },
               ].map((m, i, arr) => (
                 <li key={i} className={i === arr.length - 1 ? "is-next" : ""}>

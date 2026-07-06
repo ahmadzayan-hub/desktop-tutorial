@@ -1,25 +1,66 @@
 {
-  "name": "Tweenz AI Learning OS",
-  "short_name": "Tweenz AI",
-  "description": "Your MBA study life, organized by AI. Bilingual AI academic platform.",
-  "start_url": "/dashboard",
+  "name": "Pitchora — AI Boardroom Presentation Studio",
+  "short_name": "Pitchora",
+  "description": "Turn a rough idea into a boardroom-ready deck in minutes. Brand-governed, evidence-controlled, editable PPTX, native Arabic RTL.",
+  "id": "/presentiq/",
+  "start_url": "/presentiq/?utm_source=pwa",
+  "scope": "/presentiq/",
   "display": "standalone",
-  "background_color": "#f0f4ff",
-  "theme_color": "#2563eb",
-  "orientation": "portrait-primary",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "background_color": "#0a0e2a",
+  "theme_color": "#0a0e2a",
+  "orientation": "any",
   "lang": "en",
   "dir": "ltr",
   "icons": [
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/icon.svg",     "sizes": "any",     "type": "image/svg+xml" }
+    { "src": "/icon.svg",     "sizes": "any",       "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon-192.png", "sizes": "192x192",   "type": "image/png",     "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512",   "type": "image/png",     "purpose": "any" },
+    { "src": "/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
-  "screenshots": [],
-  "categories": ["education", "productivity"],
+  "screenshots": [
+    {
+      "src": "/screenshot-narrow.png",
+      "sizes": "720x1280",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Pitchora composer on mobile"
+    },
+    {
+      "src": "/screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Pitchora templates gallery on desktop"
+    }
+  ],
+  "categories": ["productivity", "business"],
   "shortcuts": [
-    { "name": "Dashboard", "url": "/dashboard", "description": "Your academic dashboard" },
-    { "name": "AI Tutor", "url": "/tutor", "description": "Chat with your AI tutor" },
-    { "name": "Study Packs", "url": "/study-packs", "description": "Your AI study packs" },
-    { "name": "Ask My MBA", "url": "/ask-mba", "description": "Ask your MBA agent" }
-  ]
+    {
+      "name": "New presentation",
+      "short_name": "New deck",
+      "url": "/presentiq/projects/new?utm_source=pwa_shortcut",
+      "description": "Start a new boardroom presentation"
+    },
+    {
+      "name": "Templates",
+      "short_name": "Templates",
+      "url": "/presentiq/templates?utm_source=pwa_shortcut",
+      "description": "Browse boardroom-ready templates"
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Home",
+      "url": "/presentiq/dashboard?utm_source=pwa_shortcut",
+      "description": "View your recent presentations"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "share_target": {
+    "action": "/presentiq/projects/new",
+    "method": "GET",
+    "params": { "title": "prompt", "text": "prompt", "url": "source" }
+  }
 }

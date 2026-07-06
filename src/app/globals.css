@@ -3135,3 +3135,193 @@ html.dark {
   color: var(--pq-text-secondary);
 }
 
+
+/* ══════════════════════════════════════════════════════════════════
+   Phase 3 — Get-the-app / PWA install section
+   ══════════════════════════════════════════════════════════════════ */
+
+.pq-install {
+  position: relative;
+  isolation: isolate;
+  padding: 3rem 1.5rem;
+  border-radius: 1.75rem;
+  overflow: hidden;
+  background:
+    radial-gradient(70% 100% at 15% 20%, rgba(138,108,247,0.28) 0%, transparent 55%),
+    radial-gradient(60% 90% at 90% 90%, rgba(78,125,232,0.25) 0%, transparent 55%),
+    linear-gradient(180deg, #12183A 0%, #0A0E2A 100%);
+  border: 1px solid rgba(129,140,248,0.28);
+}
+.pq-install-inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.4fr 0.9fr;
+  gap: 2.5rem;
+  align-items: center;
+  max-width: 76rem;
+  margin: 0 auto;
+}
+@media (max-width: 900px) {
+  .pq-install-inner { grid-template-columns: 1fr; }
+  .pq-install { padding: 2.25rem 1.25rem; }
+}
+.pq-install-copy .pq-section-eyebrow { margin-bottom: 0.85rem; }
+.pq-install-feats {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+  display: grid;
+  gap: 0.55rem;
+}
+.pq-install-feats li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  font-size: 0.9rem;
+  color: var(--pq-text-secondary);
+  line-height: 1.55;
+}
+.pq-install-feats li svg {
+  color: var(--pq-primary);
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+}
+.pq-install-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+.pq-install-actions .pq-btn { display: inline-flex; align-items: center; gap: 0.45rem; }
+.pq-install-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.1rem;
+  border-radius: 999px;
+  background: rgba(99,102,241,0.18);
+  border: 1px solid rgba(129,140,248,0.45);
+  color: var(--pq-text-main);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.pq-install-status svg { color: var(--pq-primary); }
+.pq-install-ios-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.1rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--pq-border-soft);
+  color: var(--pq-text-secondary);
+  font-size: 0.85rem;
+  max-width: 32rem;
+}
+
+/* Phone mockup — pure CSS so it costs 0 image bytes */
+.pq-install-visual {
+  display: grid;
+  place-items: center;
+}
+.pq-install-phone {
+  position: relative;
+  width: 16rem;
+  aspect-ratio: 9 / 19;
+  border-radius: 2.2rem;
+  padding: 0.55rem;
+  background: linear-gradient(180deg, #1A2050 0%, #0A0E2A 100%);
+  border: 1px solid rgba(129,140,248,0.5);
+  box-shadow:
+    0 30px 60px -25px rgba(0,0,0,0.7),
+    0 0 0 1px rgba(129,140,248,0.18) inset,
+    0 -30px 60px -30px rgba(99,102,241,0.4) inset;
+}
+.pq-install-phone-notch {
+  position: absolute;
+  top: 0.55rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5rem;
+  height: 1.15rem;
+  border-radius: 999px;
+  background: #05081A;
+  z-index: 2;
+}
+.pq-install-phone-screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 1.9rem;
+  padding: 2rem 1rem 1rem;
+  background:
+    radial-gradient(60% 80% at 50% 0%, rgba(99,102,241,0.28) 0%, transparent 60%),
+    linear-gradient(180deg, #0F1440 0%, #070B26 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.pq-install-phone-header {
+  display: flex;
+  justify-content: center;
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+  margin-bottom: 0.4rem;
+}
+.pq-install-phone-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.35);
+}
+.pq-install-phone-pill {
+  align-self: center;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(129,140,248,0.45);
+  background: rgba(99,102,241,0.15);
+  color: #C7CBF6;
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.pq-install-phone-title {
+  text-align: center;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #F2F4FF;
+  line-height: 1.15;
+  margin-top: 0.3rem;
+}
+.pq-install-phone-input {
+  margin-top: 0.35rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  font-size: 0.62rem;
+  color: rgba(199,203,246,0.7);
+}
+.pq-install-phone-cta {
+  margin-top: 0.35rem;
+  padding: 0.55rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #6366F1 0%, #8A6CF7 100%);
+  text-align: center;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  box-shadow: 0 6px 14px -4px rgba(99,102,241,0.6);
+}
+.pq-install-phone-grid {
+  margin-top: auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.3rem;
+}
+.pq-install-phone-grid span {
+  aspect-ratio: 4 / 3;
+  border-radius: 0.55rem;
+  background: linear-gradient(135deg, rgba(99,102,241,0.32), rgba(78,125,232,0.18));
+  border: 1px solid rgba(255,255,255,0.06);
+}
+

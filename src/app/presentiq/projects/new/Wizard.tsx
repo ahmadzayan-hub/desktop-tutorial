@@ -541,9 +541,16 @@ export function Wizard() {
                     className="flex items-center gap-2 rounded-xl px-3 py-2"
                     style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(159,205,99,0.32)" }}
                   >
+                    {/* Uploaded logos come in as blob URLs the user just
+                        picked — next/image can't optimize those (unknown
+                        domain, unknown dimensions). A plain <img> is the
+                        correct primitive here. */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={logoPreview}
                       alt="Logo preview"
+                      decoding="async"
+                      loading="lazy"
                       style={{ width: 36, height: 36, objectFit: "contain", borderRadius: 6, background: "#fff" }}
                     />
                     <span className="text-xs" style={{ color: "var(--pq-text-secondary)" }}>

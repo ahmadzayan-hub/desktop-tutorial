@@ -1,20 +1,36 @@
 import type { MetadataRoute } from "next";
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.tweenz.ae";
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.pitchora.ai";
 
+/**
+ * Pitchora sitemap.
+ *
+ * Only lists public marketing pages. Authenticated app routes
+ * (dashboard, projects, brand kits, etc.) are excluded on purpose so
+ * crawlers do not chase auth-walled URLs and waste budget. Each entry
+ * carries an alternates map so Google can serve the right locale from
+ * the same URL (the app uses in-place EN/AR switching, not URL locales).
+ */
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  return [
-    { url: `${BASE}/`,               lastModified: now, priority: 1,   changeFrequency: "weekly" },
-    { url: `${BASE}/features`,        lastModified: now, priority: 0.9, changeFrequency: "monthly" },
-    { url: `${BASE}/pricing`,         lastModified: now, priority: 0.9, changeFrequency: "monthly" },
-    { url: `${BASE}/how-it-works`,    lastModified: now, priority: 0.8, changeFrequency: "monthly" },
-    { url: `${BASE}/for-students`,    lastModified: now, priority: 0.8, changeFrequency: "monthly" },
-    { url: `${BASE}/faq`,             lastModified: now, priority: 0.7, changeFrequency: "monthly" },
-    { url: `${BASE}/contact`,         lastModified: now, priority: 0.6, changeFrequency: "yearly" },
-    { url: `${BASE}/privacy`,         lastModified: now, priority: 0.4, changeFrequency: "yearly" },
-    { url: `${BASE}/terms`,           lastModified: now, priority: 0.4, changeFrequency: "yearly" },
-    { url: `${BASE}/login`,           lastModified: now, priority: 0.5, changeFrequency: "yearly" },
-    { url: `${BASE}/signup`,          lastModified: now, priority: 0.6, changeFrequency: "yearly" },
+  const marketing = [
+    { path: "/presentiq",             pri: 1.0, freq: "weekly"  as const },
+    { path: "/presentiq/pricing",     pri: 0.9, freq: "weekly"  as const },
+    { path: "/presentiq/templates",   pri: 0.9, freq: "weekly"  as const },
+    { path: "/presentiq/about",       pri: 0.8, freq: "monthly" as const },
+    { path: "/presentiq/changelog",   pri: 0.7, freq: "weekly"  as const },
+    { path: "/presentiq/contact",     pri: 0.6, freq: "yearly"  as const },
   ];
+  return marketing.map(({ path, pri, freq }) => ({
+    url: `${BASE}${path}`,
+    lastModified: now,
+    priority: pri,
+    changeFrequency: freq,
+    alternates: {
+      languages: {
+        "en-US": `${BASE}${path}`,
+        "ar-AE": `${BASE}${path}`,
+      },
+    },
+  }));
 }

@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useI18n } from "@/lib/presentiq/i18n/context";
 import { Frame4D } from "@/components/presentiq/ui/Frame4D";
+import { InstallApp } from "@/components/presentiq/ui/InstallApp";
 import { TEMPLATES } from "@/lib/presentiq/templates/registry";
 import {
   Magnetic,
@@ -480,7 +481,7 @@ export function Hero() {
             {
               q: lang === "ar"
                 ? "أول أداة تُصدر عربية RTL أصيلة تصلح مباشرة لمجلس الإدارة، بدون مراجعة يدوية."
-                : "First tool where the Arabic RTL export is actually usable in front of a board — no manual rework.",
+                : "First tool where the Arabic RTL export is actually usable in front of a board, without any manual rework.",
               a: lang === "ar" ? "مسؤول علاقات حكومية" : "GR Lead",
               w: lang === "ar" ? "هيئة اتحادية" : "Federal authority",
               i: "H",
@@ -600,8 +601,8 @@ export function Hero() {
             {
               q: lang === "ar" ? "هل مخرج PPTX قابل للتحرير فعلاً؟" : "Is the PPTX really editable?",
               a: lang === "ar"
-                ? "نعم. مربّعات نص، أشكال، جداول، ورسوم بيانية حقيقية — لا صور."
-                : "Yes. Real text boxes, shapes, tables and charts — never screenshots.",
+                ? "نعم. مربّعات نص، أشكال، جداول، ورسوم بيانية حقيقية. لا صور ثابتة."
+                : "Yes. Real text boxes, shapes, tables and charts. Never screenshots.",
             },
             {
               q: lang === "ar" ? "هل تدعمون العربية RTL؟" : "Do you support Arabic RTL?",
@@ -633,6 +634,9 @@ export function Hero() {
         </div>
       </section>
 
+      {/* ── Get the app (PWA install / Android home-screen) ──────── */}
+      <InstallApp />
+
       {/* ── Final CTA banner ─────────────────────────────────────── */}
       <section className="pq-final-cta">
         <div className="pq-final-cta-inner">
@@ -643,8 +647,8 @@ export function Hero() {
           </h2>
           <p className="pq-final-cta-sub">
             {lang === "ar"
-              ? "ابدأ عرضك الأول مجّاناً — دون بطاقة ائتمان."
-              : "Start your first deck free — no credit card required."}
+              ? "ابدأ عرضك الأول مجّاناً، بلا بطاقة ائتمان."
+              : "Start your first deck free. No credit card required."}
           </p>
           <div className="pq-final-cta-row">
             <Link href="/presentiq/projects/new" className="pq-btn pq-btn-liquid pq-btn-liquid-primary pq-btn-liquid-pill">

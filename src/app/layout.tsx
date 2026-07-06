@@ -2,50 +2,89 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n/I18nProvider";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.tweenz.ae";
-const TITLE = "Tweenz AI Learning OS — MBA Study Platform | منصة التعلم الذكي";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.pitchora.ai";
+const TITLE = "Pitchora | AI Boardroom Presentation Studio · استوديو العروض الذكيّة";
 const DESCRIPTION =
-  "Tweenz AI Learning OS — bilingual AI academic operating system for MBA and university students. Manage courses, lectures, study packs, grades, deadlines, and AI tutor chat in one professional platform. From UAE to the world. | نظام تشغيل أكاديمي ذكي ثنائي اللغة لطلاب الماجستير والجامعات.";
+  "Pitchora is the AI studio that turns a rough idea into a boardroom-ready deck in minutes. Brand-governed, evidence-controlled, editable PPTX out, with native Arabic RTL support and a 10-dimension readiness score. Built in the UAE for executives and government committees. بِتشورا: استوديو ذكاء اصطناعي يحوّل الفكرة إلى عرضٍ جاهز لمجلس الإدارة في دقائق، بدعم عربي أصيل من اليمين إلى اليسار.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
-  title: { default: TITLE, template: "%s · Tweenz AI" },
+  title: { default: TITLE, template: "%s · Pitchora" },
   description: DESCRIPTION,
-  applicationName: "Tweenz AI",
+  applicationName: "Pitchora",
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, title: "Tweenz AI", statusBarStyle: "default" },
-  icons: { icon: "/icon.svg", apple: "/apple-icon.png" },
-  authors: [{ name: "Tweenz AI", url: APP_URL }],
+  appleWebApp: { capable: true, title: "Pitchora", statusBarStyle: "black-translucent" },
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: "/apple-icon.png",
+  },
+  authors: [{ name: "Pitchora", url: APP_URL }],
+  creator: "Pitchora by Zaian",
+  publisher: "Pitchora",
+  category: "productivity",
+  formatDetection: { telephone: false, email: false, address: false },
   keywords: [
-    "Tweenz AI", "MBA study app", "AI tutor", "study packs", "Moodle companion",
-    "bilingual education", "Arabic learning", "UAE EdTech", "online MBA",
-    "academic AI", "study flashcards", "grade tracker", "exam readiness",
-    "منصة تعليمية", "تعلم ذكي", "ماجستير", "طلاب الجامعة"
+    // Product & brand
+    "Pitchora", "Pitchora AI", "بِتشورا",
+    // Core product terms
+    "AI presentation", "boardroom deck", "executive presentation", "PPTX generator",
+    "AI slide generator", "pitch deck AI", "presentation AI agent",
+    // Arabic + RTL
+    "Arabic RTL slides", "bilingual presentations", "عروض تقديمية بالذكاء الاصطناعي",
+    "عرض تنفيذي", "عرض مجلس إدارة", "شرائح عربية", "استوديو عروض",
+    // Enterprise angles
+    "brand governance", "evidence-controlled AI", "corporate presentations",
+    "consulting deck", "government committee deck", "board readiness score",
+    // Regional
+    "UAE SaaS", "Dubai AI startup", "MENA AI presentations",
   ],
   openGraph: {
     type: "website",
     title: TITLE,
     description: DESCRIPTION,
     url: APP_URL,
-    siteName: "Tweenz AI",
+    siteName: "Pitchora",
     locale: "en_US",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Tweenz AI Learning OS" }]
+    alternateLocale: ["ar_AE", "ar_SA"],
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Pitchora, AI boardroom presentation studio" }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/og-image.png"]
+    images: ["/og-image.png"],
+    site: "@pitchora",
+    creator: "@pitchora",
   },
-  robots: { index: true, follow: true },
-  alternates: { canonical: APP_URL },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  alternates: {
+    canonical: APP_URL,
+    languages: { "en-US": APP_URL, "ar-AE": APP_URL },
+  },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#2563eb",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f4f6ff" },
+    { media: "(prefers-color-scheme: dark)",  color: "#0a0e2a" },
+  ],
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
+  colorScheme: "dark light",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

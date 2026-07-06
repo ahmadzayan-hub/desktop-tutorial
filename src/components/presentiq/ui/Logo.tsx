@@ -14,10 +14,15 @@ type Props = {
 };
 
 /**
- * PresentIQ logo system — pure SVG so it sharpens at any DPI, ships with
- * no external assets, and inherits the green/gold accent through CSS
- * variables. The chart-icon mark mirrors the brand sheet: a soft-cornered
- * tile, a rising line + arrow, and four sparkle stars.
+ * Pitchora logo system (v0.6 refresh).
+ *
+ * Mark: a stylised aurora-arc rising from a slide corner. The arc
+ * encodes "Pitch + Aurora" (the brand's etymology) in a single
+ * gesture, and the underlying rounded square reads as a slide.
+ * Wordmark: Pitchora set in an 800-weight geometric sans with a
+ * subtle aurora-tinted 'ora' tail.
+ *
+ * Pure SVG. Sharpens at any DPI, ships with no external assets.
  */
 export function Logo({
   variant = "horizontal",
@@ -30,7 +35,7 @@ export function Logo({
     const size = height;
     return (
       <svg
-        viewBox="0 0 64 64"
+        viewBox="0 0 48 48"
         width={size}
         height={size}
         className={className}
@@ -39,16 +44,16 @@ export function Logo({
         role="img"
       >
         <Defs />
-        <IconTile />
+        <IconMark />
       </svg>
     );
   }
 
   if (variant === "wordmark") {
-    const w = (height / 28) * 168;
+    const w = (height / 28) * 176;
     return (
       <svg
-        viewBox="0 0 168 36"
+        viewBox="0 0 176 36"
         width={w}
         height={height}
         className={className}
@@ -63,10 +68,10 @@ export function Logo({
   }
 
   // Horizontal — mark + wordmark side-by-side, optional "by Zaian" byline.
-  const w = (height / 28) * (byline ? 226 : 220);
+  const w = (height / 28) * (byline ? 236 : 226);
   return (
     <svg
-      viewBox={byline ? "0 0 226 44" : "0 0 220 36"}
+      viewBox={byline ? "0 0 236 44" : "0 0 226 36"}
       width={w}
       height={byline ? (height / 36) * 44 : height}
       className={className}
@@ -75,22 +80,22 @@ export function Logo({
       role="img"
     >
       <Defs />
-      <g transform="translate(0,0)">
-        <IconTile />
+      <g transform="translate(2,0)">
+        <IconMark />
       </g>
-      <g transform="translate(56,3)">
+      <g transform="translate(58,3)">
         <Wordmark />
       </g>
       {byline && (
         <text
-          x={56 + 168}
+          x={58 + 168}
           y={42}
           textAnchor="end"
           fontFamily="Inter, system-ui, sans-serif"
           fontSize="9"
           fontWeight="600"
-          letterSpacing="0.18em"
-          fill="var(--pq-byline, #C9D0C1)"
+          letterSpacing="0.22em"
+          fill="var(--pq-byline, #95A0CB)"
         >
           BY ZAIAN
         </text>
@@ -104,35 +109,41 @@ export function Logo({
 function Defs() {
   return (
     <defs>
-      <linearGradient id="pq-tile-fill" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%"   stopColor="#0F1F12" />
-        <stop offset="55%"  stopColor="#162A18" />
-        <stop offset="100%" stopColor="#0B1A0E" />
+      {/* Slide tile — deep indigo */}
+      <linearGradient id="pq-mark-tile" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%"   stopColor="#1E2654" />
+        <stop offset="55%"  stopColor="#161D44" />
+        <stop offset="100%" stopColor="#0E1330" />
       </linearGradient>
-      <linearGradient id="pq-line-stroke" x1="0" y1="1" x2="1" y2="0">
-        <stop offset="0%"   stopColor="#7BB94A" />
-        <stop offset="55%"  stopColor="#9FCD63" />
-        <stop offset="100%" stopColor="#D4F08C" />
+      {/* Aurora arc — signature gradient */}
+      <linearGradient id="pq-mark-aurora" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0%"   stopColor="#6366F1" />
+        <stop offset="45%"  stopColor="#8A6CF7" />
+        <stop offset="100%" stopColor="#C084FC" />
       </linearGradient>
-      <linearGradient id="pq-arrow-stroke" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%"  stopColor="#F4B63E" />
-        <stop offset="100%" stopColor="#D5A84A" />
+      {/* Ascending line dot */}
+      <linearGradient id="pq-mark-dot" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%"   stopColor="#C084FC" />
+        <stop offset="100%" stopColor="#818CF8" />
       </linearGradient>
+      {/* Wordmark cool base */}
       <linearGradient id="pq-word-fill" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%"   stopColor="#F4F7EF" />
-        <stop offset="100%" stopColor="#D6E8C0" />
+        <stop offset="0%"   stopColor="#F2F4FF" />
+        <stop offset="100%" stopColor="#C7CBF6" />
       </linearGradient>
-      <linearGradient id="pq-word-iq" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%"   stopColor="#9FCD63" />
-        <stop offset="100%" stopColor="#D4F08C" />
+      {/* Wordmark aurora tail on 'ora' */}
+      <linearGradient id="pq-word-tail" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%"   stopColor="#8A6CF7" />
+        <stop offset="100%" stopColor="#C084FC" />
       </linearGradient>
-      <radialGradient id="pq-glow" cx="50%" cy="50%" r="50%">
-        <stop offset="0%"   stopColor="rgba(159,205,99,0.55)" />
-        <stop offset="60%"  stopColor="rgba(159,205,99,0.10)" />
-        <stop offset="100%" stopColor="rgba(159,205,99,0)" />
+      {/* Soft outer glow behind the mark */}
+      <radialGradient id="pq-mark-glow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%"   stopColor="rgba(138,108,247,0.45)" />
+        <stop offset="60%"  stopColor="rgba(138,108,247,0.08)" />
+        <stop offset="100%" stopColor="rgba(138,108,247,0)" />
       </radialGradient>
-      <filter id="pq-soft-glow" x="-50%" y="-50%" width="200%" height="200%">
-        <feGaussianBlur stdDeviation="1.4" result="b" />
+      <filter id="pq-mark-soft" x="-40%" y="-40%" width="180%" height="180%">
+        <feGaussianBlur stdDeviation="0.9" result="b" />
         <feMerge>
           <feMergeNode in="b" />
           <feMergeNode in="SourceGraphic" />
@@ -142,73 +153,58 @@ function Defs() {
   );
 }
 
-function IconTile() {
+/**
+ * The mark itself: a rounded-square slide with an aurora arc rising
+ * from the bottom-left through a headline bar and a bullet stack,
+ * closing in a bright terminal dot at the top-right. Reads at 16px.
+ */
+function IconMark() {
   return (
     <g>
-      {/* Outer green halo */}
-      <rect x="2" y="2" width="44" height="44" rx="11" fill="url(#pq-glow)" opacity="0.9" />
-      {/* Tile */}
+      {/* Outer halo */}
+      <rect x="0" y="0" width="48" height="48" rx="12" fill="url(#pq-mark-glow)" opacity="0.9" />
+      {/* Slide tile */}
       <rect
-        x="4"
-        y="4"
-        width="40"
-        height="40"
-        rx="9"
-        fill="url(#pq-tile-fill)"
-        stroke="#9FCD63"
-        strokeOpacity="0.55"
+        x="3"
+        y="3"
+        width="42"
+        height="42"
+        rx="10"
+        fill="url(#pq-mark-tile)"
+        stroke="#8A6CF7"
+        strokeOpacity="0.42"
         strokeWidth="0.9"
       />
-      {/* Inner highlight */}
-      <rect x="4.6" y="4.6" width="38.8" height="38.8" rx="8.5" fill="none" stroke="rgba(244,247,239,0.06)" />
-      {/* Chart axes (subtle) */}
-      <line x1="11" y1="34" x2="37" y2="34" stroke="rgba(159,205,99,0.35)" strokeWidth="0.8" />
-      <line x1="11" y1="34" x2="11" y2="13" stroke="rgba(159,205,99,0.35)" strokeWidth="0.8" />
-      {/* Rising line */}
-      <path
-        d="M12 30 L18 25 L24 27 L30 19 L36 14"
-        fill="none"
-        stroke="url(#pq-line-stroke)"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        filter="url(#pq-soft-glow)"
-      />
-      {/* Arrow head */}
-      <path
-        d="M32 14 L36 14 L36 18"
-        fill="none"
-        stroke="url(#pq-arrow-stroke)"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Sparkles */}
-      <Sparkle cx={14} cy={14} r={1.6} />
-      <Sparkle cx={38} cy={28} r={1.2} />
-      <Sparkle cx={28} cy={11} r={1} />
-    </g>
-  );
-}
+      {/* Inner hairline */}
+      <rect x="3.6" y="3.6" width="40.8" height="40.8" rx="9.4" fill="none" stroke="rgba(255,255,255,0.05)" />
 
-function Sparkle({ cx, cy, r }: { cx: number; cy: number; r: number }) {
-  const a = r * 2.4;
-  return (
-    <g fill="#D4F08C" opacity="0.9">
-      <circle cx={cx} cy={cy} r={r * 0.55} />
+      {/* Slide content ghost lines (headline + bullets) */}
+      <rect x="10" y="14" width="20" height="2.4" rx="1.2" fill="rgba(199,203,246,0.28)" />
+      <rect x="10" y="19.5" width="14" height="1.6" rx="0.8" fill="rgba(199,203,246,0.18)" />
+      <rect x="10" y="23.5" width="17" height="1.6" rx="0.8" fill="rgba(199,203,246,0.18)" />
+      <rect x="10" y="27.5" width="12" height="1.6" rx="0.8" fill="rgba(199,203,246,0.18)" />
+
+      {/* Aurora arc — the pitch */}
       <path
-        d={`M${cx - a},${cy} L${cx + a},${cy} M${cx},${cy - a} L${cx},${cy + a}`}
-        stroke="#D4F08C"
-        strokeWidth="0.7"
+        d="M11 36 C 18 30, 26 26, 34 21 C 37 19, 39 16, 40 13"
+        fill="none"
+        stroke="url(#pq-mark-aurora)"
+        strokeWidth="2.4"
         strokeLinecap="round"
+        filter="url(#pq-mark-soft)"
       />
+      {/* Terminal dot at the arc's peak */}
+      <circle cx="40" cy="13" r="2.4" fill="url(#pq-mark-dot)" />
+      <circle cx="40" cy="13" r="4.2" fill="none" stroke="rgba(192,132,252,0.35)" strokeWidth="0.8" />
+
+      {/* Anchor dot at the arc's base */}
+      <circle cx="11" cy="36" r="1.8" fill="#8A6CF7" opacity="0.9" />
     </g>
   );
 }
 
 function Wordmark() {
-  // "Pitch" in cool light, "ora" in the green→lime accent gradient.
-  // Wordmark fits the same 168×36 cell as the prior "PresentIQ".
+  // "Pitch" cool, "ora" aurora-tinted. Underline arc echoes the mark.
   return (
     <g>
       <text
@@ -217,31 +213,33 @@ function Wordmark() {
         fontFamily="Inter, 'Segoe UI', system-ui, sans-serif"
         fontWeight="800"
         fontSize="28"
-        letterSpacing="-0.02em"
+        letterSpacing="-0.025em"
         fill="url(#pq-word-fill)"
       >
         Pitch
       </text>
       <text
-        x="74"
+        x="76"
         y="26"
         fontFamily="Inter, 'Segoe UI', system-ui, sans-serif"
         fontWeight="800"
         fontSize="28"
-        letterSpacing="-0.02em"
-        fill="url(#pq-word-iq)"
+        letterSpacing="-0.025em"
+        fill="url(#pq-word-tail)"
       >
         ora
       </text>
-      {/* Aurora arc kissing the "o" of ora — captures the brand */}
+      {/* Aurora arc under 'ora' — brand echo */}
       <path
-        d="M82 5 Q104 -2 126 5"
+        d="M78 30 Q 118 34, 152 30"
         fill="none"
-        stroke="url(#pq-line-stroke)"
+        stroke="url(#pq-mark-aurora)"
         strokeWidth="1.4"
         strokeLinecap="round"
-        opacity="0.85"
+        opacity="0.9"
       />
+      {/* Terminal dot on the arc */}
+      <circle cx="152" cy="30" r="1.6" fill="#C084FC" />
     </g>
   );
 }
