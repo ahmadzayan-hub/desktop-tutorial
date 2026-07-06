@@ -13,8 +13,10 @@ android {
         applicationId = "com.wifeassistant"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        // رقم الإصدار بيزيد تلقائياً من رقم بناء الـ CI (VERSION_CODE) عشان
+        // التحديثات تتثبّت فوق بعضها. محلياً بيرجع لـ 1.
+        versionCode = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 1
+        versionName = System.getenv("VERSION_NAME") ?: "1.0"
     }
 
     // توقيع نسخة الـ release. بيقرأ من متغيّرات البيئة (بتتحط في الـ CI من
