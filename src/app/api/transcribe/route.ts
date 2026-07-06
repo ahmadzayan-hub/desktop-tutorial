@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { isDemoMode } from "@/lib/demo";
+import { requireUser } from "@/lib/db/supabase-server";
 
 export const runtime = "nodejs";
 
@@ -28,7 +29,10 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  // ── Production: forward to OpenAI Whisper ────────────────────────────
+  // ── Production: require authenticated user ────────────────────────────
+  const { unauthorized } = await requireUser();
+  if (unauthorized) return unauthorized;
+
   const openaiKey = process.env.OPENAI_API_KEY;
   if (!openaiKey) {
     return NextResponse.json(
