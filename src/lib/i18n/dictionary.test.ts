@@ -33,7 +33,7 @@ describe("dictionary parity", () => {
 
   it("brand strings are present in both locales", () => {
     expect(dictionary.en.appName).toBe("Mutabasir");
-    expect(dictionary.ar.appName).toBe("متابصير");
+    expect(dictionary.ar.appName).toBe("مُتَبَصِّر");
     expect(dictionary.en.engineCodename).toBe("Basira");
     expect(dictionary.ar.engineCodename).toBe("بصيرة");
   });

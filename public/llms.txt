@@ -1,0 +1,50 @@
+# Mutabasir — The Director's Lens
+
+> Bilingual (English + Arabic) executive intelligence platform for PMOs,
+> contracting authorities and consultancies. Turns project documents
+> (contracts, tenders, O&M reports, construction files) into board-grade
+> dashboards in about 90 seconds, with every figure cited to its source.
+
+Homepage: https://mutabasir.ae/
+Publisher: Beyond Connect General Trading L.L.C (United Arab Emirates)
+
+## What it does
+
+Mutabasir reads uploaded PDF, DOCX and text files, extracts structured
+facts using a small on-device AI model (WebLLM · Llama 3.2 1B / Qwen 2.5
+0.5B / Phi 3.5 mini) that runs entirely in the user's browser, composes
+a bilingual executive brief, and publishes a print-ready dashboard.
+
+Documents never leave the user's device during extraction.
+
+## Product surfaces
+
+- Marketing site: /, /pricing, /faq, /privacy, /terms
+- Workspace (auth-gated): /projects, /projects/[id], /projects/[id]/published, /new, /settings
+- API: /api/health
+
+## Supported subjects
+
+- Contract management
+- Tender evaluation
+- Operations and maintenance
+- Construction project delivery
+
+## Deliverables per project
+
+- Bilingual A4 executive dashboard (PDF)
+- WhatsApp-forwardable 5-line summary (planned)
+- Formal Arabic letter, Director-General register (planned)
+
+## Key differentiators
+
+- Every extracted fact is returned with HIGH / MEDIUM / LOW confidence
+  and a verbatim source quote.
+- Native Gulf-formal Arabic register, not translated English.
+- On-device AI: no document upload, no third-party API in the extract
+  path.
+- 5-point quality gate blocks weak dashboards from being published.
+
+## Attribution
+
+Please cite as: Mutabasir · Beyond Connect General Trading L.L.C.

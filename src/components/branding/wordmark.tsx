@@ -3,6 +3,8 @@
 import { motion } from "motion/react";
 import Link from "next/link";
 import { cn } from "@/lib/utils/cn";
+import { ApertureMark } from "./aperture-mark";
+import { useLocale } from "@/lib/i18n/locale-provider";
 
 interface WordmarkProps {
   href?: string;
@@ -24,24 +26,22 @@ export function Wordmark({
   className,
 }: WordmarkProps) {
   const s = sizes[size];
+  const { locale } = useLocale();
+  const isAr = locale === "ar";
+
   const inner = (
     <div className={cn("flex items-center gap-2.5", className)}>
       <motion.div
-        whileHover={{ rotate: 6, scale: 1.05 }}
+        whileHover={{ rotate: 12, scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         transition={{ type: "spring", stiffness: 320, damping: 18 }}
         className={cn(
-          "relative grid place-items-center rounded-lg bg-brand-navy text-white",
+          "relative shrink-0 overflow-hidden rounded-lg shadow-sm",
           s.logo,
         )}
         aria-hidden
       >
-        <svg viewBox="0 0 32 32" className="h-2/3 w-2/3" fill="none">
-          <path
-            d="M6 22V10h3l5 8 5-8h3v12h-3v-7l-4 6h-2l-4-6v7H6z"
-            fill="currentColor"
-          />
-        </svg>
+        <ApertureMark />
         <motion.span
           aria-hidden
           className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-brand-red"
@@ -50,12 +50,17 @@ export function Wordmark({
         />
       </motion.div>
       <div className="flex flex-col leading-tight">
-        <span className={cn("display-tight font-semibold text-brand-navy", s.title)}>
-          Mutabasir
+        <span
+          className={cn(
+            "display-tight font-semibold tracking-tight text-brand-navy",
+            s.title,
+          )}
+        >
+          {isAr ? "مُتَبَصِّر" : "Mutabasir"}
         </span>
         {showTagline && (
           <span className={cn("font-medium text-slate-500", s.tag)}>
-            The Director&apos;s Lens
+            {isAr ? "عدسة المدير" : "The Director’s Lens"}
           </span>
         )}
       </div>

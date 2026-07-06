@@ -1,0 +1,41 @@
+{
+  "name": "Mutabasir — Executive Intelligence",
+  "short_name": "Mutabasir",
+  "description": "From paperwork to board insight in 90 seconds. Bilingual executive dashboards from your project documents.",
+  "start_url": "/projects",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0F172A",
+  "theme_color": "#171C8F",
+  "categories": ["business", "productivity", "utilities"],
+  "lang": "en-AE",
+  "dir": "auto",
+  "icons": [
+    { "src": "/icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" },
+    { "src": "/apple-touch-icon.svg", "sizes": "180x180", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/favicon.svg", "sizes": "32x32", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    {
+      "name": "New project",
+      "short_name": "New",
+      "url": "/new",
+      "icons": [{ "src": "/favicon.svg", "sizes": "32x32", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Projects",
+      "short_name": "Projects",
+      "url": "/projects",
+      "icons": [{ "src": "/favicon.svg", "sizes": "32x32", "type": "image/svg+xml" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/opengraph-image",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ]
+}
