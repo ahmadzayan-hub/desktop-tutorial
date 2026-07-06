@@ -87,7 +87,7 @@ fun StatsScreen(onBack: () -> Unit) {
 
             if (report.total == 0) {
                 Text(
-                    "لسه مفيش تفاعلات كفاية — استخدم الاقتراحات شوية والإحصائيات هتظهر.",
+                    "لسه مفيش تفاعلات كفاية - استخدم الاقتراحات شوية والإحصائيات هتظهر.",
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }

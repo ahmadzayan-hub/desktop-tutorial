@@ -4,7 +4,7 @@ import com.wifeassistant.data.SuggestionEngine
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-// اختبار تحليل رد الموديل لاقتراحين (parseTwo) — نظير generate.test.js.
+// اختبار تحليل رد الموديل لاقتراحين (parseTwo) - نظير generate.test.js.
 class SuggestionParseTest {
     private val themes = listOf("امتنان", "دعاء")
 

@@ -5,7 +5,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-// اختبار وحدة العلاقات (Relations) — نقي بالكامل.
+// اختبار وحدة العلاقات (Relations) - نقي بالكامل.
 class RelationsTest {
 
     @Test

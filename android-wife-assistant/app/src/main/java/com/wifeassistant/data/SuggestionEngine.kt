@@ -2,7 +2,7 @@ package com.wifeassistant.data
 
 import kotlin.random.Random
 
-// قلب التوليد — نظير generateSuggestion.js.
+// قلب التوليد - نظير generateSuggestion.js.
 // تعلّم بالسياق (few-shot) + ترجيح المواضيع + تنويع + مرساة صوت ثابتة.
 class SuggestionEngine(
     private val store: Store,
@@ -48,13 +48,13 @@ class SuggestionEngine(
         return items.last()
     }
 
-    // مرساة الصوت — النبرة الأساسية حسب نوع العلاقة (شريك/ابن/أم/أخ...).
+    // مرساة الصوت - النبرة الأساسية حسب نوع العلاقة (شريك/ابن/أم/أخ...).
     private fun buildSystemPrompt(): String {
         val rel = Relations.byId(settings.currentRecipient()?.relation ?: "partner_wife")
         val lines = mutableListOf(
             "انت بتساعد شخص مصري يكتب رسالة قصيرة ${rel.toAddr} (${rel.label}) باللهجة المصرية العامية.",
             "النبرة المناسبة للعلاقة دي: ${rel.tone}.",
-            "اكتب كإنسان حقيقي بمشاعر صادقة ودفء إنساني — مش كلام آلة.",
+            "اكتب كإنسان حقيقي بمشاعر صادقة ودفء إنساني - مش كلام آلة.",
             "قواعد ثابتة لا تتغيّر:",
             if (settings.messageLength == "medium")
                 "- الرسالة من سطرين لـ 3 أسطر."
@@ -74,13 +74,13 @@ class SuggestionEngine(
         return lines.joinToString("\n")
     }
 
-    // بلوك التخصيص — بيخلّي الرسالة للشخص ده بالذات ومنّه هو (شخصنة إنسانية).
+    // بلوك التخصيص - بيخلّي الرسالة للشخص ده بالذات ومنّه هو (شخصنة إنسانية).
     private fun buildPersonaBlock(): String {
         val r = settings.currentRecipient()
         val parts = mutableListOf<String>()
         if (settings.myName.isNotBlank()) parts.add("اسم اللي بيبعت: ${settings.myName.trim()}.")
         if (r != null && r.name.isNotBlank()) {
-            parts.add("اسم اللي بيتبعتله: ${r.name.trim()} — نادِه باسمه أو دلعه بشكل طبيعي.")
+            parts.add("اسم اللي بيتبعتله: ${r.name.trim()} - نادِه باسمه أو دلعه بشكل طبيعي.")
         }
         if (r != null && r.notes.isNotBlank()) {
             parts.add("حاجات عنه تخصّص بيها الرسالة: ${r.notes.trim()}.")
@@ -99,7 +99,7 @@ class SuggestionEngine(
             .mapIndexed { i, e -> "${i + 1}) ${e.text}" }
             .joinToString("\n")
         return listOf(
-            "دي أمثلة من رسايل اخترتها أو عدّلتها قبل كده — ده أسلوبي وصوتي.",
+            "دي أمثلة من رسايل اخترتها أو عدّلتها قبل كده - ده أسلوبي وصوتي.",
             "قلّد روح الأمثلة دي (اختيار الكلمات والإيقاع) من غير ما تنسخها حرفياً:",
             lines,
         ).joinToString("\n")
@@ -137,7 +137,7 @@ class SuggestionEngine(
     }
 
     companion object {
-        // تحليل رد الموديل لاقتراحين — يفضّل الأسطر المرقّمة فعلاً ويتجاهل التمهيد.
+        // تحليل رد الموديل لاقتراحين - يفضّل الأسطر المرقّمة فعلاً ويتجاهل التمهيد.
         // دالة نقية (بدون I/O) عشان تتختبر بسهولة.
         internal fun parseTwo(raw: String, themes: List<String>): List<Suggestion> {
             val lines = raw.split("\n").map { it.trim() }.filter { it.isNotEmpty() }

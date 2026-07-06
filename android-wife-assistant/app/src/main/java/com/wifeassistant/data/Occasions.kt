@@ -1,6 +1,6 @@
 package com.wifeassistant.data
 
-// تحديد مناسبة النهاردة من الإعدادات — نظير occasions.js.
+// تحديد مناسبة النهاردة من الإعدادات - نظير occasions.js.
 // fixed = MM-DD ثابت، manual = YYYY-MM-DD (أعياد إسلامية بتتغيّر كل سنة).
 class Occasions(private val settings: Settings) {
 

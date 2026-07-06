@@ -8,7 +8,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-// اختبار مطابقة المناسبات (Occasions.match) — نظير occasions.test.js.
+// اختبار مطابقة المناسبات (Occasions.match) - نظير occasions.test.js.
 class OccasionsTest {
 
     @Test

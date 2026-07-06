@@ -6,14 +6,14 @@ import android.net.Uri
 import android.widget.Toast
 import java.net.URLEncoder
 
-// إرسال لواتساب — بيفتح الشات والرسالة جاهزة مكتوبة، وانت تدوس Send.
+// إرسال لواتساب - بيفتح الشات والرسالة جاهزة مكتوبة، وانت تدوس Send.
 // مفيش إرسال تلقائي: الضغطة الأخيرة بإيدك (مشروع وآمن ومتوافق مع الشروط).
 object WhatsApp {
     // إرسال لجهة اتصال محددة (رقم مباشر).
     fun send(context: Context, rawNumber: String, text: String) {
         val digits = rawNumber.filter { it.isDigit() }
         if (digits.isEmpty()) {
-            Toast.makeText(context, "رقم واتساب الشخص مش متسجّل — ظبّطه من الأشخاص", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "رقم واتساب الشخص مش متسجّل - ظبّطه من الأشخاص", Toast.LENGTH_LONG).show()
             return
         }
         open(context, "https://wa.me/$digits?text=" + URLEncoder.encode(text, "UTF-8"))

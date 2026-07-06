@@ -8,7 +8,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 
 // بيقرأ أحداث تقويم الموبايل (اللي بيزامن Google Calendar وأي حساب تاني)
-// عبر CalendarContract — محلي بالكامل، بإذن READ_CALENDAR. بيغذّي الاقتراحات
+// عبر CalendarContract - محلي بالكامل، بإذن READ_CALENDAR. بيغذّي الاقتراحات
 // بناءً على أجندتك (أعياد، مناسبات، مواعيد).
 object CalendarReader {
     data class Event(val title: String, val begin: Long)
@@ -43,7 +43,7 @@ object CalendarReader {
                 }
             }
         } catch (e: SecurityException) {
-            // مفيش إذن التقويم — نرجّع فاضي بهدوء
+            // مفيش إذن التقويم - نرجّع فاضي بهدوء
         } catch (e: Exception) {
             // أي مشكلة تانية في القراءة
         }

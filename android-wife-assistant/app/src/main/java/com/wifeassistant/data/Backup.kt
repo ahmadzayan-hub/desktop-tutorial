@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-// نسخة احتياطية من بياناتك (بدون مفتاح Groq — سر مايتشاركش).
+// نسخة احتياطية من بياناتك (بدون مفتاح Groq - سر مايتشاركش).
 @Serializable
 data class Backup(
     val recipients: List<Recipient> = emptyList(),

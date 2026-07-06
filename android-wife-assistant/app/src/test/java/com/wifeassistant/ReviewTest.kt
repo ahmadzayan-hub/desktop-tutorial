@@ -8,7 +8,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-// اختبار حساب التقرير (Review.compute) — نظير review.test.js.
+// اختبار حساب التقرير (Review.compute) - نظير review.test.js.
 class ReviewTest {
     private fun fb(slot: String, choice: String, themes: List<String> = listOf("امتنان", "دعاء")) =
         Feedback("2026-07-05", slot, themes, choice, null)

@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit
 
 data class ChatMessage(val role: String, val content: String)
 
-// طبقة تجريد عقل الـ AI (Groq) — نظير llm.js. المزوّد معزول هنا بس.
+// طبقة تجريد عقل الـ AI (Groq) - نظير llm.js. المزوّد معزول هنا بس.
 class GroqClient(private val settings: Settings) {
     private val client = OkHttpClient.Builder()
         .connectTimeout(20, TimeUnit.SECONDS)
