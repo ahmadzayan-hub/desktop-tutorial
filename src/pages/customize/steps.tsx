@@ -70,6 +70,7 @@ export function UploadStep({ draft, update }: StepProps) {
           type="file"
           accept="image/jpeg,image/png"
           className="sr-only"
+          aria-label={t("customize.upload.heading")}
           onChange={(e) => {
             const f = e.target.files?.[0];
             if (f) void handleFile(f);
