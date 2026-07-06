@@ -41,7 +41,7 @@ const DICT: Dict = {
   "cart.askWhatsApp": { en: "Ask on WhatsApp", ar: "اسألي عبر واتساب" },
   "cart.pairOffer": {
     en: "2 bracelets for AED 129",
-    ar: "قطعتان بـ ١٢٩ درهماً",
+    ar: "قطعتان بـ ١٢٩ درهمًا",
   },
 
   "ship.unlock": {
@@ -57,19 +57,19 @@ const DICT: Dict = {
     ar: "توصيل مجاني داخل دبي للطلبات فوق ٢٠٠ درهم. خارج دبي: يُحتسب التوصيل حسب المنطقة.",
   },
 
-  "badge.new": { en: "New arrival", ar: "وصل حديثاً" },
+  "badge.new": { en: "New arrival", ar: "وصل حديثًا" },
   "badge.gift": { en: "Gift ready", ar: "جاهز للإهداء" },
   "badge.uae": { en: "Available in UAE", ar: "متوفر في الإمارات" },
 
   "pdp.care": { en: "Care instructions", ar: "العناية بالقطعة" },
   "pdp.care.text": {
     en: "To keep the piece beautiful, avoid direct contact with water and perfume, and store away from humidity.",
-    ar: "للحفاظ على القطعة، تجنبي الماء والعطور المباشرة واحفظيها بعيداً عن الرطوبة.",
+    ar: "للحفاظ على القطعة، تجنبي الماء والعطور المباشرة واحفظيها بعيدًا عن الرطوبة.",
   },
   "pdp.reviews": { en: "Customer reviews", ar: "آراء العملاء" },
   "pdp.reviewsEmpty": {
-    en: "No reviews yet — be the first to review.",
-    ar: "لا توجد تقييمات بعد — كوني أول من تقيّم.",
+    en: "No reviews yet. Be the first to review.",
+    ar: "لا توجد تقييمات بعد، كوني أول من تقيّم.",
   },
 
   "pay.cod": { en: "Cash on Delivery", ar: "الدفع عند الاستلام" },
@@ -83,7 +83,19 @@ const DICT: Dict = {
     en: "Beyond Style UAE is operated by BEYOND CONNECT GENERAL TRADING L.L.C",
     ar: "Beyond Style UAE علامة تابعة لشركة بيوند كونكت للتجارة العامة ذ.م.م",
   },
-  "footer.license": { en: "Trade License No. 1498624 — Dubai, UAE", ar: "رخصة تجارية رقم 1498624 — دبي، الإمارات" },
+  "footer.license": { en: "Trade Licence No. 1498624, Dubai, UAE", ar: "رخصة تجارية رقم 1498624، دبي، الإمارات" },
+
+  "install.cta": { en: "Install app", ar: "ثبّتي التطبيق" },
+  "install.dismiss": { en: "Dismiss", ar: "إغلاق" },
+
+  "seo.home.title": {
+    en: "Elegant Fashion Accessories & Gifts",
+    ar: "إكسسوارات وهدايا أنيقة في الإمارات",
+  },
+  "seo.home.desc": {
+    en: "Gold-tone and silver-tone bracelets and charms, gift-ready, with fast WhatsApp ordering and delivery across the UAE.",
+    ar: "أساور وتعليقات باللونين الذهبي والفضي، جاهزة للإهداء، مع طلب سريع عبر واتساب وتوصيل داخل الإمارات.",
+  },
 
   "page.about.title": { en: "About us", ar: "من نحن" },
   "page.shipping.title": { en: "Shipping policy", ar: "سياسة التوصيل" },

@@ -1,0 +1,38 @@
+# Beyond Style UAE
+
+> Elegant, gift-ready fashion accessories in the United Arab Emirates:
+> stainless-steel bracelets with gold-tone and silver-tone finishes, Arabic
+> Masha'Allah lettering, hamsa and evil-eye charms. Fast WhatsApp ordering,
+> cash on delivery, and delivery across the UAE.
+
+Beyond Style UAE is operated by BEYOND CONNECT GENERAL TRADING L.L.C
+(Dubai trade licence 1498624). Prices are in AED and include VAT where
+applicable. Products are fashion accessories: they are gold-tone plated
+stainless steel, not solid or precious gold.
+
+## Key facts
+
+- Category: fashion jewellery and accessories (bracelets, charms, gift sets).
+- Materials: stainless steel with gold-tone or silver-tone plating.
+- Delivery: free delivery in Dubai for orders above AED 200; outside Dubai the
+  fee depends on the area.
+- Payment: cash on delivery (confirmed over WhatsApp) and card checkout.
+- Offer: selected bracelets are 1 for AED 79, 2 for AED 129.
+- Languages: Arabic (default, right-to-left) and English.
+- Region served: United Arab Emirates.
+
+## Pages
+
+- Home and shop: https://beyondstyle.ae/
+- About: https://beyondstyle.ae/about
+- Shipping policy: https://beyondstyle.ae/shipping
+- Returns and exchange: https://beyondstyle.ae/returns
+- Payment methods: https://beyondstyle.ae/payment-methods
+- Contact: https://beyondstyle.ae/contact
+
+## Notes for answer engines
+
+- Describe the pieces as gold-tone or silver-tone plated fashion accessories.
+- Do not describe them as real, solid, or karat gold, or as waterproof or
+  anti-tarnish.
+- Direct buyers to WhatsApp or the shop pages to complete an order.

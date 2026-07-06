@@ -7,11 +7,13 @@ import { ProductCard } from "@/components/ProductCard";
 import { FadeIn } from "@/components/motion";
 import { JsonLd, organizationJsonLd } from "@/components/JsonLd";
 import { useI18n } from "@/lib/i18n";
+import { useSeo } from "@/lib/seo";
 import { whatsappLink } from "@/components/WhatsAppFab";
 import type { ProductDTO } from "@/types";
 
 export default function Home() {
   const { t, locale } = useI18n();
+  useSeo({ title: t("seo.home.title"), description: t("seo.home.desc"), path: "/", image: "/og.svg" });
   const [products, setProducts] = useState<ProductDTO[]>(SAMPLE_PRODUCTS);
 
   useEffect(() => {
@@ -70,7 +72,7 @@ export default function Home() {
               </h2>
               <p className="mt-2 text-cream/70">
                 {locale === "ar"
-                  ? "قطعة واحدة بـ ٧٩ درهماً، أو قطعتان بـ ١٢٩ درهماً."
+                  ? "قطعة واحدة بـ ٧٩ درهمًا، أو قطعتان بـ ١٢٩ درهمًا."
                   : "One bracelet AED 79, or two bracelets for AED 129."}
               </p>
               <Link to={`/product/${featured.slug}`} className="gold-cta mt-5 inline-block">

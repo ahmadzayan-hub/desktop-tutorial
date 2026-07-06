@@ -25,8 +25,8 @@ export function JewelryCareBadge() {
         </ul>
         <p className="mt-3 text-xs text-cream/50">
           {locale === "ar"
-            ? "إكسسوار أزياء — ستانلس ستيل بطلاء ذهبي اللون أو فضي اللون."
-            : "Fashion accessory — stainless steel with gold-tone or silver-tone plating."}
+            ? "إكسسوار أزياء من ستانلس ستيل بطلاء ذهبي اللون أو فضي اللون."
+            : "Fashion accessory in stainless steel with gold-tone or silver-tone plating."}
         </p>
       </div>
     </section>

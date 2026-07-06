@@ -5,6 +5,7 @@ import { I18nProvider } from "@/lib/i18n";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { WhatsAppFab } from "@/components/WhatsAppFab";
+import { InstallPrompt } from "@/components/InstallPrompt";
 import { useAbandonedCart } from "@/hooks/useAbandonedCart";
 import {
   AboutPage,
@@ -73,6 +74,7 @@ export default function App() {
             </Suspense>
           </main>
           <WhatsAppFab />
+          <InstallPrompt />
           <Footer />
         </BrowserRouter>
       </CartProvider>

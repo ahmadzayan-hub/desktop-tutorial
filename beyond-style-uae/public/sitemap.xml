@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://beyondstyle.ae/</loc>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://beyondstyle.ae/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://beyondstyle.ae/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://beyondstyle.ae/"/>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url><loc>https://beyondstyle.ae/about</loc><priority>0.6</priority></url>
+  <url><loc>https://beyondstyle.ae/shipping</loc><priority>0.5</priority></url>
+  <url><loc>https://beyondstyle.ae/returns</loc><priority>0.5</priority></url>
+  <url><loc>https://beyondstyle.ae/payment-methods</loc><priority>0.5</priority></url>
+  <url><loc>https://beyondstyle.ae/contact</loc><priority>0.6</priority></url>
+  <url><loc>https://beyondstyle.ae/privacy</loc><priority>0.3</priority></url>
+  <url><loc>https://beyondstyle.ae/terms</loc><priority>0.3</priority></url>
+</urlset>

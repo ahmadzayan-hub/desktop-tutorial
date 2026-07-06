@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Beyond Style">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#A6864B"/>
+      <stop offset="0.45" stop-color="#C9A96E"/>
+      <stop offset="1" stop-color="#E4CFA1"/>
+    </linearGradient>
+  </defs>
+  <!-- Full-bleed background keeps the icon maskable-safe on Android -->
+  <rect width="512" height="512" fill="#0A0A0A"/>
+  <!-- Faceted gem: a jewel mark for a jewellery brand -->
+  <g>
+    <path d="M196 150 H316 L392 216 L256 404 L120 216 Z" fill="url(#gold)"/>
+    <path d="M120 216 H392 M196 150 L256 216 L316 150 M256 216 V404"
+          fill="none" stroke="#0A0A0A" stroke-width="6" stroke-linejoin="round" opacity="0.5"/>
+  </g>
+  <!-- Wordmark initials -->
+  <text x="256" y="452" text-anchor="middle"
+        font-family="Alexandria, Inter, system-ui, sans-serif" font-size="46" font-weight="700"
+        letter-spacing="6" fill="url(#gold)">BS</text>
+</svg>

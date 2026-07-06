@@ -3,6 +3,7 @@ import { ShoppingBag, Globe } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useI18n } from "@/lib/i18n";
 import { ShippingBanner } from "@/components/ShippingBanner";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export function Header() {
   const { count } = useCart();
@@ -13,9 +14,8 @@ export function Header() {
       <ShippingBanner />
       <div className="border-b border-gold/15 bg-ink/90">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <Link to="/" className="font-display text-xl tracking-wide">
-            <span className="gold-text">Beyond Style</span>
-            <span className="ms-1 text-cream/70 text-sm">UAE</span>
+          <Link to="/" aria-label="Beyond Style UAE">
+            <BrandLogo />
           </Link>
 
           <nav className="flex items-center gap-4 text-sm">

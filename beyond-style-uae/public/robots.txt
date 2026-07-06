@@ -1,0 +1,20 @@
+# Beyond Style UAE
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /checkout
+Disallow: /thank-you
+
+# AI / answer engines are welcome to read the catalogue and the AI summary.
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://beyondstyle.ae/sitemap.xml

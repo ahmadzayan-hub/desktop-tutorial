@@ -6,6 +6,7 @@ import { SAMPLE_PRODUCTS, SAMPLE_REVIEWS, PAIR_OFFERS } from "@/lib/sample-data"
 import { cld, cldSrcSet } from "@/lib/cloudinary";
 import { formatAED } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
+import { useSeo } from "@/lib/seo";
 import { useCart } from "@/context/CartContext";
 import { track } from "@/lib/analytics";
 import { JewelryCareBadge } from "@/components/JewelryCareBadge";
@@ -39,6 +40,17 @@ export default function ProductDetail() {
   useEffect(() => {
     if (product) track("view_item", { item_id: product.id, value: Number(product.priceAed) });
   }, [product]);
+
+  // Keep hook order stable: called every render, product-null-safe.
+  useSeo({
+    title: product ? (locale === "ar" ? product.titleAr : product.titleEn) : t("seo.home.title"),
+    description: product
+      ? locale === "ar"
+        ? product.descriptionAr
+        : product.descriptionEn
+      : undefined,
+    path: `/product/${slug}`,
+  });
 
   if (!product) {
     return <div className="mx-auto max-w-5xl px-4 py-20 text-center text-cream/60">Not found.</div>;

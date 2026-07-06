@@ -63,7 +63,9 @@ type EventName =
   | "add_to_cart"
   | "begin_checkout"
   | "purchase"
-  | "free_shipping_unlocked";
+  | "free_shipping_unlocked"
+  | "pwa_install_prompt"
+  | "pwa_installed";
 
 const PIXEL_MAP: Partial<Record<EventName, string>> = {
   view_item: "ViewContent",

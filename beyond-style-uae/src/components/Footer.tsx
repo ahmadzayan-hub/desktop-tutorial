@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import { WHATSAPP_DISPLAY, whatsappLink } from "@/components/WhatsAppFab";
+import { BrandLogo } from "@/components/BrandLogo";
 
 /** Trust footer — UAE compliance: company, trade license, contact, policies. */
 export function Footer() {
@@ -20,8 +21,8 @@ export function Footer() {
     <footer className="mt-16 border-t border-gold/15 bg-ink/95 text-cream/70">
       <div className="mx-auto grid max-w-5xl gap-8 px-4 py-10 md:grid-cols-3">
         <div>
-          <p className="font-display text-lg gold-text">Beyond Style UAE</p>
-          <p className="mt-2 text-sm">{t("brand.tagline")}</p>
+          <BrandLogo />
+          <p className="mt-3 text-sm">{t("brand.tagline")}</p>
           <p className="mt-4 text-xs leading-relaxed">
             {t("footer.company")}
             <br />

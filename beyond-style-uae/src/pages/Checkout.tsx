@@ -115,8 +115,8 @@ export default function Checkout() {
         <label className="flex items-center gap-2 rounded-xl border border-gold/15 p-4 text-sm text-cream/90">
           <input type="checkbox" name="giftWrap" />
           {locale === "ar"
-            ? "تغليف هدية — متاح حسب المخزون"
-            : "Gift packaging — available subject to stock"}
+            ? "تغليف هدية، متاح حسب المخزون"
+            : "Gift packaging, available subject to stock"}
         </label>
 
         <p className="text-xs text-cream/50">{t("ship.note")}</p>
