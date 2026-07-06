@@ -438,9 +438,11 @@ export function ReviewStep({ draft, update, onEditDesign }: StepProps & { onEdit
           <div className="my-3 border-t border-coffee-100" />
           <Row label={t("customize.review.subtotal")} value={formatAed(subtotal, lang)} />
           <Row label={t("customize.review.deliveryFee")} value={formatAed(deliveryFee, lang)} />
-          <Row label={t("customize.review.vat")} value={formatAed(vat, lang)} muted />
           <div className="my-3 border-t border-coffee-100" />
           <Row label={t("customize.review.total")} value={formatAed(total, lang)} strong />
+          {/* Prices are VAT-inclusive, so VAT is shown as "of which" below the
+              total — never as an additive line (which would not sum to total). */}
+          <Row label={t("customize.review.vat")} value={formatAed(vat, lang)} muted />
         </div>
 
         <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-coffee-100 bg-cream-50 p-4">
