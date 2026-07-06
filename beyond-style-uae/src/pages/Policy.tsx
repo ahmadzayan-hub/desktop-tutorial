@@ -1,4 +1,5 @@
 import { useI18n } from "@/lib/i18n";
+import { useSeo } from "@/lib/seo";
 import { WHATSAPP_DISPLAY, whatsappLink } from "@/components/WhatsAppFab";
 
 type PolicyKey = "about" | "shipping" | "returns" | "payment" | "privacy" | "terms" | "contact";
@@ -8,7 +9,7 @@ const COPY: Record<PolicyKey, { titleKey: Parameters<ReturnType<typeof useI18n>[
     titleKey: "page.about.title",
     en: `Beyond Style UAE offers elegant fashion accessories and gift-ready pieces inspired by Arabic design. We focus on clear pricing, fast WhatsApp ordering, and delivery across the UAE.
 
-Beyond Style UAE is a brand operated by BEYOND CONNECT GENERAL TRADING L.L.C, a company registered in Dubai under Trade License No. 1498624.`,
+Beyond Style UAE is a brand operated by BEYOND CONNECT GENERAL TRADING L.L.C, a company registered in Dubai under Trade Licence No. 1498624.`,
     ar: `Beyond Style UAE تقدم إكسسوارات أزياء وهدايا أنيقة بتفاصيل عربية، مع التركيز على وضوح السعر، سرعة الطلب عبر واتساب، والتوصيل داخل الإمارات.
 
 Beyond Style UAE علامة تجارية تابعة لشركة بيوند كونكت للتجارة العامة ذ.م.م، مسجلة في إمارة دبي برخصة تجارية رقم 1498624.`,
@@ -18,7 +19,7 @@ Beyond Style UAE علامة تجارية تابعة لشركة بيوند كون
     en: `• Free delivery in Dubai for orders above AED 200.
 • Inside Dubai under AED 200: standard delivery fee applies.
 • Outside Dubai (other emirates): shipping is calculated by area at checkout or via WhatsApp.
-• Standard delivery window: 2–5 working days after order confirmation.
+• Standard delivery window: 2 to 5 working days after order confirmation.
 • For Cash on Delivery, we confirm the order by WhatsApp before dispatch.`,
     ar: `• توصيل مجاني داخل دبي للطلبات فوق ٢٠٠ درهم.
 • داخل دبي تحت ٢٠٠ درهم: تُطبَّق رسوم التوصيل القياسية.
@@ -30,13 +31,13 @@ Beyond Style UAE علامة تجارية تابعة لشركة بيوند كون
     titleKey: "page.returns.title",
     en: `• You may request a return or exchange within 7 days of receiving the order.
 • The item must be unused, in its original packaging, and in its original condition.
-• Earrings and personalised pieces are non-returnable for hygiene reasons.
-• Refunds are issued to the original payment method within 7–14 working days after we receive the returned item.
+• Personalised or made-to-order pieces are non-returnable for hygiene reasons.
+• Refunds are issued to the original payment method within 7 to 14 working days after we receive the returned item.
 • To start a return, message us on WhatsApp with your order number.`,
     ar: `• يمكنكِ طلب استبدال أو استرجاع خلال ٧ أيام من استلام الطلب.
-• يجب أن تكون القطعة غير مستخدمة وداخل العبوة الأصلية وبحالتها الأولى.
-• الأقراط والقطع المخصصة غير قابلة للاسترجاع لأسباب صحية.
-• تتم إعادة المبلغ على وسيلة الدفع الأصلية خلال ٧ إلى ١٤ يوم عمل من استلامنا القطعة.
+• يجب أن تكون القطعة غير مستخدمة وداخل عبوتها الأصلية وبحالتها الأصلية.
+• القطع المخصّصة أو المصنوعة حسب الطلب غير قابلة للاسترجاع لأسباب صحية.
+• تتم إعادة المبلغ إلى وسيلة الدفع الأصلية خلال ٧ إلى ١٤ يوم عمل من استلامنا للقطعة.
 • لبدء عملية الاسترجاع: راسلينا على واتساب مع رقم الطلب.`,
   },
   payment: {
@@ -80,7 +81,7 @@ We reserve the right to refuse or cancel any order in case of incorrect pricing,
 
 WhatsApp: ${WHATSAPP_DISPLAY}
 Operator: BEYOND CONNECT GENERAL TRADING L.L.C
-Trade License No. 1498624
+Trade Licence No. 1498624
 Dubai, United Arab Emirates`,
     ar: `أسرع وسيلة للتواصل معنا هي عبر واتساب.
 
@@ -96,6 +97,12 @@ export function policyPage(key: PolicyKey) {
     const { t, locale } = useI18n();
     const data = COPY[key];
     const body = locale === "ar" ? data.ar : data.en;
+    // First real line of the body makes a clean per-page meta description.
+    const description = body
+      .split("\n")
+      .map((s) => s.replace(/^•\s*/, "").trim())
+      .filter(Boolean)[0];
+    useSeo({ title: t(data.titleKey), description });
     return (
       <div className="mx-auto max-w-2xl px-4 py-12">
         <h1 className="mb-6 font-display text-3xl gold-text">{t(data.titleKey)}</h1>
