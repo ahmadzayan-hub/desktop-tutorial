@@ -2,6 +2,10 @@ package com.wifeassistant.data
 
 import kotlinx.serialization.Serializable
 
+// مناسبة خاصة بشخص (عيد ميلاد/جواز...) — بتتكرر كل سنة بصيغة MM-DD.
+@Serializable
+data class PersonOccasion(val label: String, val date: String)
+
 // شخص بتتواصل معاه (شريك/شريكة، ابن، بنت، أم، أب، أخ، أخت).
 @Serializable
 data class Recipient(
@@ -10,6 +14,7 @@ data class Recipient(
     val relation: String,        // Relations id
     val number: String = "",     // واتساب (اختياري)
     val notes: String = "",      // حاجات عنه تخصّص بيها الرسالة
+    val occasions: List<PersonOccasion> = emptyList(), // مناسباته الخاصة (MM-DD)
 )
 
 // مثال من أسلوبي (رسالة اخترتها أو عدّلتها) — للتعلّم بالسياق، لكل شخص على حدة.

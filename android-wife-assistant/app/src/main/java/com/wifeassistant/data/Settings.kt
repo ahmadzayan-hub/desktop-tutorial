@@ -52,6 +52,11 @@ class Settings(context: Context) {
         get() = prefs.getBoolean("onboarded", false)
         set(v) = prefs.edit().putBoolean("onboarded", v).apply()
 
+    // إيموجي معبّر في الاقتراحات؟
+    var emoji: Boolean
+        get() = prefs.getBoolean("emoji", true)
+        set(v) = prefs.edit().putBoolean("emoji", v).apply()
+
     // ---- المواعيد ----
     var morningTime: String
         get() = prefs.getString("morningTime", "07:00") ?: "07:00"

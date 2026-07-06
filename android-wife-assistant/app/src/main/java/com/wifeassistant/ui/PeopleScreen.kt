@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.wifeassistant.data.PersonOccasion
 import com.wifeassistant.data.Recipient
 import com.wifeassistant.data.Relations
 import com.wifeassistant.data.Settings
@@ -51,10 +52,11 @@ fun PeopleScreen(onBack: () -> Unit) {
     var relation by remember { mutableStateOf(Relations.ALL.first().id) }
     var number by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
+    var occText by remember { mutableStateOf("") }
     var editingId by remember { mutableStateOf<String?>(null) }
 
     fun clearForm() {
-        name = ""; number = ""; notes = ""; relation = Relations.ALL.first().id; editingId = null
+        name = ""; number = ""; notes = ""; occText = ""; relation = Relations.ALL.first().id; editingId = null
     }
 
     fun save() {
@@ -62,13 +64,17 @@ fun PeopleScreen(onBack: () -> Unit) {
             Toast.makeText(context, "اكتب الاسم الأول", Toast.LENGTH_SHORT).show()
             return
         }
+        val occs = parseOccasions(occText)
         val list = people.toMutableList()
         val id = editingId
         if (id == null) {
-            list.add(Recipient(UUID.randomUUID().toString(), name.trim(), relation, number.trim(), notes.trim()))
+            list.add(Recipient(UUID.randomUUID().toString(), name.trim(), relation, number.trim(), notes.trim(), occs))
         } else {
             val i = list.indexOfFirst { it.id == id }
-            if (i >= 0) list[i] = list[i].copy(name = name.trim(), relation = relation, number = number.trim(), notes = notes.trim())
+            if (i >= 0) list[i] = list[i].copy(
+                name = name.trim(), relation = relation, number = number.trim(),
+                notes = notes.trim(), occasions = occs,
+            )
         }
         settings.recipients = list
         if (settings.selectedRecipientId.isBlank()) settings.selectedRecipientId = list.first().id
@@ -137,6 +143,13 @@ fun PeopleScreen(onBack: () -> Unit) {
                 minLines = 2,
                 modifier = Modifier.fillMaxWidth(),
             )
+            OutlinedTextField(
+                value = occText,
+                onValueChange = { occText = it },
+                label = { Text("مناسباته (سطر لكل واحدة: عيد ميلاد=08-24)") },
+                minLines = 2,
+                modifier = Modifier.fillMaxWidth(),
+            )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(onClick = { save() }, modifier = Modifier.weight(1f)) {
                     Text(if (editingId == null) "➕ إضافة" else "💾 حفظ التعديل")
@@ -181,6 +194,7 @@ fun PeopleScreen(onBack: () -> Unit) {
                             ) { Text("اختار") }
                             OutlinedButton(onClick = {
                                 name = p.name; relation = p.relation; number = p.number; notes = p.notes
+                                occText = p.occasions.joinToString("\n") { "${it.label}=${it.date}" }
                                 editingId = p.id
                             }) { Text("تعديل") }
                             TextButton(onClick = {
@@ -197,5 +211,19 @@ fun PeopleScreen(onBack: () -> Unit) {
                 }
             }
         }
+    }
+}
+
+// تحويل نص "الاسم=MM-DD" (سطر لكل مناسبة) لقائمة مناسبات.
+private fun parseOccasions(text: String): List<PersonOccasion> {
+    val re = Regex("^\\d{2}-\\d{2}$")
+    return text.split("\n").mapNotNull { line ->
+        val t = line.trim()
+        if (t.isEmpty()) return@mapNotNull null
+        val idx = t.lastIndexOf('=')
+        if (idx <= 0) return@mapNotNull null
+        val label = t.substring(0, idx).trim()
+        val date = t.substring(idx + 1).trim()
+        if (label.isEmpty() || !re.matches(date)) null else PersonOccasion(label, date)
     }
 }
