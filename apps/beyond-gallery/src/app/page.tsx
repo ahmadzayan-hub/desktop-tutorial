@@ -7,8 +7,15 @@ import { BackToTop, FloatingWhatsApp, ScrollProgress, StatCounter } from "./_com
 import HeroArt from "./_components/HeroArt";
 import Marquee from "./_components/Marquee";
 import Logo, { LogoMark } from "./_components/Logo";
-import ProductTile, { type Ribbon, type Variant } from "./_components/ProductTile";
+import ProductTile, { type Variant } from "./_components/ProductTile";
 import PWAInstall from "./_components/PWAInstall";
+import {
+  FILTER_TABS,
+  PRODUCTS,
+  type Category,
+  type Product,
+  type Stock,
+} from "../data/products";
 import QuickView, { type QuickViewProduct } from "./_components/QuickView";
 import { Reveal, Stagger, StaggerItem } from "./_components/Reveal";
 import Spotlight from "./_components/Spotlight";
@@ -83,6 +90,7 @@ const NAV_LINKS = [
   { en: "Corporate Gifts", ar: "هدايا الشركات", href: "#corporate" },
   { en: "Supply Desk", ar: "قسم التوريد", href: "#supply" },
   { en: "Marketplace", ar: "المتاجر", href: "#marketplace" },
+  { en: "Journal", ar: "المجلة", href: "/journal" },
   { en: "Contact", ar: "تواصل", href: "#contact" },
 ];
 
@@ -1138,41 +1146,10 @@ function Collections({ lang }: { lang: "en" | "ar" }) {
 }
 
 // Featured Products with filter + search + Quick View
+// Product data lives in src/data/products.ts and is shared with the
+// /product/[slug] detail pages and the /journal related-products strip.
 
-type Category = "accessories" | "gifts" | "boards" | "corporate" | "lifestyle";
-type Stock = "in" | "made_to_order" | "bespoke";
-
-type Product = QuickViewProduct & {
-  id: string;
-  category: Category;
-  stock: Stock;
-  leadDays?: string;
-  ribbon?: Ribbon;
-};
-
-const FEATURED: Product[] = [
-  { id: "arabic-charm", name: "Arabic Charm Bracelet", nameAr: "إسوارة بأحرف عربية", benefit: "Personalise with Arabic letters or name.", benefitAr: "خصّصها بأحرف أو اسم عربي.", price: "AED 65", variant: "arabic-bracelet", category: "accessories", stock: "in", ribbon: "bestseller" },
-  { id: "name-bracelet", name: "Personalised Name Bracelet", nameAr: "إسوارة الاسم", benefit: "Custom name in English or Arabic.", benefitAr: "اسم مخصّص بالعربية أو الإنجليزية.", price: "AED 75", variant: "name-bracelet", category: "gifts", stock: "made_to_order", leadDays: "3 to 5 days", ribbon: "custom" },
-  { id: "hamsa", name: "Hamsa and Evil Eye Bracelet", nameAr: "إسوارة الكف والعين", benefit: "Symbolic everyday wear.", benefitAr: "رمزية للارتداء اليومي.", price: "AED 55", variant: "hamsa", category: "accessories", stock: "in" },
-  { id: "necklace", name: "Premium Necklace Set", nameAr: "طقم قلائد فاخر", benefit: "Elegant pendant and chain set.", benefitAr: "طقم قلادة بسلسلة أنيقة.", price: "AED 145", variant: "necklace", category: "accessories", stock: "in", ribbon: "new" },
-  { id: "gift-box", name: "Elegant Gift Box Set", nameAr: "طقم صندوق هدية أنيق", benefit: "Ready to gift packaging.", benefitAr: "تغليف جاهز للإهداء.", price: "AED 120", variant: "gift-box", category: "gifts", stock: "in", ribbon: "bestseller" },
-  { id: "drawing-board", name: "Creative Drawing Board", nameAr: "لوحة رسم إبداعية", benefit: "Reusable, ideal for kids and students.", benefitAr: "قابلة لإعادة الاستخدام للأطفال والطلاب.", price: "AED 89", variant: "drawing-board", category: "boards", stock: "in" },
-  { id: "notebook", name: "A5 Branded Notebook", nameAr: "دفتر A5 مع الشعار", benefit: "Hardcover with brand printing option.", benefitAr: "غلاف فاخر مع خيار طباعة الشعار.", price: "AED 35", variant: "notebook", category: "corporate", stock: "made_to_order", leadDays: "5 to 7 days", ribbon: "custom" },
-  { id: "pen", name: "Metal Gift Pen", nameAr: "قلم معدني للهدايا", benefit: "Smooth writing, gift ready.", benefitAr: "كتابة سلسة وجاهز للإهداء.", price: "AED 25", variant: "pen", category: "corporate", stock: "in" },
-  { id: "tote", name: "Canvas Gift Tote Bag", nameAr: "حقيبة قماشية", benefit: "Reusable canvas tote with logo option.", benefitAr: "حقيبة قابلة لإعادة الاستخدام مع خيار الشعار.", price: "AED 30", variant: "tote", category: "corporate", stock: "in" },
-  { id: "mug", name: "Ceramic Gift Mug", nameAr: "كوب سيراميك", benefit: "Ideal for offices and giveaways.", benefitAr: "مناسب للمكاتب والفعاليات.", price: "AED 28", variant: "mug", category: "corporate", stock: "in", ribbon: "new" },
-  { id: "vip-box", name: "Corporate VIP Gift Pack", nameAr: "طقم هدايا مميّز للشركات", benefit: "Curated executive presentation.", benefitAr: "تشكيلة تنفيذية مختارة.", price: "AED 250", variant: "vip-box", category: "corporate", stock: "bespoke", leadDays: "7 to 10 days", ribbon: "limited" },
-  { id: "desk-decor", name: "Lifestyle Desk Decor", nameAr: "ديكور مكتب", benefit: "Charming desk accents.", benefitAr: "لمسات أنيقة للمكتب.", price: "AED 95", variant: "desk-decor", category: "lifestyle", stock: "in" },
-];
-
-const FILTER_TABS: { key: Category | "all"; en: string; ar: string }[] = [
-  { key: "all", en: "All", ar: "الكل" },
-  { key: "accessories", en: "Accessories", ar: "إكسسوارات" },
-  { key: "gifts", en: "Gifts", ar: "هدايا" },
-  { key: "boards", en: "Boards", ar: "لوحات" },
-  { key: "corporate", en: "Corporate", ar: "شركات" },
-  { key: "lifestyle", en: "Lifestyle", ar: "أسلوب حياة" },
-];
+const FEATURED = PRODUCTS;
 
 function StockBadge({ stock, lang, leadDays }: { stock: Stock; lang: "en" | "ar"; leadDays?: string }) {
   const map = {
