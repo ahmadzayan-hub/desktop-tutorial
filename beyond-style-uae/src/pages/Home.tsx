@@ -42,7 +42,7 @@ export default function Home() {
       </FadeIn>
 
       {/* 2. Best sellers */}
-      <h2 className="section-title">{locale === "ar" ? "الأكثر مبيعاً" : "Best sellers"}</h2>
+      <h2 className="section-title">{t("home.bestSellers")}</h2>
       <div className="mb-16 grid grid-cols-2 gap-4 md:grid-cols-3">
         {products.slice(0, 6).map((p, i) => (
           <FadeIn key={p.id} delay={i * 0.05}>
@@ -57,16 +57,12 @@ export default function Home() {
           <section className="surface-card mb-16 grid items-center gap-6 p-6 md:grid-cols-2">
             <div>
               <p className="mb-2 text-xs uppercase tracking-wider text-gold">
-                {locale === "ar" ? "عرض مميز" : "Featured offer"}
+                {t("home.featuredOffer")}
               </p>
               <h2 className="font-display text-2xl text-cream">
                 {locale === "ar" ? featured.titleAr : featured.titleEn}
               </h2>
-              <p className="mt-2 text-cream/75">
-                {locale === "ar"
-                  ? "قطعة واحدة بـ ٧٩ درهماً، أو قطعتان بـ ١٢٩ درهماً."
-                  : "One bracelet AED 79, or two bracelets for AED 129."}
-              </p>
+              <p className="mt-2 text-cream/75">{t("home.featuredCopy")}</p>
               <Link to={`/product/${featured.slug}`} className="gold-cta mt-5 inline-block">
                 {t("cart.addToCart")}
               </Link>
@@ -81,7 +77,7 @@ export default function Home() {
       )}
 
       {/* 4. Gift-ready */}
-      <h2 className="section-title">{locale === "ar" ? "جاهز للإهداء" : "Gift ready"}</h2>
+      <h2 className="section-title">{t("home.giftReady")}</h2>
       <div className="mb-16 grid grid-cols-2 gap-4 md:grid-cols-3">
         {restProducts.slice(0, 3).map((p, i) => (
           <FadeIn key={p.id} delay={i * 0.05}>
@@ -91,13 +87,9 @@ export default function Home() {
       </div>
 
       {/* 5. How to order */}
-      <h2 className="section-title">{locale === "ar" ? "كيف تطلبين" : "How to order"}</h2>
+      <h2 className="section-title">{t("home.howToOrder")}</h2>
       <ol className="mb-16 grid gap-4 md:grid-cols-3">
-        {[
-          locale === "ar" ? "اختاري التصميم من الموقع" : "Pick the design",
-          locale === "ar" ? "أدخلي بياناتك ومنطقة التوصيل" : "Enter your details and area",
-          locale === "ar" ? "نؤكد الطلب عبر واتساب" : "We confirm by WhatsApp",
-        ].map((step, i) => (
+        {[t("home.step1"), t("home.step2"), t("home.step3")].map((step, i) => (
           <li key={i} className="surface-card p-4 text-sm text-cream/80">
             <span className="gold-text font-display text-2xl">{i + 1}</span>
             <p className="mt-2">{step}</p>
@@ -108,21 +100,9 @@ export default function Home() {
       {/* 6. Trust */}
       <FadeIn>
         <section className="surface-card grid gap-4 p-6 md:grid-cols-3">
-          <TrustItem
-            icon={Truck}
-            label={locale === "ar" ? "توصيل داخل الإمارات" : "Delivery across UAE"}
-            note={locale === "ar" ? "مجاني داخل دبي فوق ٢٠٠ درهم" : "Free in Dubai over AED 200"}
-          />
-          <TrustItem
-            icon={ShieldCheck}
-            label={locale === "ar" ? "دفع آمن" : "Secure payment"}
-            note={locale === "ar" ? "بطاقة عبر Stripe أو الدفع عند الاستلام" : "Card via Stripe or Cash on Delivery"}
-          />
-          <TrustItem
-            icon={Gift}
-            label={locale === "ar" ? "تغليف هدايا" : "Gift packaging"}
-            note={locale === "ar" ? "متوفر حسب المخزون" : "Available subject to stock"}
-          />
+          <TrustItem icon={Truck} label={t("home.trust.delivery")} note={t("home.trust.deliveryNote")} />
+          <TrustItem icon={ShieldCheck} label={t("home.trust.payment")} note={t("home.trust.paymentNote")} />
+          <TrustItem icon={Gift} label={t("home.trust.gift")} note={t("home.trust.giftNote")} />
         </section>
       </FadeIn>
     </div>

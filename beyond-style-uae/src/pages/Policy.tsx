@@ -102,7 +102,7 @@ export function policyPage(key: PolicyKey) {
         <article className="whitespace-pre-line text-base text-cream/85 leading-loose md:text-lg">{body}</article>
         {key === "contact" && (
           <a
-            href={whatsappLink(locale === "ar" ? "مرحباً" : "Hello")}
+            href={whatsappLink(t("wa.greeting"))}
             target="_blank"
             rel="noopener noreferrer"
             className="gold-cta mt-6 inline-block"

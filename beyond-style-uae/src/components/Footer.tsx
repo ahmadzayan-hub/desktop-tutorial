@@ -4,7 +4,7 @@ import { WHATSAPP_DISPLAY, whatsappLink } from "@/components/WhatsAppFab";
 
 /** Trust footer — UAE compliance: company, trade license, contact, policies. */
 export function Footer() {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
 
   const links: { to: string; key: Parameters<typeof t>[0] }[] = [
     { to: "/about", key: "page.about.title" },
@@ -31,7 +31,7 @@ export function Footer() {
 
         <div>
           <p className="mb-2 text-sm uppercase tracking-wider text-cream/50">
-            {locale === "ar" ? "روابط" : "Information"}
+            {t("footer.information")}
           </p>
           <ul className="space-y-1.5 text-sm md:text-base">
             {links.map((l) => (
@@ -46,19 +46,17 @@ export function Footer() {
 
         <div>
           <p className="mb-2 text-sm uppercase tracking-wider text-cream/50">
-            {locale === "ar" ? "تواصل" : "Contact"}
+            {t("footer.contact")}
           </p>
           <a
-            href={whatsappLink(locale === "ar" ? "مرحباً" : "Hello")}
+            href={whatsappLink(t("wa.greeting"))}
             target="_blank"
             rel="noopener noreferrer"
             className="text-base hover:text-gold"
           >
             WhatsApp · {WHATSAPP_DISPLAY}
           </a>
-          <p className="mt-2 text-sm text-cream/60">
-            {locale === "ar" ? "دبي، الإمارات العربية المتحدة" : "Dubai, United Arab Emirates"}
-          </p>
+          <p className="mt-2 text-sm text-cream/60">{t("footer.location")}</p>
         </div>
       </div>
       <p className="border-t border-white/5 py-4 text-center text-sm text-cream/50">

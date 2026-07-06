@@ -72,14 +72,12 @@ export default function Cart() {
           </div>
         )}
         <div className="flex justify-between">
-          <span className="text-cream/70">
-            {locale === "ar" ? "التوصيل" : "Shipping"}
-          </span>
+          <span className="text-cream/70">{t("cart.shipping")}</span>
           <span>{shipping.qualifies ? t("ship.unlocked") : fmt(shipping.shippingAed)}</span>
         </div>
         <p className="text-sm text-cream/60">{t("ship.note")}</p>
         <div className="flex justify-between text-lg font-semibold">
-          <span>{locale === "ar" ? "الإجمالي" : "Total"}</span>
+          <span>{t("cart.total")}</span>
           <span className="gold-text">{fmt(total)}</span>
         </div>
         <p className="text-sm text-cream/60">{t("pay.note")}</p>

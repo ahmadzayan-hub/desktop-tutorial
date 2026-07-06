@@ -20,12 +20,11 @@ export function AskOnWhatsApp({
   size?: "sm" | "md";
   className?: string;
 }) {
-  const { t, locale } = useI18n();
-  const fallback = locale === "ar" ? "مرحباً، أريد الاستفسار" : "Hi, I'd like to ask";
+  const { t } = useI18n();
   const padding = size === "sm" ? "px-4 py-2 text-sm" : "px-6 py-3 text-sm";
   return (
     <a
-      href={whatsappLink(message ?? fallback)}
+      href={whatsappLink(message ?? t("wa.genericAsk"))}
       target="_blank"
       rel="noopener noreferrer"
       className={`btn-outline inline-flex items-center gap-2 ${padding} ${className}`.trim()}

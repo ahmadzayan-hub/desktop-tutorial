@@ -10,13 +10,10 @@ export function whatsappLink(message: string): string {
 
 /** Always-visible floating action button so buyers can ask before they buy. */
 export function WhatsAppFab() {
-  const { t, locale } = useI18n();
-  const message =
-    locale === "ar" ? "السلام عليكم، أود الاستفسار عن منتج" : "Hi, I'd like to ask about a product";
-
+  const { t } = useI18n();
   return (
     <a
-      href={whatsappLink(message)}
+      href={whatsappLink(t("wa.askAboutProduct"))}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={t("cart.askWhatsApp")}

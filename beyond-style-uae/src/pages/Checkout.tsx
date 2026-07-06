@@ -19,7 +19,7 @@ const EMIRATES = [
 
 export default function Checkout() {
   const { items, total, shipping, subtotal, clear } = useCart();
-  const { t, locale, fmtLocale } = useI18n();
+  const { t, fmtLocale } = useI18n();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -83,40 +83,32 @@ export default function Checkout() {
       <h1 className="mb-6 font-display text-2xl gold-text">{t("cart.checkout")}</h1>
 
       <form onSubmit={onSubmit} className="space-y-4">
-        <Field name="customerName" label={locale === "ar" ? "الاسم الكامل" : "Full name"} />
-        <Field name="phone" label={locale === "ar" ? "رقم الجوال (+9715XXXXXXXX)" : "Mobile (+9715XXXXXXXX)"} placeholder="+9715XXXXXXXX" />
+        <Field name="customerName" label={t("checkout.fullName")} />
+        <Field name="phone" label={t("checkout.mobileLabel")} placeholder="+9715XXXXXXXX" />
         <div>
-          <label className="mb-1 block text-sm text-cream/70">{locale === "ar" ? "الإمارة" : "Emirate"}</label>
+          <label className="mb-1 block text-sm text-cream/70">{t("checkout.emirate")}</label>
           <select name="emirate" className="w-full rounded-md border border-gold/20 bg-ink px-3 py-2 text-cream" required>
             {EMIRATES.map((e) => (
               <option key={e} value={e}>{e}</option>
             ))}
           </select>
         </div>
-        <Field name="addressLine" label={locale === "ar" ? "العنوان" : "Address"} />
+        <Field name="addressLine" label={t("checkout.address")} />
 
         <fieldset className="rounded-xl border border-gold/15 p-4">
-          <legend className="px-2 text-sm text-cream/70">
-            {locale === "ar" ? "طريقة الدفع" : "Payment method"}
-          </legend>
+          <legend className="px-2 text-sm text-cream/70">{t("checkout.paymentMethodLegend")}</legend>
           <label className="flex items-center gap-2 text-cream/90">
             <input type="radio" name="paymentMethod" value="cod" defaultChecked /> {t("pay.cod")}
           </label>
           <label className="mt-2 flex items-center gap-2 text-cream/90">
             <input type="radio" name="paymentMethod" value="card" /> {t("pay.card")}
           </label>
-          <p className="mt-2 text-xs text-cream/50">
-            {locale === "ar"
-              ? "طلبات الدفع عند الاستلام تتطلب تأكيدًا عبر واتساب قبل الشحن."
-              : "COD orders require WhatsApp confirmation before dispatch."}
-          </p>
+          <p className="mt-2 text-xs text-cream/50">{t("checkout.codNote")}</p>
         </fieldset>
 
         <label className="flex items-center gap-2 rounded-xl border border-gold/15 p-4 text-sm text-cream/90">
           <input type="checkbox" name="giftWrap" />
-          {locale === "ar"
-            ? "تغليف هدية — متاح حسب المخزون"
-            : "Gift packaging — available subject to stock"}
+          {t("checkout.giftWrap")}
         </label>
 
         <p className="text-xs text-cream/50">{t("ship.note")}</p>

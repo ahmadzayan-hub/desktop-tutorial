@@ -67,6 +67,19 @@ const DICT: Dict = {
     en: "To keep the piece beautiful, avoid direct contact with water and perfume, and store away from humidity.",
     ar: "للحفاظ على القطعة، يُرجى تجنّب ملامستها للماء والعطور مباشرةً، وحفظها بعيداً عن الرطوبة.",
   },
+  "pdp.care.tip1": { en: "Avoid water and perfume", ar: "تجنّبي الماء والعطور" },
+  "pdp.care.tip2": {
+    en: "Wipe with a soft dry cloth",
+    ar: "امسحي بقطعة قماش ناعمة وجافّة",
+  },
+  "pdp.care.tip3": {
+    en: "Store in the pouch provided",
+    ar: "احفظي القطعة في الكيس المرفق",
+  },
+  "pdp.care.footnote": {
+    en: "Fashion accessory — stainless steel with gold-tone or silver-tone plating.",
+    ar: "إكسسوار أزياء — ستانلس ستيل بطلاء ذهبي اللون أو فضي اللون.",
+  },
   "pdp.reviews": { en: "Customer reviews", ar: "آراء العميلات" },
   "pdp.reviewsEmpty": {
     en: "No reviews yet — be the first to review.",
@@ -96,6 +109,89 @@ const DICT: Dict = {
   "page.privacy.title": { en: "Privacy policy", ar: "سياسة الخصوصية" },
   "page.terms.title": { en: "Terms & conditions", ar: "الشروط والأحكام" },
   "page.contact.title": { en: "Contact us", ar: "تواصلي معنا" },
+
+  // Home
+  "home.bestSellers": { en: "Best sellers", ar: "الأكثر مبيعاً" },
+  "home.giftReady": { en: "Gift ready", ar: "مناسب للإهداء" },
+  "home.howToOrder": { en: "How to order", ar: "طريقة الطلب" },
+  "home.featuredOffer": { en: "Featured offer", ar: "عرض مميز" },
+  "home.featuredCopy": {
+    en: "One bracelet AED 79, or two bracelets for AED 129.",
+    ar: "قطعة واحدة بـ ٧٩ درهماً، أو قطعتان بـ ١٢٩ درهماً.",
+  },
+  "home.step1": { en: "Pick the design", ar: "اختاري التصميم من الموقع" },
+  "home.step2": { en: "Enter your details and area", ar: "أدخلي بياناتكِ ومنطقة التوصيل" },
+  "home.step3": { en: "We confirm by WhatsApp", ar: "نؤكّد الطلب عبر واتساب" },
+  "home.trust.delivery": { en: "Delivery across UAE", ar: "توصيل داخل الإمارات" },
+  "home.trust.deliveryNote": {
+    en: "Free in Dubai over AED 200",
+    ar: "مجاني داخل دبي فوق ٢٠٠ درهم",
+  },
+  "home.trust.payment": { en: "Secure payment", ar: "دفع آمن" },
+  "home.trust.paymentNote": {
+    en: "Card via Stripe or Cash on Delivery",
+    ar: "بطاقة عبر Stripe أو الدفع عند الاستلام",
+  },
+  "home.trust.gift": { en: "Gift packaging", ar: "تغليف هدايا" },
+  "home.trust.giftNote": { en: "Available subject to stock", ar: "متوفّر حسب المخزون" },
+
+  // Cart
+  "cart.shipping": { en: "Shipping", ar: "التوصيل" },
+  "cart.total": { en: "Total", ar: "الإجمالي" },
+
+  // Checkout
+  "checkout.fullName": { en: "Full name", ar: "الاسم الكامل" },
+  "checkout.mobileLabel": {
+    en: "Mobile (+9715XXXXXXXX)",
+    ar: "رقم الجوال (+9715XXXXXXXX)",
+  },
+  "checkout.emirate": { en: "Emirate", ar: "الإمارة" },
+  "checkout.address": { en: "Address", ar: "العنوان" },
+  "checkout.paymentMethodLegend": { en: "Payment method", ar: "طريقة الدفع" },
+  "checkout.codNote": {
+    en: "COD orders require WhatsApp confirmation before dispatch.",
+    ar: "طلبات الدفع عند الاستلام تتطلّب تأكيداً عبر واتساب قبل الشحن.",
+  },
+  "checkout.giftWrap": {
+    en: "Gift packaging — available subject to stock",
+    ar: "تغليف هدية — متاح حسب المخزون",
+  },
+
+  // Common WhatsApp greetings
+  "wa.greeting": { en: "Hello", ar: "مرحباً" },
+  "wa.askProduct": {
+    en: "Hi, I'd like to ask about",
+    ar: "مرحباً، أود الاستفسار عن",
+  },
+  "wa.genericAsk": {
+    en: "Hi, I'd like to ask",
+    ar: "مرحباً، أود الاستفسار",
+  },
+  "wa.trackOrder": {
+    en: "Hi, I'd like to track order:",
+    ar: "مرحباً، أود متابعة الطلب رقم:",
+  },
+  "wa.askAboutProduct": {
+    en: "Hi, I'd like to ask about a product",
+    ar: "السلام عليكم، أود الاستفسار عن منتج",
+  },
+
+  // Thank-you page
+  "ty.title": { en: "Thank you for your order!", ar: "شكراً لطلبكِ!" },
+  "ty.body": {
+    en: "Your order is received. For Cash on Delivery, we'll confirm by WhatsApp before dispatch.",
+    ar: "تم استلام طلبكِ. لطلبات الدفع عند الاستلام سنؤكّد عبر واتساب قبل الشحن.",
+  },
+  "ty.continue": { en: "Continue shopping", ar: "متابعة التسوق" },
+  "ty.trackLabel": { en: "Track on WhatsApp", ar: "تتبّعي الطلب عبر واتساب" },
+
+  // Footer section headings
+  "footer.information": { en: "Information", ar: "روابط" },
+  "footer.contact": { en: "Contact", ar: "تواصل" },
+  "footer.location": {
+    en: "Dubai, United Arab Emirates",
+    ar: "دبي، الإمارات العربية المتحدة",
+  },
 };
 
 interface I18nValue {
