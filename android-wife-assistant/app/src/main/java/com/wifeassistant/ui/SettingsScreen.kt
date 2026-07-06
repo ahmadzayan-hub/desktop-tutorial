@@ -57,6 +57,8 @@ fun SettingsScreen(onBack: () -> Unit) {
     var model by remember { mutableStateOf(settings.model) }
     var morning by remember { mutableStateOf(settings.morningTime) }
     var evening by remember { mutableStateOf(settings.eveningTime) }
+    var reminders by remember { mutableStateOf(settings.reminders) }
+    var reminderDays by remember { mutableStateOf(settings.reminderDays.toString()) }
     var showRestore by remember { mutableStateOf(false) }
     var restoreText by remember { mutableStateOf("") }
 
@@ -155,6 +157,26 @@ fun SettingsScreen(onBack: () -> Unit) {
                 )
             }
 
+            Section("تذكيرات التواصل")
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("ذكّرني لو بقالي فترة ما كلّمت حد", modifier = Modifier.weight(1f))
+                Switch(checked = reminders, onCheckedChange = { reminders = it })
+            }
+            if (reminders) {
+                OutlinedTextField(
+                    value = reminderDays,
+                    onValueChange = { reminderDays = it.filter { c -> c.isDigit() }.take(2) },
+                    label = { Text("بعد كام يوم من غير تواصل") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Text(
+                    "هنبعتلك إشعار لطيف يفكّرك، والاختيار ليك تبعت أو لأ. مفيش أي حاجة بتتبعت تلقائي.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+
             Section("نسخة احتياطية واستعادة")
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(
@@ -182,6 +204,8 @@ fun SettingsScreen(onBack: () -> Unit) {
                     settings.model = model
                     settings.morningTime = morning.trim()
                     settings.eveningTime = evening.trim()
+                    settings.reminders = reminders
+                    reminderDays.toIntOrNull()?.let { settings.reminderDays = it }
                     Scheduler.scheduleDaily(context)
                     Toast.makeText(context, "اتحفظ ✅", Toast.LENGTH_SHORT).show()
                     onBack()

@@ -7,12 +7,14 @@ import kotlinx.serialization.json.Json
 // الإعدادات (المفتاح + رقم الواتساب + التخصيص + المواعيد + المناسبات).
 // كله على الجهاز بس (SharedPreferences) - مفيش سر بيتبعت لأي حد غير Groq.
 class Settings(context: Context) {
+    private val appCtx = context.applicationContext
     private val prefs = context.getSharedPreferences("wife_assistant_settings", Context.MODE_PRIVATE)
     private val json = Json { ignoreUnknownKeys = true }
 
+    // مفتاح Groq مشفّر (Android Keystore) بدل التخزين العادي.
     var groqKey: String
-        get() = prefs.getString("groqKey", "").orEmpty()
-        set(v) = prefs.edit().putString("groqKey", v).apply()
+        get() = SecureStore.getGroqKey(appCtx)
+        set(v) = SecureStore.setGroqKey(appCtx, v)
 
     // رقم مراتك بالصيغة الدولية بأرقام بس (زي 201001234567).
     var wifeNumber: String
@@ -56,6 +58,15 @@ class Settings(context: Context) {
     var emoji: Boolean
         get() = prefs.getBoolean("emoji", true)
         set(v) = prefs.edit().putBoolean("emoji", v).apply()
+
+    // تذكيرات "بقالك فترة ما كلّمت فلان".
+    var reminders: Boolean
+        get() = prefs.getBoolean("reminders", true)
+        set(v) = prefs.edit().putBoolean("reminders", v).apply()
+
+    var reminderDays: Int
+        get() = prefs.getInt("reminderDays", 7)
+        set(v) = prefs.edit().putInt("reminderDays", v.coerceIn(1, 90)).apply()
 
     // ---- المواعيد ----
     var morningTime: String

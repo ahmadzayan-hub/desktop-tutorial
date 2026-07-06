@@ -76,6 +76,24 @@ class Store(context: Context) {
         val d = read(); d.lastSentPerSlot[slot] = DateUtil.todayISO(); write(d)
     }
 
+    // ---- تذكيرات التواصل ("بقالك فترة ما كلّمت فلان") ----
+    @Synchronized
+    fun markContacted(recipientId: String) {
+        if (recipientId.isBlank()) return
+        val d = read(); d.lastContactedPerRecipient[recipientId] = DateUtil.todayISO(); write(d)
+    }
+
+    // عدد الأيام من آخر تواصل، أو null لو مفيش تواصل قبل كده.
+    fun daysSinceContact(recipientId: String): Long? {
+        val last = read().lastContactedPerRecipient[recipientId] ?: return null
+        return runCatching {
+            java.time.temporal.ChronoUnit.DAYS.between(
+                java.time.LocalDate.parse(last),
+                DateUtil.today(),
+            )
+        }.getOrNull()
+    }
+
     // ---- الجولة المعلّقة (بين الإشعار والواجهة) ----
     fun getPending(): PendingRound? = read().pending
 
