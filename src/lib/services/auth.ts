@@ -7,7 +7,14 @@ export interface AuthContext {
   orgId: string;
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function requireUserOrg(orgIdHeader: string | null): Promise<AuthContext | NextResponse> {
+  // Reject malformed org IDs before they reach the DB
+  if (orgIdHeader && !UUID_RE.test(orgIdHeader)) {
+    return NextResponse.json({ error: "invalid_org_id" }, { status: 400 });
+  }
+
   const supabase = getServerSupabase();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {

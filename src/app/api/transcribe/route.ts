@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { isDemoMode } from "@/lib/demo";
 import { requireUser } from "@/lib/db/supabase-server";
+import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -29,9 +30,18 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  // ── Production: require authenticated user ────────────────────────────
+  // ── Production: require authenticated user + rate limit ──────────────
   const { unauthorized } = await requireUser();
   if (unauthorized) return unauthorized;
+
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+  const rl = rateLimit(`transcribe:${ip}`, 10, 60_000); // 10 req/min per IP
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait before transcribing again." },
+      { status: 429, headers: rateLimitHeaders(rl, 10) }
+    );
+  }
 
   const openaiKey = process.env.OPENAI_API_KEY;
   if (!openaiKey) {
@@ -84,9 +94,10 @@ export async function POST(req: NextRequest) {
     });
 
     if (!res.ok) {
-      const detail = await res.text();
+      const rawDetail = await res.text();
+      const isProd = process.env.NODE_ENV === "production";
       return NextResponse.json(
-        { error: "Transcription API returned an error.", detail },
+        { error: "Transcription API returned an error.", ...(isProd ? {} : { detail: rawDetail }) },
         { status: 502 }
       );
     }
@@ -103,8 +114,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ transcript });
   } catch (e: unknown) {
+    const isProd = process.env.NODE_ENV === "production";
     return NextResponse.json(
-      { error: "Transcription failed.", detail: String(e) },
+      { error: "Transcription failed.", ...(isProd ? {} : { detail: String(e) }) },
       { status: 500 }
     );
   }

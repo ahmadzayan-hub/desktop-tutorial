@@ -35,7 +35,9 @@ export function handleError(e: unknown): NextResponse {
     );
   }
   console.error("[api]", e);
-  return NextResponse.json({ error: "internal", message: msg }, { status: 500 });
+  // Never expose internal error details to clients in production
+  const safe = process.env.NODE_ENV === "production" ? {} : { detail: msg };
+  return NextResponse.json({ error: "internal", ...safe }, { status: 500 });
 }
 
 /**

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient, getUser } from "@/lib/db/supabase-server";
 import { aiChat } from "@/lib/ai/client";
 import { retrieveChunks, buildContext, extractCitations } from "@/lib/rag/retriever";
+import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
 export async function GET(req: NextRequest, { params }: { params: { chatId: string } }) {
   if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") return NextResponse.json([]);
@@ -21,6 +22,16 @@ export async function POST(req: NextRequest, { params }: { params: { chatId: str
   }
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+  const rl = rateLimit(`tutor:${user.id}`, 30, 60_000); // 30 messages/min per user
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many messages. Please slow down." },
+      { status: 429, headers: rateLimitHeaders(rl, 30) }
+    );
+  }
+
   const supabase = createClient();
 
   // Save user message

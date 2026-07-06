@@ -32,7 +32,9 @@ const CSP = [
   // Frames: only self (e.g. PWA install prompt)
   "frame-src 'self'",
   // Upgrade any accidental http requests
-  "upgrade-insecure-requests"
+  "upgrade-insecure-requests",
+  // Collect violation reports at our own endpoint (no third-party data sharing)
+  "report-uri /api/csp-report"
 ].join("; ");
 
 const nextConfig = {

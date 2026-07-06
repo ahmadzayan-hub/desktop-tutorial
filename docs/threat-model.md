@@ -129,19 +129,30 @@ Browser / Mobile PWA
 
 | Risk | Decision | Owner |
 |------|----------|-------|
-| No rate limiter on AI routes | Open — add Upstash rate limiter | Eng |
-| LLM errors return HTTP 200 | Accepted for demo/dev-mode; add monitoring alert | Ops |
-| No audit log for admin actions | Low priority; Supabase logs cover | Eng |
-| `detail` field in 5xx responses | Acceptable — only shown server-side error text | Eng |
-| Ollama endpoint in error body | Low — dev-mode only | Eng |
+| In-process rate limiter resets on cold start | Accepted — provides meaningful warm-instance protection; upgrade path: swap Map for Upstash Redis with same interface | Eng |
+| LLM errors return HTTP 200 | Accepted for demo/dev-mode; add monitoring alert on `unavailable:true` rate | Ops |
+| No audit log for admin actions | Low priority; Supabase dashboard logs cover | Eng |
+| Ollama endpoint in error body | Low — dev-mode only (`NODE_ENV !== production`) | Eng |
 
 ---
 
-## 5. Recommended Next Steps (Priority Order)
+## 5. Remaining Next Steps
 
-1. **Rate limiting** — add Upstash Redis rate limiter to `/api/transcribe`, `/api/tutor`, `/api/study-packs` (D-1)
-2. **CSP reporting** — add `report-uri` or `report-to` directive pointing at a CSP violations endpoint for ongoing monitoring
-3. **Middleware-level admin guard** — enforce `role=admin` in middleware before admin routes, not only in route handlers (E-1)
-4. **Strip error detail in production** — remove `detail: String(e)` from 5xx responses when `NODE_ENV === "production"` (I-1)
-5. **Monitoring alert** — alert if `unavailable:true` response rate exceeds threshold (R-1)
-6. **Org-ID validation** — verify `x-org-id` header is a valid UUID before DB lookup to prevent malformed queries (E-3)
+1. **Persistent rate limiting** — swap in-process Map for Upstash Redis when `UPSTASH_REDIS_REST_URL` is available (D-1)
+2. **Monitoring alert** — alert if `unavailable:true` response rate exceeds threshold (R-1)
+3. **CSP report-to** — upgrade `report-uri` to modern `report-to` directive with JSON endpoint group for browser compatibility
+4. **Audit log** — persist admin actions to a dedicated table for compliance (R-2)
+
+## 6. Closed Items (all implemented)
+
+| Item | Fix |
+|------|-----|
+| CORS wildcard | Restricted to `tweenz.ae` + `VERCEL_URL` + localhost dev |
+| Missing CSP | Full CSP header with `report-uri /api/csp-report` |
+| Admin anon key fallback | Throws 500 if service role key absent |
+| Transcribe no auth | `requireUser()` guard + rate limit 10 req/min/IP |
+| Tutor messages no rate limit | `rateLimit()` 30 msg/min/user |
+| Error detail in production | Stripped from all 5xx responses via `NODE_ENV` check |
+| Org-ID not validated | UUID regex check before DB lookup |
+| Middleware admin guard | Early 401 on `/api/admin/*` without session cookie |
+| CSP reporting endpoint | `/api/csp-report` receives browser violation reports |
