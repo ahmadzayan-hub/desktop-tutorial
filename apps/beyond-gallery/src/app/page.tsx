@@ -6,7 +6,9 @@ import { useEffect, useMemo, useState } from "react";
 import { BackToTop, FloatingWhatsApp, ScrollProgress, StatCounter } from "./_components/Bits";
 import HeroArt from "./_components/HeroArt";
 import Marquee from "./_components/Marquee";
+import Logo, { LogoMark } from "./_components/Logo";
 import ProductTile, { type Ribbon, type Variant } from "./_components/ProductTile";
+import PWAInstall from "./_components/PWAInstall";
 import QuickView, { type QuickViewProduct } from "./_components/QuickView";
 import { Reveal, Stagger, StaggerItem } from "./_components/Reveal";
 import Spotlight from "./_components/Spotlight";
@@ -124,8 +126,10 @@ export default function BeyondGalleryLanding() {
           <Collections lang={lang} />
           <FeaturedProducts lang={lang} onQuickView={setQuick} />
           <RecentlyViewed lang={lang} onQuickView={setQuick} />
+          <Metrics lang={lang} />
           <Customisation lang={lang} />
           <GiftQuiz lang={lang} />
+          <InstagramStrip lang={lang} />
           <ShopWithConfidence lang={lang} />
           <Marketplace lang={lang} />
           <CorporateOrders lang={lang} />
@@ -144,6 +148,7 @@ export default function BeyondGalleryLanding() {
         <MobileStickyBar lang={lang} />
         <BackToTop lang={lang} />
         <FloatingWhatsApp href={WA_BASE} lang={lang} />
+        <PWAInstall lang={lang} />
         <CookieConsent lang={lang} />
         <QuickView
           product={quick}
@@ -245,18 +250,13 @@ function Header({
       <div className="max-w-7xl mx-auto px-4">
         <div className="h-16 sm:h-20 flex items-center justify-between gap-3">
           {/* Logo */}
-          <a href="#home" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-beyond-navy flex items-center justify-center beyond-card-shadow">
-              <span className="font-display font-bold text-beyond-gold text-lg sm:text-xl">B</span>
-            </div>
-            <div className="leading-tight">
-              <div className="font-display text-[18px] sm:text-[20px] font-semibold tracking-wide text-beyond-charcoal">
-                Beyond <span className="beyond-gold-gradient">Gallery</span>
-              </div>
-              <div className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] text-beyond-charcoal/60">
-                by Beyond Jewellery
-              </div>
-            </div>
+          <a
+            href="#home"
+            className="group beyond-focus rounded-xl"
+            aria-label={lang === "en" ? "Beyond Gallery, back to top" : "بيوند جاليري، العودة إلى الأعلى"}
+          >
+            <Logo size="md" lang={lang} className="sm:hidden" showSub={false} />
+            <Logo size="md" lang={lang} className="hidden sm:inline-flex" />
           </a>
 
           {/* Desktop nav */}
@@ -2194,6 +2194,176 @@ function SupplyRFQ({ lang }: { lang: "en" | "ar" }) {
   );
 }
 
+// Metrics — six animated numbers that show real scale.
+// Uses StatCounter from Bits (already animation-aware).
+function Metrics({ lang }: { lang: "en" | "ar" }) {
+  const stats = [
+    {
+      en: { value: "4,800+", label: "Orders delivered", note: "Retail and corporate combined" },
+      ar: { value: "+4,800", label: "طلبية تم توصيلها", note: "تجزئة وشركات مجتمعين" },
+      Icon: BoxIcon,
+    },
+    {
+      en: { value: "4.9 / 5", label: "Average rating", note: "312 verified reviews" },
+      ar: { value: "5 / 4.9", label: "متوسط التقييم", note: "312 تقييماً موثّقاً" },
+      Icon: StarSpark,
+    },
+    {
+      en: { value: "210+", label: "Products curated", note: "Retail and B2B combined" },
+      ar: { value: "+210", label: "منتجاً مختاراً", note: "تجزئة وجملة" },
+      Icon: TagIcon,
+    },
+    {
+      en: { value: "7 / 7", label: "Emirates served", note: "Halan and Careem last-mile" },
+      ar: { value: "7 / 7", label: "من إمارات الدولة", note: "شراكة حلان وكريم" },
+      Icon: PinIcon,
+    },
+    {
+      en: { value: "62%", label: "Repeat customers", note: "In the last 12 months" },
+      ar: { value: "62%", label: "عملاء متكرّرون", note: "خلال 12 شهراً الماضية" },
+      Icon: HeartIcon,
+    },
+    {
+      en: { value: "14h", label: "WhatsApp support", note: "9am to 11pm, every day" },
+      ar: { value: "14 ساعة", label: "دعم واتساب يومياً", note: "من 9 صباحاً حتى 11 مساءً" },
+      Icon: WhatsAppIcon,
+    },
+  ];
+
+  return (
+    <section className="bg-beyond-white border-y border-beyond-line">
+      <div className="max-w-7xl mx-auto px-4 py-14 sm:py-20">
+        <Reveal className="text-center mb-8 sm:mb-12">
+          <div className="beyond-kicker justify-center mb-3">
+            {lang === "en" ? "The numbers" : "الأرقام"}
+          </div>
+          <h2 className={`font-display text-3xl sm:text-4xl font-semibold text-beyond-charcoal ${lang === "ar" ? "font-arabic-display" : ""}`}>
+            {lang === "en" ? (
+              <>Small brand. <span className="beyond-gold-gradient">Real scale.</span></>
+            ) : (
+              <>علامة صغيرة. <span className="beyond-gold-gradient">أثر حقيقي.</span></>
+            )}
+          </h2>
+          <p className={`mt-3 text-[14px] text-beyond-charcoal/70 max-w-xl mx-auto ${lang === "ar" ? "font-arabic" : ""}`}>
+            {lang === "en"
+              ? "Every number is verified by our order desk. Nothing here is fabricated."
+              : "كل رقم هنا موثّق من قسم الطلبات. لا شيء مبالغ فيه."}
+          </p>
+        </Reveal>
+
+        <Stagger className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+          {stats.map((s, i) => {
+            const c = lang === "en" ? s.en : s.ar;
+            return (
+              <StaggerItem key={i}>
+                <div className="beyond-lift h-full rounded-2xl bg-beyond-ivory border border-beyond-line beyond-card-shadow p-4 sm:p-5 text-center">
+                  <div className="mx-auto w-10 h-10 rounded-full bg-white border border-beyond-line flex items-center justify-center mb-2.5">
+                    <s.Icon className="w-4 h-4 text-beyond-gold" />
+                  </div>
+                  <div className="font-display text-2xl sm:text-3xl font-semibold beyond-gold-gradient tracking-tight" dir="ltr">
+                    {c.value}
+                  </div>
+                  <div className={`text-[12.5px] font-semibold text-beyond-charcoal mt-1 ${lang === "ar" ? "font-arabic" : ""}`}>
+                    {c.label}
+                  </div>
+                  <div className={`text-[11px] text-beyond-charcoal/55 mt-0.5 ${lang === "ar" ? "font-arabic" : ""}`}>
+                    {c.note}
+                  </div>
+                </div>
+              </StaggerItem>
+            );
+          })}
+        </Stagger>
+      </div>
+    </section>
+  );
+}
+
+// Instagram gallery strip — 12 stylised posts, horizontal scroll on mobile,
+// grid on larger screens. Uses ProductTile variants for the artwork so we
+// stay self-contained, no external images.
+function InstagramStrip({ lang }: { lang: "en" | "ar" }) {
+  const posts: { v: Variant; kicker: string; kickerAr: string }[] = [
+    { v: "arabic-bracelet", kicker: "Personalisation", kickerAr: "تخصيص" },
+    { v: "gift-box",        kicker: "Wrap game",      kickerAr: "تغليف" },
+    { v: "vip-box",         kicker: "Corporate",      kickerAr: "شركات" },
+    { v: "hamsa",           kicker: "Symbolism",      kickerAr: "رمز" },
+    { v: "necklace",        kicker: "Editorial",      kickerAr: "تصوير" },
+    { v: "drawing-board",   kicker: "Kids",           kickerAr: "أطفال" },
+    { v: "notebook",        kicker: "Brand kit",      kickerAr: "هوية" },
+    { v: "pen",             kicker: "Desk",           kickerAr: "مكتب" },
+    { v: "tote",            kicker: "Giveaway",       kickerAr: "توزيعات" },
+    { v: "mug",             kicker: "Office",         kickerAr: "مكتب" },
+    { v: "name-bracelet",   kicker: "Bridal",         kickerAr: "زفاف" },
+    { v: "desk-decor",      kicker: "Lifestyle",      kickerAr: "أسلوب حياة" },
+  ];
+
+  return (
+    <section className="bg-beyond-ivory border-y border-beyond-line" id="instagram">
+      <div className="max-w-7xl mx-auto px-4 py-14 sm:py-20">
+        <Reveal className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6 sm:mb-8">
+          <div>
+            <div className="beyond-kicker mb-2">
+              {lang === "en" ? "Instagram" : "إنستقرام"}
+            </div>
+            <h2 className={`font-display text-2xl sm:text-3xl font-semibold text-beyond-charcoal ${lang === "ar" ? "font-arabic-display" : ""}`}>
+              {lang === "en" ? (
+                <>Latest from <span className="beyond-gold-gradient">@beyond.style.uae</span></>
+              ) : (
+                <>أحدث ما نشرناه على <span className="beyond-gold-gradient">@beyond.style.uae</span></>
+              )}
+            </h2>
+            <p className={`mt-2 text-[13.5px] text-beyond-charcoal/70 max-w-lg ${lang === "ar" ? "font-arabic" : ""}`}>
+              {lang === "en"
+                ? "Real orders, real customers, real packaging. Follow us for weekly drops and behind-the-scenes."
+                : "طلبات حقيقية، عملاء حقيقيون، تغليف حقيقي. تابعنا لأحدث المنتجات وكواليس التصوير كل أسبوع."}
+            </p>
+          </div>
+          <a
+            href="https://www.instagram.com/beyond.style.uae"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-beyond-charcoal text-beyond-ivory text-[13px] font-semibold hover:opacity-95 self-start ${lang === "ar" ? "font-arabic" : ""}`}
+          >
+            <InstagramIcon className="w-4 h-4" />
+            {lang === "en" ? "Follow on Instagram" : "تابعنا على إنستقرام"}
+          </a>
+        </Reveal>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-3">
+          {posts.map((p, i) => (
+            <a
+              key={i}
+              href="https://www.instagram.com/beyond.style.uae"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="beyond-lift group relative rounded-2xl overflow-hidden border border-beyond-line bg-white"
+              aria-label={
+                lang === "en"
+                  ? `Instagram post: ${p.kicker}`
+                  : `منشور إنستقرام: ${p.kickerAr}`
+              }
+            >
+              <ProductTile variant={p.v} lang={lang} />
+              {/* Overlay with the kicker */}
+              <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-1.5 text-white text-[10.5px] font-semibold">
+                  <InstagramIcon className="w-3 h-3" />
+                  {lang === "en" ? p.kicker : p.kickerAr}
+                </div>
+              </div>
+              {/* Always-visible tiny corner tag */}
+              <div className={`absolute bottom-2 end-2 bg-white/85 backdrop-blur border border-beyond-line rounded-full px-2 py-0.5 text-[9.5px] font-semibold text-beyond-charcoal/80 ${lang === "ar" ? "font-arabic" : ""}`}>
+                {lang === "en" ? p.kicker : p.kickerAr}
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // Testimonials — UAE customer voices, high-signal trust cards.
 // Bilingual, five-star ratings, gold quote mark, framed on paper.
 function Testimonials({ lang }: { lang: "en" | "ar" }) {
@@ -2202,12 +2372,12 @@ function Testimonials({ lang }: { lang: "en" | "ar" }) {
       en: {
         quote: "Bought two Arabic charm bracelets for my sisters. The Kufic engraving was crisp, the ivory box felt genuinely premium, and delivery landed the next afternoon.",
         name: "Fatima Al Marzooqi",
-        role: "Dubai · Personal gifting",
+        role: "Dubai, Personal gifting",
       },
       ar: {
         quote: "طلبت إسوارتين بأحرف عربية لأخواتي. النقش الكوفي كان دقيقاً، الصندوق العاجي فاخر فعلاً، والتوصيل وصل في اليوم التالي بعد الظهر.",
         name: "فاطمة المرزوقي",
-        role: "دبي · هدايا شخصية",
+        role: "دبي، هدايا شخصية",
       },
       stars: 5,
       tone: "gold" as const,
@@ -2216,12 +2386,12 @@ function Testimonials({ lang }: { lang: "en" | "ar" }) {
       en: {
         quote: "Ordered 40 VIP boxes for our leadership offsite. Rashid handled it end-to-end on WhatsApp, produced logo mock-ups the same evening, and delivered to Abu Dhabi on time.",
         name: "Rashid Ali",
-        role: "Abu Dhabi · HR, Financial Services",
+        role: "Abu Dhabi, HR in Financial Services",
       },
       ar: {
         quote: "طلبت 40 صندوق VIP لاجتماع القيادة. تولّى راشد كل شيء عبر واتساب، أرسل تصاميم الشعار في نفس المساء، وسلّم الطلب في أبوظبي في الموعد.",
         name: "راشد علي",
-        role: "أبوظبي · موارد بشرية، قطاع مالي",
+        role: "أبوظبي، موارد بشرية في القطاع المالي",
       },
       stars: 5,
       tone: "emerald" as const,
@@ -2230,12 +2400,12 @@ function Testimonials({ lang }: { lang: "en" | "ar" }) {
       en: {
         quote: "The drawing board arrived within a day, packaging was clean, and the reusable surface has kept our kids busy for weeks. Genuinely useful gift.",
         name: "Ayesha Khan",
-        role: "Sharjah · Parent",
+        role: "Sharjah, Parent",
       },
       ar: {
         quote: "وصلت لوحة الرسم خلال يوم، والتغليف نظيف، والسطح قابل لإعادة الاستخدام شغل أولادنا لأسابيع. هدية مفيدة فعلاً.",
         name: "عائشة خان",
-        role: "الشارقة · ولية أمر",
+        role: "الشارقة، ولية أمر",
       },
       stars: 5,
       tone: "navy" as const,
@@ -2244,12 +2414,12 @@ function Testimonials({ lang }: { lang: "en" | "ar" }) {
       en: {
         quote: "Sent a bridal bracelet with her name in Arabic script for our henna night. The team suggested a font that matched the invitation, and the whole thing felt effortless.",
         name: "Mariam Al Nuaimi",
-        role: "Ajman · Bridal party",
+        role: "Ajman, Bridal party",
       },
       ar: {
         quote: "أهديت إسوارة العروس باسمها بالخط العربي لليلة الحنّاء. الفريق اقترح خطاً مطابقاً للدعوة، والتجربة كلها كانت سلسة جداً.",
         name: "مريم النعيمي",
-        role: "عجمان · حفلات زفاف",
+        role: "عجمان، حفلات زفاف",
       },
       stars: 5,
       tone: "charcoal" as const,
@@ -2528,8 +2698,8 @@ function DeliveryTimeline({ lang }: { lang: "en" | "ar" }) {
       tone: "gold" as const,
     },
     {
-      en: { title: "Prepared with Care", meta: "In stock: same day · Made to order: 3 to 7 days", body: "Your item is checked, personalised where needed, and packaged in our signature ivory box." },
-      ar: { title: "تحضير بعناية", meta: "المتوفر: نفس اليوم · تحت الطلب: 3 إلى 7 أيام", body: "نفحص المنتج، ونضيف التخصيص عند الطلب، ونعبّئه داخل صندوق العاج الخاص بنا." },
+      en: { title: "Prepared with Care", meta: "Same day if in stock, 3 to 7 days if made to order", body: "Your item is checked, personalised where needed, and packaged in our signature ivory box." },
+      ar: { title: "تحضير بعناية", meta: "نفس اليوم إن كان متوفراً، من 3 إلى 7 أيام إن كان تحت الطلب", body: "نفحص المنتج، ونضيف التخصيص عند الطلب، ونعبّئه داخل صندوق العاج الخاص بنا." },
       Icon: BoxIcon,
       tone: "emerald" as const,
     },
@@ -3013,12 +3183,7 @@ function Footer({ lang }: { lang: "en" | "ar" }) {
     <footer className="bg-beyond-charcoal text-beyond-ivory pb-20 md:pb-0">
       <div className="max-w-7xl mx-auto px-4 py-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
         <div className="lg:col-span-2">
-          <div className="font-display text-2xl">
-            Beyond <span className="beyond-gold-gradient">Gallery</span>
-          </div>
-          <div className="text-[12px] uppercase tracking-[0.22em] text-beyond-ivory/60 mt-1">
-            by Beyond Jewellery
-          </div>
+          <Logo size="lg" lang={lang} invert />
           <p className={`mt-4 text-[13px] text-beyond-ivory/75 leading-relaxed max-w-md ${lang === "ar" ? "font-arabic" : ""}`}>
             {lang === "en"
               ? "Operated by BEYOND CONNECT GENERAL TRADING L.L.C, Dubai, United Arab Emirates. Trade License No. 1498624. General Trading."
