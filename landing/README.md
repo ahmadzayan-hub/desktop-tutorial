@@ -6,10 +6,9 @@ backend required: ordering flows through **WhatsApp** and the **Google order
 form**, so the page can be hosted anywhere (GitHub Pages, Vercel, Netlify,
 Cloudflare Pages) and loads fast on mobile.
 
-> The full e-commerce storefront (cart/checkout/Stripe/API) lives in
-> [`../beyond-style-uae`](../beyond-style-uae), and the internal sales console
-> lives at the repo root. This landing page is the top of the funnel in front
-> of both.
+> This page is self-contained: everything it needs lives inside `landing/`.
+> Orders flow through WhatsApp and the Google order form, so it works without
+> any other app in this repository.
 
 ## Structure
 
@@ -51,8 +50,7 @@ Copy never claims 925 silver, real gold, waterproof, anti-tarnish, or warranty.
 Material, color, size, availability and customization are confirmed on WhatsApp
 per item before each order — this wording is baked into the Product Information
 section and the FAQ. Keep it that way when editing copy (see
-`config/site.config.json → compliance.note` and the guardrail engine in the
-root console app).
+`config/site.config.json → compliance.note`).
 
 ## Preview locally
 
