@@ -1,114 +1,100 @@
-# نموذج التهديدات (Threat Model) — مشروع «وصال»
+# Threat Model — Beyond Coffee Moments
 
-وثيقة أمنية على مستوى التطبيق والبيئة، بتحدد الأصول، حدود الثقة، التهديدات (بمنهج
-STRIDE)، الدفاعات الموجودة، والثغرات مع توصيات مرتّبة بالأولوية.
+Application- and environment-level threat model to surface security gaps early.
+Method: asset inventory → trust boundaries → data-flow → **STRIDE** per element →
+prioritised gaps → mitigations. Scope covers the **current** client-side app and
+the **planned** production integrations (payments, photo storage, AI, WhatsApp,
+admin), since most risk lives in what gets wired next.
 
-آخر تحديث: 2026-07-06 · النطاق: تطبيق أندرويد «وصال» + بوت تيليجرام + خط الـ CI/CD +
-موقع الهبوط.
+> Status legend: ✅ in place · ⚠️ partial / gap · ⛔ missing (do before launch)
 
----
+## 1. Assets to protect
+| Asset | Why it matters |
+| --- | --- |
+| Customer photo uploads | Personal data (PDPL); may include children/biometrics |
+| Order + contact details (name, phone, address, email) | Personal data; fraud target |
+| Payment data | Handled by gateway, but flows/links must not leak |
+| Corporate leads / quotations | Commercially sensitive |
+| Admin console + operational data | Business integrity; must not be public |
+| Brand + domain reputation | Phishing / defacement risk |
+| VAT invoice data | Legally must be retained, unaltered, in-UAE |
 
-## 1) نظرة عامة والمكوّنات
+## 2. Trust boundaries
+```
+[ User browser / PWA ]  --HTTPS-->  [ CDN static host (Vercel/Netlify) ]
+        |                                   (serves static SPA only today)
+        | (planned)                         
+        +--HTTPS--> [ API / BFF ]  --> [ DB ]  [ Object storage (photos) ]
+                        |  \--> [ Payment gateway (Telr/PayTabs, Tabby/Tamara) ]
+                        |  \--> [ AI / moderation endpoint ]
+                        \-----> [ WhatsApp BSP ]
+```
+Current build has **no backend**: it is a static SPA. All "server" boxes above
+are planned. Each arrow crossing a box is a trust boundary and an attack surface.
 
-| المكوّن | الوصف | التقنية |
+## 3. STRIDE analysis (by element)
+
+### 3.1 Client SPA (current)
+| Threat | Assessment | Gap |
 | --- | --- | --- |
-| تطبيق «وصال» | تطبيق أندرويد محلي يقترح رسائل ويرسلها بيد المستخدم | Kotlin/Compose |
-| بوت تيليجرام | مساعد شخصي للمالك على تيليجرام | Node.js/telegraf |
-| خط الـ CI/CD | يبني ويوقّع وينشر الـ APK | GitHub Actions |
-| موقع الهبوط | صفحة تعريف وتحميل ثابتة | HTML ثابت على Vercel |
-| مزوّد الذكاء | يولّد نص الرسائل | Groq API (طرف ثالث) |
+| **S**poofing | No auth in client; `/console` is reachable by anyone | ⚠️ Console is demo-only but must be auth-gated before real data |
+| **T**ampering | Static assets are hashed + immutable; SRI not set | ⚠️ Add `frame-ancestors`, CSP to blunt injected content |
+| **R**epudiation | No client-side logging of consent events | ⚠️ Log PDPL consent server-side when backend lands |
+| **I**nfo disclosure | No secrets in bundle (verified: only `VITE_*` public envs) | ✅ Keep all keys server-side |
+| **D**oS | Static CDN absorbs load | ✅ |
+| **E**oP | No privileged client operations | ✅ |
 
-## 2) الأصول (Assets)
+### 3.2 Photo upload + preview (current: 100% client-side)
+- Photos never leave the device until checkout; preview/crop/enhance run in-canvas. ✅ good privacy default.
+- `moderateImage()` **fails open** when no `VITE_AI_ENDPOINT` is set. ⛔ Real moderation must run server-side and **fail closed** before an order is accepted.
+- No file-type/size enforcement beyond `accept`/UI. ⚠️ Validate MIME + magic bytes + size server-side; strip EXIF/GPS on upload.
 
-1. **مفتاح Groq API** (سر): على الجهاز في SharedPreferences، وفي `.env` للبوت، وكمتغيّر بيئة.
-2. **توكن بوت تيليجرام** (سر): في `.env` فقط.
-3. **مفتاح توقيع الـ APK (keystore)** (سر): في GitHub Secrets (اختياري).
-4. **بيانات المستخدم الشخصية**: أسماء الأقارب، أرقامهم، ملاحظات خاصة، نص الرسائل، مناسبات.
-5. **مخزن التعلّم المحلي** (`store.json` / SharedPreferences).
-6. **بيانات التقويم** (عناوين أحداث اليوم عند طلب المستخدم).
+### 3.3 Payments (planned)
+- Never handle PAN in the SPA — use gateway-hosted fields / redirect / payment links. ⛔ requirement.
+- Payment-link flow: verify amounts server-side; sign/verify webhook callbacks; idempotency keys. ⛔
+- Enforce server-side price recomputation (never trust client totals). ⛔
 
-## 3) حدود الثقة (Trust Boundaries) وتدفّق البيانات
+### 3.4 Admin console (planned real version)
+- Needs authentication + RBAC, server-side authorization on every action, audit log, and network/IP allow-listing. ⛔
+- `robots.txt` disallows `/console` — that is **obscurity, not security**. ⚠️
 
-- **الجهاز ↔ Groq API**: بيانات السياق (اسم المستقبِل + ملاحظات + عنوان الحدث المختار)
-  بتخرج من الجهاز لـ Groq عبر HTTPS عشان تتولّد الرسالة.
-- **الجهاز ↔ واتساب/تيليجرام**: عبر Intents محلية (مفيش شبكة من عندنا).
-- **جهاز المطوّر/الـ CI ↔ GitHub + Groq + Telegram**: أسرار في `.env`/Secrets.
-- **المستخدم ↔ التطبيق**: كل التخزين محلي على الجهاز.
+### 3.5 AI / moderation endpoint (planned)
+- Sends personal data (photos) off-device → must be HTTPS, authenticated, rate-limited, and covered by a DPIA + processor agreement (PDPL). ⛔
+- Treat AI output as untrusted; keep human review for rejects (already designed). ✅ design intent.
 
-> ملاحظة دقّة مهمة: التخزين محلي، لكن **التوليد بيستدعي طرف ثالث (Groq)**، يعني سياق
-> الرسالة بيغادر الجهاز. لازم ده يتوضّح صراحةً في صفحة الخصوصية (مذكور في الثغرات).
+### 3.6 WhatsApp deep links (current)
+- `waLink()` uses `encodeURIComponent` on message text → no query injection. ✅
+- Phone number is a constant, not user-controlled. ✅
 
----
-
-## 4) تحليل STRIDE
-
-### تطبيق أندرويد «وصال»
-| التهديد | السيناريو | الدفاع الموجود | الثغرة/التوصية |
-| --- | --- | --- | --- |
-| **S**poofing | تطبيق يتنكّر كوصال | لا ينطبق (توزيع مباشر) | وثّق بصمة شهادة التوقيع للتحقق |
-| **T**ampering | تعديل الـ APK وإعادة توزيعه | توقيع الـ APK | نسخة الـ CI الافتراضية موقّعة بمفتاح debug (عام) — استخدم keystore حقيقي |
-| **R**epudiation | إنكار إرسال رسالة | الإرسال بيد المستخدم | لا يوجد سجل مركزي (مقبول لمستخدم فردي) |
-| **I**nfo disclosure | تسريب المفتاح/البيانات | لا شيء يُطبع، لا سيرفر | المفتاح والبيانات في SharedPreferences **بدون تشفير**؛ و`allowBackup="true"` قد يرفعهم لنسخة جوجل السحابية |
-| **D**oS | إغراق | لا ينطبق (محلي) | — |
-| **E**levation | صلاحيات زيادة | أذونات قليلة (INTERNET, POST_NOTIFICATIONS, READ_CALENDAR) | راجِع أن READ_CALENDAR اختياري وقت الطلب فقط |
-
-### بوت تيليجرام
-| التهديد | الدفاع الموجود | الثغرة/التوصية |
+## 4. Environment / deployment hardening
+| Control | State | Action |
 | --- | --- | --- |
-| Spoofing/Elevation | حارس المالك `isOwner` (chatId) | قبل ضبط chatId يرد على أي حد (مرحلة الإعداد) — قلّل النافذة أو أكّد الهوية |
-| Info disclosure | التوكن في `.env`، `.gitignore` يستثنيه | التوكن اللي ظهر في الشات يُعتبر متسرّب — دوّره (rotate) |
-| Tampering | — | لا يوجد تحقق تكامل للرسائل الواردة (مقبول) |
+| HTTPS everywhere | ✅ (Vercel/Netlify default) | — |
+| Security headers (XFO, XCTO, Referrer-Policy, Permissions-Policy) | ✅ set in `vercel.json` | mirror in `netlify.toml` |
+| **Content-Security-Policy** | ✅ added (this change) | tighten `connect-src` to the real API host at launch |
+| Preview-deploy exposure | ⚠️ Vercel preview auth = ON (good); public previews would leak WIP | keep protection on non-prod |
+| Secrets management | ✅ no secrets in repo/bundle | store gateway/WhatsApp/AI keys in host env, server-only |
+| Dependency supply chain | ⚠️ | enable Dependabot + `npm audit` in CI; pin/lock (lockfile present) |
+| Data residency (PDPL/FTA) | ⛔ (no backend yet) | host photos + invoices in a UAE region; lifecycle-delete source photos after fulfilment |
+| Service worker | ✅ same-origin only, no opaque caching of APIs | scope `/`, never cache authenticated responses |
 
-### خط الـ CI/CD (GitHub Actions)
-| التهديد | الدفاع الموجود | الثغرة/التوصية |
-| --- | --- | --- |
-| Secrets leakage | الأسرار في Secrets، تُقرأ عبر `env`، `secrets` مش في شرط `if` | خطوة الـ release محروسة بـ `pull_request` — تمام |
-| Supply chain | — | الـ actions مثبّتة بـ tag مش بـ commit SHA — ثبّتها بـ SHA |
-| Integrity | توقيع الـ APK | الرجوع لتوقيع debug عند غياب الأسرار — غير مناسب للتوزيع العام |
+## 5. Prioritised gaps (fix order)
+1. ⛔ **Server-side image moderation that fails closed** before accepting an order.
+2. ⛔ **Real admin auth + RBAC + audit log** (never ship `/console` with live data unauthenticated).
+3. ⛔ **Server-side price/amount validation** and **signed payment webhooks**.
+4. ⛔ **UAE-region storage** + **auto-deletion** of source photos + **EXIF/GPS stripping** on upload.
+5. ⚠️ **DPIA + processor agreements** for the AI/moderation vendor and cloud host (PDPL).
+6. ⚠️ **CI security gates**: `npm audit`, Dependabot, secret scanning.
+7. ⚠️ **Tighten CSP `connect-src`** to the exact API origin once the backend exists.
 
-### موقع الهبوط (Vercel ثابت)
-| التهديد | الدفاع الموجود | الثغرة/التوصية |
-| --- | --- | --- |
-| XSS/Injection | مفيش مدخلات مستخدم ولا سكربت خارجي | ضِف CSP وسياسات أمان في `vercel.json` |
-| Tampering | HTTPS من Vercel | ضِف security headers (X-Content-Type-Options, Referrer-Policy) |
+## 6. Security acceptance checklist (pre-launch)
+- [ ] No secret ends up in the client bundle (`grep -r "SECRET\|_KEY" dist/` is clean).
+- [ ] `/console` requires authentication and authorises every action server-side.
+- [ ] Uploads validated (MIME + size + magic bytes), EXIF stripped, stored in-region, auto-deleted per retention.
+- [ ] Payments via hosted fields/redirect; amounts recomputed server-side; webhooks signature-verified + idempotent.
+- [ ] CSP present and `connect-src` limited to the real API; headers verified on prod.
+- [ ] PDPL: consent recorded server-side; DPIA done; erasure/delete-my-photos flow works end-to-end.
+- [ ] CI runs `npm audit` + secret scanning; Dependabot enabled.
 
----
-
-## 5) الثغرات والتوصيات (مرتّبة بالأولوية)
-
-### 🔴 P1 — عاجلة
-1. **`allowBackup="true"` + أسرار غير مشفّرة**: ممكن يرفع مفتاح Groq والبيانات لنسخة جوجل
-   الاحتياطية. **الحل**: `android:allowBackup="false"` أو قواعد نسخ تستثني الأسرار، +
-   تخزين المفتاح في `EncryptedSharedPreferences` (androidx.security-crypto).
-2. **تدوير الأسرار المتسرّبة**: توكن تيليجرام ومفتاح Groq ظهروا في محادثات — لازم
-   يتعملهم rotate فوراً.
-3. **دقّة ادّعاء الخصوصية**: صفحة الهبوط بتقول "كله على جهازك" — لازم توضّح إن **التوليد
-   بيرسل سياق الرسالة لـ Groq**. صحّح النص عشان يكون أمين.
-
-### 🟠 P2 — مهمة
-4. **توقيع release حقيقي**: استبدل fallback الـ debug بـ keystore عبر Secrets للتوزيع،
-   ووثّق بصمة الشهادة (SHA-256) للتحقق.
-5. **تثبيت الـ GitHub Actions بـ commit SHA** بدل الـ tags (حماية supply chain).
-6. **نسخة احتياطية أكثر أماناً**: النسخة بتحتوي بيانات شخصية (أرقام، ملاحظات) — أضف
-   تحذير واضح، وفكّر في تشفيرها بكلمة سر اختيارية.
-7. **إفصاح عن التقويم**: وضّح إن عنوان الحدث المختار بيتبعت لـ Groq.
-
-### 🟡 P3 — تحسينات
-8. **security headers + CSP** في `vercel.json`.
-9. **فحص التبعيات دورياً**: `npm audit` للبوت + Dependabot للأندرويد.
-10. **حارس المالك في البوت**: قلّل نافذة "الرد للكل" قبل ضبط chatId.
-
----
-
-## 6) قرارات تصميم أمنية (موجودة بالفعل — نقاط قوة)
-
-- ✅ **مفيش إرسال تلقائي لأي حد** — كل إرسال بيد المستخدم (يقلّل مخاطر إساءة الاستخدام والحظر).
-- ✅ **مفيش سيرفر يخزّن البيانات** — سطح هجوم أصغر بكتير.
-- ✅ **مفيش أسرار في الكود** — كلها في `.env`/Secrets/إعدادات الجهاز.
-- ✅ **النسخة الاحتياطية بتستثني مفتاح Groq**.
-- ✅ **أذونات قليلة ومبرّرة**، وREAD_CALENDAR بيتطلب وقت الاستخدام فقط.
-- ✅ **حارس المالك** في البوت + `.gitignore` يستثني الأسرار وبيانات المخزن.
-
-## 7) خطوات تالية مقترحة
-نفّذ P1 أولاً (allowBackup + تشفير المفتاح + تدوير الأسرار + تصحيح نص الخصوصية)، وبعدها
-P2 (توقيع release + تثبيت الـ actions). أقدر أنفّذ أي بند من دول كـ PR لو حبيت.
+_This document is a living artefact — revisit it whenever a new trust boundary
+(backend, vendor, integration) is introduced._

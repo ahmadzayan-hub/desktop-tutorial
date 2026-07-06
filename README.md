@@ -1,121 +1,103 @@
-# Beyond Style UAE — Customer Conversion & Order Control Agent
+# Beyond Coffee Moments
 
-A **human-approved sales operating console** for Beyond Style UAE
-(BEYOND CONNECT GENERAL TRADING L.L.C). This is **not** an auto-reply bot. It is
-a control tower for UAE social commerce: the agent **drafts** replies and order
-actions, the owner **approves**, the system **tracks**, and the dashboard
-**learns**. Automation comes later — only after the system proves it does not
-make pricing, delivery, stock, or privacy mistakes.
+A premium, **UAE-ready bilingual (EN/AR) SaaS commerce platform** for
+personalised coffee gifts, live event coffee stations, and corporate
+appreciation campaigns — operated by **Beyond Connect General Trading L.L.C**.
 
-> The agent drafts → you approve → the system tracks → the dashboard learns → automation comes later.
+This is the customer-facing storefront + a demo operations console. It is a
+single Vite + React app at the **repository root**, so Vercel and Netlify build
+it directly with no monorepo/subfolder configuration. It is also an installable
+**PWA** (add to home screen on Android/iOS).
 
-## Why this shape
-
-If you automate too early, you scale mistakes. This MVP scales *discipline*
-instead: every drafted customer reply is forced through a **guardrail engine**
-before an operator can approve and send it.
+> Mobile-first · conversion-focused · Arabic RTL-quality · UAE-compliance-ready.
 
 ## Stack
 
-- **Next.js 14** (App Router) + **TypeScript**
-- **Tailwind CSS**
-- **Supabase** (Postgres + Auth + Storage)
-- **Configurable AI provider wrapper** — OpenAI / Anthropic (Claude) / Gemini /
-  `mock`. No API keys are hard-coded; everything is env-driven.
-- **Vitest** for the guardrail/logic test suite.
+- **Vite + React 18 + TypeScript**
+- **Tailwind CSS** with logical properties (`ps`/`pe`/`ms`/`me`) so layouts
+  mirror automatically in Arabic RTL
+- **react-router-dom** with route-level code splitting
+- Lightweight custom **i18n** (`src/i18n`) — EN source of truth, AR mirrored and
+  type-enforced to the same shape; switches `document.dir` instantly
+- Zero heavy runtime deps (no chart/animation/PDF libraries) to protect
+  Lighthouse / LCP / INP / CLS
 
 ## Quick start
 
 ```bash
-cd beyond-style-uae
+cd beyond-coffee-moments
 npm install
-cp .env.example .env.local      # fill in Supabase + AI provider
-npm run test                    # 20 guardrail/logic tests
-npm run dev                     # http://localhost:3000
+npm run dev        # http://localhost:5173
+npm run build      # tsc --noEmit + vite build
+npm run preview
 ```
 
-The app runs **before** Supabase is configured (pages show a "connect Supabase"
-hint) and **before** an AI key is set (`AI_PROVIDER=mock` returns placeholder
-analysis so you can see the flow end-to-end).
+## What's inside
 
-### Database
-
-In the Supabase SQL editor (or via the CLI), run in order:
-
-1. `supabase/migrations/0001_schema.sql` — all tables + RLS.
-2. `supabase/seed.sql` — default catalogue, offers, couriers, prompts,
-   settings, and the §30 test-scenario conversations.
-
-### Environment
-
-| Var | Purpose |
+| Area | Where |
 | --- | --- |
-| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase client |
-| `SUPABASE_SERVICE_ROLE_KEY` | server-side privileged writes |
-| `AI_PROVIDER` | `openai` \| `anthropic` \| `gemini` \| `mock` |
-| `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / `GEMINI_API_KEY` | provider keys |
+| Home + 3 above-the-fold paths (Personal · Corporate · Bulk) | `src/pages/Home.tsx`, `components/CustomerPaths.tsx` |
+| Mobile header with hamburger | `components/Header.tsx` |
+| Non-overlapping WhatsApp FAB | `components/WhatsAppFab.tsx` (icon-only on mobile; `<main>` reserves bottom padding) |
+| Customisation flow (7 steps) | `src/pages/Customize.tsx`, `pages/customize/*` |
+| Live cup/sleeve/box/card preview | `components/ProductPreview.tsx` (SVG, no image weight) |
+| Corporate flow + **PDF quotation** | `src/pages/Corporate.tsx` (print-to-PDF), `lib/quotation.ts` |
+| Operations console | `src/pages/admin/Admin.tsx` at `/console` |
+| Bilingual dictionaries | `src/i18n/en.ts`, `src/i18n/ar.ts` |
+| Pricing / gallery / delivery / legal | `src/pages/*`, `lib/catalog.ts` |
+| Seller identity + VAT + compliance config | `src/lib/brand.ts` |
 
-## The control tower (guardrail engine)
+### Customisation flow steps
 
-`src/lib/guardrails.ts` runs every drafted reply through checks. A **fail**
-blocks the Approve button; a **warn** surfaces a caution; some findings force
-**owner approval**:
+Upload → **image-quality validation** → live preview (cup/sleeve/box/card) →
+gift message (AR/EN) → package → delivery Emirate & date/time → review →
+pay online **or** request a WhatsApp payment link. Personalised-goods
+non-returnable notice + PDPL photo consent are enforced in-flow.
 
-| Guard | Rule |
-| --- | --- |
-| Claim (§7) | Blocks "real gold", waterproof, anti-tarnish, etc. without supplier evidence; auto-rewords to safe wording |
-| Privacy (§14) | Detects phone / address / payment data leaking into a reply |
-| Price (§6) | Requires an active, unexpired offer before quoting; price-first |
-| Stock (§8) | Blocks unverified in-stock promises |
-| Delivery (§10) | Blocks same-day-outside-Dubai without courier confirmation |
-| Payment (§9) | No courier dispatch until payment is confirmed |
-| VAT (§6/§9) | Flags missing VAT line when applicable |
-| Arabic name (§4) | Never blind-transliterates; falls back to أستاذة / أستاذ |
-| Length / answered / payment-step (§5/§29) | Keeps replies short, on-point, and converting |
+### AI features (`src/lib/ai.ts`)
 
-Plus: QC checklist (§11), human-approval matrix (§24), fraud screening (§23),
-and the journey-stage playbook (§16) live in `src/lib/operations.ts`.
+All behind small, swappable interfaces. They run offline/deterministically out
+of the box; set `VITE_AI_ENDPOINT` to route generation + image moderation to a
+real provider (OpenAI / Anthropic / Gemini / Firefly).
 
-## Core flow (acceptance §31, §33)
+- AI image cleanup + auto-crop for cup/box (canvas, client-side)
+- Arabic name spelling assistant (curated map + flagged phonetic fallback)
+- Gift-message generator (tone × language)
+- Corporate proposal + event-package recommender
+- Image moderation seam before checkout
 
-`/intake` → paste a customer message + known facts (+ optional screenshot) →
-`POST /api/analyze` → structured `AnalysisOutput` JSON + guardrail findings →
-operator reviews badges, copies the (possibly auto-corrected) reply, and
-**Approves to send**.
+## UAE compliance readiness
 
-## Review scorecard
+Built to the compliance brief in
+`../3b802fdb-Beyond_Coffee_Moments…Compliance…Report.md`:
 
-| Area | Where it lives |
-| --- | --- |
-| Customer intake | `/intake` (text + screenshot) |
-| AI analysis (intent/persona/product/risk/next action) | `src/lib/ai/analyze.ts` |
-| Arabic name handling | `src/lib/arabic-names.ts` (tested) |
-| Price / stock / delivery / payment control | `src/lib/guardrails.ts` (tested) |
-| Privacy detection | guardrails + intake pre-check |
-| QC checklist | `src/lib/operations.ts` (tested) |
-| Dashboard (conversion / payment / delivery) | `/` |
-| Daily & weekly improvement loops | `/reports` |
+- **Seller identity** (legal name, licence authority, licence no., TRN, address)
+  shown in footer, contact, checkout and on the quotation — edit in
+  `src/lib/brand.ts` (`TODO` values must be confirmed before launch).
+- **VAT-inclusive** consumer pricing; **VAT-exclusive** B2B with a full tax
+  invoice / quotation; 5% VAT wording throughout.
+- **Personalised-goods non-returnable** notice at checkout.
+- **PDPL**: explicit photo-upload consent, stated 30-day auto-deletion of source
+  photos, and a bilingual Privacy Policy covering retention, sharing,
+  cross-border transfers, children and AI processing.
+- Bilingual **Terms**, **Refund & Cancellation** and **Delivery** policies.
 
-## Tests
+> The seller licence number and TRN are placeholders — confirm and set them in
+> `src/lib/brand.ts`. Payment, WhatsApp Business API and real AI/moderation keys
+> belong on a server, never in the client bundle.
 
-`npm run test` covers the §30 business scenarios against the pure logic:
-real-gold claim, privacy leak, unverified stock, same-day Sharjah delivery,
-dispatch-before-payment, VAT math, Arabic name mapping (Rehab→رحاب, Kay kept
-as-is), QC gating, approval matrix, and fraud signals.
+## Performance notes
 
-## Pages (§26)
+- Route-level `lazy()` splitting; home ships a small bundle.
+- Fonts preconnected with `display=swap`; SVG/gradient mockups instead of
+  hero images (no CLS, no large LCP image).
+- `prefers-reduced-motion` respected; all interactive controls are keyboard-
+  and screen-reader-labelled; skip-to-content link included.
 
-Login · Dashboard · New Conversation (intake) · Customer Inbox · Customers ·
-Orders · Inventory · Offers · Payments · Courier Tracking · Suppliers · Reviews ·
-Reports & Reviews · Integrations · Settings · Prompt Management · Audit Log.
+## Recommended production wiring
 
-### Integrations — NotebookLM (Google OAuth)
-
-`/integrations` connects the console to NotebookLM via Google OAuth 2.0
-(authorization-code flow). Set `GOOGLE_OAUTH_CLIENT_ID` / `GOOGLE_OAUTH_CLIENT_SECRET`
-(see `.env.example`), add `<origin>/api/integrations/notebooklm/callback` as an
-authorized redirect URI in Google Cloud Console, then click **Connect**. Tokens
-are AES-256-GCM-encrypted in an httpOnly cookie — no DB required, nothing exposed
-to the browser. The page shows a "not configured" state until the env is set.
-
-See `DEVELOPER_NOTES.md` for architecture details and `ROADMAP.md` for phases.
+- Payments: **Telr** or **PayTabs** + **Tabby** + **Tamara** + Apple/Google Pay
+  + COD + corporate payment links.
+- Hosting/data residency: UAE cloud region for photos & invoice data; per-object
+  lifecycle rules to auto-purge source images after fulfilment.
+- WhatsApp Business API via a BSP for order/utility/OTP messages.
