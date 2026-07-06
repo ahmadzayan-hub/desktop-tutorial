@@ -39,14 +39,14 @@ function isoAt(daysAgo: number, hour = 11, minute = 0) {
 // ----------------------------- canonical lists ------------------------------
 
 const PRODUCT_CATALOGUE = [
-  { id: uid("prd", 1), name: "Custom Name Necklace — Classic", category: "custom_name_necklace", default_price: 220, description: "Personalised Arabic / English name pendant on a delicate chain.", claim_notes: "Fashion accessory, gold-tone plated. Subject to availability.", active: true },
-  { id: uid("prd", 2), name: "Fashion Bracelet — Crescent", category: "fashion_bracelet", default_price: 140, description: "Crescent charm bracelet with adjustable clasp.", claim_notes: "Fashion accessory, gold-tone plated.", active: true },
-  { id: uid("prd", 3), name: "Car Hanger — Name Charm", category: "car_hanger", default_price: 95, description: "Hanging name charm for car rear-view mirror.", claim_notes: "Decorative gift item.", active: true },
+  { id: uid("prd", 1), name: "Custom Name Necklace · Classic", category: "custom_name_necklace", default_price: 220, description: "Personalised Arabic / English name pendant on a delicate chain.", claim_notes: "Fashion accessory, gold-tone plated. Subject to availability.", active: true },
+  { id: uid("prd", 2), name: "Fashion Bracelet · Crescent", category: "fashion_bracelet", default_price: 140, description: "Crescent charm bracelet with adjustable clasp.", claim_notes: "Fashion accessory, gold-tone plated.", active: true },
+  { id: uid("prd", 3), name: "Car Hanger · Name Charm", category: "car_hanger", default_price: 95, description: "Hanging name charm for car rear-view mirror.", claim_notes: "Decorative gift item.", active: true },
   { id: uid("prd", 4), name: "Graduation Charm Set", category: "graduation_charm", default_price: 180, description: "Cap-and-scroll graduation charm with custom date.", claim_notes: "Seasonal item, fashion accessory.", active: true },
-  { id: uid("prd", 5), name: "Gift Box — Pearl Edition", category: "gift_box", default_price: 260, description: "Curated gift box: bracelet + necklace + ribbon-wrapped box.", claim_notes: "Plated fashion accessories.", active: true },
-  { id: uid("prd", 6), name: "Ring — Minimalist Band", category: "ring", default_price: 110, description: "Slim band ring with adjustable sizing.", claim_notes: "Fashion accessory.", active: true },
-  { id: uid("prd", 7), name: "Anklet — Star Drop", category: "anklet", default_price: 95, description: "Delicate anklet with hanging star charm.", claim_notes: "Fashion accessory.", active: true },
-  { id: uid("prd", 8), name: "Custom Name Necklace — Bold", category: "custom_name_necklace", default_price: 280, description: "Heavier weight Arabic name pendant for statement look.", claim_notes: "Fashion accessory, gold-tone plated.", active: true },
+  { id: uid("prd", 5), name: "Gift Box · Pearl Edition", category: "gift_box", default_price: 260, description: "Curated gift box: bracelet + necklace + ribbon-wrapped box.", claim_notes: "Plated fashion accessories.", active: true },
+  { id: uid("prd", 6), name: "Ring · Minimalist Band", category: "ring", default_price: 110, description: "Slim band ring with adjustable sizing.", claim_notes: "Fashion accessory.", active: true },
+  { id: uid("prd", 7), name: "Anklet · Star Drop", category: "anklet", default_price: 95, description: "Delicate anklet with hanging star charm.", claim_notes: "Fashion accessory.", active: true },
+  { id: uid("prd", 8), name: "Custom Name Necklace · Bold", category: "custom_name_necklace", default_price: 280, description: "Heavier weight Arabic name pendant for statement look.", claim_notes: "Fashion accessory, gold-tone plated.", active: true },
 ];
 
 const COLOURS = ["gold-tone", "silver-tone", "rose-gold-tone", "two-tone"] as const;
@@ -134,15 +134,15 @@ const RISK_BY_STAGE: Record<string, "low" | "medium" | "high"> = {
 };
 
 const SAMPLE_MESSAGES_EN = [
-  "Hi! I saw the name necklace on Instagram — how much for Arabic with the name?",
+  "Hi! I saw the name necklace on Instagram · how much for Arabic with the name?",
   "How long for delivery to Sharjah?",
   "Is the silver-tone still available?",
   "Hello, can I get this gift wrapped? It's for my sister's birthday.",
   "Can you do same-day delivery to Marina?",
   "Is the gold real?",
   "Can I pay on delivery?",
-  "I bought from you last month — do you have new designs?",
-  "The bracelet I received looks different from the photo 😕",
+  "I bought from you last month · do you have new designs?",
+  "The bracelet I received looks different from the photo",
   "Hello, do you ship to Al Ain?",
 ];
 
@@ -150,12 +150,12 @@ const SAMPLE_MESSAGES_AR = [
   "السلام عليكم، كم سعر السلسلة بالاسم؟",
   "متى يوصل الطلب لأبوظبي؟",
   "هل اللون الذهبي متوفر؟",
-  "أبي هدية لأختي 🤍 ممكن غلاف هدية؟",
+  "أبي هدية لأختي ممكن غلاف هدية؟",
   "ممكن توصيل اليوم؟",
   "الذهب أصلي؟",
   "ممكن أدفع عند الاستلام؟",
   "أنا اشتريت قبل، عندكم تصاميم جديدة؟",
-  "السلسلة وصلت مختلفة عن الصورة 😢",
+  "السلسلة وصلت مختلفة عن الصورة",
   "توصلون لرأس الخيمة؟",
 ];
 
@@ -168,7 +168,7 @@ const INTENTS = [
   "Asks about material authenticity (gold / silver)",
   "Asks about cash-on-delivery option",
   "Returning customer looking at new designs",
-  "Complaint — received item different from photo",
+  "Complaint · received item different from photo",
   "Asks for emirate delivery feasibility",
 ];
 
@@ -182,18 +182,18 @@ const COURIERS = [
 
 const SUPPLIERS = [
   { id: uid("sup", 1), name: "Yiwu Jewellery Co.", country: "China", contact: "wechat: yj_co_2026", platform: "Alibaba", catalogue_status: "received", real_video_received: true, material_proof: "gold-tone plating spec", sample_status: "approved", sample_approved: true, moq: 50, unit_cost: 18, shipping_cost: 320, production_time: "10-14 days", wrong_item_policy: "Replacement at supplier cost", damage_policy: "Photo + video evidence within 48h", payment_method: "30% deposit, 70% on shipment", risk_score: 0.25, notes: "Reliable for name necklaces." },
-  { id: uid("sup", 2), name: "Dubai Plated Goods FZ", country: "UAE", contact: "+971 4 200 0001", platform: "Direct", catalogue_status: "received", real_video_received: true, material_proof: "lab certificate", sample_status: "approved", sample_approved: true, moq: 20, unit_cost: 32, shipping_cost: 0, production_time: "3-5 days", wrong_item_policy: "Free replacement", damage_policy: "Photo evidence", payment_method: "Net 30", risk_score: 0.10, notes: "Local — fastest restock." },
-  { id: uid("sup", 3), name: "Istanbul Charms Atelier", country: "Türkiye", contact: "+90 212 555 0123", platform: "Email", catalogue_status: "received", real_video_received: false, material_proof: "pending", sample_status: "shipped", sample_approved: false, moq: 30, unit_cost: 24, shipping_cost: 180, production_time: "14-21 days", wrong_item_policy: "Replacement excl. shipping", damage_policy: "Within 7 days", payment_method: "50/50", risk_score: 0.55, notes: "Hold — no video yet. Do not bulk buy." },
+  { id: uid("sup", 2), name: "Dubai Plated Goods FZ", country: "UAE", contact: "+971 4 200 0001", platform: "Direct", catalogue_status: "received", real_video_received: true, material_proof: "lab certificate", sample_status: "approved", sample_approved: true, moq: 20, unit_cost: 32, shipping_cost: 0, production_time: "3-5 days", wrong_item_policy: "Free replacement", damage_policy: "Photo evidence", payment_method: "Net 30", risk_score: 0.10, notes: "Local · fastest restock." },
+  { id: uid("sup", 3), name: "Istanbul Charms Atelier", country: "Türkiye", contact: "+90 212 555 0123", platform: "Email", catalogue_status: "received", real_video_received: false, material_proof: "pending", sample_status: "shipped", sample_approved: false, moq: 30, unit_cost: 24, shipping_cost: 180, production_time: "14-21 days", wrong_item_policy: "Replacement excl. shipping", damage_policy: "Within 7 days", payment_method: "50/50", risk_score: 0.55, notes: "Hold · no video yet. Do not bulk buy." },
   { id: uid("sup", 4), name: "Guangzhou Trade Plus", country: "China", contact: "alibaba.com/gz-trade-plus", platform: "Alibaba", catalogue_status: "received", real_video_received: true, material_proof: "received", sample_status: "approved", sample_approved: true, moq: 100, unit_cost: 12, shipping_cost: 450, production_time: "12-16 days", wrong_item_policy: "Replacement", damage_policy: "Within 7 days", payment_method: "Letter of credit", risk_score: 0.35, notes: "Best for high-volume basics." },
-  { id: uid("sup", 5), name: "Cairo Goldsmiths Ltd", country: "Egypt", contact: "+20 2 555 0123", platform: "WhatsApp", catalogue_status: "in_review", real_video_received: false, material_proof: "missing", sample_status: "not_sent", sample_approved: false, moq: 25, unit_cost: 22, shipping_cost: 140, production_time: "21-28 days", wrong_item_policy: "Unclear", damage_policy: "Unclear", payment_method: "Wire", risk_score: 0.75, notes: "High risk — incomplete docs." },
-  { id: uid("sup", 6), name: "Sharjah Gift Box Co.", country: "UAE", contact: "+971 6 555 0001", platform: "Direct", catalogue_status: "received", real_video_received: true, material_proof: "n/a (packaging)", sample_status: "approved", sample_approved: true, moq: 10, unit_cost: 8, shipping_cost: 0, production_time: "2-3 days", wrong_item_policy: "Replacement", damage_policy: "Photo evidence", payment_method: "Cash on delivery", risk_score: 0.05, notes: "Packaging only — fast and cheap." },
+  { id: uid("sup", 5), name: "Cairo Goldsmiths Ltd", country: "Egypt", contact: "+20 2 555 0123", platform: "WhatsApp", catalogue_status: "in_review", real_video_received: false, material_proof: "missing", sample_status: "not_sent", sample_approved: false, moq: 25, unit_cost: 22, shipping_cost: 140, production_time: "21-28 days", wrong_item_policy: "Unclear", damage_policy: "Unclear", payment_method: "Wire", risk_score: 0.75, notes: "High risk · incomplete docs." },
+  { id: uid("sup", 6), name: "Sharjah Gift Box Co.", country: "UAE", contact: "+971 6 555 0001", platform: "Direct", catalogue_status: "received", real_video_received: true, material_proof: "n/a (packaging)", sample_status: "approved", sample_approved: true, moq: 10, unit_cost: 8, shipping_cost: 0, production_time: "2-3 days", wrong_item_policy: "Replacement", damage_policy: "Photo evidence", payment_method: "Cash on delivery", risk_score: 0.05, notes: "Packaging only · fast and cheap." },
 ];
 
 const OFFERS = [
   { id: uid("ofr", 1), name: "Free Dubai delivery weekend", description: "Free delivery within Dubai for orders > AED 200", products_included: ["custom_name_necklace", "fashion_bracelet"], price: 220, delivery_rule: "free_dubai", emirates_covered: ["Dubai"], vat_rule: "inclusive", start_at: isoAt(2), end_at: isoAt(-5), terms: "Dubai only, minimum AED 200.", active: true },
   { id: uid("ofr", 2), name: "Gift box bundle", description: "Necklace + bracelet + gift box at AED 380", products_included: ["custom_name_necklace", "fashion_bracelet", "gift_box"], price: 380, delivery_rule: "courier_confirm", emirates_covered: [], vat_rule: "inclusive", start_at: isoAt(5), end_at: isoAt(-12), terms: "Subject to courier confirmation outside Dubai.", active: true },
   { id: uid("ofr", 3), name: "Graduation season set", description: "Graduation charm + custom date AED 199", products_included: ["graduation_charm"], price: 199, delivery_rule: "courier_confirm", emirates_covered: [], vat_rule: "inclusive", start_at: isoAt(10), end_at: isoAt(-30), terms: "While stocks last.", active: true },
-  { id: uid("ofr", 4), name: "Expired ad promo", description: "Old promo — no longer valid", products_included: ["ring"], price: 80, delivery_rule: "flat", emirates_covered: [], vat_rule: "inclusive", start_at: isoAt(60), end_at: isoAt(10), terms: "Expired.", active: false },
+  { id: uid("ofr", 4), name: "Expired ad promo", description: "Old promo · no longer valid", products_included: ["ring"], price: 80, delivery_rule: "flat", emirates_covered: [], vat_rule: "inclusive", start_at: isoAt(60), end_at: isoAt(10), terms: "Expired.", active: false },
 ];
 
 // ------------------------------- generators ---------------------------------
@@ -219,7 +219,7 @@ function generateCustomers(rng: () => number) {
       segment,
       vip: segment === "vip",
       purchase_count: purchaseCount,
-      notes: segment === "vip" ? "Top customer — owner deliveries." : segment === "lost" ? "Did not respond to last 2 follow-ups." : null,
+      notes: segment === "vip" ? "Top customer · owner deliveries." : segment === "lost" ? "Did not respond to last 2 follow-ups." : null,
       created_at: isoAt(60 - Math.floor(rng() * 60)),
     });
   }
@@ -399,7 +399,7 @@ function generateDeliveries(rng: () => number, orders: Record<string, unknown>[]
 function generateReviews(rng: () => number, customers: Record<string, unknown>[], orders: Record<string, unknown>[]) {
   const delivered = orders.filter((o) => o.order_status === "delivered");
   const sampleFeedback = [
-    "Beautiful piece — exactly as the photo! Will reorder 🤍",
+    "Beautiful piece · exactly as the photo! Will reorder",
     "Quality is amazing for the price. Highly recommend.",
     "Fast delivery to Dubai. Lovely packaging.",
     "Gift was a hit at my sister's birthday. Thank you!",
@@ -408,7 +408,7 @@ function generateReviews(rng: () => number, customers: Record<string, unknown>[]
     "Loved it. Already ordered another for my mum.",
     "Best gift box I've received. Will order again for Eid.",
     "Charm is delicate but feels well made.",
-    "Customer service was lovely throughout 🤍",
+    "Customer service was lovely throughout",
   ];
   return delivered.slice(0, 22).map((o, i) => ({
     id: uid("rev", i + 1),
@@ -467,7 +467,7 @@ function generateFollowups(rng: () => number, customers: Record<string, unknown>
         : type === "stock_back" ? "Notify customer the colour is back in stock."
         : type === "after_sale_review" ? "Ask for review + permission to share."
         : type === "vip_thank_you" ? "Hand-written VIP thank-you note."
-        : "Gentle nudge — abandoned payment link.",
+        : "Gentle nudge · abandoned payment link.",
       scheduled_at: isoAt(-Math.floor(rng() * 3) - 1, 10, 0),
       status: i < 4 ? "sent" : "pending",
       created_at: isoAt(Math.floor(rng() * 4)),
@@ -541,8 +541,8 @@ function generateAiOutputs(rng: () => number, conversations: Record<string, unkn
       guardrails_json: { worstStatus: g.worstStatus, findings: g.findings },
       reply_draft:
         c.message_language === "ar"
-          ? "أهلاً 🤍 سعر السلسلة بالاسم AED 220 شامل الضريبة. تحبين أزرق ذهبي أو فضي؟"
-          : "Hello 🤍 The custom name necklace is AED 220 incl. VAT. Would you like gold-tone or silver-tone?",
+          ? "أهلاً سعر السلسلة بالاسم AED 220 شامل الضريبة. تحبين أزرق ذهبي أو فضي؟"
+          : "Hello The custom name necklace is AED 220 incl. VAT. Would you like gold-tone or silver-tone?",
       confidence_score: 0.7 + (i % 3) * 0.1,
       approved: i % 3 !== 0,
       approved_by: i % 3 !== 0 ? "owner@beyondstyle.ae" : null,

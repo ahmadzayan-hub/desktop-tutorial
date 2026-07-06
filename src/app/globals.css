@@ -78,9 +78,22 @@ body {
 /* ---- Kanban column ---- */
 .kanban { @apply flex min-w-[260px] flex-col gap-2 rounded-2xl bg-white/60 p-3; }
 
-/* ---- RTL helper ---- */
-.rtl { direction: rtl; text-align: right; }
+/* ---- Bilingual · RTL helpers ---- */
+/* Any element flagged with dir="rtl" or lang="ar" gets proper Arabic rendering,
+   including a webfont-friendly line-height and inline logical mirroring for
+   chevrons, arrows and numeric ranges. */
+.rtl,
+[dir="rtl"],
+[lang="ar"] {
+  direction: rtl;
+  text-align: right;
+  font-feature-settings: "ss01", "cv11", "kern", "calt";
+  unicode-bidi: plaintext;
+}
 .ltr { direction: ltr; }
+
+/* Mirror common single-glyph directional icons when inside RTL flow. */
+[dir="rtl"] .icon-flip { transform: scaleX(-1); }
 
 /* ---- Recharts axis tweak ---- */
 .recharts-text { fill: #6b7280; font-size: 11px; }

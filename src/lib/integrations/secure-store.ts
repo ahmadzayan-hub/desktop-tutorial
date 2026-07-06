@@ -4,7 +4,7 @@
 // provides AES-256-GCM encrypt/decrypt (pure, testable) plus thin Next.js cookie
 // helpers. The console runs single-owner, and storing the encrypted token in an
 // httpOnly + secure cookie keeps the OAuth flow fully functional without
-// requiring a database table — consistent with the app's "works before Supabase"
+// requiring a database table · consistent with the app's "works before Supabase"
 // posture. Swap `readTokens`/`saveTokens` for a Supabase-backed store later
 // without touching the route handlers.
 

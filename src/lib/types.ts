@@ -1,4 +1,4 @@
-// Beyond Style UAE — Customer Conversion & Order Control Agent
+// Beyond Style UAE · Customer Conversion & Order Control Agent
 // Core domain types. These mirror the Supabase schema (see supabase/migrations).
 
 export type Platform =

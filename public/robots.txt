@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /
+
+# This is an internal operator tool. The public storefront lives elsewhere and
+# has its own robots policy.

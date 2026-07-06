@@ -1,0 +1,28 @@
+{
+  "name": "Beyond Style UAE · Order Control Console",
+  "short_name": "Beyond Style",
+  "description": "UAE social-commerce sales operating console. Owner-approved replies, live orders, delivery and margin in one place.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#FAF6F0",
+  "theme_color": "#0A0A0A",
+  "lang": "en-AE",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "shopping"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    { "name": "Customer Inbox",  "url": "/inbox",  "icons": [{ "src": "/icon.svg", "sizes": "any" }] },
+    { "name": "New Conversation", "url": "/intake", "icons": [{ "src": "/icon.svg", "sizes": "any" }] },
+    { "name": "Orders",          "url": "/orders", "icons": [{ "src": "/icon.svg", "sizes": "any" }] }
+  ],
+  "screenshots": []
+}

@@ -1,4 +1,4 @@
-// NotebookLM (Google) OAuth 2.0 integration — pure config + flow helpers.
+// NotebookLM (Google) OAuth 2.0 integration · pure config + flow helpers.
 //
 // NotebookLM is a Google product and authenticates through Google's standard
 // OAuth 2.0 authorization-code flow. This module is deliberately free of any

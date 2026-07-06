@@ -37,11 +37,11 @@ OUTPUT: return ONLY valid JSON matching the AnalysisOutput schema. The reply in
 the customer one step closer to payment.`,
 
   arabic_reply_style: `Arabic tone: warm, polite, UAE social-commerce friendly, short and clear.
-Light emoji use; preferred 🤍. Answer price questions with the price first.
+Light emoji use; preferred. Answer price questions with the price first.
 For customization, ask only the minimum needed details. For hot leads, move to order summary + payment.`,
 
   english_reply_style: `English tone: simple, warm, direct, professional. Short sentences, no long paragraphs.
-Light emoji use; preferred 🤍. Answer price questions with the price first.`,
+Light emoji use; preferred. Answer price questions with the price first.`,
 
   product_recognition: `Analyze the uploaded product/chat screenshot. Identify ONLY sales-relevant context:
 product type (bracelet, custom name necklace, car hanger, graduation charm, gift box, ring, anklet, supplier item),

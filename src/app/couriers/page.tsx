@@ -79,11 +79,11 @@ export default async function CouriersPage() {
               <tbody>
                 {activeWithOrders.map(({ delivery, order, window }) => (
                   <tr key={delivery.id as string}>
-                    <td className="truncate">{(order?.product_summary as string) ?? "—"}</td>
-                    <td>{(order?.customer_name as string) ?? "—"}</td>
-                    <td>{(order?.delivery_area as string) ?? "—"}</td>
+                    <td className="truncate">{(order?.product_summary as string) ?? "·"}</td>
+                    <td>{(order?.customer_name as string) ?? "·"}</td>
+                    <td>{(order?.delivery_area as string) ?? "·"}</td>
                     <td className="text-xs text-gray-500">{window.label}</td>
-                    <td>{(delivery.courier_name as string) ?? "—"}</td>
+                    <td>{(delivery.courier_name as string) ?? "·"}</td>
                     <td><CourierStatusPill status={delivery.delivery_status as string} /></td>
                   </tr>
                 ))}
@@ -100,7 +100,7 @@ export default async function CouriersPage() {
           {Object.entries(EMIRATE_BUFFERS).map(([emirate, b]) => (
             <div key={emirate} className="rounded-lg bg-gray-50 px-3 py-2">
               <div className="font-medium capitalize">{emirate}</div>
-              <div className="text-xs text-gray-500">{b.minDays}–{b.maxDays} day{b.maxDays > 1 ? "s" : ""}{emirate.toLowerCase() === "dubai" ? "" : " · courier confirm"}</div>
+              <div className="text-xs text-gray-500">{b.minDays}·{b.maxDays} day{b.maxDays > 1 ? "s" : ""}{emirate.toLowerCase() === "dubai" ? "" : " · courier confirm"}</div>
             </div>
           ))}
         </div>

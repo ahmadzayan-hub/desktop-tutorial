@@ -48,7 +48,7 @@ export default async function PaymentsPage() {
       <div className="card mb-4">
         <SectionTitle>Verify these now ({verify.length})</SectionTitle>
         {verify.length === 0 ? (
-          <p className="text-sm text-gray-500">Nothing waiting on you. 🤍</p>
+          <p className="text-sm text-gray-500">Nothing waiting on you.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="tbl">
@@ -99,7 +99,7 @@ export default async function PaymentsPage() {
       <div className="card mb-4">
         <SectionTitle>Disputes ({disputes.length})</SectionTitle>
         {disputes.length === 0 ? (
-          <p className="text-sm text-gray-500">No disputes — keep it clean. 🤍</p>
+          <p className="text-sm text-gray-500">No disputes · keep it clean.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="tbl">
@@ -116,7 +116,7 @@ export default async function PaymentsPage() {
                       </span>
                     </td>
                     <td className="max-w-[24rem] text-xs text-gray-700">
-                      {RESOLUTION_TEMPLATES[d.reason as DisputeReason]?.en ?? "—"}
+                      {RESOLUTION_TEMPLATES[d.reason as DisputeReason]?.en ?? "·"}
                     </td>
                     <td className="text-xs text-gray-500">{formatRelative(d.created_at as string)}</td>
                   </tr>

@@ -59,7 +59,7 @@ export function evaluateQc(qc: QcChecklist): QcResult {
   return {
     passed: failedItems.length === 0,
     failedItems,
-    warning: failedItems.length ? "DO NOT DISPATCH — QC incomplete." : null,
+    warning: failedItems.length ? "DO NOT DISPATCH · QC incomplete." : null,
   };
 }
 
@@ -108,14 +108,14 @@ export const STAGE_PLAYBOOK: Record<JourneyStage, StagePlaybook> = {
   information_lead: {
     bestReplyHint: "Answer the question simply, then surface the product.",
     nextAction: "Move toward price or customization.",
-    followUpTiming: "3–4 hours.",
+    followUpTiming: "3·4 hours.",
     ownerActionRequired: false,
     riskLevel: "low",
   },
   price_lead: {
     bestReplyHint: "Answer price directly first, then offer to reserve colour.",
     nextAction: "Confirm product + colour + location.",
-    followUpTiming: "3–4 hours, then next-day gentle reminder.",
+    followUpTiming: "3·4 hours, then next-day gentle reminder.",
     ownerActionRequired: false,
     riskLevel: "low",
   },
@@ -150,7 +150,7 @@ export const STAGE_PLAYBOOK: Record<JourneyStage, StagePlaybook> = {
   after_sale_stage: {
     bestReplyHint: "Thank, ask feedback, soft-consent for future offers.",
     nextAction: "Request review, tag for repeat purchase.",
-    followUpTiming: "1–2 days after delivery.",
+    followUpTiming: "1·2 days after delivery.",
     ownerActionRequired: false,
     riskLevel: "low",
   },

@@ -22,7 +22,7 @@ export function DemoBanner({ demoMode }: { demoMode: boolean }) {
     <div className="card-accent mb-4 flex items-start gap-3 text-sm">
       <span className="badge badge-vip">DEMO</span>
       <div className="flex-1 text-gray-800">
-        <strong>Demo mode</strong> — sample customers, orders, payments &amp; reviews so you can explore
+        <strong>Demo mode</strong> · sample customers, orders, payments &amp; reviews so you can explore
         every feature instantly. Connect Supabase (see <code>README</code>) to switch to live data.
       </div>
     </div>

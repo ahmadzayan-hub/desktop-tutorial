@@ -7,7 +7,7 @@ import { buildDemoUniverse, getDemoTable } from "./demo/seed";
 export interface FetchOpts {
   limit?: number;
   order?: string;
-  /** Optional column filter — e.g. { stage: "hot_lead" }. Only used in demo mode. */
+  /** Optional column filter · e.g. { stage: "hot_lead" }. Only used in demo mode. */
   where?: Record<string, string | number | boolean | null>;
 }
 
@@ -163,14 +163,14 @@ export function formatAed(n: number | null | undefined): string {
 }
 
 export function formatDate(iso: string | null | undefined): string {
-  if (!iso) return "—";
+  if (!iso) return "·";
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "—";
+  if (Number.isNaN(d.getTime())) return "·";
   return d.toLocaleString("en-AE", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 }
 
 export function formatRelative(iso: string | null | undefined): string {
-  if (!iso) return "—";
+  if (!iso) return "·";
   const d = new Date(iso);
   const diff = Date.now() - d.getTime();
   const m = Math.floor(diff / 60_000);

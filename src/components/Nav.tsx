@@ -67,12 +67,12 @@ export default function Nav({ mobile, badges = DEFAULT_BADGES }: { mobile?: bool
       </Link>
       <NavList pathname={pathname} badges={badges} />
       <div className="mt-auto card-accent text-xs">
-        <div className="font-semibold text-ink" style={{ color: "rgb(var(--ink))" }}>
-          AI drafts. You approve.
+        <div className="font-semibold" style={{ color: "rgb(var(--ink))" }}>
+          Every reply passes the guardrail engine.
         </div>
         <div className="mt-1 text-gray-700">
-          Every reply passes the guardrail engine. Owner approval gates anything that touches money,
-          dispatch, or product claims.
+          Owner approval gates anything that touches money, dispatch, or product claims. Nothing is
+          sent to a customer without your signoff.
         </div>
       </div>
     </nav>
@@ -80,21 +80,18 @@ export default function Nav({ mobile, badges = DEFAULT_BADGES }: { mobile?: bool
 }
 
 function BrandMark({ large = false }: { large?: boolean }) {
+  const size = large ? 32 : 24;
   return (
     <span className="inline-flex items-center gap-2">
-      <span
-        className={clsx(
-          "grid place-items-center rounded-full text-ink font-semibold",
-          large ? "h-8 w-8 text-sm" : "h-6 w-6 text-[11px]",
-        )}
-        style={{
-          background: "linear-gradient(135deg, rgb(var(--brand-dark)), rgb(var(--brand)) 55%, rgb(var(--brand-light)))",
-          color: "rgb(var(--ink))",
-        }}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/icon.svg"
+        alt=""
+        width={size}
+        height={size}
         aria-hidden
-      >
-        B
-      </span>
+        className={clsx("shrink-0 rounded-lg", large ? "h-8 w-8" : "h-6 w-6")}
+      />
       <span className={clsx("display-face tracking-tight", large ? "text-[17px]" : "text-sm")}>
         Beyond Style <span className="text-gray-500">UAE</span>
       </span>

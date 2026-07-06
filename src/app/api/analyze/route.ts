@@ -1,4 +1,4 @@
-// POST /api/analyze — runs the AI analysis + guardrail pipeline.
+// POST /api/analyze · runs the AI analysis + guardrail pipeline.
 // Body: { customerMessage, context, images?, claimEvidenceVerified?, isCourierPromise?, isSensitiveAction? }
 // Returns the structured AnalysisOutput + guardrail findings for operator review.
 

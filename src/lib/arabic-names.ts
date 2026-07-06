@@ -75,7 +75,7 @@ export function resolveArabicName(
       arabic: cleaned,
       confidence: 1,
       safeAddress: cleaned,
-      note: "Customer provided their own Arabic spelling — used verbatim.",
+      note: "Customer provided their own Arabic spelling · used verbatim.",
     };
   }
 
@@ -84,7 +84,7 @@ export function resolveArabicName(
       arabic: null,
       confidence: 0,
       safeAddress: title,
-      note: "No name available — used respectful title only.",
+      note: "No name available · used respectful title only.",
     };
   }
 
@@ -129,7 +129,7 @@ export function resolveArabicName(
 }
 
 // Detect whether a drafted Arabic reply contains a transliterated name that we
-// could NOT verify — used by the guardrail engine.
+// could NOT verify · used by the guardrail engine.
 export function replyUsesUnverifiedArabicName(
   reply: string,
   result: ArabicNameResult
