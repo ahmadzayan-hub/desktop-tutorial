@@ -76,18 +76,19 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private fun themes() = _state.value.themesShown
+    private fun rid() = settings.currentRecipient()?.id ?: ""
 
     fun choose(idx: Int) {
         val items = _state.value.items
         if (idx !in items.indices) return
         val chosen = items[idx]
         val theme = themes().getOrNull(idx) ?: themes().firstOrNull()
-        store.addStyleExample(chosen.text, theme)
+        store.addStyleExample(chosen.text, theme, rid())
         if (theme != null) store.bumpThemeWeight(theme, +0.3)
         val other = themes().getOrNull(if (idx == 0) 1 else 0)
         if (other != null && other != theme) store.bumpThemeWeight(other, -0.1)
         store.addFeedback(
-            Feedback(DateUtil.todayISO(), _state.value.slot, themes(), if (idx == 0) "pick1" else "pick2", chosen.text)
+            Feedback(DateUtil.todayISO(), _state.value.slot, themes(), if (idx == 0) "pick1" else "pick2", chosen.text, rid())
         )
         store.clearPending()
         _state.value = _state.value.copy(info = "حفظت أسلوبك من الاختيار ده 👌")
@@ -97,23 +98,23 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
         val t = text.trim()
         if (t.isEmpty()) return
         val theme = themes().firstOrNull()
-        store.addStyleExample(t, theme)
+        store.addStyleExample(t, theme, rid())
         if (theme != null) store.bumpThemeWeight(theme, +0.3)
-        store.addFeedback(Feedback(DateUtil.todayISO(), _state.value.slot, themes(), "edited", t))
+        store.addFeedback(Feedback(DateUtil.todayISO(), _state.value.slot, themes(), "edited", t, rid()))
         store.clearPending()
         _state.value = _state.value.copy(info = "سجّلت نسختك المعدّلة وضفتها لأسلوبي 🌟")
     }
 
     fun ignore() {
         themes().forEach { store.bumpThemeWeight(it, -0.2) }
-        store.addFeedback(Feedback(DateUtil.todayISO(), _state.value.slot, themes(), "ignore", null))
+        store.addFeedback(Feedback(DateUtil.todayISO(), _state.value.slot, themes(), "ignore", null, rid()))
         store.clearPending()
         _state.value = HomeState(info = "تمام، تجاهلنا دي 🙈")
     }
 
     fun regenerate() {
         val occ = _state.value.occasionLabel?.let { Occasion("manual", it) }
-        store.addFeedback(Feedback(DateUtil.todayISO(), _state.value.slot, themes(), "regen", null))
+        store.addFeedback(Feedback(DateUtil.todayISO(), _state.value.slot, themes(), "regen", null, rid()))
         generate(if (occ != null) "occasion" else _state.value.slot, occ)
     }
 }

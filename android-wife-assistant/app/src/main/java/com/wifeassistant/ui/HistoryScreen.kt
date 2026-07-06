@@ -93,7 +93,7 @@ fun HistoryScreen(onBack: () -> Unit) {
                                 modifier = Modifier.weight(1f),
                             ) { Text("🔗") }
                             OutlinedButton(
-                                onClick = { WhatsApp.send(context, Settings(context).wifeNumber, fb.finalText.orEmpty()) },
+                                onClick = { WhatsApp.send(context, Settings(context).currentRecipient()?.number.orEmpty(), fb.finalText.orEmpty()) },
                                 modifier = Modifier.weight(1f),
                             ) { Text("📲") }
                         }

@@ -13,18 +13,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -33,6 +27,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -51,6 +46,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.wifeassistant.data.Relations
 import com.wifeassistant.data.Settings
 import com.wifeassistant.data.Suggestion
 import com.wifeassistant.util.Share
@@ -63,6 +59,7 @@ fun HomeScreen(
     onOpenSettings: () -> Unit,
     onOpenStats: () -> Unit,
     onOpenHistory: () -> Unit,
+    onOpenPeople: () -> Unit,
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -78,21 +75,10 @@ fun HomeScreen(
         snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
             TopAppBar(
-                title = { Text("مساعد الرسايل", fontWeight = FontWeight.Bold) },
+                title = { Text("رسايل القلب 💗", fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
                 ),
-                actions = {
-                    IconButton(onClick = onOpenHistory) {
-                        Icon(Icons.Filled.History, contentDescription = "السجل")
-                    }
-                    IconButton(onClick = onOpenStats) {
-                        Icon(Icons.Filled.BarChart, contentDescription = "الإحصائيات")
-                    }
-                    IconButton(onClick = onOpenSettings) {
-                        Icon(Icons.Filled.Settings, contentDescription = "الإعدادات")
-                    }
-                },
             )
         },
     ) { padding ->
@@ -105,6 +91,7 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             HeaderBanner()
+            RecipientBar(onOpenPeople = onOpenPeople)
 
             // أزرار التوليد
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -147,7 +134,10 @@ fun HomeScreen(
                     onChoose = { vm.choose(idx) },
                     onCopy = { clipboard.setText(AnnotatedString(item.text)) },
                     onShare = { Share.text(context, item.text) },
-                    onWhatsApp = { WhatsApp.send(context, Settings(context).wifeNumber, item.text) },
+                    onWhatsApp = {
+                        WhatsApp.send(context, Settings(context).currentRecipient()?.number.orEmpty(), item.text)
+                    },
+                    onGroup = { WhatsApp.chooser(context, item.text) },
                 )
             }
 
@@ -181,6 +171,30 @@ fun HomeScreen(
 }
 
 @Composable
+private fun RecipientBar(onOpenPeople: () -> Unit) {
+    val context = LocalContext.current
+    val r = remember { Settings(context).currentRecipient() }
+    val who = when {
+        r == null -> "محدّش لسه — ضيف شخص"
+        r.name.isNotBlank() -> "${Relations.emojiOf(r.relation)} ${r.name} · ${Relations.labelOf(r.relation)}"
+        else -> "${Relations.emojiOf(r.relation)} ${Relations.labelOf(r.relation)}"
+    }
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text("✍️ بتكتب لـ: $who", modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+            TextButton(onClick = onOpenPeople) { Text("تغيير") }
+        }
+    }
+}
+
+@Composable
 private fun HeaderBanner() {
     Box(
         modifier = Modifier
@@ -204,7 +218,7 @@ private fun HeaderBanner() {
                 fontWeight = FontWeight.Bold,
             )
             Text(
-                "اختار اقتراح، عدّله، وابعته لمراتك بضغطة",
+                "اختار اقتراح، عدّله، وابعته للي بتحب بضغطة",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimary,
             )
@@ -220,6 +234,7 @@ private fun SuggestionCard(
     onCopy: () -> Unit,
     onShare: () -> Unit,
     onWhatsApp: () -> Unit,
+    onGroup: () -> Unit,
 ) {
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(
@@ -240,14 +255,16 @@ private fun SuggestionCard(
             }
             Text(item.text, style = MaterialTheme.typography.bodyLarge)
 
-            Button(
-                onClick = onWhatsApp,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                ),
-            ) { Text("📲 ابعت لمراتي على واتساب") }
-
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(
+                    onClick = onWhatsApp,
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                ) { Text("📲 للشخص") }
+                FilledTonalButton(onClick = onGroup, modifier = Modifier.weight(1f)) {
+                    Text("📣 مجموعة")
+                }
+            }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(onClick = onCopy, modifier = Modifier.weight(1f)) {
                     Text("📋 نسخ")

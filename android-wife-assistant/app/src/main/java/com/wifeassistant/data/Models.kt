@@ -2,9 +2,24 @@ package com.wifeassistant.data
 
 import kotlinx.serialization.Serializable
 
-// مثال من أسلوبي (رسالة اخترتها أو عدّلتها) — للتعلّم بالسياق.
+// شخص بتتواصل معاه (شريك/شريكة، ابن، بنت، أم، أب، أخ، أخت).
 @Serializable
-data class StyleExample(val text: String, val theme: String? = null, val date: String)
+data class Recipient(
+    val id: String,
+    val name: String,
+    val relation: String,        // Relations id
+    val number: String = "",     // واتساب (اختياري)
+    val notes: String = "",      // حاجات عنه تخصّص بيها الرسالة
+)
+
+// مثال من أسلوبي (رسالة اخترتها أو عدّلتها) — للتعلّم بالسياق، لكل شخص على حدة.
+@Serializable
+data class StyleExample(
+    val text: String,
+    val theme: String? = null,
+    val date: String,
+    val recipientId: String = "",
+)
 
 // تسجيل تفاعل واحد (تغذية راجعة).
 @Serializable
@@ -14,6 +29,7 @@ data class Feedback(
     val themesShown: List<String>,
     val choice: String,          // pick1 / pick2 / edited / ignore / regen
     val finalText: String? = null,
+    val recipientId: String = "",
 )
 
 // اقتراح واحد + موضوعه.
