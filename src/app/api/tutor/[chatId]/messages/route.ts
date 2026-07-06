@@ -23,8 +23,7 @@ export async function POST(req: NextRequest, { params }: { params: { chatId: str
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
-  const rl = rateLimit(`tutor:${user.id}`, 30, 60_000); // 30 messages/min per user
+  const rl = await rateLimit(`tutor:${user.id}`, 30, 60_000); // 30 messages/min per user
   if (!rl.allowed) {
     return NextResponse.json(
       { error: "Too many messages. Please slow down." },

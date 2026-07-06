@@ -14,7 +14,12 @@ const SUPABASE_NOT_CONFIGURED =
  * to a fall-through, and Vercel's metrics no longer flag it as a 5xx.
  */
 export function handleError(e: unknown): NextResponse {
+  const isProd = process.env.NODE_ENV === "production";
+
   if (e instanceof LlmUnreachableError) {
+    // In production, this is a real operational failure worth alerting on.
+    // console.error shows up in Vercel logs and can trigger monitoring alerts.
+    if (isProd) console.error("[monitoring] llm_unreachable", e.baseUrl, e.message);
     return NextResponse.json(
       {
         unavailable: true,
@@ -22,22 +27,27 @@ export function handleError(e: unknown): NextResponse {
         message: e.message,
         hint:
           "Start Ollama locally (`ollama serve`) or set OLLAMA_BASE_URL to a reachable endpoint.",
-        base_url: e.baseUrl
+        ...(isProd ? {} : { base_url: e.baseUrl })
       },
       { status: 200 }
     );
   }
+
   const msg = (e as Error)?.message ?? "";
   if (SUPABASE_NOT_CONFIGURED.test(msg)) {
+    if (isProd) console.error("[monitoring] backend_not_configured", msg);
     return NextResponse.json(
-      { unavailable: true, reason: "backend_not_configured", message: msg },
+      { unavailable: true, reason: "backend_not_configured", ...(isProd ? {} : { message: msg }) },
       { status: 200 }
     );
   }
+
   console.error("[api]", e);
   // Never expose internal error details to clients in production
-  const safe = process.env.NODE_ENV === "production" ? {} : { detail: msg };
-  return NextResponse.json({ error: "internal", ...safe }, { status: 500 });
+  return NextResponse.json(
+    { error: "internal", ...(isProd ? {} : { detail: msg }) },
+    { status: 500 }
+  );
 }
 
 /**

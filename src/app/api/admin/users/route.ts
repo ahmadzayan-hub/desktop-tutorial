@@ -1,9 +1,10 @@
 export const dynamic = "force-dynamic";
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { getUser } from "@/lib/db/supabase-server";
+import { auditLog } from "@/lib/audit";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -28,6 +29,9 @@ export async function GET() {
 
   const { data: userData } = await supabase.from("users").select("role").eq("id", user.id).single();
   if (userData?.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim();
+  void auditLog({ actorId: user.id, action: "admin.list_users", ip });
 
   const { data } = await supabase.from("users").select("id, email, display_name, role, created_at, subscriptions(plan, status)").order("created_at", { ascending: false }).limit(100);
   return NextResponse.json(data ?? []);

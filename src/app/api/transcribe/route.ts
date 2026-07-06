@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   if (unauthorized) return unauthorized;
 
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
-  const rl = rateLimit(`transcribe:${ip}`, 10, 60_000); // 10 req/min per IP
+  const rl = await rateLimit(`transcribe:${ip}`, 10, 60_000); // 10 req/min per IP
   if (!rl.allowed) {
     return NextResponse.json(
       { error: "Too many requests. Please wait before transcribing again." },

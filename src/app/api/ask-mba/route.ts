@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient, getUser } from "@/lib/db/supabase-server";
 import { aiChat } from "@/lib/ai/client";
+import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const rl = await rateLimit(`ask-mba:${user.id}`, 20, 60_000); // 20 req/min per user
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please slow down." },
+      { status: 429, headers: rateLimitHeaders(rl, 20) }
+    );
+  }
+
   const { query } = await req.json();
   if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
     const answers: Record<string, string> = {
