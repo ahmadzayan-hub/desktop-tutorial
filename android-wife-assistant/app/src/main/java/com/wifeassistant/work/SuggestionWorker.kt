@@ -19,7 +19,7 @@ class SuggestionWorker(context: Context, params: WorkerParameters) :
     override suspend fun doWork(): Result {
         val slot = inputData.getString("slot") ?: "morning"
         val settings = Settings(applicationContext)
-        if (settings.groqKey.isBlank()) return Result.success() // مفيش مفتاح — نتخطى بهدوء
+        if (settings.groqKey.isBlank()) return Result.success() // مفيش مفتاح - نتخطى بهدوء
 
         val store = Store(applicationContext)
         val occasion = if (slot == "morning") Occasions(settings).todaysOccasion() else null

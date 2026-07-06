@@ -104,7 +104,7 @@ fun HomeScreen(
         snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
             TopAppBar(
-                title = { Text("رسايل القلب 💗", fontWeight = FontWeight.Bold) },
+                title = { Text("وصال 💗", fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
                 ),
@@ -231,7 +231,7 @@ private fun RecipientBar(onOpenPeople: () -> Unit) {
     val context = LocalContext.current
     val r = remember { Settings(context).currentRecipient() }
     val who = when {
-        r == null -> "محدّش لسه — ضيف شخص"
+        r == null -> "محدّش لسه - ضيف شخص"
         r.name.isNotBlank() -> "${Relations.emojiOf(r.relation)} ${r.name} · ${Relations.labelOf(r.relation)}"
         else -> "${Relations.emojiOf(r.relation)} ${Relations.labelOf(r.relation)}"
     }

@@ -5,7 +5,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 // الإعدادات (المفتاح + رقم الواتساب + التخصيص + المواعيد + المناسبات).
-// كله على الجهاز بس (SharedPreferences) — مفيش سر بيتبعت لأي حد غير Groq.
+// كله على الجهاز بس (SharedPreferences) - مفيش سر بيتبعت لأي حد غير Groq.
 class Settings(context: Context) {
     private val prefs = context.getSharedPreferences("wife_assistant_settings", Context.MODE_PRIVATE)
     private val json = Json { ignoreUnknownKeys = true }

@@ -208,7 +208,7 @@ fun SettingsScreen(onBack: () -> Unit) {
                             showRestore = false
                             Toast.makeText(
                                 context,
-                                if (ok) "اتستعادت ✅ — أعد فتح التطبيق" else "النص مش صحيح",
+                                if (ok) "اتستعادت ✅ - أعد فتح التطبيق" else "النص مش صحيح",
                                 Toast.LENGTH_LONG,
                             ).show()
                             if (ok) onBack()

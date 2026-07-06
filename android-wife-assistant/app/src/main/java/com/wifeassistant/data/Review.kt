@@ -1,6 +1,6 @@
 package com.wifeassistant.data
 
-// التقييم الذاتي — نظير review.js. بيحسب ملخّص من التغذية الراجعة.
+// التقييم الذاتي - نظير review.js. بيحسب ملخّص من التغذية الراجعة.
 data class WorstSlot(val slot: String, val ignoredRate: Int, val total: Int)
 
 data class ReviewReport(

@@ -5,7 +5,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 
-// المخزن المحلي (JSON) — نظير store.js. بيحفظ التعلّم وثبات الحالة.
+// المخزن المحلي (JSON) - نظير store.js. بيحفظ التعلّم وثبات الحالة.
 class Store(context: Context) {
     private val file = File(context.filesDir, "store.json")
     private val json = Json { prettyPrint = true; ignoreUnknownKeys = true; encodeDefaults = true }

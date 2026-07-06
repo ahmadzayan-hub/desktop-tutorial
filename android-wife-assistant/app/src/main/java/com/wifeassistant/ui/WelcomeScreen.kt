@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
-// شاشة ترحيب أول تشغيل — بتوضّح هدف التطبيق (الترابط الأسري والتواصل العاطفي).
+// شاشة ترحيب أول تشغيل - بتوضّح هدف التطبيق (الترابط الأسري والتواصل العاطفي).
 @Composable
 fun WelcomeScreen(onStart: () -> Unit) {
     Column(
@@ -41,7 +41,7 @@ fun WelcomeScreen(onStart: () -> Unit) {
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text("رسايل القلب 💗", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
+            Text("وصال 💗", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
             Text(
                 "مساعدك للتواصل العاطفي والترابط الأسري",
                 style = MaterialTheme.typography.titleMedium,
@@ -49,7 +49,7 @@ fun WelcomeScreen(onStart: () -> Unit) {
             )
         }
 
-        WelcomePoint("👨‍👩‍👧‍👦", "لكل قرايبك", "شريك/شريكة، ابن، بنت، أم، أب، أخ، أخت — وكمان مجموعات.")
+        WelcomePoint("👨‍👩‍👧‍👦", "لكل قرايبك", "شريك/شريكة، ابن، بنت، أم، أب، أخ، أخت - وكمان مجموعات.")
         WelcomePoint("💬", "كلام من القلب", "اقتراحات دافئة باللهجة المصرية، بنبرة مناسبة لكل علاقة.")
         WelcomePoint("🧠", "بيتعلّم منك", "كل ما تختار وتعدّل، الرسايل تقرب من أسلوبك أكتر.")
         WelcomePoint("🔒", "خصوصيتك أولاً", "كل حاجة على موبايلك، مفيش سيرفر، والإرسال بإيدك انت.")
