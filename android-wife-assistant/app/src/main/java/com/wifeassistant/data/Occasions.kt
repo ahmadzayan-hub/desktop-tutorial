@@ -8,6 +8,14 @@ class Occasions(private val settings: Settings) {
         match(settings.occasions, DateUtil.todayISO(), DateUtil.todayMMDD())
 
     companion object {
+        // مناسبة الشخص النهاردة (عيد ميلاده/جوازه...) لو فيه.
+        fun recipientOccasionToday(r: Recipient, mmdd: String = DateUtil.todayMMDD()): Occasion? {
+            for (o in r.occasions) {
+                if (o.date.isNotBlank() && o.date == mmdd) return Occasion("person", o.label)
+            }
+            return null
+        }
+
         // مطابقة نقية (بدون I/O) عشان تتختبر مباشرة.
         internal fun match(configs: List<OccasionConfig>, ymd: String, mmdd: String): Occasion? {
             for (occ in configs) {

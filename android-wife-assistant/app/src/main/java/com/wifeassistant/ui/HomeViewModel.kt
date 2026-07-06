@@ -71,7 +71,10 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun requestOccasion() {
-        val occ = occasions.todaysOccasion() ?: Occasion("manual", "لمسة حب من القلب")
+        val r = settings.currentRecipient()
+        val occ = (r?.let { com.wifeassistant.data.Occasions.recipientOccasionToday(it) })
+            ?: occasions.todaysOccasion()
+            ?: Occasion("manual", "لمسة حب من القلب")
         generate("occasion", occ)
     }
 

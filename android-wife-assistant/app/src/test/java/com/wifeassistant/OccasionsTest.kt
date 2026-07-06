@@ -2,6 +2,8 @@ package com.wifeassistant
 
 import com.wifeassistant.data.OccasionConfig
 import com.wifeassistant.data.Occasions
+import com.wifeassistant.data.PersonOccasion
+import com.wifeassistant.data.Recipient
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -55,5 +57,15 @@ class OccasionsTest {
             ymd = "2026-07-05", mmdd = "07-05",
         )
         assertNull(res)
+    }
+
+    @Test
+    fun `مناسبة الشخص الخاصة بتتطابق باليوم`() {
+        val r = Recipient(
+            id = "1", name = "سارة", relation = "daughter",
+            occasions = listOf(PersonOccasion("عيد ميلاد", "08-24")),
+        )
+        assertEquals("عيد ميلاد", Occasions.recipientOccasionToday(r, "08-24")?.label)
+        assertNull(Occasions.recipientOccasionToday(r, "01-01"))
     }
 }

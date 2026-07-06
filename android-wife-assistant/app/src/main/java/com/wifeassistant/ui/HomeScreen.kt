@@ -1,5 +1,11 @@
 package com.wifeassistant.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -46,9 +53,11 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.wifeassistant.data.Occasion
 import com.wifeassistant.data.Relations
 import com.wifeassistant.data.Settings
 import com.wifeassistant.data.Suggestion
+import com.wifeassistant.util.CalendarReader
 import com.wifeassistant.util.Share
 import com.wifeassistant.util.WhatsApp
 
@@ -66,6 +75,26 @@ fun HomeScreen(
     val clipboard = LocalClipboardManager.current
     var edited by remember { mutableStateOf("") }
     val snackbar = remember { SnackbarHostState() }
+
+    // ---- تقويم الموبايل (Google Calendar وغيره) ----
+    var calEvents by remember { mutableStateOf<List<String>>(emptyList()) }
+    var showCal by remember { mutableStateOf(false) }
+    fun loadCalendar() {
+        calEvents = CalendarReader.events(context).map { it.title }
+        showCal = true
+    }
+    val calPermission = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) loadCalendar()
+        else Toast.makeText(context, "محتاج إذن التقويم عشان أقرأ أجندتك", Toast.LENGTH_LONG).show()
+    }
+    fun openCalendar() {
+        val granted = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.READ_CALENDAR
+        ) == PackageManager.PERMISSION_GRANTED
+        if (granted) loadCalendar() else calPermission.launch(Manifest.permission.READ_CALENDAR)
+    }
 
     // نعرض رسائل الحالة (نجاح/خطأ) كـ Snackbar لطيف.
     LaunchedEffect(state.info) { state.info?.let { snackbar.showSnackbar(it) } }
@@ -109,6 +138,33 @@ fun HomeScreen(
                 OutlinedButton(onClick = { vm.generate("evening") }, modifier = Modifier.weight(1f)) {
                     Text("🌙 مسائي")
                 }
+            }
+            OutlinedButton(onClick = { openCalendar() }, modifier = Modifier.fillMaxWidth()) {
+                Text("📅 مناسبة من أجندتي")
+            }
+
+            if (showCal) {
+                AlertDialog(
+                    onDismissRequest = { showCal = false },
+                    title = { Text("من أجندتك النهاردة 📅") },
+                    text = {
+                        if (calEvents.isEmpty()) {
+                            Text("مفيش أحداث النهاردة في تقويمك.")
+                        } else {
+                            Column {
+                                calEvents.take(10).forEach { title ->
+                                    TextButton(onClick = {
+                                        showCal = false
+                                        vm.generate("occasion", Occasion("cal", title))
+                                    }) { Text("• $title") }
+                                }
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showCal = false }) { Text("إغلاق") }
+                    },
+                )
             }
 
             if (state.loading) {

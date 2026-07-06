@@ -52,6 +52,7 @@ fun SettingsScreen(onBack: () -> Unit) {
     var groqKey by remember { mutableStateOf(settings.groqKey) }
     var myName by remember { mutableStateOf(settings.myName) }
     var humor by remember { mutableStateOf(settings.humor) }
+    var emoji by remember { mutableStateOf(settings.emoji) }
     var messageLength by remember { mutableStateOf(settings.messageLength) }
     var model by remember { mutableStateOf(settings.model) }
     var morning by remember { mutableStateOf(settings.morningTime) }
@@ -107,6 +108,10 @@ fun SettingsScreen(onBack: () -> Unit) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("لمسة دُعابة خفيفة", modifier = Modifier.weight(1f))
                 Switch(checked = humor, onCheckedChange = { humor = it })
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("إيموجي معبّر في الرسالة", modifier = Modifier.weight(1f))
+                Switch(checked = emoji, onCheckedChange = { emoji = it })
             }
             Text("طول الرسالة", style = MaterialTheme.typography.bodyMedium)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -172,6 +177,7 @@ fun SettingsScreen(onBack: () -> Unit) {
                     settings.groqKey = groqKey.trim()
                     settings.myName = myName.trim()
                     settings.humor = humor
+                    settings.emoji = emoji
                     settings.messageLength = messageLength
                     settings.model = model
                     settings.morningTime = morning.trim()
