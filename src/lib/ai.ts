@@ -26,12 +26,12 @@ const MESSAGE_BANK: Record<Tone, { en: string[]; ar: string[] }> = {
   warm: {
     en: [
       "Every good memory tastes a little sweeter with you. Thank you for being you.",
-      "A small cup, a big feeling — you mean the world to me.",
+      "A small cup, a big feeling. You mean the world to me.",
       "Here's to the little moments that matter most. With all my love.",
     ],
     ar: [
       "كل ذكرى جميلة تصير أحلى معك. شكراً لأنك أنت.",
-      "كوب صغير وإحساس كبير — أنت الدنيا كلها بالنسبة لي.",
+      "كوب صغير وإحساس كبير، أنت الدنيا كلها بالنسبة لي.",
       "نخب اللحظات الصغيرة اللي تسوى الكثير. بكل حبّي.",
     ],
   },
@@ -43,19 +43,19 @@ const MESSAGE_BANK: Record<Tone, { en: string[]; ar: string[] }> = {
     ],
     ar: [
       "أنت زود الحلا، ومو بس لأني محتاج قهوة الصبح.",
-      "احنا مثل القهوة والصباح — فوضى بسيطة، بس ضروريين.",
+      "احنا مثل القهوة والصباح، فوضى بسيطة، بس ضروريين.",
       "تحذير: المحتوى يسبّب ابتسامة زايدة. بالعافية!",
     ],
   },
   formal: {
     en: [
       "With sincere appreciation for your dedication and hard work. Thank you.",
-      "A token of our gratitude — your contribution does not go unnoticed.",
+      "A token of our gratitude. Your contribution does not go unnoticed.",
       "Wishing you continued success. With our warmest regards.",
     ],
     ar: [
       "مع خالص التقدير لتفانيك وجهدك. شكراً لك.",
-      "لفتة امتنان — إسهامك محلّ تقدير دائم.",
+      "لفتة امتنان، إسهامك محلّ تقدير دائم.",
       "نتمنى لك دوام التوفيق. مع أطيب التحيات.",
     ],
   },
@@ -99,7 +99,7 @@ export function generateCorporateProposal(input: ProposalInput, lang: Lang): str
   if (lang === "ar") {
     return `يسعد Beyond Coffee Moments تقديم تجربة قهوة راقية لـ ${input.company} بمناسبة ${input.eventType} في ${input.location} بتاريخ ${input.date}. لعدد ${input.guests} ضيفاً، نوصي بباقة "${pkg.name.ar}" التي تشمل طباعة قهوة سيلفي مباشرة وأكواباً تحمل هويتكم وفريق باريستا محترف. نلتزم بتجربة سلسة تعزّز حضور علامتكم وتترك انطباعاً لا يُنسى لدى ضيوفكم.`;
   }
-  return `Beyond Coffee Moments is delighted to propose a premium coffee experience for ${input.company} at your ${input.eventType} in ${input.location} on ${input.date}. For ${input.guests} guests, we recommend the "${pkg.name.en}" package — live selfie-coffee printing, branded cups and a professional barista team. We commit to a seamless activation that elevates your brand presence and leaves a memorable impression on every guest.`;
+  return `Beyond Coffee Moments is delighted to propose a premium coffee experience for ${input.company} at your ${input.eventType} in ${input.location} on ${input.date}. For ${input.guests} guests, we recommend the "${pkg.name.en}" package: live selfie-coffee printing, branded cups and a professional barista team. We commit to a seamless activation that elevates your brand presence and leaves a memorable impression on every guest.`;
 }
 
 // ---- 5. Image cleanup + auto-crop (client-side; swappable) ----------------

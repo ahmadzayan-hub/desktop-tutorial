@@ -161,7 +161,7 @@ export default function Corporate() {
               <div>
                 <span className="field-label">{t("corporate.form.package")}</span>
                 <select className="field" value={form.packageId} onChange={(e) => set({ packageId: e.target.value })}>
-                  <option value="">—</option>
+                  <option value="">-</option>
                   {EVENT_PACKAGES.map((p) => <option key={p.id} value={p.id}>{pick(p.name)}</option>)}
                 </select>
               </div>
@@ -244,14 +244,14 @@ function QuotationView({ quote, onEdit }: { quote: Quotation & { form: CorpForm 
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-coffee-400">{t("corporate.quote.preparedFor")}</p>
-            <p className="mt-1 font-semibold text-coffee-900">{f.company || "—"}</p>
+            <p className="mt-1 font-semibold text-coffee-900">{f.company || "-"}</p>
             <p className="text-sm text-coffee-600">{f.contact}</p>
             <p className="text-sm text-coffee-600">{f.phone} · {f.email}</p>
           </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-coffee-400">{t("corporate.quote.event")}</p>
             <p className="mt-1 text-sm text-coffee-700">{t(`corporate.form.eventTypes.${f.eventType}`)}</p>
-            <p className="text-sm text-coffee-600">{f.location} · {f.eventDate || "—"}</p>
+            <p className="text-sm text-coffee-600">{f.location} · {f.eventDate || "-"}</p>
             <p className="text-sm text-coffee-600">{f.guests} {t("corporate.form.guests")}</p>
           </div>
         </div>
