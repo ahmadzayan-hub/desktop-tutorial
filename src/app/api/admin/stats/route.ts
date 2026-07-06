@@ -11,9 +11,20 @@ export async function GET() {
     return NextResponse.json({ totalUsers: 847, activeSubscriptions: 312, trialUsers: 94, aiCostThisMonth: 128.47, storageUsedGB: 24.3, failedJobs: 2 });
   }
 
+  // Fail closed if the service role key is not configured. Silently
+  // falling back to the anon key would run admin queries under
+  // ordinary RLS and return inconsistent results (or nothing) rather
+  // than an honest 503. See THREAT_MODEL.md § 4.3 / § 5 G2.
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!serviceRoleKey) {
+    return NextResponse.json(
+      { error: "admin_service_role_key_missing" },
+      { status: 503 },
+    );
+  }
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    serviceRoleKey,
     { cookies: { getAll: () => [], setAll: () => {} } }
   );
 
