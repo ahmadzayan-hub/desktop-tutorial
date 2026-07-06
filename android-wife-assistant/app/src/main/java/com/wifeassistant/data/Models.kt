@@ -57,6 +57,8 @@ data class AppData(
     val themeWeights: MutableMap<String, Double> = mutableMapOf(),
     val feedback: MutableList<Feedback> = mutableListOf(),
     val lastSentPerSlot: MutableMap<String, String> = mutableMapOf(),
+    // آخر يوم تواصلت فيه مع كل شخص (recipientId -> YYYY-MM-DD) لتذكيرات "بقالك فترة".
+    val lastContactedPerRecipient: MutableMap<String, String> = mutableMapOf(),
     var pending: PendingRound? = null,
 )
 

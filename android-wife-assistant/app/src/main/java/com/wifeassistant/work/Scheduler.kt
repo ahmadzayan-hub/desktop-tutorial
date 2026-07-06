@@ -20,6 +20,19 @@ object Scheduler {
         val settings = Settings(context)
         scheduleSlot(context, "morning", settings.morningTime)
         scheduleSlot(context, "evening", settings.eveningTime)
+        scheduleReminders(context)
+    }
+
+    // فحص يومي للتذكيرات ("بقالك فترة") - الساعة 11 صباحاً بتوقيت Asia/Dubai.
+    private fun scheduleReminders(context: Context) {
+        val req = PeriodicWorkRequestBuilder<ReminderWorker>(24, TimeUnit.HOURS)
+            .setInitialDelay(initialDelayMinutes(11, 0), TimeUnit.MINUTES)
+            .build()
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            "contact_reminder",
+            ExistingPeriodicWorkPolicy.UPDATE,
+            req,
+        )
     }
 
     private fun scheduleSlot(context: Context, slot: String, hhmm: String) {

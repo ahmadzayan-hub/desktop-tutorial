@@ -93,6 +93,7 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
         store.addFeedback(
             Feedback(DateUtil.todayISO(), _state.value.slot, themes(), if (idx == 0) "pick1" else "pick2", chosen.text, rid())
         )
+        store.markContacted(rid())
         store.clearPending()
         _state.value = _state.value.copy(info = "حفظت أسلوبك من الاختيار ده 👌")
     }
@@ -104,6 +105,7 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
         store.addStyleExample(t, theme, rid())
         if (theme != null) store.bumpThemeWeight(theme, +0.3)
         store.addFeedback(Feedback(DateUtil.todayISO(), _state.value.slot, themes(), "edited", t, rid()))
+        store.markContacted(rid())
         store.clearPending()
         _state.value = _state.value.copy(info = "سجّلت نسختك المعدّلة وضفتها لأسلوبي 🌟")
     }

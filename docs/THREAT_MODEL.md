@@ -77,24 +77,30 @@ STRIDE)، الدفاعات الموجودة، والثغرات مع توصيات
 ## 5) الثغرات والتوصيات (مرتّبة بالأولوية)
 
 ### 🔴 P1 — عاجلة
-1. **`allowBackup="true"` + أسرار غير مشفّرة**: ممكن يرفع مفتاح Groq والبيانات لنسخة جوجل
-   الاحتياطية. **الحل**: `android:allowBackup="false"` أو قواعد نسخ تستثني الأسرار، +
-   تخزين المفتاح في `EncryptedSharedPreferences` (androidx.security-crypto).
+1. ✅ **`allowBackup` + تشفير المفتاح**: اتضبط `android:allowBackup="false"`، والمفتاح
+   بقى متخزّن في `EncryptedSharedPreferences` (Android Keystore / androidx.security-crypto)
+   عبر `SecureStore` مع ترحيل آمن يمسح النسخة القديمة غير المشفّرة.
 2. **تدوير الأسرار المتسرّبة**: توكن تيليجرام ومفتاح Groq ظهروا في محادثات — لازم
    يتعملهم rotate فوراً.
 3. **دقّة ادّعاء الخصوصية**: صفحة الهبوط بتقول "كله على جهازك" — لازم توضّح إن **التوليد
    بيرسل سياق الرسالة لـ Groq**. صحّح النص عشان يكون أمين.
 
 ### 🟠 P2 — مهمة
-4. **توقيع release حقيقي**: استبدل fallback الـ debug بـ keystore عبر Secrets للتوزيع،
-   ووثّق بصمة الشهادة (SHA-256) للتحقق.
+4. **توقيع release حقيقي**: ✅ الآلية جاهزة — الـ workflow بيوقّع بـ keystore عبر Secrets
+   (`KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`)؛ فاضل إن المستخدم
+   يضيف الأسرار. وثّق بصمة الشهادة (SHA-256) بعد أول توقيع حقيقي للتحقق.
 5. **تثبيت الـ GitHub Actions بـ commit SHA** بدل الـ tags (حماية supply chain).
+   ⏸️ **مؤجّل عن قصد**: كل الـ actions المستخدمة first-party موثوقة
+   (`actions/*`, `gradle/*`, `android-actions/*`, `softprops/action-gh-release`)
+   ومثبّتة على major tag. التثبيت بـ SHA خطأ بيكسر الـ CI فوراً، والقيمة الأمنية لمشروع
+   شخصي بهذا الحجم منخفضة. يتعمل لما نفعّل Dependabot (بيحدّث الـ SHA-pins أوتوماتيك).
+
+### 🟡 P3 — تحسينات
 6. **نسخة احتياطية أكثر أماناً**: النسخة بتحتوي بيانات شخصية (أرقام، ملاحظات) — أضف
    تحذير واضح، وفكّر في تشفيرها بكلمة سر اختيارية.
 7. **إفصاح عن التقويم**: وضّح إن عنوان الحدث المختار بيتبعت لـ Groq.
-
-### 🟡 P3 — تحسينات
-8. **security headers + CSP** في `vercel.json`.
+8. **security headers + CSP**: ✅ اتضافت في `vercel.json` (CSP, HSTS, Permissions-Policy,
+   X-Content-Type-Options, X-Frame-Options, Referrer-Policy).
 9. **فحص التبعيات دورياً**: `npm audit` للبوت + Dependabot للأندرويد.
 10. **حارس المالك في البوت**: قلّل نافذة "الرد للكل" قبل ضبط chatId.
 
