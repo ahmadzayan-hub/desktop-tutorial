@@ -2,24 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Unified Beyond Style UAE design tokens (mirrors the customer storefront). */
 :root {
   color-scheme: light;
-  --brand: 24 24 27;       /* zinc-900 */
-  --accent: 244 114 182;   /* pink-400 — soft fashion accent */
-  --pearl: 250 245 240;    /* warm off-white */
-  --sand: 245 240 235;
+  --ink:        10 10 10;      /* #0A0A0A near-black */
+  --brand:      201 169 110;   /* #C9A96E gold */
+  --brand-light:228 207 161;   /* #E4CFA1 */
+  --brand-dark: 166 134 75;    /* #A6864B */
+  --cream:      245 241 232;   /* #F5F1E8 */
+  --pearl:      250 246 240;   /* #FAF6F0 warm off-white canvas */
 }
 
 html, body { height: 100%; }
 body {
-  @apply bg-[color:var(--pearl)] text-gray-900 antialiased;
+  @apply bg-[color:rgb(var(--pearl))] text-gray-900 antialiased;
   font-feature-settings: "ss01", "cv11";
 }
+
+/* Display face for hero titles and brand marks (loaded via layout.tsx). */
+.display-face { font-family: "Cormorant Garamond", Georgia, serif; letter-spacing: -0.01em; }
 
 /* ---- Cards ---- */
 .card { @apply rounded-2xl border border-gray-200 bg-white p-4 shadow-sm; }
 .card-tight { @apply rounded-xl border border-gray-200 bg-white p-3 shadow-sm; }
-.card-accent { @apply rounded-2xl border border-pink-200 bg-pink-50 p-4 shadow-sm; }
+.card-accent {
+  @apply rounded-2xl border p-4 shadow-sm;
+  background: rgb(var(--brand-light) / 0.28);
+  border-color: rgb(var(--brand) / 0.35);
+}
 
 /* ---- Badges / pills ---- */
 .badge { @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium; }
@@ -28,7 +38,10 @@ body {
 .badge-fail { @apply bg-red-100 text-red-800; }
 .badge-info { @apply bg-blue-100 text-blue-800; }
 .badge-neutral { @apply bg-gray-100 text-gray-700; }
-.badge-vip { @apply bg-gradient-to-r from-pink-500 to-rose-500 text-white; }
+.badge-vip {
+  color: rgb(var(--ink));
+  background-image: linear-gradient(135deg, rgb(var(--brand-dark)), rgb(var(--brand)) 55%, rgb(var(--brand-light)));
+}
 .badge-hot { @apply bg-red-100 text-red-700; }
 .badge-warm { @apply bg-amber-100 text-amber-800; }
 .badge-cold { @apply bg-sky-100 text-sky-800; }
@@ -39,10 +52,12 @@ body {
 
 /* ---- Buttons ---- */
 .btn { @apply inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition; }
-.btn-primary { @apply bg-gray-900 text-white hover:bg-gray-700; }
-.btn-accent { @apply bg-pink-500 text-white hover:bg-pink-600; }
+.btn-primary { background: rgb(var(--ink)); color: rgb(var(--cream)); }
+.btn-primary:hover { background: rgb(var(--ink) / 0.85); }
+.btn-accent  { background: rgb(var(--brand)); color: rgb(var(--ink)); }
+.btn-accent:hover  { background: rgb(var(--brand-dark)); color: rgb(var(--cream)); }
 .btn-ghost { @apply border border-gray-300 bg-white hover:bg-gray-100; }
-.btn-soft { @apply bg-gray-100 hover:bg-gray-200 text-gray-900; }
+.btn-soft  { @apply bg-gray-100 hover:bg-gray-200 text-gray-900; }
 .btn-sm { @apply px-2 py-1 text-xs; }
 
 /* ---- Inputs ---- */

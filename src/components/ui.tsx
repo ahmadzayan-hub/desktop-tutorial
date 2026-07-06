@@ -4,10 +4,12 @@ export function PageHeader({
   title, subtitle, action,
 }: { title: string; subtitle?: string; action?: React.ReactNode }) {
   return (
-    <div className="mb-4 flex items-end justify-between gap-4">
+    <div className="mb-5 flex items-end justify-between gap-4 border-b border-cream/60 pb-4">
       <div>
-        <h1 className="h1">{title}</h1>
-        {subtitle && <p className="muted mt-0.5">{subtitle}</p>}
+        <h1 className="display-face text-2xl font-semibold tracking-tight text-gray-900 md:text-[28px]">
+          {title}
+        </h1>
+        {subtitle && <p className="muted mt-1 max-w-2xl">{subtitle}</p>}
       </div>
       {action && <div>{action}</div>}
     </div>
@@ -17,12 +19,11 @@ export function PageHeader({
 export function DemoBanner({ demoMode }: { demoMode: boolean }) {
   if (!demoMode) return null;
   return (
-    <div className="mb-4 flex items-start gap-3 rounded-2xl border border-pink-200 bg-pink-50/70 p-3 text-sm">
+    <div className="card-accent mb-4 flex items-start gap-3 text-sm">
       <span className="badge badge-vip">DEMO</span>
-      <div className="flex-1 text-pink-900">
-        <strong>Demo mode</strong> — these are sample customers, orders, payments &amp; reviews so you can
-        explore every feature instantly. Connect Supabase (see <code>README</code>) to switch to live data, or just keep
-        playing.
+      <div className="flex-1 text-gray-800">
+        <strong>Demo mode</strong> — sample customers, orders, payments &amp; reviews so you can explore
+        every feature instantly. Connect Supabase (see <code>README</code>) to switch to live data.
       </div>
     </div>
   );
