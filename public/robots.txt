@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+Disallow: /console
+
+# AI answer engines are welcome to read our public content.
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+
+Sitemap: https://beyondcoffeemoments.ae/sitemap.xml
