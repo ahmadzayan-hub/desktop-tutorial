@@ -1,5 +1,5 @@
 // Configurable AI provider wrapper (spec §25).
-// The owner picks a provider via AI_PROVIDER env var. NO keys are hard-coded —
+// The owner picks a provider via AI_PROVIDER env var. NO keys are hard-coded ·
 // everything comes from environment variables. Adding a provider = add a case.
 
 // "groq" and "together" are OpenAI-compatible hosts for open models
@@ -40,7 +40,7 @@ function env(key: string): string | undefined {
 
 // ---- OpenAI-compatible (OpenAI, Groq, Together, or any compatible host) ----
 // Open models (Llama 3.1 70B / Qwen 2.5 72B) are served via Groq/Together using
-// the same /chat/completions contract — one adapter covers all of them.
+// the same /chat/completions contract · one adapter covers all of them.
 class OpenAiCompatibleProvider implements AiProvider {
   name: AiProviderName;
   model: string;
@@ -176,7 +176,7 @@ class GeminiProvider implements AiProvider {
   }
 }
 
-// ---- Mock (no network) — used for local dev, tests, and when no key is set ----
+// ---- Mock (no network) · used for local dev, tests, and when no key is set ----
 class MockProvider implements AiProvider {
   name: AiProviderName = "mock";
   model = "mock";
@@ -189,8 +189,8 @@ class MockProvider implements AiProvider {
       name_check: "mock",
       correct_arabic_name: null,
       missing_information: ["product", "colour", "emirate"],
-      risk_or_caution: ["mock provider — no live model call"],
-      best_reply_to_send: "Hello 🤍 How can we help you today?",
+      risk_or_caution: ["mock provider · no live model call"],
+      best_reply_to_send: "Hello  How can we help you today?",
       next_action: "Identify product interest.",
       follow_up_timing: "Next day if no reply.",
       internal_sales_note: "Mock output. Set AI_PROVIDER and the matching API key.",

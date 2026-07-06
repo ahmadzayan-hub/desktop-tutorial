@@ -136,7 +136,7 @@ export function buildAttentionQueue(args: {
         id: `dispute-${d.id}`,
         severity: "high",
         title: `Dispute: ${(d.reason as string).replace(/_/g, " ")}`,
-        detail: `${d.customer_name} — order ${d.order_id}`,
+        detail: `${d.customer_name} · order ${d.order_id}`,
         href: `/payments`,
       });
     }
@@ -147,7 +147,7 @@ export function buildAttentionQueue(args: {
       out.push({
         id: `pay-${p.id}`,
         severity: "high",
-        title: `Verify payment — AED ${p.amount_expected}`,
+        title: `Verify payment · AED ${p.amount_expected}`,
         detail: `${p.customer_name} · ref ${p.reference}`,
         href: `/payments`,
       });
@@ -159,7 +159,7 @@ export function buildAttentionQueue(args: {
       out.push({
         id: `qc-${o.id}`,
         severity: "medium",
-        title: `Run QC — ${o.product_summary}`,
+        title: `Run QC · ${o.product_summary}`,
         detail: `${o.customer_name} · ${o.delivery_area}`,
         href: `/orders`,
       });
@@ -171,7 +171,7 @@ export function buildAttentionQueue(args: {
       out.push({
         id: `hot-${c.id}`,
         severity: "medium",
-        title: `Hot lead — draft reply`,
+        title: `Hot lead · draft reply`,
         detail: `${(c as Record<string, unknown>).customer_name} on ${c.platform}`,
         href: `/inbox`,
       });
@@ -185,7 +185,7 @@ export function buildAttentionQueue(args: {
       out.push({
         id: `stock-out-${inv.id}`,
         severity: "high",
-        title: `Out of stock — ${inv.product_name} (${inv.colour})`,
+        title: `Out of stock · ${inv.product_name} (${inv.colour})`,
         detail: `Reorder via ${inv.supplier_source ?? "supplier"}`,
         href: `/inventory`,
       });
@@ -193,7 +193,7 @@ export function buildAttentionQueue(args: {
       out.push({
         id: `stock-low-${inv.id}`,
         severity: "medium",
-        title: `Low stock — ${inv.product_name} (${inv.colour})`,
+        title: `Low stock · ${inv.product_name} (${inv.colour})`,
         detail: `~${Math.floor(qty / daily)} days left at current velocity`,
         href: `/inventory`,
       });

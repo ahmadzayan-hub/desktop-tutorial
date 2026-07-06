@@ -66,21 +66,21 @@ export function deterministicNarrative(m: DailyMetrics): { en: string; ar: strin
   const en = [
     `Today: ${m.todayConversations} conversations, ${m.todayOrders} orders (${m.todayHotLeads} hot leads).`,
     `Revenue today: AED ${m.todayPaidAed.toLocaleString()} from paid orders. Pending payment links worth AED ${m.todayPendingAed.toLocaleString()}.`,
-    m.topProduct ? `Best mover: ${m.topProduct}.` : `No paid orders yet today — focus on hot leads.`,
+    m.topProduct ? `Best mover: ${m.topProduct}.` : `No paid orders yet today · focus on hot leads.`,
     m.topEmirate ? `Top emirate today: ${m.topEmirate}.` : `No emirate concentration yet.`,
     `Conversion (today): ${m.conversionPercent}%.`,
-    m.todayComplaints ? `⚠ ${m.todayComplaints} complaint(s) opened today — review the dispute queue before close.` : `No complaints today.`,
-    m.todayLost ? `${m.todayLost} lost lead(s) — tag the lost-reason for the weekly review.` : ``,
+    m.todayComplaints ? `⚠ ${m.todayComplaints} complaint(s) opened today · review the dispute queue before close.` : `No complaints today.`,
+    m.todayLost ? `${m.todayLost} lost lead(s) · tag the lost-reason for the weekly review.` : ``,
   ].filter(Boolean).join("\n");
 
   const ar = [
     `اليوم: ${m.todayConversations} محادثة، ${m.todayOrders} طلب (${m.todayHotLeads} عميل جدّي).`,
     `الإيرادات اليوم: ${m.todayPaidAed.toLocaleString()} درهم من طلبات مدفوعة. روابط دفع معلّقة بقيمة ${m.todayPendingAed.toLocaleString()} درهم.`,
-    m.topProduct ? `الأكثر مبيعاً: ${m.topProduct}.` : `لا توجد طلبات مدفوعة بعد اليوم — ركّز على العملاء الجدّيين.`,
+    m.topProduct ? `الأكثر مبيعاً: ${m.topProduct}.` : `لا توجد طلبات مدفوعة بعد اليوم · ركّز على العملاء الجدّيين.`,
     m.topEmirate ? `أكثر إمارة اليوم: ${m.topEmirate}.` : `لا تركّز حسب الإمارة بعد.`,
     `معدّل التحويل اليوم: ${m.conversionPercent}%.`,
-    m.todayComplaints ? `⚠ ${m.todayComplaints} شكوى مفتوحة اليوم — راجع قائمة النزاعات قبل نهاية الدوام.` : `لا شكاوى اليوم.`,
-    m.todayLost ? `${m.todayLost} عميل محتمل مفقود — سجّل السبب للمراجعة الأسبوعية.` : ``,
+    m.todayComplaints ? `⚠ ${m.todayComplaints} شكوى مفتوحة اليوم · راجع قائمة النزاعات قبل نهاية الدوام.` : `لا شكاوى اليوم.`,
+    m.todayLost ? `${m.todayLost} عميل محتمل مفقود · سجّل السبب للمراجعة الأسبوعية.` : ``,
   ].filter(Boolean).join("\n");
 
   return { en, ar };

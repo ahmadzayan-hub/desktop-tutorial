@@ -4,7 +4,7 @@
 // provides AES-256-GCM encrypt/decrypt (pure, testable) plus thin Next.js cookie
 // helpers. The console runs single-owner, and storing the encrypted token in an
 // httpOnly + secure cookie keeps the OAuth flow fully functional without
-// requiring a database table — consistent with the app's "works before Supabase"
+// requiring a database table · consistent with the app's "works before Supabase"
 // posture. Swap `readTokens`/`saveTokens` for a Supabase-backed store later
 // without touching the route handlers.
 
@@ -20,10 +20,21 @@ const ALGORITHM = "aes-256-gcm";
  * works out of the box, then to a build-time constant for demo/no-secret runs.
  */
 function encryptionKey(): Buffer {
+  // Fail loudly in production if only the demo fallback is available; a leaked
+  // token cookie with a known secret is trivially forgeable. See THREAT_MODEL.md §3.5.
+  if (
+    process.env.NODE_ENV === "production" &&
+    !process.env.INTEGRATION_TOKEN_SECRET &&
+    !process.env.SUPABASE_SERVICE_ROLE_KEY
+  ) {
+    throw new Error(
+      "INTEGRATION_TOKEN_SECRET (or SUPABASE_SERVICE_ROLE_KEY) must be set in production.",
+    );
+  }
   const secret =
     process.env.INTEGRATION_TOKEN_SECRET ||
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    "beyond-style-uae-demo-integration-secret";
+    "wasl-demo-integration-secret";
   return createHash("sha256").update(secret).digest();
 }
 

@@ -57,7 +57,7 @@ export default async function ReportsPage() {
     <div className="mx-auto max-w-7xl">
       <PageHeader
         title="Insights"
-        subtitle="Revenue, funnel, product mix, customer voice, and the daily/weekly improvement loop — one surface for every question you'll ask on Sunday."
+        subtitle="Revenue, funnel, product mix, customer voice, and the daily/weekly improvement loop · one surface for every question you'll ask on Sunday."
         action={<VatExportButton csv={csv} />}
       />
       <DemoBanner demoMode={demoMode} />
@@ -108,9 +108,9 @@ export default async function ReportsPage() {
             <Stat k="Conversion" v={`${metrics.conversionPercent}%`} />
             <Stat k="Complaints" v={metrics.todayComplaints} />
           </dl>
-          <h3 className="h2 mt-3 mb-1">Narrative — English</h3>
+          <h3 className="h2 mt-3 mb-1">Narrative · English</h3>
           <pre className="whitespace-pre-wrap rounded-xl bg-gray-50 p-3 text-sm">{narrative.en}</pre>
-          <h3 className="h2 mt-3 mb-1">السرد — العربية</h3>
+          <h3 className="h2 mt-3 mb-1">السرد · العربية</h3>
           <pre className="rtl whitespace-pre-wrap rounded-xl bg-gray-50 p-3 text-sm" dir="rtl">{narrative.ar}</pre>
           <p className="mt-2 text-xs text-gray-500">
             Wire your AI provider (Settings) to polish this narrative every evening from the day&apos;s conversations.

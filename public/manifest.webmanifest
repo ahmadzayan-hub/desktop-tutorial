@@ -1,0 +1,41 @@
+{
+  "name": "Wasl. Commerce Console",
+  "short_name": "Wasl",
+  "description": "The calm operating console for social sellers. AI drafts, owner approves, orders ship.",
+  "start_url": "/?src=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#fafafb",
+  "theme_color": "#f43f5e",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "shopping"],
+  "icons": [
+    { "src": "/icons/logo.svg",      "sizes": "any",     "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icons/logo-mono.svg", "sizes": "any",     "type": "image/svg+xml", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Conversation",
+      "short_name": "Intake",
+      "description": "Paste a customer message and draft a reply.",
+      "url": "/intake?src=pwa-shortcut",
+      "icons": [{ "src": "/icons/logo-mono.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Customer Inbox",
+      "short_name": "Inbox",
+      "url": "/inbox?src=pwa-shortcut",
+      "icons": [{ "src": "/icons/logo-mono.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Payments",
+      "url": "/payments?src=pwa-shortcut",
+      "icons": [{ "src": "/icons/logo-mono.svg", "sizes": "any", "type": "image/svg+xml" }]
+    }
+  ],
+  "screenshots": [],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Wasl monochrome logo">
+  <rect width="512" height="512" rx="112" fill="#f43f5e"/>
+  <path
+    d="M 128 96 L 384 96 L 384 416 L 350 384 L 316 416 L 282 384 L 248 416 L 214 384 L 180 416 L 146 384 L 128 416 Z"
+    fill="#ffffff"/>
+  <rect x="170" y="150" width="172" height="18" rx="9" fill="#f43f5e" opacity=".22"/>
+  <rect x="170" y="188" width="120" height="14" rx="7" fill="#f43f5e" opacity=".18"/>
+  <path d="M 176 272 L 232 322 L 342 218" fill="none" stroke="#f43f5e" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

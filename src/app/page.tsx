@@ -42,8 +42,8 @@ export default async function Dashboard() {
   return (
     <div className="mx-auto max-w-7xl">
       <PageHeader
-        title="Beyond Style UAE — Control Tower"
-        subtitle="Live conversion, payment, delivery & margin. Demo data updates every reload."
+        title="Wasl. Commerce Control Tower"
+        subtitle="Live conversion, payment, delivery, and margin. Every KPI refreshes on reload."
         action={
           <Link href="/intake" className="btn btn-accent">+ New Conversation</Link>
         }
@@ -79,7 +79,7 @@ export default async function Dashboard() {
             Needs your attention
           </SectionTitle>
           {attention.length === 0 ? (
-            <p className="text-sm text-gray-500">Inbox is clear — enjoy a quiet moment 🤍</p>
+            <p className="text-sm text-gray-500">Inbox is clear · enjoy a quiet moment </p>
           ) : (
             <ul className="flex flex-col gap-2">
               {attention.map((a) => (

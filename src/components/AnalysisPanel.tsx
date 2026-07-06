@@ -43,8 +43,8 @@ export default function AnalysisPanel({ result }: { result: Result }) {
             <KV w="w-28" k="Persona" v={analysis.customer_persona} />
             <KV w="w-28" k="Product" v={analysis.product_identified} />
             <KV w="w-28" k="Name check" v={analysis.name_check} />
-            <KV w="w-28" k="Arabic name" v={analysis.correct_arabic_name ?? "—"} />
-            <KV w="w-28" k="Missing info" v={analysis.missing_information.join(", ") || "—"} />
+            <KV w="w-28" k="Arabic name" v={analysis.correct_arabic_name ?? "·"} />
+            <KV w="w-28" k="Missing info" v={analysis.missing_information.join(", ") || "·"} />
             <KV w="w-28" k="Next action" v={analysis.next_action} />
             <KV w="w-28" k="Follow-up" v={analysis.follow_up_timing} />
             <KV w="w-28" k="Confidence" v={`${Math.round(analysis.confidence_score * 100)}%`} />
@@ -104,7 +104,7 @@ export default function AnalysisPanel({ result }: { result: Result }) {
           </button>
           {!canSend && (
             <span className="text-xs text-red-700">
-              Blocked by a failing guardrail — fix the reply before approving.
+              Blocked by a failing guardrail · fix the reply before approving.
             </span>
           )}
         </div>

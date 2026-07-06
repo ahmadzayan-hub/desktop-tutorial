@@ -31,7 +31,7 @@ export function DemoBanner({ demoMode }: { demoMode: boolean }) {
     <div className="banner banner-demo mb-4">
       <span className="badge badge-vip">DEMO</span>
       <div className="flex-1">
-        <strong>Demo mode</strong> — sample customers, orders, payments &amp; reviews. Connect Supabase (see <code>README</code>) to switch to live data.
+        <strong>Demo mode</strong> · sample customers, orders, payments &amp; reviews. Connect Supabase (see <code>README</code>) to switch to live data.
       </div>
     </div>
   );

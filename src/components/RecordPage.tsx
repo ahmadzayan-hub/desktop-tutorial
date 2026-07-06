@@ -70,7 +70,7 @@ export default async function RecordPage({
 }
 
 function format(v: unknown): string {
-  if (v == null) return "—";
+  if (v == null) return "·";
   if (Array.isArray(v)) return v.join(", ");
   if (typeof v === "object") return JSON.stringify(v);
   if (typeof v === "boolean") return v ? "yes" : "no";

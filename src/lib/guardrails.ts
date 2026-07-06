@@ -1,4 +1,4 @@
-// Guardrail engine — the "control tower". Every drafted reply runs through
+// Guardrail engine · the "control tower". Every drafted reply runs through
 // these checks before an operator is allowed to approve & send. Pure functions,
 // no I/O, fully unit-testable (see tests/guardrails.test.ts).
 
@@ -81,7 +81,7 @@ export function runGuardrails(input: GuardrailInput): GuardrailResult {
         findings.push({
           code: "claim",
           status: "warn",
-          message: `Reply states "${claim.label}" — allowed only because supplier evidence is on file. Confirm before sending.`,
+          message: `Reply states "${claim.label}" · allowed only because supplier evidence is on file. Confirm before sending.`,
           requiresHumanApproval: true,
         });
       } else {
@@ -239,7 +239,7 @@ export function runGuardrails(input: GuardrailInput): GuardrailResult {
     findings.push({
       code: "human_escalation",
       status: "warn",
-      message: "Refund / exchange / complaint / sensitive action — owner approval mandatory before sending (§24).",
+      message: "Refund / exchange / complaint / sensitive action · owner approval mandatory before sending (§24).",
       requiresHumanApproval: true,
     });
   }
@@ -290,7 +290,7 @@ function round2(n: number): number {
   return Math.round(n * 100) / 100;
 }
 
-// §23 Fraud / scam screening — independent of reply wording.
+// §23 Fraud / scam screening · independent of reply wording.
 export function screenFraudSignals(signals: {
   asksCourierBeforePayment?: boolean;
   unclearPaymentScreenshot?: boolean;
@@ -303,7 +303,7 @@ export function screenFraudSignals(signals: {
   const out: GuardrailFinding[] = [];
   const map: [keyof typeof signals, string][] = [
     ["asksCourierBeforePayment", "Customer asks for courier before payment."],
-    ["unclearPaymentScreenshot", "Unclear payment screenshot — needs verification."],
+    ["unclearPaymentScreenshot", "Unclear payment screenshot · needs verification."],
     ["largeOrderNoDeposit", "Large order with no deposit."],
     ["pressureUrgentNoPayment", "Pressure for urgent delivery without payment."],
     ["refusesPhoneOrArea", "Customer refuses to share phone or delivery area."],

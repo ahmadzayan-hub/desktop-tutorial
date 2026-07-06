@@ -10,7 +10,7 @@
 :root {
   color-scheme: light;
 
-  /* Neutrals — cool, near-white base for a modern console feel */
+  /* Neutrals · cool, near-white base for a modern console feel */
   --bg:        250 250 251;    /* page */
   --surface:   255 255 255;    /* cards, panels */
   --surface-2: 246 246 248;    /* subtle wells (stats, table rows) */
@@ -22,7 +22,7 @@
   --ink-2:    88 88 100;       /* labels, muted */
   --ink-3:   140 140 155;
 
-  /* Brand — rose, restrained */
+  /* Brand · rose, restrained */
   --brand:    244 63 116;      /* rose-500-ish */
   --brand-2:  253 232 240;     /* soft rose surface */
   --brand-ink: 122  32  58;
@@ -54,7 +54,7 @@ body {
   font-feature-settings: "ss01", "cv11";
 }
 
-/* Focus rings — a single, cohesive style everywhere. */
+/* Focus rings · a single, cohesive style everywhere. */
 :where(a, button, [role="button"], input, select, textarea, summary):focus-visible {
   outline: none;
   box-shadow: var(--focus);
@@ -283,6 +283,36 @@ body {
    -------------------------------------------------------------------------- */
 .rtl { direction: rtl; text-align: right; }
 .ltr { direction: ltr; }
+
+/* Arabic serif polish for Arabic-language surfaces. */
+:where([lang="ar"], [dir="rtl"], .rtl) {
+  font-family: "Tajawal", "Cairo", "Noto Sans Arabic", system-ui, sans-serif;
+  font-feature-settings: "kern", "liga", "clig", "calt";
+}
+
+/* --------------------------------------------------------------------------
+   Accessibility
+   -------------------------------------------------------------------------- */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 12px;
+  z-index: 100;
+  padding: .5rem 1rem;
+  border-radius: var(--r-md);
+  background: rgb(var(--ink));
+  color: rgb(var(--surface));
+  font-size: .875rem;
+  font-weight: 500;
+}
+.skip-link:focus { top: 12px; }
+
+/* Ensure interactive targets on mobile hit the 44px WCAG minimum. */
+@media (max-width: 768px) {
+  .btn { min-height: 44px; }
+  .input { min-height: 44px; }
+  .nav-link { min-height: 40px; }
+}
 
 /* --------------------------------------------------------------------------
    Recharts axis tweak

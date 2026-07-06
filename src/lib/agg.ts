@@ -28,7 +28,7 @@ export function tallyBy<T>(rows: T[], key: (r: T) => string | undefined | null, 
   return out;
 }
 
-/** Materialise a tally as `{name, value}[]` — the shape recharts/pie/bar want. */
+/** Materialise a tally as `{name, value}[]` · the shape recharts/pie/bar want. */
 export function tallyToArray(m: Map<string, number>): Array<{ name: string; value: number }>;
 /** Custom key names variant (e.g. `{name, orders}` for a bar chart). */
 export function tallyToArray<K extends string, V extends string>(
@@ -68,7 +68,7 @@ export function dayWindows(now: number = Date.now()) {
   };
 }
 
-/** ISO date `yyyy-mm-dd` slice — used everywhere for day-bucket keys. */
+/** ISO date `yyyy-mm-dd` slice · used everywhere for day-bucket keys. */
 export function dayKey(iso: string): string {
   return iso.slice(0, 10);
 }

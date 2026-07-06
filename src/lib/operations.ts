@@ -59,7 +59,7 @@ export function evaluateQc(qc: QcChecklist): QcResult {
   return {
     passed: failedItems.length === 0,
     failedItems,
-    warning: failedItems.length ? "DO NOT DISPATCH — QC incomplete." : null,
+    warning: failedItems.length ? "DO NOT DISPATCH · QC incomplete." : null,
   };
 }
 

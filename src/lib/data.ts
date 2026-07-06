@@ -8,7 +8,7 @@ import { sumBy, countBy, inWindow, dayWindows, type Row } from "./agg";
 export interface FetchOpts {
   limit?: number;
   order?: string;
-  /** Optional column filter — e.g. { stage: "hot_lead" }. Only used in demo mode. */
+  /** Optional column filter · e.g. { stage: "hot_lead" }. Only used in demo mode. */
   where?: Record<string, string | number | boolean | null>;
 }
 
@@ -72,7 +72,7 @@ export interface Kpis {
 }
 
 /**
- * Single source of truth for KPI derivation — used by both the demo and the
+ * Single source of truth for KPI derivation · used by both the demo and the
  * live Supabase paths so we don't repeat the same reducer twice.
  *
  * Live tables select a narrow projection; that projection still matches every
@@ -148,14 +148,14 @@ export function formatAed(n: number | null | undefined): string {
 }
 
 export function formatDate(iso: string | null | undefined): string {
-  if (!iso) return "—";
+  if (!iso) return "·";
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "—";
+  if (Number.isNaN(d.getTime())) return "·";
   return d.toLocaleString("en-AE", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 }
 
 export function formatRelative(iso: string | null | undefined): string {
-  if (!iso) return "—";
+  if (!iso) return "·";
   const d = new Date(iso);
   const diff = Date.now() - d.getTime();
   const m = Math.floor(diff / 60_000);
