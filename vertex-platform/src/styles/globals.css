@@ -38,7 +38,7 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Accessibility — visible focus on every interactive element */
+  /* Accessibility - visible focus on every interactive element */
   :focus-visible {
     outline: 2px solid rgb(var(--color-focus));
     outline-offset: 2px;

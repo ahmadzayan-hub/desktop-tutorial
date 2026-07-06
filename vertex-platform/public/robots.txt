@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /upload
+Disallow: /submissions/
+Disallow: /projects/
+
+Sitemap: https://vertex.ae/sitemap.xml

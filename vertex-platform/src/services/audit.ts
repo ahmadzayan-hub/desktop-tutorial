@@ -3,7 +3,7 @@ import { supabase } from '@/utils/supabase';
 type Json = Record<string, unknown> | Array<unknown> | string | number | boolean | null;
 
 /**
- * Append an entry to public.audit_log. Never throws — audit failures should
+ * Append an entry to public.audit_log. Never throws - audit failures should
  * not break user-facing flows; they log to the console instead.
  */
 export async function logAuditEvent(input: {

@@ -1,4 +1,4 @@
--- VERTEX Session 2 — dashboard RPCs, activity view, submissions storage bucket, extra RLS.
+-- VERTEX Session 2 - dashboard RPCs, activity view, submissions storage bucket, extra RLS.
 --
 -- Assumes 0001_vertex_init.sql has already run (tables + roles + auth glue).
 -- Idempotent: safe to re-apply.

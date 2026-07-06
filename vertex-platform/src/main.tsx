@@ -15,3 +15,13 @@ createRoot(root).render(
     <App />
   </StrictMode>,
 );
+
+// Register the service worker in production only. In dev, Vite already owns
+// the module graph and a stale worker would break HMR.
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js').catch((err) => {
+      console.warn('[sw] registration failed', err);
+    });
+  });
+}

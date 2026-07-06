@@ -1,5 +1,5 @@
 // deno-lint-ignore-file
-// Supabase Edge Function — Deno runtime
+// Supabase Edge Function - Deno runtime
 //
 // POST /functions/v1/analyze-submission
 // Body: { submission_id: string, provider?: "anthropic" | "openai" | "mock" }

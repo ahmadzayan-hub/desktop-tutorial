@@ -1,4 +1,4 @@
--- VERTEX Platform — Session 1 schema
+-- VERTEX Platform - Session 1 schema
 -- 10 tables + RLS policies (Admin > Reviewer > Viewer > API User)
 -- Region: UAE North (me-south-1)
 
@@ -377,7 +377,7 @@ ALTER TABLE public.insurance_tracking ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audit_log ENABLE ROW LEVEL SECURITY;
 
 -- =============================================================================
--- RLS policies — Admin: full access on everything
+-- RLS policies - Admin: full access on everything
 -- =============================================================================
 CREATE POLICY admin_all_users ON public.users
   FOR ALL USING (public.is_admin()) WITH CHECK (public.is_admin());
@@ -401,7 +401,7 @@ CREATE POLICY admin_all_audit ON public.audit_log
   FOR ALL USING (public.is_admin()) WITH CHECK (public.is_admin());
 
 -- =============================================================================
--- RLS — users: every authenticated user can read/update their own row
+-- RLS - users: every authenticated user can read/update their own row
 -- =============================================================================
 CREATE POLICY users_read_self ON public.users
   FOR SELECT USING (auth.uid() = id);
@@ -409,7 +409,7 @@ CREATE POLICY users_update_self ON public.users
   FOR UPDATE USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
 
 -- =============================================================================
--- RLS — Reviewer: full access on projects they own + their submissions
+-- RLS - Reviewer: full access on projects they own + their submissions
 -- =============================================================================
 CREATE POLICY reviewer_own_projects ON public.projects
   FOR ALL USING (
@@ -498,7 +498,7 @@ CREATE POLICY reviewer_insurance ON public.insurance_tracking
   );
 
 -- =============================================================================
--- RLS — Viewer: read-only on every project-scoped table
+-- RLS - Viewer: read-only on every project-scoped table
 -- =============================================================================
 CREATE POLICY viewer_read_projects ON public.projects
   FOR SELECT USING (public.current_user_role() = 'viewer');
@@ -518,7 +518,7 @@ CREATE POLICY viewer_read_insurance ON public.insurance_tracking
   FOR SELECT USING (public.current_user_role() = 'viewer');
 
 -- =============================================================================
--- RLS — API User: read-only programmatic access (same shape as viewer)
+-- RLS - API User: read-only programmatic access (same shape as viewer)
 -- =============================================================================
 CREATE POLICY api_read_projects ON public.projects
   FOR SELECT USING (public.current_user_role() = 'api_user');
@@ -536,7 +536,7 @@ CREATE POLICY api_read_insurance ON public.insurance_tracking
   FOR SELECT USING (public.current_user_role() = 'api_user');
 
 -- =============================================================================
--- RLS — audit_log: any authenticated user can INSERT their own events;
+-- RLS - audit_log: any authenticated user can INSERT their own events;
 -- reads are admin-only (handled by admin_all_audit above).
 -- =============================================================================
 CREATE POLICY audit_insert_self ON public.audit_log

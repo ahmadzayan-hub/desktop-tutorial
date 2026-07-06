@@ -4,7 +4,7 @@ const url = import.meta.env.VITE_SUPABASE_URL;
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!url || !anonKey) {
-  // Surface configuration problems early — the app cannot work without these.
+  // Surface configuration problems early - the app cannot work without these.
   console.error(
     '[VERTEX] Missing Supabase env vars. Copy .env.example to .env.local and fill VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.',
   );

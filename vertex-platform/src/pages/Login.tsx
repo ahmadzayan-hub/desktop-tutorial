@@ -2,6 +2,7 @@ import { Navigate } from 'react-router-dom';
 
 import { LoginForm } from '@/components/auth/LoginForm';
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
+import { Logo } from '@/components/brand/Logo';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -22,12 +23,7 @@ export default function Login() {
         role="banner"
         className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 md:px-6"
       >
-        <div className="flex items-baseline gap-2">
-          <span className="text-xl font-bold tracking-wide text-vertex-600">
-            {t('app.name')}
-          </span>
-          <span className="hidden text-xs text-slate-500 md:inline">{t('app.tagline')}</span>
-        </div>
+        <Logo ariaLabel={t('app.name')} />
         <LanguageSwitcher />
       </header>
 

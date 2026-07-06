@@ -4,7 +4,7 @@ interface BiDiTextProps {
   children: ReactNode;
   /**
    * Force a direction for embedded latin/numeric content inside an RTL
-   * paragraph (or vice versa). Defaults to "ltr" — useful for currency
+   * paragraph (or vice versa). Defaults to "ltr" - useful for currency
    * amounts, contract refs, and email addresses inside Arabic UI.
    */
   dir?: 'ltr' | 'rtl';

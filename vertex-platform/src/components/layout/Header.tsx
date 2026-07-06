@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { Link } from 'react-router-dom';
+
+import { Logo } from '@/components/brand/Logo';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/hooks/useLanguage';
 import { LanguageSwitcher } from './LanguageSwitcher';
@@ -55,12 +58,10 @@ export function Header({ pageTitle, onMenuToggle, menuOpen = false }: HeaderProp
           </span>
         </button>
 
-        <div className="flex items-baseline gap-2">
-          <span className="text-xl font-bold tracking-wide text-vertex-600">
-            {t('app.name')}
-          </span>
-          <span className="hidden text-xs text-slate-500 md:inline">{t('app.tagline')}</span>
-        </div>
+        <Link to="/dashboard" className="focus:outline-none focus:ring-2 focus:ring-vertex-500 rounded">
+          <Logo ariaLabel={t('app.name')} />
+        </Link>
+        <span className="hidden text-xs text-slate-500 md:inline">{t('app.tagline')}</span>
       </div>
 
       {pageTitle && (

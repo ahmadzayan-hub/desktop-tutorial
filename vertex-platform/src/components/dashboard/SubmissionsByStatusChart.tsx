@@ -18,7 +18,7 @@ const COLORS: Record<string, string> = {
 export function SubmissionsByStatusChart({ data }: Props) {
   const { t } = useLanguage();
   if (data.length === 0) {
-    return <EmptyState title={t('dashboard.widgets.submissionsByStatus')} description="—" />;
+    return <EmptyState title={t('dashboard.widgets.submissionsByStatus')} description="-" />;
   }
   const localized = data.map((d) => ({
     ...d,

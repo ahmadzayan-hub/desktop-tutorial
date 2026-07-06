@@ -55,19 +55,19 @@ export default function ProjectDetail() {
               <p className="font-semibold text-slate-800">
                 {project.contract_value_aed != null
                   ? formatCurrencyAED(project.contract_value_aed, language)
-                  : '—'}
+                  : '-'}
               </p>
             </div>
             <div>
               <p className="text-slate-500">{t('project.meta.commencement')}</p>
               <p className="font-semibold text-slate-800">
-                {project.commencement_date ? formatDate(project.commencement_date, language) : '—'}
+                {project.commencement_date ? formatDate(project.commencement_date, language) : '-'}
               </p>
             </div>
             <div>
               <p className="text-slate-500">{t('project.meta.completion')}</p>
               <p className="font-semibold text-slate-800">
-                {project.completion_date ? formatDate(project.completion_date, language) : '—'}
+                {project.completion_date ? formatDate(project.completion_date, language) : '-'}
               </p>
             </div>
             <div>

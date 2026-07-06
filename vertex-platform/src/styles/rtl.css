@@ -24,7 +24,7 @@ html[dir='rtl'] .mirror-on-rtl {
   direction: ltr;
 }
 
-/* Tabular numbers — used for currency, percent, dates */
+/* Tabular numbers - used for currency, percent, dates */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }

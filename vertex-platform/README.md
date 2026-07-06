@@ -1,4 +1,4 @@
-# VERTEX — Session 1 Foundation
+# VERTEX - Session 1 Foundation
 
 Professional Contract & Project Intelligence platform. This directory contains
 the **Session 1** foundation: authentication, database schema, bilingual
@@ -8,7 +8,7 @@ accessible layout.
 ## What's in Session 1
 
 - React 18 + TypeScript + Vite scaffold (mobile-first, responsive)
-- Supabase PostgreSQL schema — 10 tables with RLS policies
+- Supabase PostgreSQL schema - 10 tables with RLS policies
   (Admin > Reviewer > Viewer > API User)
 - Supabase email/password authentication (30-day refresh sessions)
 - i18next bilingual setup with localStorage persistence
@@ -92,11 +92,11 @@ All tables have RLS enabled. Helper functions `current_user_role()` /
 
 ## Role hierarchy (RLS)
 
-- **Admin** — full CRUD on every table.
-- **Reviewer** — full CRUD only on projects they own (`owner_id = auth.uid()`)
+- **Admin** - full CRUD on every table.
+- **Reviewer** - full CRUD only on projects they own (`owner_id = auth.uid()`)
   and rows linked to those projects.
-- **Viewer** — `SELECT` only on project-scoped tables.
-- **API User** — `SELECT` only (same shape as viewer; intended for programmatic
+- **Viewer** - `SELECT` only on project-scoped tables.
+- **API User** - `SELECT` only (same shape as viewer; intended for programmatic
   read access from automations).
 
 Every authenticated user can read and update their own row in `users`. Every
@@ -147,7 +147,7 @@ Database:
 - [ ] RLS enabled (lock icon) on every table
 - [ ] Inserting a test user via Supabase Auth seeds `public.users`
 
-## Deployment — keeping VERTEX isolated from the root project
+## Deployment - keeping VERTEX isolated from the root project
 
 This repo also hosts a separate Next.js app at the root (Prompt
 Orchestrator / Tweenz). To prevent the two from interfering on Vercel, each
@@ -157,7 +157,7 @@ project has an `ignoreCommand` in its own `vercel.json` that combines
 | File | Always skips on | Otherwise |
 |------|------------------|-----------|
 | `/vercel.json` (root) | `claude/vertex-*`, `vertex/*` branches | Skips when the last commit didn't touch any file outside `vertex-platform/` |
-| `/vertex-platform/vercel.json` | _never_ — these branches **always build** | Skips when the last commit didn't touch `vertex-platform/` |
+| `/vertex-platform/vercel.json` | _never_ - these branches **always build** | Skips when the last commit didn't touch `vertex-platform/` |
 
 Why both? The branch-name rule gives a hard, permanent guarantee:
 **any branch matching `claude/vertex-*` or `vertex/*` cannot trigger a
@@ -169,7 +169,7 @@ VERTEX-only changes.
 
 ### One-time Vercel setup for VERTEX
 
-1. Vercel dashboard → **Add New… → Project**.
+1. Vercel dashboard → **Add New. → Project**.
 2. Import the same Git repository (`ahmadzayan-hub/desktop-tutorial`).
 3. **Root Directory**: `vertex-platform` (click **Edit** and pick the subdir).
 4. **Framework Preset**: `Vite` (auto-detected).
@@ -180,7 +180,7 @@ VERTEX-only changes.
    - `VITE_SUPABASE_ANON_KEY`
    - `VITE_CLAUDE_API_KEY` (Session 2+)
 8. Deploy. Future commits on `claude/vertex-*` / `vertex/*` branches will
-   be built only by this project — the root project will skip them.
+   be built only by this project - the root project will skip them.
 
 ### Branch strategy
 
@@ -191,7 +191,7 @@ VERTEX-only changes.
 | `vertex/*` | **Skipped** (branch policy) | **Builds** (branch policy) |
 
 If you ever need an existing-app preview from a `claude/vertex-*`
-branch, push that work to a regular branch instead — that's the
+branch, push that work to a regular branch instead - that's the
 explicit boundary between the two products in this monorepo.
 
 ### Cleaning up the stale "Tweenz" previews

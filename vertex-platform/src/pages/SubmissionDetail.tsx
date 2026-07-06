@@ -126,13 +126,13 @@ export default function SubmissionDetail() {
             <div>
               <p className="text-slate-500">{t('submission.meta.compliance')}</p>
               <p className="font-semibold text-slate-800">
-                {submission.compliance_score != null ? `${submission.compliance_score}/100` : '—'}
+                {submission.compliance_score != null ? `${submission.compliance_score}/100` : '-'}
               </p>
             </div>
             <div>
               <p className="text-slate-500">{t('submission.meta.confidence')}</p>
               <p className="font-semibold text-slate-800">
-                {submission.confidence_percent != null ? `${submission.confidence_percent}%` : '—'}
+                {submission.confidence_percent != null ? `${submission.confidence_percent}%` : '-'}
               </p>
             </div>
           </div>

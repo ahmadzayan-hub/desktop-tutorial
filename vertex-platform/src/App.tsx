@@ -1,9 +1,10 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { AuthProvider } from '@/components/auth/AuthProvider';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { RTLWrapper } from '@/components/common/RTLWrapper';
 
+import Landing from '@/pages/Landing';
 import Login from '@/pages/Login';
 import Dashboard from '@/pages/Dashboard';
 import Upload from '@/pages/Upload';
@@ -17,7 +18,7 @@ export default function App() {
       <AuthProvider>
         <RTLWrapper>
           <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route
               path="/dashboard"
@@ -51,7 +52,7 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-            {/* Session 3 placeholders — reuse Dashboard until wired */}
+            {/* Session 3 placeholders - reuse Dashboard until wired */}
             <Route
               path="/kpi"
               element={

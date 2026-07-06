@@ -63,7 +63,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) return { ok: false, error: error.message };
 
-      // Best-effort last_login update — never blocks the login.
+      // Best-effort last_login update - never blocks the login.
       const { data: u } = await supabase.auth.getUser();
       if (u.user) {
         void supabase

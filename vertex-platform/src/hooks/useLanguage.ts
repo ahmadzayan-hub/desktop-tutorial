@@ -18,5 +18,5 @@ export function useLanguage() {
     [i18n],
   );
 
-  return { language, setLanguage, t };
+  return { language, setLanguage, t, i18n };
 }

@@ -1,0 +1,37 @@
+# VERTEX
+
+> Contract and project intelligence for UAE infrastructure and services contracts. Owners and reviewers upload a submission (invoice, timesheet, technical document, progress update) and receive a compliance score, a traffic light verdict, and structured findings with clause references and evidence quotes.
+
+VERTEX is a Vite + React + TypeScript single page app backed by Supabase (Postgres, Auth, Storage, Edge Functions). It is bilingual (English and Arabic) with full right to left support, mobile first, and installable as a Progressive Web App on Android and iOS.
+
+## Core capabilities
+
+- Email and password authentication with Supabase Auth, roles: admin, reviewer, viewer, api_user.
+- Ten row-level-secured tables that model users, projects, submissions, ai_findings, comments, kpi_tracking, mobilization_tracking, obligations, insurance_tracking, audit_log.
+- Dashboard with five traffic light stat cards, a six month compliance trend line chart, submissions by status donut, recent activity feed, and alerts panel.
+- Upload flow with a four step wizard that validates MIME and 25 MB size, stores files in a private Supabase Storage bucket, and inserts a submission row.
+- AI analysis service abstracted over mock, Anthropic, OpenAI, and a Supabase Edge Function. Keys stay in Supabase secrets; the browser never sees them.
+- Submission review page with tabs for findings, file preview, comments with mark-resolved, and audit history. Admin and reviewer approve with a confirm dialog and optional reason.
+- Bilingual EN and AR translations for every screen. Layout uses CSS logical properties so it flips correctly in Arabic.
+
+## Public URLs
+
+- Landing: /
+- Login: /login
+- Dashboard (auth): /dashboard
+- Upload (auth): /upload
+- Submission (auth): /submissions/{id}
+- Project (auth): /projects/{id}
+- Manifest: /manifest.webmanifest
+- Sitemap: /sitemap.xml
+- Icon: /icon.svg
+
+## Not intended for
+
+- Drafting contracts or legal advice.
+- Fully automated approval. Human sign off is required for every decision.
+- Storing personally identifying information beyond what is needed to review a submission.
+
+## Contact
+
+Owner: BEYOND CONNECT GENERAL TRADING L.L.C, Dubai, United Arab Emirates.

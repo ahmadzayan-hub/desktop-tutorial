@@ -18,7 +18,7 @@ interface Props {
 export function ComplianceTrendChart({ data }: Props) {
   const { t } = useLanguage();
   if (data.length === 0) {
-    return <EmptyState title={t('dashboard.widgets.complianceTrend')} description="—" />;
+    return <EmptyState title={t('dashboard.widgets.complianceTrend')} description="-" />;
   }
   return (
     <div style={{ width: '100%', height: 220 }}>

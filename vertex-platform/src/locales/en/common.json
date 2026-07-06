@@ -1,17 +1,17 @@
 {
   "app": {
     "name": "VERTEX",
-    "tagline": "Contract & Project Intelligence",
+    "tagline": "Contract and project intelligence",
     "skipToMain": "Skip to main content"
   },
   "nav": {
     "dashboard": "Dashboard",
     "upload": "Upload",
-    "kpi": "KPI Tracker",
+    "kpi": "KPI tracker",
     "projects": "Projects",
     "reports": "Reports",
     "analytics": "Analytics",
-    "logout": "Logout",
+    "logout": "Log out",
     "main": "Main navigation",
     "openMenu": "Open menu",
     "closeMenu": "Close menu"
@@ -22,14 +22,14 @@
     "red": "Alert"
   },
   "auth": {
-    "email": "Email Address",
+    "email": "Email address",
     "emailPlaceholder": "you@example.com",
     "password": "Password",
     "passwordPlaceholder": "Minimum 8 characters",
-    "login": "Log In",
-    "loggingIn": "Logging in…",
-    "signup": "Sign Up",
-    "forgot": "Forgot Password?",
+    "login": "Log in",
+    "loggingIn": "Logging in",
+    "signup": "Sign up",
+    "forgot": "Forgot password?",
     "welcome": "Welcome back",
     "welcomeSubtitle": "Sign in to your VERTEX workspace",
     "passwordHint": "At least 8 characters, with one uppercase letter and one number",
@@ -38,7 +38,7 @@
   "errors": {
     "invalidEmail": "Please enter a valid email address.",
     "passwordTooShort": "Password must be at least 8 characters.",
-    "passwordWeak": "Password must contain at least 1 uppercase letter and 1 number.",
+    "passwordWeak": "Password must contain at least one uppercase letter and one number.",
     "loginFailed": "Invalid email or password. Please try again.",
     "generic": "Something went wrong. Please try again.",
     "notFoundTitle": "Page not found",
@@ -65,24 +65,24 @@
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Welcome back",
-    "subtitle": "Live view of your contracts, submissions, and risks.",
+    "subtitle": "Live view of your contracts, submissions and risks.",
     "widgets": {
-      "submissionsPending": "Submissions Pending",
+      "submissionsPending": "Submissions pending",
       "submissionsPendingHint": "Awaiting AI analysis or reviewer approval",
-      "obligationsAtRisk": "Obligations at Risk",
-      "obligationsAtRiskHint": "At-risk or overdue against contract deadlines",
-      "insuranceExpiring": "Insurance Expiring",
+      "obligationsAtRisk": "Obligations at risk",
+      "obligationsAtRiskHint": "At risk or overdue against contract deadlines",
+      "insuranceExpiring": "Insurance expiring",
       "insuranceExpiringHint": "Policies expiring within 30 days",
-      "kpiPenalties": "KPI Penalties (this month)",
+      "kpiPenalties": "KPI penalties (this month)",
       "kpiPenaltiesHint": "Cumulative deductions triggered this month",
-      "complianceScore": "Compliance Score",
+      "complianceScore": "Compliance score",
       "complianceScoreHint": "30-day average across all submissions",
-      "recentActivity": "Recent Activity",
+      "recentActivity": "Recent activity",
       "recentActivityEmpty": "No recent activity yet. Upload a submission to get started.",
       "alerts": "Alerts",
       "alertsEmpty": "No active alerts.",
-      "complianceTrend": "Compliance Trend",
-      "submissionsByStatus": "Submissions by Status"
+      "complianceTrend": "Compliance trend",
+      "submissionsByStatus": "Submissions by status"
     },
     "activity": {
       "submission_uploaded": "Submission uploaded",
@@ -102,7 +102,7 @@
     },
     "project": {
       "label": "Project",
-      "placeholder": "Select a project…",
+      "placeholder": "Select a project",
       "help": "You can only upload against projects you own."
     },
     "type": {
@@ -116,11 +116,11 @@
     "file": {
       "label": "File",
       "drop": "Drop a file here or click to browse",
-      "allowed": "PDF, PNG, JPG, TXT, CSV, JSON, XLS/XLSX — up to 25 MB",
+      "allowed": "PDF, PNG, JPG, TXT, CSV, JSON, XLS, XLSX up to 25 MB",
       "selected": "Selected: {{name}} ({{size}})",
       "remove": "Remove file",
       "name": "Document name",
-      "namePlaceholder": "Optional — defaults to file name"
+      "namePlaceholder": "Optional. Defaults to file name."
     },
     "confirm": {
       "title": "Ready to upload",
@@ -128,8 +128,8 @@
       "type": "Type",
       "file": "File",
       "size": "Size",
-      "submit": "Upload & Analyze",
-      "submitting": "Uploading and analyzing…"
+      "submit": "Upload and analyze",
+      "submitting": "Uploading and analyzing"
     },
     "actions": {
       "back": "Back",
@@ -153,7 +153,7 @@
     },
     "processingStatus": {
       "pending": "Analysis pending",
-      "processing": "Analyzing…",
+      "processing": "Analyzing",
       "complete": "Analysis complete",
       "error": "Analysis error"
     },
@@ -170,13 +170,13 @@
       "history": "History"
     },
     "findings": {
-      "empty": "No AI findings yet — run analysis to generate.",
+      "empty": "No AI findings yet. Run analysis to generate them.",
       "runAnalysis": "Run analysis"
     },
     "preview": {
       "notSupported": "Preview not available for this file type. Download to view.",
       "download": "Download file",
-      "loading": "Loading preview…"
+      "loading": "Loading preview"
     },
     "history": {
       "empty": "No audit history for this submission yet."
@@ -190,8 +190,8 @@
     "info": "Info"
   },
   "findingType": {
-    "compliance_pass": "Compliance Pass",
-    "compliance_fail": "Compliance Fail",
+    "compliance_pass": "Compliance pass",
+    "compliance_fail": "Compliance fail",
     "alert": "Alert",
     "insight": "Insight",
     "recommendation": "Recommendation"
@@ -219,15 +219,15 @@
       "conditional": "Approve with conditions",
       "reject": "Reject"
     },
-    "approvedBy": "Approved by {{name}} · {{time}}",
+    "approvedBy": "Approved by {{name}} on {{time}}",
     "confirm": "Are you sure? This action is auditable."
   },
   "comments": {
     "title": "Comments",
-    "empty": "No comments yet — start the conversation.",
-    "placeholder": "Write a comment…",
+    "empty": "No comments yet. Start the conversation.",
+    "placeholder": "Write a comment",
     "send": "Send",
-    "sending": "Sending…",
+    "sending": "Sending",
     "resolve": "Mark resolved",
     "resolved": "Resolved",
     "unresolve": "Unresolve"
@@ -246,8 +246,84 @@
     "submissionsEmpty": "No submissions on this project yet.",
     "upload": "Upload submission"
   },
+  "landing": {
+    "hero": {
+      "eyebrow": "For UAE owners and reviewers",
+      "title": "See the risk in every contract submission before you approve it.",
+      "subtitle": "Upload an invoice, timesheet, technical document or progress update. VERTEX returns a compliance score, a traffic light verdict and structured findings with clause references. In seconds.",
+      "primaryCta": "Get started free",
+      "secondaryCta": "Install on Android",
+      "trust": "Bilingual English and Arabic. Runs on your Supabase. UAE hosted."
+    },
+    "features": {
+      "title": "Built for the review desk, not the sales deck.",
+      "items": [
+        {
+          "title": "Traffic light in seconds",
+          "body": "A single glance tells you whether a submission passes, needs conditions, or should not ship. Green, amber, red. Backed by evidence."
+        },
+        {
+          "title": "Clause level findings",
+          "body": "Every finding cites a contract clause, quotes the exact evidence and states the confidence. No hallucination without a citation."
+        },
+        {
+          "title": "Bilingual by design",
+          "body": "Full Arabic and English. Right to left flips correctly, dates and currency respect the locale. No half translations."
+        },
+        {
+          "title": "Full audit trail",
+          "body": "Every upload, analysis, comment and approval is written to an immutable audit log. Show it to auditors, save the argument."
+        },
+        {
+          "title": "Your keys, your data",
+          "body": "AI keys stay in Supabase secrets. Files live in a private storage bucket protected by row level security. The browser never sees a key."
+        },
+        {
+          "title": "Installable app",
+          "body": "Install VERTEX on Android from your browser. Standalone window, splash screen, offline shell. No app store required."
+        }
+      ]
+    },
+    "how": {
+      "title": "How it works",
+      "steps": [
+        {
+          "title": "Upload the document",
+          "body": "Pick the project, pick the type, drop the file. Twenty five megabytes, most common formats. Signed URLs only."
+        },
+        {
+          "title": "VERTEX analyzes",
+          "body": "The AI provider you configured extracts findings against the contract terms, scores compliance and picks a traffic light."
+        },
+        {
+          "title": "You approve or push back",
+          "body": "Reviewers approve, add conditions or reject with an audit log entry. Comments thread stays with the submission for good."
+        }
+      ]
+    },
+    "install": {
+      "title": "Get the Android app",
+      "subtitle": "Install VERTEX to your home screen as a standalone app. Same product, same account, faster launch.",
+      "webCta": "Open web app",
+      "androidCta": "Install on Android",
+      "installing": "Installing",
+      "installed": "Installed",
+      "iosNote": "On iPhone or iPad, open in Safari, tap Share, then Add to Home Screen."
+    },
+    "footer": {
+      "product": "Product",
+      "resources": "Resources",
+      "contact": "Contact",
+      "features": "Features",
+      "howItWorks": "How it works",
+      "login": "Log in",
+      "docs": "Documentation",
+      "privacy": "Privacy",
+      "terms": "Terms"
+    }
+  },
   "common": {
-    "loading": "Loading…",
+    "loading": "Loading",
     "retry": "Retry",
     "cancel": "Cancel",
     "close": "Close",
