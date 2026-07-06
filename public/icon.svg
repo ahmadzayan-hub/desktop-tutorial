@@ -1,32 +1,56 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Prompt Orchestrator">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Tweenz AI">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#6366f1"/>
-      <stop offset="60%" stop-color="#8b5cf6"/>
-      <stop offset="100%" stop-color="#ec4899"/>
+      <stop offset="0%" stop-color="#1d4ed8"/>
+      <stop offset="100%" stop-color="#0ea5e9"/>
     </linearGradient>
-    <linearGradient id="spark" x1="0" y1="0" x2="0" y2="1">
+    <linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#fde68a"/>
-      <stop offset="100%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
     </linearGradient>
-    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="6" result="b"/>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="b"/>
       <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
   </defs>
 
-  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <!-- App icon background -->
+  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
 
-  <!-- prompt cursor bracket > -->
-  <path d="M120 188 L196 256 L120 324"
-        stroke="#ffffff" stroke-width="34" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.92"/>
+  <!-- Open book base -->
+  <rect x="96" y="220" width="320" height="180" rx="14" fill="#ffffff" opacity="0.12"/>
 
-  <!-- horizontal underline (input line) -->
-  <rect x="216" y="338" width="180" height="20" rx="10" fill="#ffffff" opacity="0.55"/>
+  <!-- Book left page -->
+  <path d="M100 222 Q256 210 256 222 L256 388 Q150 376 100 388 Z"
+        fill="#ffffff" opacity="0.18"/>
 
-  <!-- spark / sparkle (the "magic" the prompt produces) -->
+  <!-- Book right page -->
+  <path d="M412 222 Q256 210 256 222 L256 388 Q362 376 412 388 Z"
+        fill="#ffffff" opacity="0.22"/>
+
+  <!-- Book spine -->
+  <rect x="250" y="214" width="12" height="180" rx="6" fill="#ffffff" opacity="0.35"/>
+
+  <!-- Lines on left page -->
+  <rect x="124" y="258" width="110" height="8" rx="4" fill="#ffffff" opacity="0.45"/>
+  <rect x="124" y="282" width="90" height="8" rx="4" fill="#ffffff" opacity="0.35"/>
+  <rect x="124" y="306" width="100" height="8" rx="4" fill="#ffffff" opacity="0.35"/>
+  <rect x="124" y="330" width="80" height="8" rx="4" fill="#ffffff" opacity="0.28"/>
+
+  <!-- Lines on right page -->
+  <rect x="278" y="258" width="110" height="8" rx="4" fill="#ffffff" opacity="0.45"/>
+  <rect x="278" y="282" width="90" height="8" rx="4" fill="#ffffff" opacity="0.35"/>
+  <rect x="278" y="306" width="100" height="8" rx="4" fill="#ffffff" opacity="0.35"/>
+  <rect x="278" y="330" width="80" height="8" rx="4" fill="#ffffff" opacity="0.28"/>
+
+  <!-- AI spark / neural node above book -->
   <g filter="url(#glow)">
-    <path d="M360 120 L376 168 L424 184 L376 200 L360 248 L344 200 L296 184 L344 168 Z"
-          fill="url(#spark)"/>
+    <path d="M256 88 L270 132 L314 146 L270 160 L256 204 L242 160 L198 146 L242 132 Z"
+          fill="url(#accent)"/>
   </g>
+
+  <!-- Small orbiting dots around spark -->
+  <circle cx="320" cy="108" r="8" fill="#fde68a" opacity="0.7"/>
+  <circle cx="192" cy="108" r="6" fill="#fde68a" opacity="0.5"/>
+  <circle cx="340" cy="160" r="5" fill="#fde68a" opacity="0.45"/>
 </svg>

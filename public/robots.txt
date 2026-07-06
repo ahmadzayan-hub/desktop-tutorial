@@ -8,6 +8,7 @@ Allow: /faq
 Allow: /contact
 Allow: /privacy
 Allow: /terms
+Allow: /download
 
 Disallow: /dashboard
 Disallow: /courses

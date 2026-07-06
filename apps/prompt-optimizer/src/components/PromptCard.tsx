@@ -89,10 +89,10 @@ export default function PromptCard({ text, intent, className }: Props) {
     // Top — brand wordmark
     ctx.fillStyle = "#ffffff";
     ctx.font = "700 56px system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
-    ctx.fillText("ZAIan Studio", pad + 32, pad + 88);
+    ctx.fillText("Tweenz AI", pad + 32, pad + 88);
     ctx.fillStyle = "rgba(255,255,255,0.7)";
     ctx.font = "500 28px system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
-    ctx.fillText("زيان ستوديو · From the UAE 🇦🇪 to the world", pad + 32, pad + 132);
+    ctx.fillText("منصة التعلم الذكي · www.tweenz.ae 🇦🇪 to the world", pad + 32, pad + 132);
 
     // Intent pill
     if (intent) {
@@ -124,7 +124,7 @@ export default function PromptCard({ text, intent, className }: Props) {
     ctx.fillStyle = "rgba(255,255,255,0.6)";
     ctx.font = "500 24px system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
     const url =
-      typeof window !== "undefined" ? window.location.host : "promptzaian";
+      typeof window !== "undefined" ? window.location.host : "tweenz.ae";
     ctx.fillText(url, pad + 32, H - pad - 24);
 
     // Right-side spark
@@ -169,7 +169,7 @@ export default function PromptCard({ text, intent, className }: Props) {
       if (!url) return;
       const a = document.createElement("a");
       a.href = url;
-      a.download = `zaian-studio-${new Date().toISOString().slice(0, 10)}.png`;
+      a.download = `tweenz-ai-${new Date().toISOString().slice(0, 10)}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -187,13 +187,13 @@ export default function PromptCard({ text, intent, className }: Props) {
       // Convert data URL → File so navigator.share can attach the image
       const res = await fetch(url);
       const blob = await res.blob();
-      const file = new File([blob], "zaian-studio.png", { type: "image/png" });
+      const file = new File([blob], "tweenz-ai.png", { type: "image/png" });
       const navAny = navigator as Navigator & { canShare?: (data: ShareData) => boolean };
       if (typeof navigator !== "undefined" && navAny.canShare?.({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: "ZAIan Studio",
-          text: "Built with ZAIan Studio · زيان ستوديو"
+          title: "Tweenz AI",
+          text: "Built with Tweenz AI · زيان ستوديو"
         });
         return;
       }

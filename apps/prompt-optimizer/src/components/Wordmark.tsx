@@ -9,9 +9,9 @@ interface Props {
 /**
  * Wordmark for the platform brand.
  *
- * - English: **ZAIan Studio** — the "ZAI" tri-letter is rendered in the
+ * - English: **Tweenz AI** — the "ZAI" tri-letter is rendered in the
  *   brand gradient to read "Z-A-I" (the AI half of the name).
- * - Arabic:  **زيان ستوديو**.
+ * - Arabic:  **منصة التعلم الذكي**.
  *
  * The component picks the right form based on the active locale, but always
  * renders the *other* form as a small subtitle so both audiences recognise
@@ -32,7 +32,7 @@ export default function Wordmark({ className }: Props) {
   );
   const ar = (
     <span className="font-semibold tracking-tight">
-      زيان ستوديو
+      منصة التعلم الذكي
     </span>
   );
 
@@ -42,7 +42,7 @@ export default function Wordmark({ className }: Props) {
         {locale === "ar" ? ar : en}
       </span>
       <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal truncate" aria-hidden="true">
-        {locale === "ar" ? "ZAIan Studio" : "زيان ستوديو"}
+        {locale === "ar" ? "Tweenz AI" : "منصة التعلم الذكي"}
       </span>
     </span>
   );

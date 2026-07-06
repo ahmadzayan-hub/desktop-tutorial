@@ -1,6 +1,6 @@
 "use client";
 
-import { useT } from "@/lib/i18n/I18nProvider";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 import type { Intent } from "@/lib/local-engine";
 
 interface Props {
@@ -49,8 +49,8 @@ const DOMAINS: Domain[] = [
 ];
 
 export default function DomainPicker({ active, onPick, autoDetected, className }: Props) {
-  const t = useT();
-  const localeIsAr = t("app.name") === "زيان ستوديو";
+  const { locale, t } = useI18n();
+  const localeIsAr = locale === "ar";
 
   return (
     <div className={"mt-3 " + (className ?? "")} aria-label={t("domain.label")}>

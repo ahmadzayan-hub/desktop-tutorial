@@ -1,25 +1,51 @@
 {
-  "name": "Tweenz AI Learning OS",
+  "name": "Tweenz AI — منصة التعلم الذكي",
   "short_name": "Tweenz AI",
-  "description": "Your MBA study life, organized by AI. Bilingual AI academic platform.",
+  "description": "منصة ذكية لطلاب الماجستير — تدير مقرراتك وتلخّص محاضراتك وتساعدك على التفوق بالعربية والإنجليزية.",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#f0f4ff",
-  "theme_color": "#2563eb",
+  "display_override": ["window-controls-overlay", "standalone", "browser"],
+  "background_color": "#eff6ff",
+  "theme_color": "#1d4ed8",
   "orientation": "portrait-primary",
-  "lang": "en",
-  "dir": "ltr",
+  "lang": "ar",
+  "dir": "rtl",
+  "id": "/",
+  "scope": "/",
+  "categories": ["education", "productivity"],
   "icons": [
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
     { "src": "/icon.svg",     "sizes": "any",     "type": "image/svg+xml" }
   ],
   "screenshots": [],
-  "categories": ["education", "productivity"],
   "shortcuts": [
-    { "name": "Dashboard", "url": "/dashboard", "description": "Your academic dashboard" },
-    { "name": "AI Tutor", "url": "/tutor", "description": "Chat with your AI tutor" },
-    { "name": "Study Packs", "url": "/study-packs", "description": "Your AI study packs" },
-    { "name": "Ask My MBA", "url": "/ask-mba", "description": "Ask your MBA agent" }
-  ]
+    {
+      "name": "لوحة التحكم",
+      "short_name": "الرئيسية",
+      "url": "/dashboard",
+      "description": "لوحة التحكم الأكاديمية"
+    },
+    {
+      "name": "المُدرِّس الذكي",
+      "short_name": "المُدرِّس",
+      "url": "/tutor",
+      "description": "حوار مع المدرس الذكي"
+    },
+    {
+      "name": "حزم الدراسة",
+      "short_name": "دراسة",
+      "url": "/study-packs",
+      "description": "حزم الدراسة الذكية"
+    },
+    {
+      "name": "اسأل الماجستير",
+      "short_name": "اسأل",
+      "url": "/ask-mba",
+      "description": "وكيل الماجستير الذكي"
+    }
+  ],
+  "prefer_related_applications": false
 }
