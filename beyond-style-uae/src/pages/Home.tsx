@@ -13,7 +13,7 @@ import type { ProductDTO } from "@/types";
 
 export default function Home() {
   const { t, locale } = useI18n();
-  useSeo({ title: t("seo.home.title"), description: t("seo.home.desc"), path: "/", image: "/og.svg" });
+  useSeo({ title: t("seo.home.title"), description: t("seo.home.desc"), path: "/", image: "/og.png" });
   const [products, setProducts] = useState<ProductDTO[]>(SAMPLE_PRODUCTS);
 
   useEffect(() => {

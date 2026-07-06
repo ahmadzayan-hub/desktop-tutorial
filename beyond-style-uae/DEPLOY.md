@@ -62,6 +62,16 @@ wrap this PWA with a Trusted Web Activity (Bubblewrap) — no code changes neede
 - `public/robots.txt`, `public/sitemap.xml`, and `public/llms.txt` (an AI /
   answer-engine summary) are included.
 
-> Note: `og.svg` is a vector share image. Some social scrapers prefer PNG/JPG —
-> if you want perfect link previews on every platform, export `og.svg` to a
-> 1200×630 PNG and point `og:image` / `twitter:image` at it.
+### Brand images
+
+Both vector sources and rasterized PNGs ship in `public/`:
+
+- `og.png` (1200×630) is referenced by `og:image` / `twitter:image` for reliable
+  social and answer-engine link previews on every platform.
+- `icon-192.png`, `icon-512.png` (standard) and `icon-maskable-192/512.png`
+  (Android adaptive safe-zone) are referenced by the manifest;
+  `apple-touch-icon.png` (180×180) covers iOS home-screen.
+
+To regenerate the PNGs after editing an SVG, run
+`node scripts/generate-icons.mjs` (needs `playwright-core` and a Chromium
+binary; see the script header).
