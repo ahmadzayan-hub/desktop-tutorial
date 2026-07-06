@@ -1,26 +1,28 @@
 /* Beyond Style UAE — landing page behavior
    1. Arabic/English toggle (persisted, updates dir + lang + WhatsApp text)
-   2. Prefilled WhatsApp message on every .js-wa link
-   3. Soft scroll-reveal animation (skipped when reduced motion is set)   */
+   2. Prefilled WhatsApp message on every .js-wa link, sourced from
+      config/site.config.json (single source of truth for links & copy)
+   3. Soft scroll-reveal animation (skipped when reduced motion is set)
+
+   The static hrefs in index.html already point at plain wa.me links, so the
+   page keeps working if this script or the config fails to load.            */
 
 (function () {
   "use strict";
 
-  var WA_NUMBER = "971551556991";
-  var WA_MSG = {
-    en: "Hello Beyond Style UAE, I would like to order a customized jewelry item. Please share the available designs and prices.",
-    ar: "مرحباً بيوند ستايل، أرغب بطلب قطعة مجوهرات مخصصة. أرجو مشاركة التصاميم المتوفرة والأسعار.",
-  };
-
   var html = document.documentElement;
+
+  // Filled from config/site.config.json; null until loaded.
+  var waBase = null;
+  var waMessages = null;
 
   function currentLang() {
     return html.getAttribute("lang") === "en" ? "en" : "ar";
   }
 
   function applyWhatsAppLinks(lang) {
-    var href =
-      "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(WA_MSG[lang]);
+    if (!waBase || !waMessages || !waMessages[lang]) return;
+    var href = waBase + "?text=" + encodeURIComponent(waMessages[lang]);
     document.querySelectorAll(".js-wa").forEach(function (a) {
       a.setAttribute("href", href);
     });
@@ -41,6 +43,18 @@
     }
   }
 
+  // Single source of truth for links and prefilled messages.
+  fetch("config/site.config.json")
+    .then(function (r) { return r.json(); })
+    .then(function (cfg) {
+      waBase = cfg.links.whatsapp;
+      waMessages = cfg.whatsappMessages;
+      applyWhatsAppLinks(currentLang());
+    })
+    .catch(function () {
+      /* offline/file:// — static wa.me hrefs keep working */
+    });
+
   // Restore saved language (Arabic is the default in the markup).
   var saved = null;
   try {
@@ -50,8 +64,6 @@
   }
   if (saved === "en" || saved === "ar") {
     setLang(saved);
-  } else {
-    applyWhatsAppLinks(currentLang());
   }
 
   var toggle = document.getElementById("langToggle");

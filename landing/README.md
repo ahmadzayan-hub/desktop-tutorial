@@ -15,10 +15,10 @@ Cloudflare Pages) and loads fast on mobile.
 
 | Path | Purpose |
 | --- | --- |
-| `index.html` | The complete landing page (all sections, bilingual copy, JSON-LD SEO) |
+| `index.html` | The complete landing page (all sections, bilingual copy, JSON-LD SEO). Every icon is defined once in an inline SVG sprite at the top of `<body>` and reused with `<use href="#i-...">` — edit an icon in one place only |
 | `css/style.css` | Luxury design system — ink black, warm gold, ivory, soft beige |
-| `js/main.js` | Language toggle (AR ⇄ EN with RTL/LTR switch), prefilled WhatsApp links, scroll reveal |
-| `config/site.config.json` | Branding, links, categories, gallery and compliance configuration (single source of truth when editing copy) |
+| `js/main.js` | Language toggle (AR ⇄ EN with RTL/LTR switch), prefilled WhatsApp links, scroll reveal. Links and WhatsApp messages are loaded from `config/site.config.json` — no duplicated strings in JS |
+| `config/site.config.json` | **Single source of truth** for branding, links, WhatsApp messages, categories, gallery and compliance configuration |
 | `assets/img/*.webp` | Optimized product photography (crops of the brand's Instagram creatives) |
 | `assets/qr/*.svg` | Real scannable QR codes for Instagram and WhatsApp |
 | `favicon.svg` | BS monogram favicon |
@@ -41,7 +41,9 @@ Cloudflare Pages) and loads fast on mobile.
 - Default is **Arabic (RTL)**; the header toggle switches to English (LTR).
 - Both languages are in the DOM (`.ar` / `.en` spans); CSS shows the active one
   based on `<html lang>`. The choice persists in `localStorage`.
-- All WhatsApp links (`.js-wa`) get a prefilled message in the active language.
+- All WhatsApp links (`.js-wa`) get a prefilled message in the active language,
+  sourced from `config/site.config.json`. If JS or the config fails to load,
+  the static `wa.me` links still work — just without the prefilled text.
 
 ## Compliance rules (important)
 

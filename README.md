@@ -1,38 +1,82 @@
-# Beyond Style UAE — Customer Conversion & Order Control Agent
+# Beyond Style UAE
 
-A **human-approved sales operating console** for Beyond Style UAE
-(BEYOND CONNECT GENERAL TRADING L.L.C). This is **not** an auto-reply bot. It is
-a control tower for UAE social commerce: the agent **drafts** replies and order
+One brand, three apps, one repository. Beyond Style UAE
+(BEYOND CONNECT GENERAL TRADING L.L.C) sells personalized jewelry and Arabic
+calligraphy accessories in the UAE — this repo holds the full funnel, from the
+first Instagram click to the approved WhatsApp reply.
+
+| App | Path | What it is | Stack |
+| --- | --- | --- | --- |
+| **Landing page** | [`landing/`](landing/) | Bilingual (AR-first/EN) marketing page that converts Instagram/WhatsApp visitors into orders. Static — no build, no backend. | HTML/CSS/JS |
+| **Storefront** | [`beyond-style-uae/`](beyond-style-uae/) | Customer shop: catalogue, cart, checkout (COD + Stripe), bilingual with RTL. | React 19 · Vite · Hono · Drizzle |
+| **Sales console** | repo root (`src/`, `supabase/`) | Internal control tower: AI-drafted replies pass a guardrail engine, the owner approves, the system tracks. | Next.js 14 · Supabase |
+
+How they fit: the **landing page** is the top of the funnel (orders flow to
+WhatsApp and a Google order form) → the **storefront** is the self-service shop
+→ the **console** is where the team answers, quotes, and tracks every
+conversation safely.
+
+## One brand, one source of truth
+
+To avoid the same facts drifting apart across apps:
+
+- **Brand config** (links, palette, categories, copy, compliance note):
+  [`landing/config/site.config.json`](landing/config/site.config.json) — the
+  landing page reads it at runtime; treat it as canonical when editing brand
+  data anywhere.
+- **Contact constants in code**: the storefront centralizes the WhatsApp
+  number/display in `beyond-style-uae/src/components/WhatsAppFab.tsx` — every
+  component imports from there. Keep it equal to the config above
+  (`+971 55 155 6991`).
+- **Palette**: ink `#141210/#0A0A0A` · gold `#C9A96E` (dark `#A6864B`, light
+  `#E4CFA1`) · ivory `#FAF7F0` · beige `#F1EADF`. Fonts: Alexandria (Arabic +
+  display), Inter (English body).
+- **Compliance (all apps)**: never claim 925 silver, real gold, waterproof,
+  anti-tarnish, or warranty unless confirmed for the specific item. Material,
+  color, size and availability are confirmed on WhatsApp before every order.
+  The console's guardrail engine enforces this on drafted replies; the landing
+  and storefront bake it into their copy.
+
+Official links: [Instagram @beyond.style.uae](https://www.instagram.com/beyond.style.uae) ·
+[WhatsApp +971 55 155 6991](https://wa.me/971551556991) ·
+[Order form](https://forms.gle/wyHSJdYYGLJovAUBA)
+
+## Quick start per app
+
+```bash
+# Landing page (static)
+cd landing && python3 -m http.server 8080     # http://localhost:8080
+
+# Storefront
+cd beyond-style-uae && npm install && npm run dev
+
+# Sales console (repo root)
+npm install
+cp .env.example .env.local      # fill in Supabase + AI provider
+npm run test                    # guardrail/logic tests
+npm run dev                     # http://localhost:3000
+```
+
+Each app has its own docs: [`landing/README.md`](landing/README.md),
+[`beyond-style-uae/README.md`](beyond-style-uae/README.md) (+
+[`OVERVIEW.md`](beyond-style-uae/OVERVIEW.md)), and the console sections below
+(+ [`DEVELOPER_NOTES.md`](DEVELOPER_NOTES.md), [`ROADMAP.md`](ROADMAP.md)).
+
+---
+
+# The sales console (this directory)
+
+A **human-approved sales operating console** — not an auto-reply bot. It is a
+control tower for UAE social commerce: the agent **drafts** replies and order
 actions, the owner **approves**, the system **tracks**, and the dashboard
 **learns**. Automation comes later — only after the system proves it does not
 make pricing, delivery, stock, or privacy mistakes.
 
 > The agent drafts → you approve → the system tracks → the dashboard learns → automation comes later.
 
-## Why this shape
-
 If you automate too early, you scale mistakes. This MVP scales *discipline*
 instead: every drafted customer reply is forced through a **guardrail engine**
 before an operator can approve and send it.
-
-## Stack
-
-- **Next.js 14** (App Router) + **TypeScript**
-- **Tailwind CSS**
-- **Supabase** (Postgres + Auth + Storage)
-- **Configurable AI provider wrapper** — OpenAI / Anthropic (Claude) / Gemini /
-  `mock`. No API keys are hard-coded; everything is env-driven.
-- **Vitest** for the guardrail/logic test suite.
-
-## Quick start
-
-```bash
-cd beyond-style-uae
-npm install
-cp .env.example .env.local      # fill in Supabase + AI provider
-npm run test                    # 20 guardrail/logic tests
-npm run dev                     # http://localhost:3000
-```
 
 The app runs **before** Supabase is configured (pages show a "connect Supabase"
 hint) and **before** an AI key is set (`AI_PROVIDER=mock` returns placeholder
@@ -55,7 +99,7 @@ In the Supabase SQL editor (or via the CLI), run in order:
 | `AI_PROVIDER` | `openai` \| `anthropic` \| `gemini` \| `mock` |
 | `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / `GEMINI_API_KEY` | provider keys |
 
-## The control tower (guardrail engine)
+## The guardrail engine
 
 `src/lib/guardrails.ts` runs every drafted reply through checks. A **fail**
 blocks the Approve button; a **warn** surfaces a caution; some findings force
