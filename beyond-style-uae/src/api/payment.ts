@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { and, eq, gte, sql } from "drizzle-orm";
 import { db, schema } from "@/db";
 import { computeShipping } from "@/lib/shipping";
+import { computeSubtotal } from "@/lib/pricing";
 import { sendWhatsApp } from "@/api/notify";
 import type { OrderInput } from "@/schemas/product";
 
@@ -33,7 +34,9 @@ async function sendCodVerification(order: CreatedOrder, input: OrderInput): Prom
  * pending_verification. Card orders start at pending_payment.
  */
 export async function createOrder(input: OrderInput): Promise<CreatedOrder> {
-  const subtotal = input.items.reduce((sum, i) => sum + i.priceAed * i.qty, 0);
+  // Authoritative subtotal — applies the same pair offers the cart advertised
+  // (never trusts a client-sent total, but honours the published offer price).
+  const subtotal = computeSubtotal(input.items);
   const { shippingAed } = computeShipping(subtotal);
   const total = subtotal + shippingAed;
 

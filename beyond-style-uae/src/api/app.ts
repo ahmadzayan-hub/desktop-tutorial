@@ -13,6 +13,7 @@ import { createOrder, InsufficientStockError, restockOrder } from "@/api/payment
 import { createCheckoutSession, getStripe, stripeConfigured } from "@/api/stripe";
 import { audit, resolveActor } from "@/api/admin-auth";
 import { sendAbandonedCartNudge } from "@/api/notify";
+import { PAIR_OFFERS, lineSubtotal } from "@/lib/pricing";
 
 type Variables = { actor: string };
 
@@ -85,11 +86,21 @@ app.post("/api/orders", zValidator("json", orderInputSchema), async (c) => {
       orderId: order.id,
       shippingAed: order.shippingAed,
       origin: c.req.header("origin") ?? process.env.PUBLIC_BASE_URL ?? "http://localhost:5173",
-      items: input.items.map((i) => ({
-        name: nameById.get(i.productId) ?? "Beyond Style item",
-        priceAed: i.priceAed,
-        qty: i.qty,
-      })),
+      items: input.items.map((i) => {
+        const name = nameById.get(i.productId) ?? "Beyond Style item";
+        const offer = PAIR_OFFERS[i.productId];
+        // When a pair offer applies, collapse the line to a single entry priced
+        // at the offer-adjusted amount so Stripe charges exactly what the cart
+        // showed. Non-offer lines keep their normal per-unit quantity.
+        if (offer && i.qty >= offer.qty) {
+          return {
+            name: `${name} × ${i.qty}`,
+            priceAed: lineSubtotal({ productId: i.productId, priceAed: i.priceAed, qty: i.qty }),
+            qty: 1,
+          };
+        }
+        return { name, priceAed: i.priceAed, qty: i.qty };
+      }),
     });
 
     await db

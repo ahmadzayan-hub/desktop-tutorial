@@ -9,7 +9,7 @@ import {
 } from "react";
 import { computeShipping, type ShippingState } from "@/lib/shipping";
 import { track } from "@/lib/analytics";
-import { PAIR_OFFERS } from "@/lib/sample-data";
+import { computeSavings, computeSubtotal } from "@/lib/pricing";
 
 export interface CartItem {
   productId: string;
@@ -101,35 +101,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [state]);
 
-  // Pair-offer pricing — buying ≥ N of an offer-eligible piece collapses that
-  // line's price to the pair price (and repeats for further pairs). Aligns
-  // with the active campaign: 1 bracelet 79, 2 bracelets 129.
-  const subtotal = useMemo(
-    () =>
-      state.items.reduce((sum, i) => {
-        const offer = PAIR_OFFERS[i.productId];
-        if (offer && i.qty >= offer.qty) {
-          const bundles = Math.floor(i.qty / offer.qty);
-          const remainder = i.qty % offer.qty;
-          return sum + bundles * offer.priceAed + remainder * i.priceAed;
-        }
-        return sum + i.priceAed * i.qty;
-      }, 0),
-    [state.items],
-  );
+  // Pair-offer pricing lives in the shared `@/lib/pricing` module so the cart
+  // total here and the server's authoritative charge (createOrder / Stripe)
+  // apply identical rules — the customer is never charged more than shown.
+  const subtotal = useMemo(() => computeSubtotal(state.items), [state.items]);
 
-  const savings = useMemo(
-    () =>
-      state.items.reduce((s, i) => {
-        const offer = PAIR_OFFERS[i.productId];
-        if (offer && i.qty >= offer.qty) {
-          const bundles = Math.floor(i.qty / offer.qty);
-          return s + bundles * (offer.qty * i.priceAed - offer.priceAed);
-        }
-        return s;
-      }, 0),
-    [state.items],
-  );
+  const savings = useMemo(() => computeSavings(state.items), [state.items]);
   const count = useMemo(() => state.items.reduce((n, i) => n + i.qty, 0), [state.items]);
   const shipping = useMemo(() => computeShipping(subtotal), [subtotal]);
 

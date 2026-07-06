@@ -108,14 +108,11 @@ export const SAMPLE_PRODUCTS: ProductDTO[] = [
   },
 ];
 
-/**
- * Pair offer eligibility — buying two of the same qualifying piece drops the
- * subtotal for that line to the pair price. Aligned with the active campaign:
- * one bracelet AED 79, two bracelets AED 129.
- */
-export const PAIR_OFFERS: Record<string, { qty: number; priceAed: number }> = {
-  p1: { qty: 2, priceAed: 129 },
-};
+// Pair-offer pricing now lives in the shared, server-safe pricing module
+// (`@/lib/pricing`) so the cart and the order/charge path apply identical
+// rules. Re-exported here for storefront components that import it from
+// sample-data (ProductCard, ProductDetail).
+export { PAIR_OFFERS } from "@/lib/pricing";
 
 // No fake reviews. The site shows real reviews only — when none exist, the UI
 // reads "Be the first to review". Keep this seed empty intentionally.
