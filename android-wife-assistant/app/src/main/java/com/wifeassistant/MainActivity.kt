@@ -38,7 +38,9 @@ import com.wifeassistant.ui.HomeViewModel
 import com.wifeassistant.ui.PeopleScreen
 import com.wifeassistant.ui.SettingsScreen
 import com.wifeassistant.ui.StatsScreen
+import com.wifeassistant.ui.WelcomeScreen
 import com.wifeassistant.ui.theme.WifeAssistantTheme
+import androidx.compose.ui.platform.LocalContext
 import com.wifeassistant.util.Notifications
 import com.wifeassistant.work.Scheduler
 
@@ -79,6 +81,16 @@ private data class NavItem(val key: String, val label: String, val icon: android
 
 @Composable
 private fun AppRoot() {
+    val context = LocalContext.current
+    var onboarded by remember { mutableStateOf(Settings(context).onboarded) }
+    if (!onboarded) {
+        WelcomeScreen(onStart = {
+            Settings(context).onboarded = true
+            onboarded = true
+        })
+        return
+    }
+
     var screen by remember { mutableStateOf("home") }
     val vm: HomeViewModel = viewModel()
 

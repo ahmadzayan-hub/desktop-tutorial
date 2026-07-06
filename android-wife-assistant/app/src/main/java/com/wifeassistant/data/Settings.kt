@@ -47,6 +47,11 @@ class Settings(context: Context) {
         get() = prefs.getString("messageLength", "short") ?: "short"
         set(v) = prefs.edit().putString("messageLength", v).apply()
 
+    // خلّص شاشة الترحيب؟
+    var onboarded: Boolean
+        get() = prefs.getBoolean("onboarded", false)
+        set(v) = prefs.edit().putBoolean("onboarded", v).apply()
+
     // ---- المواعيد ----
     var morningTime: String
         get() = prefs.getString("morningTime", "07:00") ?: "07:00"

@@ -137,6 +137,7 @@ fun HomeScreen(
                     onWhatsApp = {
                         WhatsApp.send(context, Settings(context).currentRecipient()?.number.orEmpty(), item.text)
                     },
+                    onGroup = { WhatsApp.chooser(context, item.text) },
                 )
             }
 
@@ -217,7 +218,7 @@ private fun HeaderBanner() {
                 fontWeight = FontWeight.Bold,
             )
             Text(
-                "اختار اقتراح، عدّله، وابعته لمراتك بضغطة",
+                "اختار اقتراح، عدّله، وابعته للي بتحب بضغطة",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimary,
             )
@@ -233,6 +234,7 @@ private fun SuggestionCard(
     onCopy: () -> Unit,
     onShare: () -> Unit,
     onWhatsApp: () -> Unit,
+    onGroup: () -> Unit,
 ) {
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(
@@ -253,14 +255,16 @@ private fun SuggestionCard(
             }
             Text(item.text, style = MaterialTheme.typography.bodyLarge)
 
-            Button(
-                onClick = onWhatsApp,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                ),
-            ) { Text("📲 ابعت لمراتي على واتساب") }
-
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(
+                    onClick = onWhatsApp,
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                ) { Text("📲 للشخص") }
+                FilledTonalButton(onClick = onGroup, modifier = Modifier.weight(1f)) {
+                    Text("📣 مجموعة")
+                }
+            }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(onClick = onCopy, modifier = Modifier.weight(1f)) {
                     Text("📋 نسخ")
