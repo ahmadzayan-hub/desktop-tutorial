@@ -81,7 +81,7 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
         store.clearPending()
         refreshRecipients()
         val name = _people.value.current?.let { it.name.ifBlank { Relations.labelOf(it.relation) } } ?: "الشخص"
-        _state.value = HomeState(info = "دلوقتي بتكتب لـ $name — دوس اقتراح فوري ✨")
+        _state.value = HomeState(info = "دلوقتي بتكتب لـ $name، دوس اقتراح فوري ✨")
     }
 
     // عند فتح التطبيق: لو فيه جولة محفوظة (من إشعار) نعرضها.
