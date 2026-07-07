@@ -31,6 +31,7 @@ export default defineConfig({
             return 'i18n';
           }
           if (id.includes('@supabase')) return 'supabase';
+          if (id.includes('jspdf')) return 'pdf';
           if (id.includes('react-router')) return 'router';
           if (
             id.includes('react-dom') ||

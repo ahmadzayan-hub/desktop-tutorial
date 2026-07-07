@@ -423,6 +423,52 @@
       "renewed": "مُجدَّدة"
     }
   },
+  "analyticsPage": {
+    "title": "التحليلات",
+    "subtitle": "امتثال ونتائج واتجاهات مخاطر عبر المحفظة كاملةً.",
+    "widgets": {
+      "portfolioScore": "امتثال المحفظة",
+      "portfolioScoreHint": "متوسط موزون لآخر ثلاثين يوماً عبر كل مشروع",
+      "totalFindings": "النتائج (30 يوماً)",
+      "totalFindingsHint": "نتائج ذكاء اصطناعي جديدة في هذه النافذة",
+      "openObligations": "التزامات مفتوحة",
+      "openObligationsHint": "على المسار أو معرضة للخطر ولم تكتمل بعد",
+      "activeInsurance": "تأمينات نشطة",
+      "activeInsuranceHint": "بوالص لها تاريخ انتهاء مستقبلي",
+      "byProject": "الامتثال حسب المشروع",
+      "byProjectEmpty": "لا توجد مستندات ذات درجة امتثال بعد.",
+      "byFindingType": "النتائج حسب النوع",
+      "bySeverity": "النتائج حسب الخطورة",
+      "trend": "النتائج أسبوعياً (آخر اثني عشر أسبوعاً)"
+    }
+  },
+  "reportsPage": {
+    "title": "التقارير",
+    "subtitle": "أنشئ تقارير PDF لمستند أو مشروع. شاركها مع المدققين، وأنهِ الجدل.",
+    "types": {
+      "submission": "تقرير مستند",
+      "project": "تقرير مشروع"
+    },
+    "pickSubmission": "اختر مستنداً",
+    "pickProject": "اختر مشروعاً",
+    "generate": "أنشئ ملف PDF",
+    "generating": "جارٍ الإنشاء",
+    "empty": "لا توجد مشاريع بعد.",
+    "sections": {
+      "meta": "نظرة عامة",
+      "findings": "النتائج",
+      "comments": "التعليقات",
+      "obligations": "الالتزامات",
+      "kpi": "غرامات مؤشرات الأداء",
+      "insurance": "التأمين",
+      "submissions": "المستندات"
+    },
+    "pdf": {
+      "confidential": "سري",
+      "generated": "تاريخ الإنشاء",
+      "page": "الصفحة {{n}} من {{total}}"
+    }
+  },
   "footer": {
     "copyright": "© {{year}} VERTEX. جميع الحقوق محفوظة.",
     "version": "الإصدار {{version}}"

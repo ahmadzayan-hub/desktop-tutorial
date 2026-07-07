@@ -23,8 +23,8 @@ export function Sidebar({ open, onClose }: SidebarProps) {
     { to: '/obligations', label: t('obligationsPage.title'), icon: '◈' },
     { to: '/insurance', label: t('insurancePage.title'), icon: '◇' },
     { to: '/projects', label: t('nav.projects'), icon: '▣' },
-    { to: '/reports', label: t('nav.reports'), icon: '☷' },
-    { to: '/analytics', label: t('nav.analytics'), icon: '◉' },
+    { to: '/analytics', label: t('analyticsPage.title'), icon: '◉' },
+    { to: '/reports', label: t('reportsPage.title'), icon: '☷' },
   ];
 
   return (

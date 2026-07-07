@@ -3,6 +3,26 @@
 Notable changes to the VERTEX platform. Semantic versioning
 (major.minor.patch) once we cut a 1.0.0 tag.
 
+## 0.5.0 - Session 6 - analytics + PDF reports
+
+- `/analytics` - portfolio wide view. Four summary cards (portfolio
+  compliance, findings 30d, open obligations, active insurance),
+  compliance by project bar chart (top 12), findings by type donut,
+  findings by severity bar chart, findings per week line chart (12
+  weeks).
+- `/reports` - generate PDF for a submission or a project. jsPDF +
+  jspdf-autotable. Every generation writes an audit_log entry.
+  - Submission report: header stripe with the VERTEX mark, submission
+    meta table, findings table grouped by severity with clause refs
+    and evidence quotes.
+  - Project report: header stripe, contract meta, submissions table,
+    obligations table, KPI penalties table, insurance table.
+- `useAnalytics` hook rolls up submissions, ai_findings, obligations,
+  insurance in a single pass (five parallel Supabase queries).
+- vite manualChunks isolates jspdf into its own chunk so it only
+  streams on `/reports`.
+- Sidebar shows Analytics and Reports; command palette lists both.
+
 ## 0.4.0 - Session 5 - KPI, obligations, insurance
 
 Three new pages that turn VERTEX from a submission review app into an

@@ -423,6 +423,52 @@
       "renewed": "Renewed"
     }
   },
+  "analyticsPage": {
+    "title": "Analytics",
+    "subtitle": "Portfolio wide compliance, findings and risk trends.",
+    "widgets": {
+      "portfolioScore": "Portfolio compliance",
+      "portfolioScoreHint": "Weighted 30 day average across every project",
+      "totalFindings": "Findings (30 days)",
+      "totalFindingsHint": "New AI findings generated this window",
+      "openObligations": "Open obligations",
+      "openObligationsHint": "On track or at risk, not yet complete",
+      "activeInsurance": "Active insurance",
+      "activeInsuranceHint": "Policies with a future expiry",
+      "byProject": "Compliance by project",
+      "byProjectEmpty": "No submissions with a compliance score yet.",
+      "byFindingType": "Findings by type",
+      "bySeverity": "Findings by severity",
+      "trend": "Findings per week (last 12 weeks)"
+    }
+  },
+  "reportsPage": {
+    "title": "Reports",
+    "subtitle": "Generate PDF reports for a submission or a project. Share with auditors, save the argument.",
+    "types": {
+      "submission": "Submission report",
+      "project": "Project report"
+    },
+    "pickSubmission": "Choose a submission",
+    "pickProject": "Choose a project",
+    "generate": "Generate PDF",
+    "generating": "Generating",
+    "empty": "No projects yet.",
+    "sections": {
+      "meta": "Overview",
+      "findings": "Findings",
+      "comments": "Comments",
+      "obligations": "Obligations",
+      "kpi": "KPI penalties",
+      "insurance": "Insurance",
+      "submissions": "Submissions"
+    },
+    "pdf": {
+      "confidential": "Confidential",
+      "generated": "Generated",
+      "page": "Page {{n}} of {{total}}"
+    }
+  },
   "footer": {
     "copyright": "© {{year}} VERTEX. All rights reserved.",
     "version": "Version {{version}}"

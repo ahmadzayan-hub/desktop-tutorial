@@ -21,6 +21,8 @@ const ProjectDetail = lazy(() => import('@/pages/ProjectDetail'));
 const KpiTracker = lazy(() => import('@/pages/KpiTracker'));
 const Obligations = lazy(() => import('@/pages/Obligations'));
 const InsuranceRenewals = lazy(() => import('@/pages/InsuranceRenewals'));
+const Analytics = lazy(() => import('@/pages/Analytics'));
+const Reports = lazy(() => import('@/pages/Reports'));
 const NotFound = lazy(() => import('@/pages/NotFound'));
 
 function LazyFallback() {
@@ -110,7 +112,7 @@ export default function App() {
                     path="/reports"
                     element={
                       <ProtectedRoute>
-                        <Dashboard />
+                        <Reports />
                       </ProtectedRoute>
                     }
                   />
@@ -118,7 +120,7 @@ export default function App() {
                     path="/analytics"
                     element={
                       <ProtectedRoute>
-                        <Dashboard />
+                        <Analytics />
                       </ProtectedRoute>
                     }
                   />
