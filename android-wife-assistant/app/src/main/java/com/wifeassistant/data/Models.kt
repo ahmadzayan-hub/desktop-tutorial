@@ -15,6 +15,7 @@ data class Recipient(
     val number: String = "",     // واتساب (اختياري)
     val notes: String = "",      // حاجات عنه تخصّص بيها الرسالة
     val occasions: List<PersonOccasion> = emptyList(), // مناسباته الخاصة (MM-DD)
+    val social: String = "",     // روابط حساباته (مرجع سريع، ما بتتسحبش تلقائياً)
 )
 
 // مثال من أسلوبي (رسالة اخترتها أو عدّلتها) - للتعلّم بالسياق، لكل شخص على حدة.
