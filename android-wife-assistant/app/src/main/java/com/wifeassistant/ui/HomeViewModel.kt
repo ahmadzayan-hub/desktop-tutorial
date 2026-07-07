@@ -83,19 +83,31 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
         )
     }
 
-    fun generate(slot: String = "manual", occasion: Occasion? = null) {
+    // آخر نيّة/سياق اتستخدموا - عشان "🔄 جديد" يعيد بنفس القصد.
+    private var lastIntent: String? = null
+    private var lastContext: String = ""
+
+    fun generate(
+        slot: String = "manual",
+        occasion: Occasion? = null,
+        intentId: String? = null,
+        context: String = "",
+    ) {
         val occ = occasion ?: if (slot == "occasion") occasions.todaysOccasion() else null
         val effectiveSlot = if (occ != null) "occasion" else slot
+        lastIntent = intentId
+        lastContext = context
         _state.value = _state.value.copy(loading = true, error = null, info = null)
         viewModelScope.launch {
             try {
-                val res = engine.generate(effectiveSlot, occ)
+                val res = engine.generate(effectiveSlot, occ, intentId, context)
                 store.setPending(PendingRound(res.slot, res.themesShown, res.items, occ?.label))
                 _state.value = HomeState(
                     items = res.items,
                     slot = res.slot,
                     themesShown = res.themesShown,
                     occasionLabel = occ?.label,
+                    info = res.note, // لو رجعنا للجاهز، نوضّح السبب للمستخدم
                 )
             } catch (e: Exception) {
                 _state.value = _state.value.copy(loading = false, error = e.message ?: "حصل خطأ")
@@ -153,6 +165,6 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
     fun regenerate() {
         val occ = _state.value.occasionLabel?.let { Occasion("manual", it) }
         store.addFeedback(Feedback(DateUtil.todayISO(), _state.value.slot, themes(), "regen", null, rid()))
-        generate(if (occ != null) "occasion" else _state.value.slot, occ)
+        generate(if (occ != null) "occasion" else _state.value.slot, occ, lastIntent, lastContext)
     }
 }

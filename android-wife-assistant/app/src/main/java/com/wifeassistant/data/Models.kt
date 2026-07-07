@@ -77,6 +77,8 @@ data class GenerationResult(
     val items: List<Suggestion>,
     val themesShown: List<String>,
     val slot: String,
+    val offline: Boolean = false,  // true لو رجعنا لبنك الرسائل الجاهز (بدون نت/مفتاح)
+    val note: String? = null,      // ملاحظة تتعرض للمستخدم (سبب الرجوع للجاهز)
 )
 
 // مناسبة النهاردة.

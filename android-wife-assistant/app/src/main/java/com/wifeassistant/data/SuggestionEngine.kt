@@ -9,15 +9,36 @@ class SuggestionEngine(
     private val groq: GroqClient,
     private val settings: Settings,
 ) {
-    suspend fun generate(slot: String, occasion: Occasion? = null): GenerationResult {
-        val themes = if (occasion != null) listOf(occasion.label, occasion.label) else pickThemes(2)
-        val raw = groq.complete(
-            listOf(
-                ChatMessage("system", buildSystemPrompt()),
-                ChatMessage("user", buildUserPrompt(slot, occasion, themes)),
+    suspend fun generate(
+        slot: String,
+        occasion: Occasion? = null,
+        intentId: String? = null,
+        context: String = "",
+    ): GenerationResult {
+        val intent = Intents.byId(intentId)
+        val themes = when {
+            intent != null -> listOf(intent.label, intent.label)
+            occasion != null -> listOf(occasion.label, occasion.label)
+            else -> pickThemes(2)
+        }
+        return try {
+            val raw = groq.complete(
+                listOf(
+                    ChatMessage("system", buildSystemPrompt(intent)),
+                    ChatMessage("user", buildUserPrompt(slot, occasion, themes, intent, context)),
+                )
             )
-        )
-        return GenerationResult(parseTwo(raw, themes), themes, slot)
+            GenerationResult(parseTwo(raw, themes), themes, slot)
+        } catch (e: Exception) {
+            // مفيش نت أو مفيش مفتاح: نرجّع بنك الرسائل الجاهز عشان التطبيق ما يقفش.
+            val hasKey = settings.groqKey.isNotBlank()
+            val items = FallbackBank.two(settings.currentRecipient(), intent)
+            val note = if (!hasKey)
+                "ضيف مفتاح Groq من الإعدادات عشان اقتراحات أذكى ✨ دي رسائل جاهزة دلوقتي."
+            else
+                "النت مش متاح دلوقتي 📴 دي رسائل جاهزة تقدر تعدّلها وتبعتها."
+            GenerationResult(items, items.map { it.theme }, slot, offline = true, note = note)
+        }
     }
 
     // اختيار موضوعين: تجنّب المستخدم مؤخراً + ترجيح بالوزن.
@@ -49,7 +70,7 @@ class SuggestionEngine(
     }
 
     // مرساة الصوت - النبرة الأساسية حسب نوع العلاقة (شريك/ابن/أم/أخ...).
-    private fun buildSystemPrompt(): String {
+    private fun buildSystemPrompt(intent: Intents.Intent? = null): String {
         val rel = Relations.byId(settings.currentRecipient()?.relation ?: "partner_wife")
         val lines = mutableListOf(
             "انت بتساعد شخص مصري يكتب رسالة قصيرة ${rel.toAddr} (${rel.label}) باللهجة المصرية العامية.",
@@ -69,6 +90,9 @@ class SuggestionEngine(
         )
         if (settings.humor) {
             lines.add("- حطّ لمسة خفيفة من الدُعابة الحلوة اللطيفة، من غير سخافة ولا مبالغة.")
+        }
+        if (intent != null) {
+            lines.add("نوع الرسالة المطلوب: ${intent.label}. ${intent.hint}")
         }
         lines.add("هدفك: اقتراح هو يبعته بنفسه ${rel.toAddr} عشان يقرّب ويقوّي الترابط.")
         return lines.joinToString("\n")
@@ -105,24 +129,36 @@ class SuggestionEngine(
         ).joinToString("\n")
     }
 
-    private fun buildUserPrompt(slot: String, occasion: Occasion?, themes: List<String>): String {
+    private fun buildUserPrompt(
+        slot: String,
+        occasion: Occasion?,
+        themes: List<String>,
+        intent: Intents.Intent? = null,
+        context: String = "",
+    ): String {
         val slotLabel = when (slot) {
             "morning" -> "الصبح"
             "evening" -> "بالليل"
             else -> "دلوقتي"
         }
-        val situation = if (occasion != null)
-            "النهاردة مناسبة: ${occasion.label}. اكتب رسالة مخصصة للمناسبة دي."
-        else
-            "الوقت: $slotLabel. الموضوع المطلوب لكل اقتراح موجود تحت."
-        val themeLine = if (occasion != null)
-            "الاتنين عن: ${occasion.label}."
-        else
-            "الاقتراح الأول موضوعه: ${themes[0]}. الاقتراح التاني موضوعه: ${themes[1]}."
+        val situation = when {
+            intent != null -> "المطلوب دلوقتي: ${intent.label}. ${intent.hint}"
+            occasion != null -> "النهاردة مناسبة: ${occasion.label}. اكتب رسالة مخصصة للمناسبة دي."
+            else -> "الوقت: $slotLabel. الموضوع المطلوب لكل اقتراح موجود تحت."
+        }
+        val themeLine = when {
+            intent != null -> "الاتنين عن: ${intent.label}، بس كل واحدة بأسلوب وزاوية مختلفة."
+            occasion != null -> "الاتنين عن: ${occasion.label}."
+            else -> "الاقتراح الأول موضوعه: ${themes[0]}. الاقتراح التاني موضوعه: ${themes[1]}."
+        }
 
         val persona = buildPersonaBlock()
         val blocks = mutableListOf(buildStyleBlock())
         if (persona.isNotBlank()) { blocks.add(""); blocks.add(persona) }
+        if (context.isNotBlank()) {
+            blocks.add("")
+            blocks.add("سياق مهم من المستخدم عن الموقف (خلّي الرسالة تتكلم عنه بشكل طبيعي من غير ما تنقله حرفياً): ${context.trim()}")
+        }
         blocks.addAll(
             listOf(
                 "",

@@ -56,6 +56,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.wifeassistant.data.Intents
 import com.wifeassistant.data.Occasion
 import com.wifeassistant.data.Recipient
 import com.wifeassistant.data.Relations
@@ -78,6 +79,8 @@ fun HomeScreen(
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
     var edited by remember { mutableStateOf("") }
+    var selectedIntent by remember { mutableStateOf<String?>(null) }
+    var contextText by remember { mutableStateOf("") }
     val snackbar = remember { SnackbarHostState() }
 
     // كل ما نرجع للشاشة نحدّث قائمة الأشخاص (ممكن اتغيّرت من شاشة الأشخاص).
@@ -135,23 +138,45 @@ fun HomeScreen(
             )
             // مناسبات الشخص المختار - لو ليه مناسبة قريّبة نعرضها كزر سريع.
             PersonOccasionChips(current) { label ->
-                vm.generate("occasion", Occasion("person", label))
+                vm.generate("occasion", Occasion("person", label), context = contextText.trim())
             }
+
+            // نيّة الرسالة: السبب الحقيقي (اعتذار/تهنئة/مواساة...). اختياري.
+            IntentPicker(selected = selectedIntent) { id ->
+                selectedIntent = if (selectedIntent == id) null else id
+            }
+            // سياق سريع للرسالة دي بس (اللي حصل/المناسبة).
+            OutlinedTextField(
+                value = contextText,
+                onValueChange = { contextText = it },
+                label = { Text("إيه المناسبة أو اللي حصل؟ (اختياري)") },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 1,
+            )
 
             // أزرار التوليد
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = { vm.generate("manual") }, modifier = Modifier.weight(1f)) {
-                    Text("✨ اقتراح فوري")
+                Button(
+                    onClick = { vm.generate("manual", intentId = selectedIntent, context = contextText.trim()) },
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text(if (selectedIntent != null) "✨ اكتب الرسالة" else "✨ اقتراح فوري")
                 }
                 FilledTonalButton(onClick = { vm.requestOccasion() }, modifier = Modifier.weight(1f)) {
                     Text("💌 مناسبة")
                 }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(onClick = { vm.generate("morning") }, modifier = Modifier.weight(1f)) {
+                OutlinedButton(
+                    onClick = { vm.generate("morning", intentId = selectedIntent, context = contextText.trim()) },
+                    modifier = Modifier.weight(1f),
+                ) {
                     Text("🌅 صباحي")
                 }
-                OutlinedButton(onClick = { vm.generate("evening") }, modifier = Modifier.weight(1f)) {
+                OutlinedButton(
+                    onClick = { vm.generate("evening", intentId = selectedIntent, context = contextText.trim()) },
+                    modifier = Modifier.weight(1f),
+                ) {
                     Text("🌙 مسائي")
                 }
             }
@@ -302,6 +327,31 @@ private fun RecipientSwitcher(
                         modifier = Modifier.padding(top = 6.dp),
                     )
                 }
+            }
+        }
+    }
+}
+
+// منتقي نيّة الرسالة: يوجّه التوليد للموقف (اعتذار/تهنئة/مواساة...). اختياري.
+@Composable
+private fun IntentPicker(selected: String?, onToggle: (String) -> Unit) {
+    Column {
+        Text(
+            "نيّة الرسالة (اختياري)",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(bottom = 4.dp),
+        )
+        Row(
+            modifier = Modifier.horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Intents.ALL.forEach { intent ->
+                FilterChip(
+                    selected = selected == intent.id,
+                    onClick = { onToggle(intent.id) },
+                    label = { Text("${intent.emoji} ${intent.label}") },
+                )
             }
         }
     }
