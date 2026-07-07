@@ -153,7 +153,7 @@ export default function Corporate() {
                 <button type="button" onClick={() => logoRef.current?.click()} className="flex w-full items-center gap-2 rounded-xl border border-dashed border-coffee-200 bg-cream-50 px-4 py-3 text-sm text-coffee-600 hover:border-gold-500">
                   <Upload className="h-4 w-4" /> {form.logo ? "✓ " + t("corporate.form.logo") : t("corporate.form.logoHint")}
                 </button>
-                <input ref={logoRef} type="file" accept="image/*" className="sr-only" onChange={(e) => {
+                <input ref={logoRef} type="file" accept="image/*" className="sr-only" aria-label={t("corporate.form.logo")} onChange={(e) => {
                   const f = e.target.files?.[0];
                   if (f) set({ logo: URL.createObjectURL(f) });
                 }} />
