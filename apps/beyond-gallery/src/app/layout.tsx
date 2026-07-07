@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 import "./brand.css";
+import Providers from "./_components/Providers";
 
 const SITE = "https://beyondgallery.ae";
 
@@ -259,7 +260,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body className="bg-beyond-ivory text-beyond-charcoal font-bg-body antialiased">
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

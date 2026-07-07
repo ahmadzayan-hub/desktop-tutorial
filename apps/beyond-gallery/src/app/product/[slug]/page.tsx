@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PRODUCTS, getProduct, relatedProducts } from "../../../data/products";
 import Logo from "../../_components/Logo";
+import ProductActions from "../../_components/ProductActions";
 import ProductTile from "../../_components/ProductTile";
 
 const SITE = "https://beyondgallery.ae";
@@ -168,22 +169,7 @@ export default function ProductPage({ params }: Params) {
             {p.longDescriptionAr ?? p.benefitAr}
           </p>
 
-          <div className="mt-7 flex flex-col sm:flex-row gap-2.5">
-            <a
-              href={waHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-beyond-emerald text-white text-[14px] font-semibold hover:opacity-95"
-            >
-              Order this on WhatsApp
-            </a>
-            <Link
-              href="/#collections"
-              className="inline-flex items-center justify-center px-5 py-3 rounded-full border border-beyond-line text-beyond-charcoal text-[14px] font-semibold hover:border-beyond-gold"
-            >
-              Browse more
-            </Link>
-          </div>
+          <ProductActions productId={p.id} productName={p.name} waHref={waHref} />
 
           {/* Attribute grid */}
           <div className="mt-8 grid grid-cols-2 gap-3 text-[13px]">

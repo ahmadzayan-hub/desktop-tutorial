@@ -19,7 +19,9 @@ import {
 import QuickView, { type QuickViewProduct } from "./_components/QuickView";
 import { Reveal, Stagger, StaggerItem } from "./_components/Reveal";
 import Spotlight from "./_components/Spotlight";
-import { ToastHost, WishlistProvider, toast, useWishlist } from "./_components/Wishlist";
+import { toast, useWishlist } from "./_components/Wishlist";
+import { useCart } from "./_components/Cart";
+import SearchOverlay from "./_components/SearchOverlay";
 import {
   ApplePayMark,
   ArrowRight,
@@ -108,7 +110,7 @@ export default function BeyondGalleryLanding() {
     : WA_BASE;
 
   return (
-    <WishlistProvider>
+    <>
       <div
         dir={isRTL ? "rtl" : "ltr"}
         lang={isRTL ? "ar" : "en"}
@@ -142,6 +144,7 @@ export default function BeyondGalleryLanding() {
           <Marketplace lang={lang} />
           <CorporateOrders lang={lang} />
           <CorporatePacks lang={lang} />
+          <BulkCalculator lang={lang} />
           <SupplyDesk lang={lang} />
           <AboutBrand lang={lang} />
           <Testimonials lang={lang} />
@@ -164,9 +167,8 @@ export default function BeyondGalleryLanding() {
           lang={lang}
           waHref={waHref}
         />
-        <ToastHost />
       </div>
-    </WishlistProvider>
+    </>
   );
 }
 
@@ -251,7 +253,9 @@ function Header({
   setLang: (l: "en" | "ar") => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { wishlist } = useWishlist();
+  const { itemCount: cartCount } = useCart();
 
   return (
     <header className="sticky top-0 z-40 bg-beyond-ivory/95 backdrop-blur border-b border-beyond-line">
@@ -290,8 +294,17 @@ function Header({
               {lang === "en" ? "العربية" : "English"}
             </button>
 
-            <a
-              href="#wishlist"
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="inline-flex relative items-center w-10 h-10 rounded-full border border-beyond-line justify-center text-beyond-charcoal hover:border-beyond-gold hover:text-beyond-gold"
+              aria-label={lang === "en" ? "Search" : "بحث"}
+              title={lang === "en" ? "Search" : "بحث"}
+            >
+              <SearchIcon className="w-4 h-4" />
+            </button>
+
+            <Link
+              href="/wishlist"
               className="hidden sm:inline-flex relative items-center w-10 h-10 rounded-full border border-beyond-line justify-center text-beyond-charcoal hover:border-beyond-gold hover:text-beyond-gold"
               aria-label={lang === "en" ? "Wishlist" : "المفضّلة"}
               title={lang === "en" ? "Wishlist" : "المفضّلة"}
@@ -302,7 +315,21 @@ function Header({
                   {wishlist.length}
                 </span>
               )}
-            </a>
+            </Link>
+
+            <Link
+              href="/cart"
+              className="inline-flex relative items-center w-10 h-10 rounded-full border border-beyond-line justify-center text-beyond-charcoal hover:border-beyond-gold hover:text-beyond-gold"
+              aria-label={lang === "en" ? "Cart" : "السلة"}
+              title={lang === "en" ? "Cart" : "السلة"}
+            >
+              <CartIcon className="w-4 h-4" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -end-1 bg-beyond-emerald text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
 
             <a
               href={buildWALink("Hello Beyond Gallery, I would like to order on WhatsApp.")}
@@ -402,6 +429,8 @@ function Header({
           </motion.div>
         )}
       </AnimatePresence>
+
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} lang={lang} />
     </header>
   );
 }
@@ -2338,6 +2367,268 @@ function InstagramStrip({ lang }: { lang: "en" | "ar" }) {
         </div>
       </div>
     </section>
+  );
+}
+
+// BulkCalculator — dynamic pricing for corporate quantities.
+// Anchor prices come from the on-sale product prices. Discount tiers ramp
+// down with quantity, and per-piece surcharges add on for personalisation.
+// The final number is a directional quote; the WhatsApp CTA sends the full
+// spec to the team for a hard confirmation.
+function BulkCalculator({ lang }: { lang: "en" | "ar" }) {
+  // Corporate items with an anchor price for a single piece. Discount tiers
+  // apply below.
+  const items = [
+    { id: "notebook", en: "A5 Branded Notebook", ar: "دفتر A5 مع الشعار", base: 35 },
+    { id: "pen",      en: "Metal Gift Pen",       ar: "قلم معدني للهدايا", base: 25 },
+    { id: "tote",     en: "Canvas Gift Tote Bag", ar: "حقيبة قماشية",       base: 30 },
+    { id: "mug",      en: "Ceramic Gift Mug",     ar: "كوب سيراميك",       base: 28 },
+    { id: "gift-box", en: "Elegant Gift Box Set", ar: "طقم صندوق هدية أنيق", base: 120 },
+    { id: "vip-box",  en: "Corporate VIP Gift Pack", ar: "طقم هدايا مميّز للشركات", base: 250 },
+  ];
+
+  const [itemId, setItemId] = useState(items[0].id);
+  const [qty, setQty] = useState(50);
+  const [logo, setLogo] = useState(true);
+  const [personalise, setPersonalise] = useState(false);
+  const [premiumBox, setPremiumBox] = useState(false);
+
+  const item = items.find((i) => i.id === itemId) ?? items[0];
+
+  // Quantity-based discount. 100+ deepest, 50-99 mid, 25-49 light, <25 none.
+  let qtyDiscount = 0;
+  if (qty >= 100) qtyDiscount = 0.22;
+  else if (qty >= 50) qtyDiscount = 0.14;
+  else if (qty >= 25) qtyDiscount = 0.08;
+
+  const logoSurcharge = logo ? 3 : 0;
+  const personaliseSurcharge = personalise ? 8 : 0;
+  const premiumBoxSurcharge = premiumBox ? 12 : 0;
+
+  const perPiece = Math.max(
+    0,
+    Math.round(
+      (item.base * (1 - qtyDiscount) + logoSurcharge + personaliseSurcharge + premiumBoxSurcharge) * 100
+    ) / 100
+  );
+  const subtotal = Math.round(perPiece * qty * 100) / 100;
+  const vat = Math.round(subtotal * 0.05 * 100) / 100;
+  const total = Math.round((subtotal + vat) * 100) / 100;
+
+  const specSummary = [
+    lang === "en" ? `Item: ${item.en}` : `المنتج: ${item.ar}`,
+    lang === "en" ? `Quantity: ${qty} pieces` : `الكمية: ${qty} قطعة`,
+    lang === "en" ? `Logo printing: ${logo ? "Yes" : "No"}` : `طباعة الشعار: ${logo ? "نعم" : "لا"}`,
+    lang === "en" ? `Per-person personalisation: ${personalise ? "Yes" : "No"}` : `تخصيص لكل شخص: ${personalise ? "نعم" : "لا"}`,
+    lang === "en" ? `Premium ivory box: ${premiumBox ? "Yes" : "No"}` : `صندوق عاجي مميّز: ${premiumBox ? "نعم" : "لا"}`,
+    lang === "en"
+      ? `Directional total: AED ${total.toLocaleString()} including 5% VAT`
+      : `الإجمالي التوجيهي: ${total.toLocaleString()} درهم شاملة ضريبة القيمة المضافة 5%`,
+    lang === "en" ? "Please confirm the final quote and delivery date." : "برجاء تأكيد العرض النهائي وتاريخ التوصيل.",
+  ].join("\n");
+
+  const waHref = buildWALink(specSummary);
+
+  return (
+    <section id="bulk-calculator" className="bg-beyond-white border-y border-beyond-line">
+      <div className="max-w-7xl mx-auto px-4 py-16 sm:py-24">
+        <Reveal className="text-center mb-8 sm:mb-10">
+          <div className="beyond-kicker justify-center mb-3">
+            {lang === "en" ? "Bulk calculator" : "حاسبة الجملة"}
+          </div>
+          <h2 className={`font-display text-3xl sm:text-4xl font-semibold text-beyond-charcoal beyond-ornament ${lang === "ar" ? "font-arabic-display" : ""}`}>
+            {lang === "en" ? (
+              <>Get a <span className="beyond-gold-gradient">directional quote</span> in seconds</>
+            ) : (
+              <>احصل على <span className="beyond-gold-gradient">تقدير مبدئي</span> في ثوانٍ</>
+            )}
+          </h2>
+          <p className={`mt-3 text-[14.5px] text-beyond-charcoal/70 max-w-2xl mx-auto ${lang === "ar" ? "font-arabic" : ""}`}>
+            {lang === "en"
+              ? "Pick an item, set the quantity, add the extras. Prices scale down with quantity. Final quote confirmed on WhatsApp."
+              : "اختر منتجاً، حدّد الكمية، أضف الإضافات. السعر ينخفض مع زيادة الكمية. العرض النهائي يُؤكَّد عبر واتساب."}
+          </p>
+        </Reveal>
+
+        <Reveal>
+          <div className="grid lg:grid-cols-2 gap-6 items-start">
+            {/* Controls */}
+            <div className="rounded-3xl border border-beyond-line bg-beyond-ivory p-5 sm:p-6">
+              <div className={`space-y-5 ${lang === "ar" ? "font-arabic" : ""}`}>
+                <div>
+                  <label className="block text-[12px] font-semibold uppercase tracking-wider text-beyond-charcoal/70 mb-1.5">
+                    {lang === "en" ? "Item" : "المنتج"}
+                  </label>
+                  <select
+                    value={itemId}
+                    onChange={(e) => setItemId(e.target.value)}
+                    className="w-full appearance-none bg-white border border-beyond-line rounded-xl px-3 py-2.5 text-[14px] text-beyond-charcoal focus:border-beyond-gold outline-none"
+                  >
+                    {items.map((it) => (
+                      <option key={it.id} value={it.id}>
+                        {lang === "en" ? it.en : it.ar} — AED {it.base}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-[12px] font-semibold uppercase tracking-wider text-beyond-charcoal/70">
+                      {lang === "en" ? "Quantity" : "الكمية"}
+                    </label>
+                    <div className="text-[13px] font-semibold text-beyond-charcoal">
+                      {qty.toLocaleString()} {lang === "en" ? "pieces" : "قطعة"}
+                    </div>
+                  </div>
+                  <input
+                    type="range"
+                    min={10}
+                    max={500}
+                    step={5}
+                    value={qty}
+                    onChange={(e) => setQty(Number(e.target.value))}
+                    className="w-full accent-beyond-gold"
+                    aria-label={lang === "en" ? "Quantity" : "الكمية"}
+                  />
+                  <div className="flex justify-between text-[11px] text-beyond-charcoal/60 mt-1">
+                    <span>10</span>
+                    <span>25</span>
+                    <span>50</span>
+                    <span>100</span>
+                    <span>250</span>
+                    <span>500</span>
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-2.5">
+                  <label className={`flex items-start gap-2.5 p-3 rounded-2xl border cursor-pointer transition-colors ${logo ? "bg-white border-beyond-gold" : "bg-white border-beyond-line hover:border-beyond-gold/50"}`}>
+                    <input
+                      type="checkbox"
+                      checked={logo}
+                      onChange={(e) => setLogo(e.target.checked)}
+                      className="mt-0.5 accent-beyond-gold"
+                    />
+                    <div>
+                      <div className="text-[13px] font-semibold text-beyond-charcoal">
+                        {lang === "en" ? "Logo printing" : "طباعة الشعار"}
+                      </div>
+                      <div className="text-[11.5px] text-beyond-charcoal/65">
+                        {lang === "en" ? "+ AED 3 per piece" : "+ 3 درهم للقطعة"}
+                      </div>
+                    </div>
+                  </label>
+
+                  <label className={`flex items-start gap-2.5 p-3 rounded-2xl border cursor-pointer transition-colors ${personalise ? "bg-white border-beyond-gold" : "bg-white border-beyond-line hover:border-beyond-gold/50"}`}>
+                    <input
+                      type="checkbox"
+                      checked={personalise}
+                      onChange={(e) => setPersonalise(e.target.checked)}
+                      className="mt-0.5 accent-beyond-gold"
+                    />
+                    <div>
+                      <div className="text-[13px] font-semibold text-beyond-charcoal">
+                        {lang === "en" ? "Per-person personalisation" : "تخصيص لكل شخص"}
+                      </div>
+                      <div className="text-[11.5px] text-beyond-charcoal/65">
+                        {lang === "en" ? "+ AED 8 per piece" : "+ 8 درهم للقطعة"}
+                      </div>
+                    </div>
+                  </label>
+
+                  <label className={`sm:col-span-2 flex items-start gap-2.5 p-3 rounded-2xl border cursor-pointer transition-colors ${premiumBox ? "bg-white border-beyond-gold" : "bg-white border-beyond-line hover:border-beyond-gold/50"}`}>
+                    <input
+                      type="checkbox"
+                      checked={premiumBox}
+                      onChange={(e) => setPremiumBox(e.target.checked)}
+                      className="mt-0.5 accent-beyond-gold"
+                    />
+                    <div>
+                      <div className="text-[13px] font-semibold text-beyond-charcoal">
+                        {lang === "en" ? "Premium ivory + gold gift box" : "صندوق هدية عاجي مع لمسات ذهبية"}
+                      </div>
+                      <div className="text-[11.5px] text-beyond-charcoal/65">
+                        {lang === "en" ? "+ AED 12 per piece" : "+ 12 درهم للقطعة"}
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* Live quote */}
+            <div className="rounded-3xl border border-beyond-gold bg-white beyond-shadow-lg p-5 sm:p-7">
+              <div className={`text-[12px] font-semibold uppercase tracking-wider text-beyond-gold ${lang === "ar" ? "font-arabic tracking-normal" : ""}`}>
+                {lang === "en" ? "Directional quote" : "التقدير المبدئي"}
+              </div>
+              <div className={`mt-1 text-[13.5px] text-beyond-charcoal/70 ${lang === "ar" ? "font-arabic" : ""}`}>
+                {lang === "en" ? item.en : item.ar}, {qty.toLocaleString()} {lang === "en" ? "pieces" : "قطعة"}
+              </div>
+
+              <div className="mt-5 space-y-2.5 text-[13.5px]">
+                <QuoteLine
+                  label={lang === "en" ? "Per piece" : "سعر القطعة"}
+                  value={`AED ${perPiece.toFixed(2)}`}
+                />
+                <QuoteLine
+                  label={lang === "en" ? "Quantity discount" : "خصم الكمية"}
+                  value={
+                    qtyDiscount > 0
+                      ? `${Math.round(qtyDiscount * 100)}%`
+                      : lang === "en"
+                      ? "None"
+                      : "لا يوجد"
+                  }
+                  tone={qtyDiscount > 0 ? "emerald" : undefined}
+                />
+                <QuoteLine
+                  label={lang === "en" ? "Subtotal" : "الإجمالي قبل الضريبة"}
+                  value={`AED ${subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+                />
+                <QuoteLine
+                  label={lang === "en" ? "VAT 5%" : "ضريبة القيمة المضافة 5%"}
+                  value={`AED ${vat.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+                />
+              </div>
+
+              <div className="mt-5 pt-4 border-t border-beyond-line">
+                <div className="flex items-end justify-between">
+                  <div className={`text-[13px] font-semibold text-beyond-charcoal ${lang === "ar" ? "font-arabic" : ""}`}>
+                    {lang === "en" ? "Total including VAT" : "الإجمالي شامل الضريبة"}
+                  </div>
+                  <div className="font-display text-3xl font-semibold beyond-gold-gradient" dir="ltr">
+                    AED {total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </div>
+                </div>
+              </div>
+
+              <a
+                href={waHref}
+                className={`mt-5 w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-beyond-emerald text-white text-[14px] font-semibold hover:opacity-95 ${lang === "ar" ? "font-arabic" : ""}`}
+              >
+                <WhatsAppIcon className="w-4 h-4" />
+                {lang === "en" ? "Confirm this quote on WhatsApp" : "أكّد هذا العرض عبر واتساب"}
+              </a>
+
+              <div className={`mt-3 text-[11.5px] text-beyond-charcoal/60 leading-relaxed ${lang === "ar" ? "font-arabic" : ""}`}>
+                {lang === "en"
+                  ? "This is a directional estimate. Final pricing depends on artwork, logistics and delivery date, and is confirmed by our team within an hour on WhatsApp."
+                  : "هذا تقدير مبدئي. السعر النهائي يعتمد على التصميم واللوجستيات وتاريخ التوصيل، ويؤكّده فريقنا خلال ساعة عبر واتساب."}
+              </div>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+function QuoteLine({ label, value, tone }: { label: string; value: string; tone?: "emerald" }) {
+  return (
+    <div className="flex items-center justify-between">
+      <div className="text-beyond-charcoal/70">{label}</div>
+      <div className={`font-semibold ${tone === "emerald" ? "text-beyond-emerald" : "text-beyond-charcoal"}`}>{value}</div>
+    </div>
   );
 }
 
