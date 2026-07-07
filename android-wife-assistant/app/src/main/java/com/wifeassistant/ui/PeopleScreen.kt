@@ -1,6 +1,11 @@
 package com.wifeassistant.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
@@ -45,6 +51,7 @@ import com.wifeassistant.data.PersonaAnalyzer
 import com.wifeassistant.data.Recipient
 import com.wifeassistant.data.Relations
 import com.wifeassistant.data.Settings
+import com.wifeassistant.util.ContactsReader
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -67,6 +74,29 @@ fun PeopleScreen(onBack: () -> Unit) {
     var pasteInfo by remember { mutableStateOf("") }
     var analyzing by remember { mutableStateOf(false) }
     var editingId by remember { mutableStateOf<String?>(null) }
+
+    // ---- استيراد أعياد الميلاد من جهات الاتصال ----
+    var contacts by remember { mutableStateOf<List<ContactsReader.ContactBirthday>>(emptyList()) }
+    var showContacts by remember { mutableStateOf(false) }
+    fun loadContacts() {
+        contacts = runCatching { ContactsReader.withBirthdays(context) }.getOrDefault(emptyList())
+        showContacts = true
+        if (contacts.isEmpty()) {
+            Toast.makeText(context, "مفيش جهات اتصال بأعياد ميلاد مسجّلة", Toast.LENGTH_LONG).show()
+        }
+    }
+    val contactsPermission = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) loadContacts()
+        else Toast.makeText(context, "محتاج إذن جهات الاتصال عشان أستورد المواعيد", Toast.LENGTH_LONG).show()
+    }
+    fun openContacts() {
+        val granted = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.READ_CONTACTS
+        ) == PackageManager.PERMISSION_GRANTED
+        if (granted) loadContacts() else contactsPermission.launch(Manifest.permission.READ_CONTACTS)
+    }
 
     fun clearForm() {
         name = ""; number = ""; notes = ""; occText = ""; social = ""; pasteInfo = ""
@@ -246,6 +276,9 @@ fun PeopleScreen(onBack: () -> Unit) {
                     Text("🧠 حلّل وكمّل الملف")
                 }
             }
+            OutlinedButton(onClick = { openContacts() }, modifier = Modifier.fillMaxWidth()) {
+                Text("📇 استورد عيد ميلاد من جهات الاتصال")
+            }
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(onClick = { save() }, modifier = Modifier.weight(1f)) {
@@ -307,6 +340,35 @@ fun PeopleScreen(onBack: () -> Unit) {
                         }
                     }
                 }
+            }
+
+            // نافذة اختيار جهة اتصال بعيد ميلاد لملء الفورمة (المستخدم يراجع ويحفظ).
+            if (showContacts && contacts.isNotEmpty()) {
+                AlertDialog(
+                    onDismissRequest = { showContacts = false },
+                    title = { Text("استورد عيد ميلاد 📇") },
+                    text = {
+                        Column(
+                            modifier = Modifier.verticalScroll(rememberScrollState()),
+                            verticalArrangement = Arrangement.spacedBy(2.dp),
+                        ) {
+                            contacts.take(50).forEach { cb ->
+                                TextButton(onClick = {
+                                    if (name.isBlank()) name = cb.name
+                                    if (number.isBlank() && cb.number.isNotBlank()) number = cb.number
+                                    val line = "عيد ميلاد=${cb.mmdd}"
+                                    occText = listOf(occText.trim(), line)
+                                        .filter { it.isNotBlank() }.joinToString("\n")
+                                    showContacts = false
+                                    Toast.makeText(context, "اتضاف - راجع واحفظ ✅", Toast.LENGTH_SHORT).show()
+                                }) { Text("🎂 ${cb.name} · ${cb.mmdd}") }
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showContacts = false }) { Text("إغلاق") }
+                    },
+                )
             }
         }
     }

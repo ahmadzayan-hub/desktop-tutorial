@@ -68,6 +68,25 @@ class Store(context: Context) {
 
     fun feedback(): List<Feedback> = read().feedback
 
+    // حذف عنصر من السجل (بمطابقة التاريخ والنص).
+    @Synchronized
+    fun deleteHistory(date: String, text: String) {
+        val d = read()
+        d.feedback.removeAll { it.date == date && it.finalText == text }
+        write(d)
+    }
+
+    // ---- المفضّلة ----
+    fun favorites(): List<String> = read().favorites
+    fun isFavorite(text: String): Boolean = read().favorites.contains(text)
+
+    @Synchronized
+    fun toggleFavorite(text: String) {
+        val d = read()
+        if (!d.favorites.remove(text)) d.favorites.add(text)
+        write(d)
+    }
+
     // ---- ثبات الحالة (مش نفس الخانة مرتين/يوم) ----
     fun wasSlotSentToday(slot: String): Boolean = read().lastSentPerSlot[slot] == DateUtil.todayISO()
 
