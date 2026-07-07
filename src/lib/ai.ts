@@ -97,9 +97,9 @@ export interface ProposalInput {
 export function generateCorporateProposal(input: ProposalInput, lang: Lang): string {
   const pkg = recommendEventPackage(input.guests);
   if (lang === "ar") {
-    return `يسعد Beyond Coffee Moments تقديم تجربة قهوة راقية لـ ${input.company} بمناسبة ${input.eventType} في ${input.location} بتاريخ ${input.date}. لعدد ${input.guests} ضيفاً، نوصي بباقة "${pkg.name.ar}" التي تشمل طباعة قهوة سيلفي مباشرة وأكواباً تحمل هويتكم وفريق باريستا محترف. نلتزم بتجربة سلسة تعزّز حضور علامتكم وتترك انطباعاً لا يُنسى لدى ضيوفكم.`;
+    return `يسعد Lahza تقديم تجربة قهوة راقية لـ ${input.company} بمناسبة ${input.eventType} في ${input.location} بتاريخ ${input.date}. لعدد ${input.guests} ضيفاً، نوصي بباقة "${pkg.name.ar}" التي تشمل طباعة قهوة سيلفي مباشرة وأكواباً تحمل هويتكم وفريق باريستا محترف. نلتزم بتجربة سلسة تعزّز حضور علامتكم وتترك انطباعاً لا يُنسى لدى ضيوفكم.`;
   }
-  return `Beyond Coffee Moments is delighted to propose a premium coffee experience for ${input.company} at your ${input.eventType} in ${input.location} on ${input.date}. For ${input.guests} guests, we recommend the "${pkg.name.en}" package: live selfie-coffee printing, branded cups and a professional barista team. We commit to a seamless activation that elevates your brand presence and leaves a memorable impression on every guest.`;
+  return `Lahza is delighted to propose a premium coffee experience for ${input.company} at your ${input.eventType} in ${input.location} on ${input.date}. For ${input.guests} guests, we recommend the "${pkg.name.en}" package: live selfie-coffee printing, branded cups and a professional barista team. We commit to a seamless activation that elevates your brand presence and leaves a memorable impression on every guest.`;
 }
 
 // ---- 5. Image cleanup + auto-crop (client-side; swappable) ----------------

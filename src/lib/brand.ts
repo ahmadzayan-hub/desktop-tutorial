@@ -5,7 +5,7 @@
  * before going to production (see UAE compliance report).
  */
 export const BRAND = {
-  name: "Beyond Coffee Moments",
+  name: "Lahza",
   tagline: "Gifting & Event Platform",
 
   // ---- Seller identity (UAE E-Commerce Law disclosure) -------------------
@@ -17,11 +17,11 @@ export const BRAND = {
   vatRate: 0.05, // 5% standard-rated
 
   // ---- Contact -----------------------------------------------------------
-  email: "hello@beyondcoffeemoments.ae",
-  supportEmail: "care@beyondcoffeemoments.ae",
+  email: "hello@lahza.ae",
+  supportEmail: "care@lahza.ae",
   phone: "+971 4 000 0000",
   whatsapp: "971500000000", // digits only, international format for wa.me
-  instagram: "beyondcoffeemoments",
+  instagram: "lahzacoffee",
 
   // ---- Data / privacy ----------------------------------------------------
   photoRetentionDays: 30, // uploaded source images auto-deleted after this

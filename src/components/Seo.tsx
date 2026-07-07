@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useI18n } from "@/i18n/I18nContext";
 
-const ORIGIN = "https://beyondcoffeemoments.ae";
+const ORIGIN = "https://lahza.ae";
 
 function upsertMeta(attr: "name" | "property", key: string, content: string) {
   let tag = document.head.querySelector(`meta[${attr}="${key}"]`);
@@ -31,7 +31,7 @@ export function Seo({
   const { pathname } = useLocation();
 
   useEffect(() => {
-    const full = `${title} · Beyond Coffee Moments`;
+    const full = `${title} · Lahza`;
     const url = `${ORIGIN}${pathname === "/" ? "" : pathname}`;
     document.title = full;
 

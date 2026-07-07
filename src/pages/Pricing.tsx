@@ -18,7 +18,7 @@ export default function Pricing() {
       item: {
         "@type": "Product",
         name: `${p.name.en} · personalised coffee gift`,
-        brand: "Beyond Coffee Moments",
+        brand: "Lahza",
         offers: {
           "@type": "Offer",
           price: p.price,

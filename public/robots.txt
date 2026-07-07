@@ -14,4 +14,4 @@ Allow: /
 User-agent: ClaudeBot
 Allow: /
 
-Sitemap: https://beyondcoffeemoments.ae/sitemap.xml
+Sitemap: https://lahza.ae/sitemap.xml

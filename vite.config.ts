@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath, URL } from "node:url";
 
-// Beyond Coffee Moments — front-end SPA build config.
+// Lahza — front-end SPA build config.
 // Manual chunking keeps the initial bundle small (router split from vendor)
 // to protect the LCP / INP performance targets.
 export default defineConfig({

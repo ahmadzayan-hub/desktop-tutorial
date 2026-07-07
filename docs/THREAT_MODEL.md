@@ -1,4 +1,4 @@
-# Threat Model — Beyond Coffee Moments
+# Threat Model — Lahza
 
 Application- and environment-level threat model to surface security gaps early.
 Method: asset inventory → trust boundaries → data-flow → **STRIDE** per element →
