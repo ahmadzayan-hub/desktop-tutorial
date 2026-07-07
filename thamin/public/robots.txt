@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /$
+Allow: /login
+Allow: /install
+Disallow: /api/
+Disallow: /q/
+Disallow: /calculator
+Disallow: /dashboard
+Disallow: /products
+Disallow: /suppliers
+Disallow: /materials
+Disallow: /quotes
+Disallow: /settings
+Disallow: /history
+Disallow: /brain
+Disallow: /templates
+
+Sitemap: https://thamin.vercel.app/sitemap.xml

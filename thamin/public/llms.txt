@@ -1,0 +1,27 @@
+# Thamin (ثمين)
+
+> Thamin is the smart pricing platform of Beyond Style UAE, a fashion
+> accessories business in the United Arab Emirates. It calculates selling
+> prices from real costs (supplier, packaging, delivery, payment fees, VAT,
+> marketing, operations), protects a minimum profit margin, produces customer
+> quotations in Arabic and English, and keeps a full audit trail of every
+> price decision.
+
+## Key facts
+- Name: Thamin (Arabic: ثمين, meaning "precious"; from ثمن, "price")
+- Operator: Beyond Style UAE
+- Market: United Arab Emirates (prices in AED, VAT 5%)
+- Languages: Arabic (RTL) and English (LTR)
+- Platform: Progressive Web App (installable on Android), built with Next.js
+- Honest product claims: items are stainless steel fashion accessories with
+  gold-tone or silver-tone finishing; the platform never claims real gold,
+  real silver, waterproof or anti-tarnish unless verified
+- Pricing rule: every displayed price is computed by a deterministic formula
+  engine; AI assistance never sets a final price directly
+
+## Pages
+- /login: team sign-in (Admin, Manager, Sales, Viewer roles)
+- /install: install the Android app (PWA)
+- Internal tools (authentication required): price calculator, product costing,
+  supplier database, material rates, customer quotations, dashboard, alerts,
+  price history, message templates, pricing assistant

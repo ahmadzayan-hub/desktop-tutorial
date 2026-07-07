@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gold: #c5a059;
+}
+
+body {
+  @apply bg-luxe text-ink antialiased;
+}
+
+/* Arabic-first font stack: prefers high-quality local Arabic UI fonts
+   (Dubai, Tajawal, Noto) and falls back cleanly for Latin text. */
+html[lang='ar'] body {
+  font-family: 'Dubai', 'Tajawal', 'Noto Kufi Arabic', 'Noto Sans Arabic',
+    'Segoe UI', Tahoma, Arial, sans-serif;
+  letter-spacing: 0;
+}
+
+html[lang='en'] body {
+  font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+@layer components {
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-gold px-5 py-3 text-base font-semibold text-white shadow-card transition hover:bg-gold-dark active:scale-[0.99] disabled:opacity-50;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-gold px-5 py-3 text-base font-semibold text-gold-dark transition hover:bg-gold/10 disabled:opacity-50;
+  }
+  .card {
+    @apply rounded-2xl bg-white p-4 shadow-card;
+  }
+  .input {
+    @apply w-full rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-base outline-none focus:border-gold focus:ring-2 focus:ring-gold/20;
+  }
+  .label {
+    @apply mb-1 block text-sm font-medium text-neutral-600;
+  }
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+}
+
+/* keep numerals and currency readable in RTL */
+[dir='rtl'] .num {
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+}

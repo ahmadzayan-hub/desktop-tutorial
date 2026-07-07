@@ -1,0 +1,24 @@
+{
+  "id": "thamin-pricing",
+  "name": "Thamin ثمين | Smart Pricing for Beyond Style UAE",
+  "short_name": "Thamin ثمين",
+  "description": "Smart pricing platform: cost formulas, margin protection and bilingual customer quotations for UAE accessories business.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["business", "finance", "productivity"],
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "حساب سعر جديد | New Price", "url": "/calculator", "icons": [{ "src": "/icon.svg", "sizes": "any" }] },
+    { "name": "عرض سعر للعميل | Customer Quote", "url": "/quotes/new", "icons": [{ "src": "/icon.svg", "sizes": "any" }] },
+    { "name": "لوحة المتابعة | Dashboard", "url": "/dashboard", "icons": [{ "src": "/icon.svg", "sizes": "any" }] }
+  ]
+}

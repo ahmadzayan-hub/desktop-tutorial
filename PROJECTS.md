@@ -34,15 +34,15 @@ and a Telegram bot.
 
 `docs/` holds shared threat models (`THREAT_MODEL.md`, `THREAT_MODEL_WISAL.md`).
 
-## Product line 3 — Beyond Style UAE Smart Pricing Brain
+## Product line 3 — Thamin (ثمين), Beyond Style UAE smart pricing
 
 | | |
 | --- | --- |
-| **Path** | `beyond-style-pricing/` |
-| **What** | Bilingual (AR/EN) jewelry pricing platform: transparent cost formulas, margin protection, AI photo estimation (open-source LLMs), customer quotations, suppliers, dashboards, audit log, PWA |
+| **Path** | `thamin/` |
+| **What** | Bilingual (AR/EN) pricing platform for Beyond Style UAE accessories: transparent cost formulas, margin protection, photo estimation (open-source LLMs), customer quotations, message templates, suppliers, dashboards, audit log, installable Android PWA |
 | **Stack** | Next.js 14 + TypeScript + Tailwind + Prisma (SQLite dev / Postgres prod) |
-| **Deploy** | Vercel as a **separate project** with Root Directory = `beyond-style-pricing` (own `vercel.json`); DB on Supabase/Postgres |
-| **Standalone** | Yes — self-contained, see its `README.md` |
+| **Deploy** | Vercel as a **separate project** with Root Directory = `thamin` (own `vercel.json`); DB on Supabase/Postgres |
+| **Standalone** | Yes — self-contained, see its `README.md` and `docs/ANDROID.md` |
 
 ## No duplication
 
