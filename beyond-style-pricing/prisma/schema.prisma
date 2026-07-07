@@ -1,0 +1,260 @@
+// Beyond Style UAE — Smart Pricing Brain
+// Default provider is SQLite so the app runs with zero external setup.
+// For production (Supabase/Postgres): change provider to "postgresql" and set
+// DATABASE_URL accordingly — the schema itself is portable.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         String   @default("SALES") // ADMIN | MANAGER | SALES | VIEWER
+  locale       String   @default("en")
+  createdAt    DateTime @default(now())
+
+  calculations PriceCalculation[]
+  quotes       Quote[]
+  products     Product[]          @relation("createdProducts")
+  approvals    Product[]          @relation("approvedProducts")
+  auditLogs    AuditLog[]
+}
+
+// Single-row business rules (id fixed to "default"), editable by ADMIN.
+model BusinessRules {
+  id                   String   @id @default("default")
+  vatRatePct           Float    @default(5)
+  vatModeDefault       String   @default("EXCLUSIVE") // EXCLUSIVE | INCLUSIVE | NONE
+  deliveryStandard     Float    @default(25)
+  deliveryRemote       Float    @default(50)
+  packagingDefault     Float    @default(10)
+  marketingDefault     Float    @default(5)
+  operationsDefault    Float    @default(50)
+  paymentFeeDefaultPct Float    @default(2.5)
+  codFee               Float    @default(10)
+  targetMarginPct      Float    @default(40)
+  minMarginPct         Float    @default(25)
+  rateMaxAgeHours      Float    @default(24)
+  quoteValidityHours   Float    @default(24)
+  roundingLadder       String   @default("[79,89,99,119,129,149,179,199,249,299,399,499,599,699,799,899,999,1299,1499,1999,2499,2999,3999,4999]")
+  bundle2DiscountPct   Float    @default(10)
+  bundle3DiscountPct   Float    @default(15)
+  wholesaleMarginPct   Float    @default(25)
+  premiumUpliftPct     Float    @default(15)
+  approvalThresholdAed Float    @default(5000) // quotes above this require manager approval
+  updatedAt            DateTime @updatedAt
+}
+
+model Material {
+  id             String   @id @default(cuid())
+  name           String
+  nameAr         String
+  category       String // GOLD | SILVER | STAINLESS | PLATING | STONE | CHAIN | CLASP | PACKAGING | OTHER
+  unit           String   @default("gram") // gram | piece | meter | set
+  ratePerUnit    Float
+  currency       String   @default("AED")
+  source         String   @default("manual") // manual | supplier | api
+  manualOverride Boolean  @default(true)
+  riskNote       String?
+  updatedAt      DateTime @updatedAt
+  createdAt      DateTime @default(now())
+}
+
+model Supplier {
+  id               String          @id @default(cuid())
+  name             String
+  country          String?
+  contact          String?
+  materialsSupplied String?
+  moq              String?
+  deliveryCost     Float?
+  leadTimeDays     Int?
+  currency         String          @default("AED")
+  qualityNotes     String?
+  reliabilityScore Int?            // 1..5
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  quotes           SupplierQuote[]
+  products         Product[]
+}
+
+model SupplierQuote {
+  id           String   @id @default(cuid())
+  supplierId   String
+  supplier     Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  description  String
+  amount       Float
+  currency     String   @default("AED")
+  exchangeRate Float    @default(1)
+  quotedAt     DateTime @default(now())
+  note         String?
+}
+
+model Product {
+  id                 String    @id @default(cuid())
+  sku                String    @unique
+  name               String
+  nameAr             String?
+  category           String // NECKLACE | BRACELET | RING | EARRINGS | PENDANT | CHAIN | SET | OTHER
+  material           String? // e.g. SILVER_925, GOLD_18K, GOLD_PLATED_STEEL, STAINLESS_316L
+  purity             String?
+  weightGrams        Float?
+  supplierId         String?
+  supplier           Supplier? @relation(fields: [supplierId], references: [id])
+  supplierQuote      Float?
+  supplierCurrency   String    @default("AED")
+  exchangeRate       Float     @default(1)
+  makingCharge       Float     @default(0)
+  platingCost        Float     @default(0)
+  chainCost          Float     @default(0)
+  claspCost          Float     @default(0)
+  pendantCost        Float     @default(0)
+  stoneCost          Float     @default(0)
+  engravingCost      Float     @default(0)
+  customizationCost  Float     @default(0)
+  packagingCost      Float     @default(0)
+  giftBoxCost        Float     @default(0)
+  deliveryCost       Float     @default(0)
+  paymentMethod      String    @default("CARD") // CARD | COD | ZIINA | LINK | CASH
+  paymentFeePct      Float     @default(2.5)
+  marketingCost      Float     @default(0)
+  operationsCost     Float     @default(0)
+  otherCosts         Float     @default(0)
+  vatMode            String    @default("EXCLUSIVE")
+  targetMarginPct    Float     @default(40)
+  finalPrice         Float?
+  approvedPrice      Float?
+  approvalStatus     String    @default("DRAFT") // DRAFT | PENDING | APPROVED | REJECTED
+  notes              String?
+  photoData          String? // base64 data URI (move to object storage in production)
+  createdById        String?
+  createdBy          User?     @relation("createdProducts", fields: [createdById], references: [id])
+  approvedById       String?
+  approvedBy         User?     @relation("approvedProducts", fields: [approvedById], references: [id])
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  calculations       PriceCalculation[]
+  attachments        Attachment[]
+}
+
+model Channel {
+  id              String  @id @default(cuid())
+  key             String  @unique // instagram | whatsapp | tiktok | noon | website | corporate | marketplace
+  name            String
+  nameAr          String
+  commissionPct   Float   @default(0)
+  adsCostPerOrder Float   @default(0)
+  paymentFeePct   Float   @default(2.5)
+  deliveryCost    Float   @default(25)
+  targetMarginPct Float   @default(40)
+  active          Boolean @default(true)
+}
+
+// Every price calculation is stored — this is the audit trail of pricing.
+model PriceCalculation {
+  id                String   @id @default(cuid())
+  productId         String?
+  product           Product? @relation(fields: [productId], references: [id])
+  mode              String   @default("QUICK") // QUICK | ADVANCED | AI_PHOTO
+  channelKey        String?
+  inputsJson        String // full PricingInput snapshot
+  resultJson        String // full PricingResult snapshot
+  totalCost         Float
+  recommendedPrice  Float
+  finalPrice        Float?
+  marginPct         Float
+  warningsJson      String   @default("[]")
+  rateSnapshotJson  String? // material rates at time of calculation
+  quotedToCustomer  Boolean  @default(false)
+  overrideByAdmin   Boolean  @default(false)
+  overrideReason    String?
+  createdById       String?
+  createdBy         User?    @relation(fields: [createdById], references: [id])
+  createdAt         DateTime @default(now())
+}
+
+model Quote {
+  id           String   @id @default(cuid())
+  number       String   @unique
+  customerName String?
+  customerPhone String?
+  channelKey   String?
+  language     String   @default("en")
+  itemsJson    String // [{name,nameAr,qty,unitPrice,total}]
+  subtotal     Float
+  deliveryCost Float    @default(0)
+  vatAmount    Float    @default(0)
+  vatMode      String   @default("EXCLUSIVE")
+  total        Float
+  currency     String   @default("AED")
+  validUntil   DateTime
+  deliveryDays String?
+  status       String   @default("SENT") // DRAFT | SENT | APPROVED | REJECTED | EXPIRED
+  publicToken  String   @unique @default(cuid())
+  createdById  String?
+  createdBy    User?    @relation(fields: [createdById], references: [id])
+  createdAt    DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  entity    String
+  entityId  String?
+  action    String
+  beforeJson String?
+  afterJson  String?
+  reason    String?
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Alert {
+  id        String   @id @default(cuid())
+  type      String // MARGIN_BELOW_MIN | MISSING_WEIGHT | STALE_RATE | BELOW_COST | OVERRIDE | ...
+  severity  String   @default("warning") // info | warning | critical
+  message   String
+  messageAr String?
+  entity    String?
+  entityId  String?
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Attachment {
+  id        String   @id @default(cuid())
+  kind      String   @default("photo") // photo | invoice | certificate | quote | screenshot
+  filename  String
+  mime      String
+  data      String // base64 (move to Supabase Storage / S3 in production)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+// Pricing Brain conversation memory
+model BrainConversation {
+  id        String         @id @default(cuid())
+  userId    String?
+  title     String?
+  createdAt DateTime       @default(now())
+  messages  BrainMessage[]
+}
+
+model BrainMessage {
+  id             String            @id @default(cuid())
+  conversationId String
+  conversation   BrainConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String // user | assistant | tool
+  content        String
+  toolCallsJson  String?
+  createdAt      DateTime          @default(now())
+}

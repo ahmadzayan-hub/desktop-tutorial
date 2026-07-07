@@ -34,6 +34,16 @@ and a Telegram bot.
 
 `docs/` holds shared threat models (`THREAT_MODEL.md`, `THREAT_MODEL_WISAL.md`).
 
+## Product line 3 — Beyond Style UAE Smart Pricing Brain
+
+| | |
+| --- | --- |
+| **Path** | `beyond-style-pricing/` |
+| **What** | Bilingual (AR/EN) jewelry pricing platform: transparent cost formulas, margin protection, AI photo estimation (open-source LLMs), customer quotations, suppliers, dashboards, audit log, PWA |
+| **Stack** | Next.js 14 + TypeScript + Tailwind + Prisma (SQLite dev / Postgres prod) |
+| **Deploy** | Vercel as a **separate project** with Root Directory = `beyond-style-pricing` (own `vercel.json`); DB on Supabase/Postgres |
+| **Standalone** | Yes — self-contained, see its `README.md` |
+
 ## No duplication
 
 There is **no duplicated project or copied application code** in the tree. Lahza
