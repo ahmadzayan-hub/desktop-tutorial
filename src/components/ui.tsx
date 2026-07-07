@@ -19,11 +19,11 @@ export function PageHeader({
 export function DemoBanner({ demoMode }: { demoMode: boolean }) {
   if (!demoMode) return null;
   return (
-    <div className="mb-5 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-3.5 text-sm">
-      <span className="badge badge-vip shrink-0">DEMO</span>
+    <div className="mb-5 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-3.5 text-sm" dir="rtl" lang="ar">
+      <span className="badge badge-vip shrink-0 font-mono">تجريبي</span>
       <div className="flex-1 text-amber-900">
-        <strong>Demo mode</strong> — sample data so you can explore every feature.
-        Connect Supabase (see <code className="rounded bg-amber-100 px-1 text-xs">README</code>) to switch to live data.
+        <strong>وضع تجريبي</strong> — بيانات نموذجية لاستكشاف جميع الميزات.
+        اربط Supabase (انظر ملف <code className="rounded bg-amber-100 px-1 text-xs font-mono">README</code>) للتبديل إلى البيانات الفعلية.
       </div>
     </div>
   );
@@ -86,10 +86,10 @@ export function EmptyState({ title, hint }: { title: string; hint?: string }) {
 /* ── Status pills ───────────────────────────────────────────────────── */
 
 const STAGE_LABEL: Record<string, string> = {
-  cold_lead: "Cold", information_lead: "Info", price_lead: "Price",
-  warm_lead: "Warm", hot_lead: "Hot", payment_stage: "Payment",
-  delivery_stage: "Delivery", after_sale_stage: "After-sale",
-  complaint_stage: "Complaint", supplier_stage: "Supplier", lost_lead: "Lost",
+  cold_lead: "بارد", information_lead: "يسأل", price_lead: "يستفسر عن سعر",
+  warm_lead: "دافئ", hot_lead: "ساخن", payment_stage: "مرحلة الدفع",
+  delivery_stage: "مرحلة التوصيل", after_sale_stage: "ما بعد البيع",
+  complaint_stage: "شكوى", supplier_stage: "مورّد", lost_lead: "فرصة ضائعة",
 };
 
 const ORDER_STATUS_BADGE: Record<string, string> = {
@@ -97,46 +97,63 @@ const ORDER_STATUS_BADGE: Record<string, string> = {
   qc: "badge-warn", dispatched: "badge-info", delivered: "badge-pass",
   cancelled: "badge-neutral", complaint: "badge-fail",
 };
+const ORDER_STATUS_LABEL: Record<string, string> = {
+  draft: "مسودة", awaiting_payment: "بانتظار الدفع", paid: "مدفوع",
+  qc: "فحص جودة", dispatched: "تم الشحن", delivered: "تم التوصيل",
+  cancelled: "ملغى", complaint: "شكوى",
+};
 
 const PAYMENT_STATUS_BADGE: Record<string, string> = {
   none: "badge-neutral", link_sent: "badge-warn", needs_verification: "badge-warn",
   confirmed: "badge-pass", refunded: "badge-fail",
+};
+const PAYMENT_STATUS_LABEL: Record<string, string> = {
+  none: "لا يوجد", link_sent: "رابط أُرسل", needs_verification: "يحتاج تأكيد",
+  confirmed: "مؤكد", refunded: "مسترد",
 };
 
 const COURIER_STATUS_BADGE: Record<string, string> = {
   none: "badge-neutral", awaiting_confirmation: "badge-warn", confirmed: "badge-info",
   picked_up: "badge-info", in_transit: "badge-info", delivered: "badge-pass", failed: "badge-fail",
 };
+const COURIER_STATUS_LABEL: Record<string, string> = {
+  none: "لا يوجد", awaiting_confirmation: "بانتظار التأكيد", confirmed: "مؤكد",
+  picked_up: "تم الاستلام", in_transit: "في الطريق", delivered: "تم التوصيل", failed: "فشل",
+};
+
+const TEMP_LABEL: Record<string, string> = {
+  hot: "ساخن", warm: "دافئ", cold: "بارد",
+};
 
 export function StagePill({ stage }: { stage: string }) {
-  return <span className="badge badge-neutral">{STAGE_LABEL[stage] ?? stage}</span>;
+  return <span className="badge badge-neutral" lang="ar">{STAGE_LABEL[stage] ?? stage}</span>;
 }
 
 export function TempPill({ temp }: { temp: string }) {
   const cls = temp === "hot" ? "badge-hot" : temp === "warm" ? "badge-warm" : "badge-cold";
-  return <span className={clsx("badge badge-dot", cls)}>{temp}</span>;
+  return <span className={clsx("badge badge-dot", cls)} lang="ar">{TEMP_LABEL[temp] ?? temp}</span>;
 }
 
 export function OrderStatusPill({ status }: { status: string }) {
   return (
-    <span className={clsx("badge", ORDER_STATUS_BADGE[status] ?? "badge-neutral")}>
-      {status.replace(/_/g, " ")}
+    <span className={clsx("badge", ORDER_STATUS_BADGE[status] ?? "badge-neutral")} lang="ar">
+      {ORDER_STATUS_LABEL[status] ?? status.replace(/_/g, " ")}
     </span>
   );
 }
 
 export function PaymentStatusPill({ status }: { status: string }) {
   return (
-    <span className={clsx("badge", PAYMENT_STATUS_BADGE[status] ?? "badge-neutral")}>
-      {status.replace(/_/g, " ")}
+    <span className={clsx("badge", PAYMENT_STATUS_BADGE[status] ?? "badge-neutral")} lang="ar">
+      {PAYMENT_STATUS_LABEL[status] ?? status.replace(/_/g, " ")}
     </span>
   );
 }
 
 export function CourierStatusPill({ status }: { status: string }) {
   return (
-    <span className={clsx("badge", COURIER_STATUS_BADGE[status] ?? "badge-neutral")}>
-      {status.replace(/_/g, " ")}
+    <span className={clsx("badge", COURIER_STATUS_BADGE[status] ?? "badge-neutral")} lang="ar">
+      {COURIER_STATUS_LABEL[status] ?? status.replace(/_/g, " ")}
     </span>
   );
 }

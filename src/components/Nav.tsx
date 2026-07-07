@@ -18,22 +18,22 @@ export interface NavBadges {
 }
 
 const NAV = [
-  { href: "/",             label: "Dashboard",          group: "Operate",  Icon: LayoutDashboard,   badgeKey: "attention" as keyof NavBadges },
-  { href: "/intake",       label: "New Conversation",   group: "Operate",  Icon: MessageSquarePlus  },
-  { href: "/inbox",        label: "Customer Inbox",     group: "Operate",  Icon: Inbox,             badgeKey: "inbox"     as keyof NavBadges },
-  { href: "/customers",    label: "Customers",          group: "Records",  Icon: Users              },
-  { href: "/orders",       label: "Orders",             group: "Records",  Icon: ShoppingBag        },
-  { href: "/payments",     label: "Payments",           group: "Records",  Icon: CreditCard,        badgeKey: "payments"  as keyof NavBadges },
-  { href: "/couriers",     label: "Couriers & Delivery",group: "Records",  Icon: Truck              },
-  { href: "/inventory",    label: "Inventory",          group: "Records",  Icon: Package            },
-  { href: "/offers",       label: "Offers",             group: "Records",  Icon: Tag                },
-  { href: "/suppliers",    label: "Suppliers",          group: "Records",  Icon: Factory            },
-  { href: "/reviews",      label: "Reviews",            group: "Records",  Icon: Star               },
-  { href: "/reports",      label: "Reports & Reviews",  group: "Insight",  Icon: BarChart3          },
-  { href: "/integrations", label: "Integrations",       group: "Admin",    Icon: Plug               },
-  { href: "/settings",     label: "Settings",           group: "Admin",    Icon: Settings           },
-  { href: "/prompts",      label: "Prompt Management",  group: "Admin",    Icon: FileText           },
-  { href: "/audit",        label: "Audit Log",          group: "Admin",    Icon: Shield             },
+  { href: "/",             label: "لوحة التحكم",        group: "التشغيل",  Icon: LayoutDashboard,   badgeKey: "attention" as keyof NavBadges },
+  { href: "/intake",       label: "محادثة جديدة",        group: "التشغيل",  Icon: MessageSquarePlus  },
+  { href: "/inbox",        label: "صندوق الوارد",        group: "التشغيل",  Icon: Inbox,             badgeKey: "inbox"     as keyof NavBadges },
+  { href: "/customers",    label: "العملاء",             group: "السجلات",  Icon: Users              },
+  { href: "/orders",       label: "الطلبات",             group: "السجلات",  Icon: ShoppingBag        },
+  { href: "/payments",     label: "المدفوعات",           group: "السجلات",  Icon: CreditCard,        badgeKey: "payments"  as keyof NavBadges },
+  { href: "/couriers",     label: "الشحن والتوصيل",      group: "السجلات",  Icon: Truck              },
+  { href: "/inventory",    label: "المخزون",             group: "السجلات",  Icon: Package            },
+  { href: "/offers",       label: "العروض",              group: "السجلات",  Icon: Tag                },
+  { href: "/suppliers",    label: "الموردون",            group: "السجلات",  Icon: Factory            },
+  { href: "/reviews",      label: "التقييمات",           group: "السجلات",  Icon: Star               },
+  { href: "/reports",      label: "التقارير",            group: "التحليلات", Icon: BarChart3         },
+  { href: "/integrations", label: "التكاملات",           group: "الإدارة",  Icon: Plug               },
+  { href: "/settings",     label: "الإعدادات",           group: "الإدارة",  Icon: Settings           },
+  { href: "/prompts",      label: "إدارة الردود الآلية", group: "الإدارة",  Icon: FileText           },
+  { href: "/audit",        label: "سجل المراجعة",        group: "الإدارة",  Icon: Shield             },
 ] as const;
 
 const DEFAULT_BADGES: NavBadges = { inbox: 0, payments: 0, disputes: 0, attention: 0 };
@@ -57,7 +57,7 @@ export default function Nav({ mobile, badges = DEFAULT_BADGES }: { mobile?: bool
             <button
               onClick={() => setOpen((v) => !v)}
               className="rounded-lg p-1.5 text-slate-600 hover:bg-slate-100 transition-colors"
-              aria-label={open ? "Close navigation" : "Open navigation"}
+              aria-label={open ? "إغلاق القائمة" : "فتح القائمة"}
             >
               {open ? <X size={18} /> : <Menu size={18} />}
             </button>
