@@ -24,7 +24,7 @@
 
 ## رابط التحميل
 زر التحميل يشير إلى أحدث نسخة APK من إصدارات GitHub:
-`releases/download/android-latest/wife-assistant.apk`
+`releases/download/android-latest/wisal.apk`
 
 ## التطوير محلياً
 أي خادم ثابت يكفي، مثال:
