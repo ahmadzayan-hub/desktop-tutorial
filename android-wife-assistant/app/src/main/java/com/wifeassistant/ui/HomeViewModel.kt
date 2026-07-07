@@ -9,6 +9,8 @@ import com.wifeassistant.data.GroqClient
 import com.wifeassistant.data.Occasion
 import com.wifeassistant.data.Occasions
 import com.wifeassistant.data.PendingRound
+import com.wifeassistant.data.Recipient
+import com.wifeassistant.data.Relations
 import com.wifeassistant.data.Settings
 import com.wifeassistant.data.Store
 import com.wifeassistant.data.Suggestion
@@ -28,6 +30,13 @@ data class HomeState(
     val occasionLabel: String? = null,
 )
 
+// حالة الأشخاص - عشان الواجهة تتفاعل فوراً مع اختيار أي شخص وتظبط كل الخيارات عليه.
+data class PeopleState(
+    val recipients: List<Recipient> = emptyList(),
+    val selectedId: String = "",
+    val current: Recipient? = null,
+)
+
 class HomeViewModel(app: Application) : AndroidViewModel(app) {
     private val settings = Settings(app)
     private val store = Store(app)
@@ -37,7 +46,31 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
     private val _state = MutableStateFlow(HomeState())
     val state: StateFlow<HomeState> = _state.asStateFlow()
 
-    init { loadPending() }
+    private val _people = MutableStateFlow(PeopleState())
+    val people: StateFlow<PeopleState> = _people.asStateFlow()
+
+    init { loadPending(); refreshRecipients() }
+
+    // نقرأ الأشخاص والشخص المختار من الإعدادات - بننده دي كل ما نفتح الشاشة
+    // أو نغيّر الاختيار عشان الواجهة تفضل مظبوطة على الشخص الحالي.
+    fun refreshRecipients() {
+        _people.value = PeopleState(
+            recipients = settings.recipients,
+            selectedId = settings.selectedRecipientId,
+            current = settings.currentRecipient(),
+        )
+    }
+
+    // اختيار شخص من الشاشة الرئيسية مباشرة: كل الخيارات (النبرة، الرقم، المناسبات،
+    // زر الواتساب) بتتظبط عليه فوراً. بنمسح الاقتراحات القديمة لأنها كانت لشخص تاني.
+    fun selectRecipient(id: String) {
+        if (id == settings.selectedRecipientId) return
+        settings.selectedRecipientId = id
+        store.clearPending()
+        refreshRecipients()
+        val name = _people.value.current?.let { it.name.ifBlank { Relations.labelOf(it.relation) } } ?: "الشخص"
+        _state.value = HomeState(info = "دلوقتي بتكتب لـ $name — دوس اقتراح فوري ✨")
+    }
 
     // عند فتح التطبيق: لو فيه جولة محفوظة (من إشعار) نعرضها.
     fun loadPending() {
