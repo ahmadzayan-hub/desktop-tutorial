@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wifeassistant.data.Settings
+import com.wifeassistant.ui.BroadcastScreen
 import com.wifeassistant.ui.HistoryScreen
 import com.wifeassistant.ui.HomeScreen
 import com.wifeassistant.ui.HomeViewModel
@@ -134,12 +135,14 @@ private fun AppRoot(onThemeChanged: () -> Unit = {}) {
                 "stats" -> StatsScreen(onBack = { screen = "home" })
                 "history" -> HistoryScreen(onBack = { screen = "home" })
                 "people" -> PeopleScreen(onBack = { screen = "home" })
+                "broadcast" -> BroadcastScreen(onBack = { screen = "home" })
                 else -> HomeScreen(
                     vm = vm,
                     onOpenSettings = { screen = "settings" },
                     onOpenStats = { screen = "stats" },
                     onOpenHistory = { screen = "history" },
                     onOpenPeople = { screen = "people" },
+                    onOpenBroadcast = { screen = "broadcast" },
                 )
             }
         }

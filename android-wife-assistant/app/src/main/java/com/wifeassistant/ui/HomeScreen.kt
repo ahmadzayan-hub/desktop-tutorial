@@ -64,6 +64,7 @@ import com.wifeassistant.data.Suggestion
 import com.wifeassistant.util.CalendarReader
 import com.wifeassistant.util.Share
 import com.wifeassistant.util.WhatsApp
+import com.wifeassistant.work.SendReminder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,6 +74,7 @@ fun HomeScreen(
     onOpenStats: () -> Unit,
     onOpenHistory: () -> Unit,
     onOpenPeople: () -> Unit,
+    onOpenBroadcast: () -> Unit = {},
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val people by vm.people.collectAsStateWithLifecycle()
@@ -184,6 +186,9 @@ fun HomeScreen(
             OutlinedButton(onClick = { openCalendar() }, modifier = Modifier.fillMaxWidth()) {
                 Text("📅 مناسبة من أجندتي")
             }
+            OutlinedButton(onClick = onOpenBroadcast, modifier = Modifier.fillMaxWidth()) {
+                Text("📣 رسالة جماعية لجهات الاتصال")
+            }
 
             // المناسبات الجاية عبر كل الأشخاص - تخطيط وتنبيه مبكّر + أفكار عملية.
             UpcomingOccasions(
@@ -254,6 +259,11 @@ fun HomeScreen(
                     },
                     onGroup = { WhatsApp.chooser(context, item.text) },
                     onRefine = { style -> vm.refine(idx, style) },
+                    onRemind = {
+                        val who = current?.let { it.name.ifBlank { Relations.labelOf(it.relation) } } ?: "حد بتحبه"
+                        SendReminder.schedule(context, who, item.text, "tomorrow_morning")
+                        Toast.makeText(context, "هفكّرك بكرة الصبح ⏰", Toast.LENGTH_SHORT).show()
+                    },
                 )
             }
 
@@ -510,6 +520,7 @@ private fun SuggestionCard(
     onWhatsApp: () -> Unit,
     onGroup: () -> Unit,
     onRefine: (String) -> Unit,
+    onRemind: () -> Unit,
 ) {
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(
@@ -539,6 +550,7 @@ private fun SuggestionCard(
                 AssistChip(onClick = { onRefine("shorter") }, label = { Text("➖ أقصر") })
                 AssistChip(onClick = { onRefine("romantic") }, label = { Text("💘 أرومانسي") })
                 AssistChip(onClick = { onRefine("simpler") }, label = { Text("🌿 أبسط") })
+                AssistChip(onClick = onRemind, label = { Text("⏰ ذكّرني بكرة") })
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
