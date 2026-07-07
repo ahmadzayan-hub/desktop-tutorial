@@ -60,6 +60,8 @@ data class AppData(
     val lastSentPerSlot: MutableMap<String, String> = mutableMapOf(),
     // آخر يوم تواصلت فيه مع كل شخص (recipientId -> YYYY-MM-DD) لتذكيرات "بقالك فترة".
     val lastContactedPerRecipient: MutableMap<String, String> = mutableMapOf(),
+    // رسايل محفوظة كمفضّلة (النص) عشان ترجعلها بسرعة من السجل.
+    val favorites: MutableList<String> = mutableListOf(),
     var pending: PendingRound? = null,
 )
 
