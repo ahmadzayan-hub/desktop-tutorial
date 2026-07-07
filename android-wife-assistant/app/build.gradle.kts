@@ -10,7 +10,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.wifeassistant"
+        applicationId = "com.wisal.app"
         minSdk = 26
         targetSdk = 35
         // رقم الإصدار بيزيد تلقائياً من رقم بناء الـ CI (VERSION_CODE) عشان

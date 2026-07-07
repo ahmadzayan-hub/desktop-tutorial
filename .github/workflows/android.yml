@@ -72,26 +72,44 @@ jobs:
           VERSION_NAME: "1.0.${{ github.run_number }}"
         run: ./gradlew assembleRelease --stacktrace --no-daemon
 
-      - name: Prepare APK file
-        run: cp app/build/outputs/apk/release/app-release.apk ../wife-assistant.apk
+      # 4) بناء App Bundle (AAB) للرفع على Google Play.
+      - name: Build release AAB (for Google Play)
+        env:
+          KEYSTORE_FILE: ${{ steps.keystore.outputs.path }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          VERSION_CODE: ${{ github.run_number }}
+          VERSION_NAME: "1.0.${{ github.run_number }}"
+        run: ./gradlew bundleRelease --stacktrace --no-daemon
 
-      - name: Upload APK artifact
+      - name: Prepare artifacts (wisal.apk / wisal.aab)
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk ../wisal.apk
+          cp app/build/outputs/bundle/release/app-release.aab ../wisal.aab
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: wife-assistant-apk
-          path: wife-assistant.apk
+          name: wisal-android
+          path: |
+            wisal.apk
+            wisal.aab
           if-no-files-found: error
 
-      # رابط تنزيل ثابت: أحدث APK دايماً على release واحد اسمه android-latest.
-      - name: Publish rolling release (latest APK)
+      # رابط تنزيل ثابت: أحدث نسخة دايماً على release واحد اسمه android-latest.
+      - name: Publish rolling release (latest build)
         if: github.event_name != 'pull_request'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: android-latest
-          name: "أحدث نسخة APK (مساعد الرسايل)"
+          name: "أحدث نسخة وصال (Wisal)"
           body: |
-            APK جاهز للتثبيت مباشرة على الموبايل.
-            نزّل `wife-assistant.apk` من Assets تحت وثبّته.
-            محتاج تسمح بتثبيت من "مصادر غير معروفة" أول مرة.
-          files: wife-assistant.apk
+            وصال - أحدث نسخة جاهزة.
+            • للتثبيت المباشر على الموبايل: نزّل `wisal.apk` من Assets تحت.
+            • للرفع على Google Play: استخدم `wisal.aab`.
+            أول تثبيت للـ APK محتاج تسمح بتثبيت من "مصادر غير معروفة".
+          files: |
+            wisal.apk
+            wisal.aab
           make_latest: true
