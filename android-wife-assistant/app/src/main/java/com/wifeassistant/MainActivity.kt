@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -58,10 +59,21 @@ class MainActivity : ComponentActivity() {
         Scheduler.scheduleDaily(this) // جدولة إشعارات الصباح/المساء
 
         setContent {
-            WifeAssistantTheme {
+            // نقرأ تفضيلات المظهر ونخلّيها state عشان تتغيّر فوراً من الإعدادات.
+            var themeMode by remember { mutableStateOf(Settings(this).themeMode) }
+            var dynamicColor by remember { mutableStateOf(Settings(this).dynamicColor) }
+            val dark = when (themeMode) {
+                "light" -> false
+                "dark" -> true
+                else -> isSystemInDarkTheme()
+            }
+            WifeAssistantTheme(darkTheme = dark, dynamicColor = dynamicColor) {
                 // اللغة عربي فالاتجاه من اليمين لليسار.
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                    AppRoot()
+                    AppRoot(onThemeChanged = {
+                        themeMode = Settings(this).themeMode
+                        dynamicColor = Settings(this).dynamicColor
+                    })
                 }
             }
         }
@@ -80,7 +92,7 @@ class MainActivity : ComponentActivity() {
 private data class NavItem(val key: String, val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector)
 
 @Composable
-private fun AppRoot() {
+private fun AppRoot(onThemeChanged: () -> Unit = {}) {
     val context = LocalContext.current
     var onboarded by remember { mutableStateOf(Settings(context).onboarded) }
     if (!onboarded) {
@@ -118,7 +130,7 @@ private fun AppRoot() {
     ) { pad ->
         Box(modifier = Modifier.padding(pad)) {
             when (screen) {
-                "settings" -> SettingsScreen(onBack = { screen = "home" })
+                "settings" -> SettingsScreen(onBack = { screen = "home" }, onThemeChanged = onThemeChanged)
                 "stats" -> StatsScreen(onBack = { screen = "home" })
                 "history" -> HistoryScreen(onBack = { screen = "home" })
                 "people" -> PeopleScreen(onBack = { screen = "home" })
