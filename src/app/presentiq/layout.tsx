@@ -1,8 +1,6 @@
 import { ReactNode } from "react";
 import type { Metadata } from "next";
 import { I18nProvider } from "@/lib/presentiq/i18n/context";
-import { ContactBubble } from "@/components/presentiq/ui/ContactBubble";
-import { Stardust } from "@/components/presentiq/ui/Stardust";
 import { PresentIqShell } from "./_shell";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.tweenz.ae";
@@ -125,8 +123,6 @@ export default function PresentIqLayout({ children }: { children: ReactNode }) {
           }}
         />
         <PresentIqShell>{children}</PresentIqShell>
-        <ContactBubble />
-        <Stardust />
       </div>
     </I18nProvider>
   );

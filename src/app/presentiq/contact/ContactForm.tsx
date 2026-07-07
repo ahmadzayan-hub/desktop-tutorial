@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useI18n } from "@/lib/presentiq/i18n/context";
 import { Frame4D } from "@/components/presentiq/ui/Frame4D";
 import { PQ_CONTACT_EMAIL } from "@/lib/presentiq/config";
-import { burstConfetti } from "@/components/presentiq/ui/Confetti";
 
 const CONTACT_EMAIL = PQ_CONTACT_EMAIL;
 
@@ -17,11 +16,9 @@ export function ContactForm() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const sendBtnRef = useRef<HTMLButtonElement | null>(null);
-
-  // Fire a confetti burst from the Send button when the message lands.
-  useEffect(() => {
-    if (sent) burstConfetti(sendBtnRef.current);
-  }, [sent]);
+  // Removed: confetti burst on send. Purely decorative and cost a
+  // module + a canvas allocation for a moment users are already
+  // celebrating on their own screen.
 
   async function submit() {
     setSending(true); setError(null);

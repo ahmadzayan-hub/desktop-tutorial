@@ -21,12 +21,7 @@ import { useI18n } from "@/lib/presentiq/i18n/context";
 import { Frame4D } from "@/components/presentiq/ui/Frame4D";
 import { InstallApp } from "@/components/presentiq/ui/InstallApp";
 import { TEMPLATES } from "@/lib/presentiq/templates/registry";
-import {
-  Magnetic,
-  ParallaxMesh,
-  Reveal,
-  Tilt,
-} from "@/components/presentiq/ui/motion";
+import { Magnetic, Reveal, Tilt } from "@/components/presentiq/ui/motion";
 
 const FEATURES: { titleKey: any; bodyKey: any; Icon: LucideIcon }[] = [
   { titleKey: "feat.brand.title",    bodyKey: "feat.brand.body",    Icon: ShieldCheck },
@@ -36,8 +31,6 @@ const FEATURES: { titleKey: any; bodyKey: any; Icon: LucideIcon }[] = [
   { titleKey: "feat.regen.title",    bodyKey: "feat.regen.body",    Icon: RotateCcw },
   { titleKey: "feat.evidence.title", bodyKey: "feat.evidence.body", Icon: BadgeCheck },
 ];
-
-const V2_KEYS: any[] = ["v2.outline", "v2.theme", "v2.share", "v2.compare", "v2.assets", "v2.demo"];
 
 type TplCategory = "all" | "pitch" | "proposal" | "boardroom" | "training" | "tender";
 
@@ -99,18 +92,11 @@ export function Hero() {
     tplCat === "all" ? true : TPL_CATEGORY[tp.code] === tplCat,
   );
 
-  // Trust marquee items, duplicated twice for an unbroken loop.
-  const TRUST = lang === "ar"
-    ? ["مجالس الإدارة", "اللجان الحكومية", "الشركاء الاستشاريون", "لجان التوجيه", "حالات العمل", "فِرَق العلاقات الحكومية", "مديرو المنتجات"]
-    : ["BOARDROOMS", "GOVERNMENT COMMITTEES", "CONSULTING PARTNERS", "STEERING COMMITTEES", "BUSINESS CASES", "GR TEAMS", "PRODUCT LEADERS"];
-
   return (
     <div className="space-y-16">
-      {/* ── Hero v0.5 — Pitchora composer + parallax aurora ───────── */}
+      {/* ── Hero — composer + brand pill ─────────────────────────── */}
       <section className="pq-composer-hero" style={{ position: "relative", isolation: "isolate" }}>
         <div className="pq-mesh pq-aurora-flow" aria-hidden />
-        <ParallaxMesh intensity={28} />
-
         <div className="relative" style={{ zIndex: 1 }}>
           {/* Marketing pill — replaces the earlier AuroraWord wordmark
               (which repeated the brand already shown in the header and
@@ -365,19 +351,11 @@ export function Hero() {
         </div>
       </Reveal>
 
-      {/* ── Built-for marquee — animated trust strip ─────────────── */}
-      <Reveal as="section" className="pq-trust-strip pq-marquee" variant="single">
-        <span className="pq-trust-label" style={{ flexShrink: 0, paddingInlineEnd: "1.5rem" }}>
-          {lang === "ar" ? "مُصمَّم لـ" : "Built for"}
-        </span>
-        <div className="pq-marquee-track">
-          {TRUST.concat(TRUST).map((label, i) => (
-            <span key={i} className="pq-trust-logo" style={{ whiteSpace: "nowrap" }}>
-              {label}
-            </span>
-          ))}
-        </div>
-      </Reveal>
+      {/* Removed: "Built for" trust marquee — the labels were audience
+          categories, not real customer logos, so they added visual
+          weight without adding trust. Real trust signals (ISO-9001,
+          UAE data residency, WCAG-AA) live in the hero chip row and
+          the footer. */}
 
       {/* ── Differentiator features ───────────────────────────────── */}
       <section className="pq-section">
@@ -422,95 +400,15 @@ export function Hero() {
         </Reveal>
       </section>
 
-      {/* ── What's new in v0.5 ────────────────────────────────────── */}
-      <Reveal as="section" variant="single">
-        <Frame4D variant="pine" className="p-8 md:p-10" interactive={false}>
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
-            <h2 className="text-2xl md:text-3xl font-semibold" style={{ color: "var(--pq-text-main)" }}>
-              {t("v2.title")}
-            </h2>
-            <Link
-              href="/presentiq/changelog"
-              className="text-sm font-semibold underline-offset-4 hover:underline"
-              style={{ color: "var(--pq-primary)" }}
-            >
-              {t("nav.changelog")} →
-            </Link>
-          </div>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
-            {V2_KEYS.map((k) => (
-              <li
-                key={k}
-                className="flex items-start gap-3 text-sm"
-                style={{ color: "var(--pq-text-secondary)" }}
-              >
-                <span
-                  className="mt-1 inline-block h-1.5 w-1.5 rounded-full shrink-0"
-                  style={{ background: "var(--pq-primary)" }}
-                  aria-hidden
-                />
-                {t(k)}
-              </li>
-            ))}
-          </ul>
-        </Frame4D>
-      </Reveal>
+      {/* Removed: "What's new in v0.5" panel — release notes belong on
+          /changelog. Duplicating them on the landing added no signup
+          value and drifted out of sync every version. */}
 
-      {/* ── Testimonials ─────────────────────────────────────────── */}
-      <section className="pq-section">
-        <div className="pq-section-head">
-          <div className="pq-section-eyebrow">
-            {lang === "ar" ? "الميدان" : "In the room"}
-          </div>
-          <h2 className="pq-section-title">
-            {lang === "ar"
-              ? "ما يقوله فرقٌ يستخدمون بِتشورا"
-              : "What teams using Pitchora say"}
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {[
-            {
-              q: lang === "ar"
-                ? "أختصر ٤ ساعات من الإعداد قبل كل اجتماع لجنة. المخرج يحترم قواعد هويّتنا حرفياً."
-                : "Cuts four hours off every committee-prep. The output actually respects our brand rules.",
-              a: lang === "ar" ? "مديرة استراتيجية" : "Head of Strategy",
-              w: lang === "ar" ? "شركة استشارات" : "Consulting firm",
-              i: "S",
-            },
-            {
-              q: lang === "ar"
-                ? "أول أداة تُصدر عربية RTL أصيلة تصلح مباشرة لمجلس الإدارة، بدون مراجعة يدوية."
-                : "First tool where the Arabic RTL export is actually usable in front of a board, without any manual rework.",
-              a: lang === "ar" ? "مسؤول علاقات حكومية" : "GR Lead",
-              w: lang === "ar" ? "هيئة اتحادية" : "Federal authority",
-              i: "H",
-            },
-            {
-              q: lang === "ar"
-                ? "التحقّق من الأدلّة يمنعنا من نشر أرقامٍ نتراجع عنها لاحقاً. الفرق يشعرون بالأمان."
-                : "Evidence controls stop us shipping numbers we'd have to walk back. My team feels safe again.",
-              a: lang === "ar" ? "قائد منتج" : "Product Lead",
-              w: lang === "ar" ? "شركة تقنية مالية" : "Fintech scale-up",
-              i: "P",
-            },
-          ].map((tst, i) => (
-            <Frame4D key={i} className="p-6 h-full" interactive={false}>
-              <div className="pq-quote-mark" aria-hidden>&ldquo;</div>
-              <p className="text-sm mt-2" style={{ color: "var(--pq-text-main)", lineHeight: 1.6 }}>
-                {tst.q}
-              </p>
-              <div className="mt-5 flex items-center gap-3">
-                <div className="pq-quote-avatar" aria-hidden>{tst.i}</div>
-                <div>
-                  <div className="text-sm font-semibold" style={{ color: "var(--pq-text-main)" }}>{tst.a}</div>
-                  <div className="text-xs" style={{ color: "var(--pq-text-muted)" }}>{tst.w}</div>
-                </div>
-              </div>
-            </Frame4D>
-          ))}
-        </div>
-      </section>
+      {/* Removed: testimonials block — the three quotes carried
+          fabricated names and roles ("Head of Strategy at Consulting
+          firm"). Fake social proof erodes trust rather than building
+          it. This block returns only when we have real, cited,
+          attributable customer quotes with permission to publish. */}
 
       {/* ── Pricing preview ──────────────────────────────────────── */}
       <section className="pq-section">
