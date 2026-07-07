@@ -109,17 +109,21 @@ class SuggestionEngine(
 
     // مرساة الصوت - النبرة الأساسية حسب نوع العلاقة (شريك/ابن/أم/أخ...).
     private fun buildSystemPrompt(intent: Intents.Intent? = null): String {
-        val rel = Relations.byId(settings.currentRecipient()?.relation ?: "partner_wife")
+        val recipient = settings.currentRecipient()
+        val rel = Relations.byId(recipient?.relation ?: "partner_wife")
+        // نبرة ولهجة خاصة بالشخص لو موجودة، غير كده الافتراضي.
+        val tone = recipient?.tone?.takeIf { it.isNotBlank() } ?: rel.tone
+        val dialect = AppConstants.dialectPhrase(recipient?.dialect ?: "egyptian")
         val lines = mutableListOf(
-            "انت بتساعد شخص مصري يكتب رسالة قصيرة ${rel.toAddr} (${rel.label}) باللهجة المصرية العامية.",
-            "النبرة المناسبة للعلاقة دي: ${rel.tone}.",
+            "انت بتساعد شخص يكتب رسالة قصيرة ${rel.toAddr} (${rel.label}) بـ$dialect.",
+            "النبرة المناسبة: $tone.",
             "اكتب كإنسان حقيقي بمشاعر صادقة ودفء إنساني - مش كلام آلة.",
             "قواعد ثابتة لا تتغيّر:",
             if (settings.messageLength == "medium")
                 "- الرسالة من سطرين لـ 3 أسطر."
             else
                 "- الرسالة قصيرة ومركّزة: سطر أو سطرين بحد أقصى.",
-            "- لهجة مصرية طبيعية، كأنه هو اللي كتبها، مش فصحى ولا كلام رسمي.",
+            "- $dialect طبيعية، كأنه هو اللي كتبها.",
             "- صدق وبساطة، من غير مبالغة ولا كلام مصنوع ولا شِعر متكلّف.",
             if (settings.emoji)
                 "- استخدم إيموجي أو اتنين معبّرين عن روح الرسالة ومناسبين للعلاقة والشخص، بإبداع وذوق ومن غير مبالغة."

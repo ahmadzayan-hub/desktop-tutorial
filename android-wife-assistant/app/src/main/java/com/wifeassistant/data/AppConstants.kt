@@ -23,6 +23,22 @@ object AppConstants {
         "medium" to "متوسطة",
     )
 
+    // اللهجات المتاحة لكل شخص (id -> اسم).
+    val DIALECTS = listOf(
+        "egyptian" to "مصري",
+        "gulf" to "خليجي",
+        "levantine" to "شامي",
+        "msa" to "فصحى",
+    )
+
+    // وصف اللهجة للبرومبت.
+    fun dialectPhrase(id: String): String = when (id) {
+        "gulf" -> "اللهجة الخليجية"
+        "levantine" -> "اللهجة الشامية"
+        "msa" -> "العربية الفصحى البسيطة"
+        else -> "اللهجة المصرية العامية"
+    }
+
     // مناسبات افتراضية - نفس اللي في بوت التيليجرام. المستخدم يقدر يعدّلها.
     val DEFAULT_OCCASIONS = listOf(
         OccasionConfig("fixed", date = "08-24", label = "عيد ميلاد مراتي"),

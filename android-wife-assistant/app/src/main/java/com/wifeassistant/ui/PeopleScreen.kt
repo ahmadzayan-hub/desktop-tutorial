@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,16 +42,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.wifeassistant.data.AppConstants
 import com.wifeassistant.data.GroqClient
 import com.wifeassistant.data.PersonOccasion
 import com.wifeassistant.data.PersonaAnalyzer
 import com.wifeassistant.data.Recipient
 import com.wifeassistant.data.Relations
 import com.wifeassistant.data.Settings
+import com.wifeassistant.util.Avatars
 import com.wifeassistant.util.ContactsReader
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -74,6 +81,19 @@ fun PeopleScreen(onBack: () -> Unit) {
     var pasteInfo by remember { mutableStateOf("") }
     var analyzing by remember { mutableStateOf(false) }
     var editingId by remember { mutableStateOf<String?>(null) }
+    var tone by remember { mutableStateOf("") }
+    var dialect by remember { mutableStateOf("egyptian") }
+    var photoPath by remember { mutableStateOf("") }
+    // معرّف ثابت للفورمة عشان نربط الصورة بالشخص حتى لو لسه ما اتحفظش.
+    var workingId by remember { mutableStateOf(UUID.randomUUID().toString()) }
+
+    val photoPicker = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            Avatars.saveFromUri(context, workingId, uri)?.let { photoPath = it }
+        }
+    }
 
     // ---- استيراد أعياد الميلاد من جهات الاتصال ----
     var contacts by remember { mutableStateOf<List<ContactsReader.ContactBirthday>>(emptyList()) }
@@ -100,6 +120,8 @@ fun PeopleScreen(onBack: () -> Unit) {
 
     fun clearForm() {
         name = ""; number = ""; notes = ""; occText = ""; social = ""; pasteInfo = ""
+        tone = ""; dialect = "egyptian"; photoPath = ""
+        workingId = UUID.randomUUID().toString()
         relation = Relations.ALL.first().id; editingId = null
     }
 
@@ -143,8 +165,9 @@ fun PeopleScreen(onBack: () -> Unit) {
         if (id == null) {
             list.add(
                 Recipient(
-                    id = UUID.randomUUID().toString(), name = name.trim(), relation = relation,
+                    id = workingId, name = name.trim(), relation = relation,
                     number = number.trim(), notes = notes.trim(), occasions = occs, social = social.trim(),
+                    tone = tone.trim(), dialect = dialect, photoPath = photoPath,
                 )
             )
         } else {
@@ -152,6 +175,7 @@ fun PeopleScreen(onBack: () -> Unit) {
             if (i >= 0) list[i] = list[i].copy(
                 name = name.trim(), relation = relation, number = number.trim(),
                 notes = notes.trim(), occasions = occs, social = social.trim(),
+                tone = tone.trim(), dialect = dialect, photoPath = photoPath,
             )
         }
         settings.recipients = list
@@ -210,11 +234,53 @@ fun PeopleScreen(onBack: () -> Unit) {
             // معاينة حيّة: نبرة الرسالة بتتغيّر حسب العلاقة المختارة.
             Relations.byId(relation).let { rel ->
                 Text(
-                    "نبرة الرسالة لـ${rel.label}: ${rel.tone}",
+                    "نبرة العلاقة الافتراضية لـ${rel.label}: ${rel.tone}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+
+            // صورة الشخص (من معرض الموبايل - مش سحب من السوشيال).
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (photoPath.isNotBlank()) {
+                    val bmp = remember(photoPath) { Avatars.load(photoPath) }
+                    if (bmp != null) {
+                        Image(
+                            bitmap = bmp,
+                            contentDescription = "صورة الشخص",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.size(56.dp).clip(CircleShape),
+                        )
+                    }
+                }
+                OutlinedButton(onClick = { photoPicker.launch("image/*") }) {
+                    Text(if (photoPath.isBlank()) "📷 أضف صورة" else "📷 غيّر الصورة")
+                }
+            }
+
+            // لهجة الرسالة الخاصة بيه.
+            Text("لهجة الرسالة", style = MaterialTheme.typography.bodyMedium)
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                AppConstants.DIALECTS.forEach { (id, label) ->
+                    FilterChip(
+                        selected = dialect == id,
+                        onClick = { dialect = id },
+                        label = { Text(label) },
+                    )
+                }
+            }
+
+            // نبرة خاصة بيه (تغلب على الافتراضية لو اتكتبت).
+            OutlinedTextField(
+                value = tone,
+                onValueChange = { tone = it },
+                label = { Text("نبرة خاصة بيه (اختياري)") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
             OutlinedTextField(
                 value = number,
                 onValueChange = { number = it },
@@ -309,11 +375,27 @@ fun PeopleScreen(onBack: () -> Unit) {
                         modifier = Modifier.padding(14.dp),
                         verticalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
-                        Text(
-                            (if (selected) "✅ " else "") + Relations.emojiOf(p.relation) + " " +
-                                (p.name.ifBlank { "(بدون اسم)" }) + " · " + Relations.labelOf(p.relation),
-                            style = MaterialTheme.typography.titleSmall,
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        ) {
+                            if (p.photoPath.isNotBlank()) {
+                                val bmp = remember(p.photoPath) { Avatars.load(p.photoPath) }
+                                if (bmp != null) {
+                                    Image(
+                                        bitmap = bmp,
+                                        contentDescription = null,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier.size(40.dp).clip(CircleShape),
+                                    )
+                                }
+                            }
+                            Text(
+                                (if (selected) "✅ " else "") + Relations.emojiOf(p.relation) + " " +
+                                    (p.name.ifBlank { "(بدون اسم)" }) + " · " + Relations.labelOf(p.relation),
+                                style = MaterialTheme.typography.titleSmall,
+                            )
+                        }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Button(
                                 onClick = {
@@ -326,7 +408,8 @@ fun PeopleScreen(onBack: () -> Unit) {
                                 name = p.name; relation = p.relation; number = p.number; notes = p.notes
                                 occText = p.occasions.joinToString("\n") { "${it.label}=${it.date}" }
                                 social = p.social; pasteInfo = ""
-                                editingId = p.id
+                                tone = p.tone; dialect = p.dialect; photoPath = p.photoPath
+                                workingId = p.id; editingId = p.id
                             }) { Text("تعديل") }
                             TextButton(onClick = {
                                 val list = people.toMutableList()
