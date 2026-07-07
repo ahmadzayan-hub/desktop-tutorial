@@ -16,6 +16,9 @@ data class Recipient(
     val notes: String = "",      // حاجات عنه تخصّص بيها الرسالة
     val occasions: List<PersonOccasion> = emptyList(), // مناسباته الخاصة (MM-DD)
     val social: String = "",     // روابط حساباته (مرجع سريع، ما بتتسحبش تلقائياً)
+    val tone: String = "",       // نبرة خاصة بيه (فاضي = نبرة العلاقة الافتراضية)
+    val dialect: String = "egyptian", // لهجة الرسالة له (مصري/خليجي/شامي/فصحى)
+    val photoPath: String = "",  // صورة محلية (اختارها المستخدم من المعرض)
 )
 
 // مثال من أسلوبي (رسالة اخترتها أو عدّلتها) - للتعلّم بالسياق، لكل شخص على حدة.
