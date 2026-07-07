@@ -35,7 +35,7 @@ function formatMessage(items, slot, occasion) {
     '',
     `2️⃣ ${items[1].text}`,
     '',
-    '— اختار، أو انسخ بضغطة 📋، أو ابعتلي نسختك المعدّلة كنص حر.',
+    'اختار، أو انسخ بضغطة 📋، أو ابعتلي نسختك المعدّلة كنص حر.',
   ].join('\n');
 }
 
@@ -177,10 +177,10 @@ function setupHandlers(bot) {
         `الـ chat_id بتاعك: ${id}\n` +
         `حطه في config.js وأعد التشغيل.\n\n` +
         `الأوامر:\n` +
-        `/suggest — اقتراح فوري\n` +
-        `/occasion — اقتراح مناسبة (أو /occasion عيد جوازنا)\n` +
-        `/morning · /evening — اقتراح صباحي/مسائي فوري\n` +
-        `/stats — ملخّص · /reset — تصفير التعلّم`
+        `/suggest: اقتراح فوري\n` +
+        `/occasion: اقتراح مناسبة (أو /occasion عيد جوازنا)\n` +
+        `/morning · /evening: اقتراح صباحي/مسائي فوري\n` +
+        `/stats: ملخّص · /reset: تصفير التعلّم`
     );
   });
 
