@@ -146,7 +146,7 @@ export function About() {
                 <Magnetic as="a" href="/presentiq/projects/new" className="pq-btn pq-btn-liquid pq-btn-liquid-primary pq-btn-liquid-pill" style={{ padding: "0.7rem 1.4rem" }}>
                   {lang === "ar" ? "جرّب الستوديو" : "Try the studio"} →
                 </Magnetic>
-                <Magnetic as="a" href={`mailto:${PQ_CONTACT_EMAIL}?subject=Pitchora%20—%20hello`} className="pq-btn pq-btn-liquid pq-btn-liquid-pill" style={{ padding: "0.7rem 1.4rem" }}>
+                <Magnetic as="a" href={`mailto:${PQ_CONTACT_EMAIL}?subject=Pitchora%20hello`} className="pq-btn pq-btn-liquid pq-btn-liquid-pill" style={{ padding: "0.7rem 1.4rem" }}>
                   {lang === "ar" ? "تحدّث مع المؤسس" : "Email the founder"}
                 </Magnetic>
               </div>
