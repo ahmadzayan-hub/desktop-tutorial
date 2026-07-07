@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 
 type Platform = "android" | "ios" | "desktop" | "unknown";
 
@@ -13,6 +14,7 @@ function detectPlatform(): Platform {
 }
 
 export default function DownloadPage() {
+  const { dir } = useI18n();
   const [platform, setPlatform] = useState<Platform>("unknown");
   const [installed, setInstalled] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<Event | null>(null);
@@ -45,7 +47,7 @@ export default function DownloadPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-sky-800 flex flex-col items-center justify-center px-4 py-16 text-white" dir="rtl">
+    <main className="min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-sky-800 flex flex-col items-center justify-center px-4 py-16 text-white" dir={dir}>
 
       {/* Logo */}
       <div className="mb-8 flex flex-col items-center gap-4">

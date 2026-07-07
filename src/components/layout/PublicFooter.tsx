@@ -4,7 +4,8 @@ import { useI18n } from "@/lib/i18n/I18nProvider";
 import { GraduationCap } from "lucide-react";
 
 export function PublicFooter() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const isAr = locale === "ar";
   const year = new Date().getFullYear();
 
   return (
@@ -25,7 +26,7 @@ export function PublicFooter() {
 
           {/* Platform */}
           <div>
-            <h4 className="text-white text-sm font-semibold mb-3">Platform</h4>
+            <h4 className="text-white text-sm font-semibold mb-3">{isAr ? "المنصة" : "Platform"}</h4>
             <ul className="space-y-2 text-sm">
               {[
                 { href: "/features",     label: t("nav.features") },
@@ -42,11 +43,12 @@ export function PublicFooter() {
 
           {/* Support */}
           <div>
-            <h4 className="text-white text-sm font-semibold mb-3">Support</h4>
+            <h4 className="text-white text-sm font-semibold mb-3">{isAr ? "الدعم" : "Support"}</h4>
             <ul className="space-y-2 text-sm">
               {[
-                { href: "/faq",     label: t("nav.faq") },
-                { href: "/contact", label: t("nav.contact") },
+                { href: "/faq",      label: t("nav.faq") },
+                { href: "/contact",  label: t("nav.contact") },
+                { href: "/download", label: isAr ? "تنزيل التطبيق" : "Download App" },
               ].map(l => (
                 <li key={l.href}>
                   <Link href={l.href} className="hover:text-white transition">{l.label}</Link>
@@ -57,7 +59,7 @@ export function PublicFooter() {
 
           {/* Legal */}
           <div>
-            <h4 className="text-white text-sm font-semibold mb-3">Legal</h4>
+            <h4 className="text-white text-sm font-semibold mb-3">{isAr ? "القانونية" : "Legal"}</h4>
             <ul className="space-y-2 text-sm">
               {[
                 { href: "/privacy", label: t("legal.privacy") },

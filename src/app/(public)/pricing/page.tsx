@@ -96,19 +96,16 @@ export default function PricingPage() {
       {/* FAQ section */}
       <div className="mt-20 max-w-2xl mx-auto">
         <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 text-center mb-8">
-          Pricing FAQ
+          {t("pricing.faq.title" as any)}
         </h2>
-        {[
-          { q: "Can I cancel anytime?", a: "Yes. Cancel your subscription at any time from your billing portal. No questions asked." },
-          { q: "Is there a free trial?", a: "All paid plans include a 7-day free trial. No credit card required to start." },
-          { q: "Can I switch plans?", a: "Yes. Upgrade or downgrade at any time. Changes take effect immediately." },
-          { q: "Do you offer student discounts?", a: "Contact us at support@tweenz.ae with your student ID for regional pricing options." },
-          { q: "Is my data private?", a: "Yes. Your uploaded files, notes, and AI conversations are private and never used for model training without your explicit opt-in." },
-          { q: "What payment methods are accepted?", a: "All major credit cards via Stripe. UAE cards, international cards, and some digital wallets are supported." },
-        ].map((item, i) => (
-          <div key={i} className="border-b border-slate-100 dark:border-slate-800 py-5">
-            <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-2">{item.q}</h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{item.a}</p>
+        {([1,2,3,4,5,6] as const).map(n => (
+          <div key={n} className="border-b border-slate-100 dark:border-slate-800 py-5">
+            <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-2">
+              {t(`pricing.faq.q${n}` as any)}
+            </h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              {t(`pricing.faq.a${n}` as any)}
+            </p>
           </div>
         ))}
       </div>

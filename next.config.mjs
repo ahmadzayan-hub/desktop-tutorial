@@ -20,10 +20,10 @@ const CSP = [
   "default-src 'self'",
   // Scripts: self + inline styles needed by Next.js hydration (nonces would be ideal but require edge middleware rewrite)
   "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-  // Styles: self + inline (Tailwind purges but Next.js injects critical CSS inline)
-  "style-src 'self' 'unsafe-inline'",
-  // Fonts & images: self + data URIs (used by canvas card export)
-  "font-src 'self' data:",
+  // Styles: self + inline (Tailwind purges but Next.js injects critical CSS inline) + Google Fonts
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  // Fonts: self + data URIs + Google Fonts CDN
+  "font-src 'self' data: https://fonts.gstatic.com",
   "img-src 'self' data: blob:",
   // API calls allowed only to self and Supabase
   `connect-src 'self' https://*.supabase.co https://api.openai.com wss://*.supabase.co`,

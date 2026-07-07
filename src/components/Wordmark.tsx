@@ -28,7 +28,7 @@ export default function Wordmark({ className }: Props) {
         {locale === "ar" ? ar : en}
       </span>
       <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal truncate" aria-hidden="true">
-        {locale === "ar" ? "منصة التعلم الذكي" : "منصة التعلم الذكي"}
+        {locale === "ar" ? "منصة التعلم الذكي" : "Smart Learning Platform"}
       </span>
     </span>
   );
