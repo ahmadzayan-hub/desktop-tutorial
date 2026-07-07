@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   quality:
-    name: quality (typecheck, lint, build)
+    name: quality (typecheck, lint, unit tests, build)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
@@ -49,10 +49,11 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Unit tests
+        run: npm run test
+
       - name: Build
         env:
-          # Vite requires these at build time; use dummy values so the build passes
-          # in CI without leaking any real Supabase URL / key.
           VITE_SUPABASE_URL: https://ci-placeholder.supabase.co
           VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
         run: npm run build
@@ -64,4 +65,46 @@ jobs:
           name: vertex-dist-${{ github.sha }}
           path: vertex-platform/dist
           if-no-files-found: error
+          retention-days: 7
+
+  e2e:
+    name: e2e (Playwright chromium)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: quality
+    defaults:
+      run:
+        working-directory: vertex-platform
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: vertex-platform/package-lock.json
+
+      - name: Install (locked)
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        env:
+          CI: 'true'
+        run: npm run e2e
+
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ github.sha }}
+          path: vertex-platform/playwright-report
+          if-no-files-found: ignore
           retention-days: 7

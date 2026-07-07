@@ -11,3 +11,10 @@ dist-ssr
 *.log
 
 tsconfig.tsbuildinfo
+
+# test artefacts
+coverage
+playwright-report
+test-results
+.playwright
+blob-report

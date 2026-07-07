@@ -3,6 +3,30 @@
 Notable changes to the VERTEX platform. Semantic versioning
 (major.minor.patch) once we cut a 1.0.0 tag.
 
+## 0.6.0 - Testing suite - vitest + Playwright
+
+- Vitest is wired with jsdom, coverage via v8, and a light setup file
+  that shims `window.matchMedia`.
+- 30 unit tests across four suites cover the pure logic:
+  `formatters` (currency, date, percent, relative, email and password
+  validation), `mock-analyzer` (determinism, output shape), `storage`
+  (MIME + size validation, byte formatting, path sanitisation),
+  `dashboard-stats` (traffic-light thresholds).
+- Playwright is wired against a pre-installed Chromium via
+  `PLAYWRIGHT_CHROMIUM_PATH` in local dev, or `npx playwright install
+  --with-deps chromium` in CI.
+- 15 e2e tests cover: landing page rendering + language toggle to RTL,
+  auth gates + form validation for email + password policy, and the
+  eight public discoverability files each returning 200 with the right
+  content type.
+- npm scripts added: `test`, `test:watch`, `test:coverage`, `e2e`,
+  `e2e:install`.
+- GitHub Actions workflow split into two jobs: `quality` (typecheck,
+  lint, unit tests, build, dist artefact) and `e2e` (installs
+  Playwright + Chromium, runs the browser suite, uploads the HTML
+  report on failure).
+- `.gitignore` adds coverage, playwright-report, test-results.
+
 ## 0.5.0 - Session 6 - analytics + PDF reports
 
 - `/analytics` - portfolio wide view. Four summary cards (portfolio
