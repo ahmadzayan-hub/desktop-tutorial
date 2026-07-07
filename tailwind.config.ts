@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 /**
- * Beyond Coffee Moments — refreshed premium identity.
+ * Lahza — refreshed premium identity.
  * Warm ivory canvas · rich espresso brown · brass-gold accent · a whisper of
  * majlis green. Logical properties (ps/pe/ms/me) everywhere so the layout
  * mirrors cleanly in Arabic RTL.

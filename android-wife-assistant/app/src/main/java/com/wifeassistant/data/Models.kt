@@ -15,6 +15,7 @@ data class Recipient(
     val number: String = "",     // واتساب (اختياري)
     val notes: String = "",      // حاجات عنه تخصّص بيها الرسالة
     val occasions: List<PersonOccasion> = emptyList(), // مناسباته الخاصة (MM-DD)
+    val social: String = "",     // روابط حساباته (مرجع سريع، ما بتتسحبش تلقائياً)
 )
 
 // مثال من أسلوبي (رسالة اخترتها أو عدّلتها) - للتعلّم بالسياق، لكل شخص على حدة.
@@ -59,6 +60,8 @@ data class AppData(
     val lastSentPerSlot: MutableMap<String, String> = mutableMapOf(),
     // آخر يوم تواصلت فيه مع كل شخص (recipientId -> YYYY-MM-DD) لتذكيرات "بقالك فترة".
     val lastContactedPerRecipient: MutableMap<String, String> = mutableMapOf(),
+    // رسايل محفوظة كمفضّلة (النص) عشان ترجعلها بسرعة من السجل.
+    val favorites: MutableList<String> = mutableListOf(),
     var pending: PendingRound? = null,
 )
 
@@ -77,6 +80,8 @@ data class GenerationResult(
     val items: List<Suggestion>,
     val themesShown: List<String>,
     val slot: String,
+    val offline: Boolean = false,  // true لو رجعنا لبنك الرسائل الجاهز (بدون نت/مفتاح)
+    val note: String? = null,      // ملاحظة تتعرض للمستخدم (سبب الرجوع للجاهز)
 )
 
 // مناسبة النهاردة.

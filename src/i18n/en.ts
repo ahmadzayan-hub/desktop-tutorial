@@ -22,7 +22,7 @@ export const en = {
   },
 
   common: {
-    brandName: "Beyond Coffee Moments",
+    brandName: "Lahza",
     brandSub: "Gifting & Event Platform",
     back: "Back",
     backHome: "Back to Home",
@@ -47,7 +47,7 @@ export const en = {
   },
 
   hero: {
-    badge: "Beyond Coffee Moments",
+    badge: "Lahza",
     titleA: "Turn Every Coffee into a",
     titleHighlight: "Personal Moment",
     subtitle:
@@ -385,9 +385,9 @@ export const en = {
     privacy: {
       title: "Privacy Policy",
       intro:
-        "This policy explains how Beyond Connect General Trading L.L.C (\"Beyond Coffee Moments\", \"we\") collects, uses and protects your personal data under the UAE Personal Data Protection Law (Federal Decree-Law No. 45 of 2021).",
+        "This policy explains how Beyond Connect General Trading L.L.C (\"Lahza\", \"we\") collects, uses and protects your personal data under the UAE Personal Data Protection Law (Federal Decree-Law No. 45 of 2021).",
       sections: [
-        { h: "Who we are", b: "Beyond Connect General Trading L.L.C, licensed by the Dubai Department of Economy & Tourism, is the data controller. Contact us at care@beyondcoffeemoments.ae." },
+        { h: "Who we are", b: "Beyond Connect General Trading L.L.C, licensed by the Dubai Department of Economy & Tourism, is the data controller. Contact us at care@lahza.ae." },
         { h: "What we collect", b: "Contact details, delivery details, order information, uploaded photos and (for corporate clients) company details. Photos you upload may show identifiable people." },
         { h: "How we use your data", b: "To produce and deliver your order, provide customer support, prepare quotations and invoices, and meet our legal and tax obligations. We do not sell your data." },
         { h: "Photo consent & processing", b: "We process uploaded photos only to fulfil your order, on the basis of your explicit consent and contract performance. If we use AI to enhance or moderate an image, this is automated processing to prepare your product; a human reviews any borderline case." },
@@ -395,13 +395,13 @@ export const en = {
         { h: "Sharing", b: "We share data only with processors needed to deliver your order, our cloud host, print partners and couriers, under confidentiality obligations, and with authorities where legally required." },
         { h: "Cross-border transfers", b: "Where data is processed outside the UAE, we apply contractual safeguards and prefer in-region hosting. Invoice data is stored within the UAE." },
         { h: "Children", b: "Our service is intended for adults. If a gift involves a child's photo, the uploading adult confirms they hold parental authority. We do not knowingly process children's data for advertising." },
-        { h: "Your rights", b: "You may access, correct, delete, restrict, port or object to the processing of your data. Email care@beyondcoffeemoments.ae and we will respond promptly." },
+        { h: "Your rights", b: "You may access, correct, delete, restrict, port or object to the processing of your data. Email care@lahza.ae and we will respond promptly." },
       ],
     },
     terms: {
       title: "Terms & Conditions",
       intro:
-        "These terms govern your use of Beyond Coffee Moments, operated by Beyond Connect General Trading L.L.C, and your purchase of our products and services in the UAE.",
+        "These terms govern your use of Lahza, operated by Beyond Connect General Trading L.L.C, and your purchase of our products and services in the UAE.",
       sections: [
         { h: "Seller identity", b: "Beyond Connect General Trading L.L.C, licensed by the Dubai Department of Economy & Tourism (licence & TRN displayed at checkout and on invoices)." },
         { h: "Orders & pricing", b: "Consumer prices are displayed inclusive of 5% VAT and standard delivery. The total payable is shown before you pay. Corporate and event prices are quoted excluding VAT, which is added on the tax invoice." },
@@ -500,7 +500,7 @@ export const en = {
     iosStep1: "Tap the Share button",
     iosStep2: "Choose “Add to Home Screen”",
     bannerTitle: "Get the app",
-    bannerText: "Install Beyond Coffee Moments for a faster, full-screen experience.",
+    bannerText: "Install Lahza for a faster, full-screen experience.",
   },
 
   announce: {

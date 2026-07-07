@@ -59,6 +59,17 @@ class Settings(context: Context) {
         get() = prefs.getBoolean("emoji", true)
         set(v) = prefs.edit().putBoolean("emoji", v).apply()
 
+    // ---- المظهر ----
+    // "system" (تلقائي) / "light" (فاتح) / "dark" (غامق).
+    var themeMode: String
+        get() = prefs.getString("themeMode", "system") ?: "system"
+        set(v) = prefs.edit().putString("themeMode", v).apply()
+
+    // Material You (ألوان من خلفية الجهاز) - أندرويد 12+.
+    var dynamicColor: Boolean
+        get() = prefs.getBoolean("dynamicColor", true)
+        set(v) = prefs.edit().putBoolean("dynamicColor", v).apply()
+
     // تذكيرات "بقالك فترة ما كلّمت فلان".
     var reminders: Boolean
         get() = prefs.getBoolean("reminders", true)

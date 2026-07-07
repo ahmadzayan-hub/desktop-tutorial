@@ -1,6 +1,7 @@
 package com.wifeassistant.data
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.add
@@ -28,6 +29,9 @@ class GroqClient(private val settings: Settings) {
         .build()
     private val json = Json { ignoreUnknownKeys = true }
 
+    // خطأ مؤقت (شبكة/زحمة/سيرفر) يستاهل إعادة محاولة، عكس خطأ المفتاح.
+    private class RetryableException(message: String) : Exception(message)
+
     suspend fun complete(messages: List<ChatMessage>, temperature: Double = 0.8): String =
         withContext(Dispatchers.IO) {
             val key = settings.groqKey
@@ -47,21 +51,41 @@ class GroqClient(private val settings: Settings) {
                 }
             }.toString()
 
-            val req = Request.Builder()
-                .url("https://api.groq.com/openai/v1/chat/completions")
-                .addHeader("Authorization", "Bearer $key")
-                .addHeader("Content-Type", "application/json")
-                .post(payload.toRequestBody("application/json".toMediaType()))
-                .build()
-
-            client.newCall(req).execute().use { resp ->
-                val text = resp.body?.string().orEmpty()
-                if (!resp.isSuccessful) error("Groq رجّع خطأ ${resp.code}")
-                val content = json.parseToJsonElement(text).jsonObject["choices"]
-                    ?.jsonArray?.firstOrNull()?.jsonObject
-                    ?.get("message")?.jsonObject
-                    ?.get("content")?.jsonPrimitive?.contentOrNull
-                content?.trim() ?: error("Groq رجّع رد فاضي.")
+            // إعادة محاولة مع تأخير متزايد للأخطاء المؤقتة (زحمة/سيرفر/انقطاع شبكة).
+            var last: Exception? = null
+            repeat(3) { attempt ->
+                try {
+                    return@withContext call(payload, key)
+                } catch (e: RetryableException) {
+                    last = e
+                } catch (e: java.io.IOException) {
+                    last = e
+                }
+                delay(500L * (attempt + 1))
             }
+            throw last ?: IllegalStateException("تعذّر الاتصال بـ Groq")
         }
+
+    private fun call(payload: String, key: String): String {
+        val req = Request.Builder()
+            .url("https://api.groq.com/openai/v1/chat/completions")
+            .addHeader("Authorization", "Bearer $key")
+            .addHeader("Content-Type", "application/json")
+            .post(payload.toRequestBody("application/json".toMediaType()))
+            .build()
+
+        client.newCall(req).execute().use { resp ->
+            val text = resp.body?.string().orEmpty()
+            if (!resp.isSuccessful) {
+                // 429/5xx مؤقتة نعيد المحاولة، الباقي (401/400...) خطأ ثابت.
+                if (resp.code == 429 || resp.code >= 500) throw RetryableException("Groq ${resp.code}")
+                error("Groq رجّع خطأ ${resp.code}")
+            }
+            val content = json.parseToJsonElement(text).jsonObject["choices"]
+                ?.jsonArray?.firstOrNull()?.jsonObject
+                ?.get("message")?.jsonObject
+                ?.get("content")?.jsonPrimitive?.contentOrNull
+            return content?.trim() ?: error("Groq رجّع رد فاضي.")
+        }
+    }
 }

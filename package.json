@@ -1,9 +1,9 @@
 {
-  "name": "beyond-coffee-moments",
+  "name": "lahza",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Beyond Coffee Moments — UAE bilingual SaaS commerce platform for personalized coffee gifts, live event coffee stations, and corporate appreciation campaigns.",
+  "description": "Lahza — UAE bilingual SaaS commerce platform for personalized coffee gifts, live event coffee stations, and corporate appreciation campaigns.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

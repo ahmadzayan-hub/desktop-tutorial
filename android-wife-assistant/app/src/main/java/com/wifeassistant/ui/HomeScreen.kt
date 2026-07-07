@@ -7,6 +7,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,12 +21,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -53,9 +56,10 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.wifeassistant.data.Intents
 import com.wifeassistant.data.Occasion
+import com.wifeassistant.data.Recipient
 import com.wifeassistant.data.Relations
-import com.wifeassistant.data.Settings
 import com.wifeassistant.data.Suggestion
 import com.wifeassistant.util.CalendarReader
 import com.wifeassistant.util.Share
@@ -71,10 +75,18 @@ fun HomeScreen(
     onOpenPeople: () -> Unit,
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
+    val people by vm.people.collectAsStateWithLifecycle()
+    val ideas by vm.ideas.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
     var edited by remember { mutableStateOf("") }
+    var selectedIntent by remember { mutableStateOf<String?>(null) }
+    var contextText by remember { mutableStateOf("") }
     val snackbar = remember { SnackbarHostState() }
+
+    // كل ما نرجع للشاشة نحدّث قائمة الأشخاص (ممكن اتغيّرت من شاشة الأشخاص).
+    LaunchedEffect(Unit) { vm.refreshRecipients() }
+    val current = people.current
 
     // ---- تقويم الموبايل (Google Calendar وغيره) ----
     var calEvents by remember { mutableStateOf<List<String>>(emptyList()) }
@@ -119,29 +131,72 @@ fun HomeScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            HeaderBanner()
-            RecipientBar(onOpenPeople = onOpenPeople)
+            HeaderBanner(current)
+            RecipientSwitcher(
+                people = people,
+                onSelect = { vm.selectRecipient(it) },
+                onManage = onOpenPeople,
+            )
+            // مناسبات الشخص المختار - لو ليه مناسبة قريّبة نعرضها كزر سريع.
+            PersonOccasionChips(current) { label ->
+                vm.generate("occasion", Occasion("person", label), context = contextText.trim())
+            }
+
+            // نيّة الرسالة: السبب الحقيقي (اعتذار/تهنئة/مواساة...). اختياري.
+            IntentPicker(selected = selectedIntent) { id ->
+                selectedIntent = if (selectedIntent == id) null else id
+            }
+            // سياق سريع للرسالة دي بس (اللي حصل/المناسبة).
+            OutlinedTextField(
+                value = contextText,
+                onValueChange = { contextText = it },
+                label = { Text("إيه المناسبة أو اللي حصل؟ (اختياري)") },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 1,
+            )
 
             // أزرار التوليد
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = { vm.generate("manual") }, modifier = Modifier.weight(1f)) {
-                    Text("✨ اقتراح فوري")
+                Button(
+                    onClick = { vm.generate("manual", intentId = selectedIntent, context = contextText.trim()) },
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text(if (selectedIntent != null) "✨ اكتب الرسالة" else "✨ اقتراح فوري")
                 }
                 FilledTonalButton(onClick = { vm.requestOccasion() }, modifier = Modifier.weight(1f)) {
                     Text("💌 مناسبة")
                 }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(onClick = { vm.generate("morning") }, modifier = Modifier.weight(1f)) {
+                OutlinedButton(
+                    onClick = { vm.generate("morning", intentId = selectedIntent, context = contextText.trim()) },
+                    modifier = Modifier.weight(1f),
+                ) {
                     Text("🌅 صباحي")
                 }
-                OutlinedButton(onClick = { vm.generate("evening") }, modifier = Modifier.weight(1f)) {
+                OutlinedButton(
+                    onClick = { vm.generate("evening", intentId = selectedIntent, context = contextText.trim()) },
+                    modifier = Modifier.weight(1f),
+                ) {
                     Text("🌙 مسائي")
                 }
             }
             OutlinedButton(onClick = { openCalendar() }, modifier = Modifier.fillMaxWidth()) {
                 Text("📅 مناسبة من أجندتي")
             }
+
+            // المناسبات الجاية عبر كل الأشخاص - تخطيط وتنبيه مبكّر + أفكار عملية.
+            UpcomingOccasions(
+                people = people,
+                onWrite = { rid, label ->
+                    vm.selectRecipient(rid)
+                    vm.generate("occasion", Occasion("person", label))
+                },
+                onIdeas = { rid, label ->
+                    vm.selectRecipient(rid)
+                    vm.loadGiftIdeas(label)
+                },
+            )
 
             if (showCal) {
                 AlertDialog(
@@ -183,17 +238,22 @@ fun HomeScreen(
                 Text("💝 مناسبة: $it", style = MaterialTheme.typography.titleMedium)
             }
 
+            val isGroup = current?.relation?.startsWith("group") == true
             state.items.forEachIndexed { idx, item ->
                 SuggestionCard(
                     index = idx,
                     item = item,
+                    sendLabel = sendLabelFor(current),
                     onChoose = { vm.choose(idx) },
                     onCopy = { clipboard.setText(AnnotatedString(item.text)) },
                     onShare = { Share.text(context, item.text) },
                     onWhatsApp = {
-                        WhatsApp.send(context, Settings(context).currentRecipient()?.number.orEmpty(), item.text)
+                        // مجموعة أو من غير رقم: نفتح منتقي واتساب. شخص بيه رقم: نفتح شاته مباشرة.
+                        if (isGroup) WhatsApp.chooser(context, item.text)
+                        else WhatsApp.send(context, current?.number.orEmpty(), item.text)
                     },
                     onGroup = { WhatsApp.chooser(context, item.text) },
+                    onRefine = { style -> vm.refine(idx, style) },
                 )
             }
 
@@ -223,35 +283,183 @@ fun HomeScreen(
 
             Spacer(Modifier.height(24.dp))
         }
+
+        // نافذة أفكار المناسبة (هدية/كارت/ورد/لمسة).
+        if (ideas.open) {
+            AlertDialog(
+                onDismissRequest = { vm.closeIdeas() },
+                title = { Text("🎁 أفكار لـ${ideas.title}") },
+                text = {
+                    if (ideas.loading) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            CircularProgressIndicator(modifier = Modifier.height(22.dp))
+                            Text("  بجهّزلك أفكار...")
+                        }
+                    } else {
+                        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                            Text(ideas.text)
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                "دي أفكار وفئة سعرية تقريبية - مش أسعار حقيقية لحظية.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                },
+                confirmButton = { TextButton(onClick = { vm.closeIdeas() }) { Text("تمام") } },
+            )
+        }
     }
 }
 
+// المناسبات الجاية عبر كل الأشخاص (خلال ~45 يوم)، الأقرب الأول.
 @Composable
-private fun RecipientBar(onOpenPeople: () -> Unit) {
-    val context = LocalContext.current
-    val r = remember { Settings(context).currentRecipient() }
-    val who = when {
-        r == null -> "محدّش لسه - ضيف شخص"
-        r.name.isNotBlank() -> "${Relations.emojiOf(r.relation)} ${r.name} · ${Relations.labelOf(r.relation)}"
-        else -> "${Relations.emojiOf(r.relation)} ${Relations.labelOf(r.relation)}"
-    }
+private fun UpcomingOccasions(
+    people: PeopleState,
+    onWrite: (String, String) -> Unit,
+    onIdeas: (String, String) -> Unit,
+) {
+    data class Up(val rid: String, val name: String, val label: String, val days: Int)
+    val upcoming = people.recipients.flatMap { r ->
+        r.occasions.mapNotNull { o ->
+            com.wifeassistant.data.DateUtil.daysUntilMMDD(o.date)?.let { d ->
+                if (d <= 45) Up(r.id, r.name.ifBlank { Relations.labelOf(r.relation) }, o.label, d) else null
+            }
+        }
+    }.sortedBy { it.days }.take(4)
+
+    if (upcoming.isEmpty()) return
+
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxWidth(),
     ) {
+        Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text("🎀 مناسبات جايّة", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            upcoming.forEach { u ->
+                val whenTxt = when (u.days) {
+                    0 -> "النهاردة"
+                    1 -> "بكرة"
+                    else -> "بعد ${u.days} يوم"
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("${u.label} لـ${u.name} · $whenTxt", style = MaterialTheme.typography.bodyMedium)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        AssistChip(onClick = { onWrite(u.rid, u.label) }, label = { Text("✍️ اكتب") })
+                        AssistChip(onClick = { onIdeas(u.rid, u.label) }, label = { Text("🎁 أفكار") })
+                    }
+                }
+            }
+        }
+    }
+}
+
+// منتقي الأشخاص على الشاشة الرئيسية: صف من الأزرار (chips) لكل شخص. اختيار أي واحد
+// بيظبط كل الخيارات عليه فوراً (النبرة، الرقم، زر الواتساب، المناسبات).
+@Composable
+private fun RecipientSwitcher(
+    people: PeopleState,
+    onSelect: (String) -> Unit,
+    onManage: () -> Unit,
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    "✍️ بتكتب لـ",
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+                TextButton(onClick = onManage) { Text("إدارة الأشخاص") }
+            }
+            if (people.recipients.isEmpty()) {
+                Text(
+                    "لسه مفيش حد. ضيف أول شخص عشان تبدأ.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            } else {
+                Row(
+                    modifier = Modifier.horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    people.recipients.forEach { r ->
+                        FilterChip(
+                            selected = r.id == people.selectedId,
+                            onClick = { onSelect(r.id) },
+                            label = {
+                                Text(
+                                    "${Relations.emojiOf(r.relation)} " +
+                                        r.name.ifBlank { Relations.labelOf(r.relation) },
+                                )
+                            },
+                        )
+                    }
+                    AssistChip(onClick = onManage, label = { Text("＋ شخص") })
+                }
+                people.current?.let { r ->
+                    Text(
+                        "النبرة: ${Relations.byId(r.relation).tone}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 6.dp),
+                    )
+                }
+            }
+        }
+    }
+}
+
+// منتقي نيّة الرسالة: يوجّه التوليد للموقف (اعتذار/تهنئة/مواساة...). اختياري.
+@Composable
+private fun IntentPicker(selected: String?, onToggle: (String) -> Unit) {
+    Column {
+        Text(
+            "نيّة الرسالة (اختياري)",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(bottom = 4.dp),
+        )
         Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text("✍️ بتكتب لـ: $who", modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
-            TextButton(onClick = onOpenPeople) { Text("تغيير") }
+            Intents.ALL.forEach { intent ->
+                FilterChip(
+                    selected = selected == intent.id,
+                    onClick = { onToggle(intent.id) },
+                    label = { Text("${intent.emoji} ${intent.label}") },
+                )
+            }
+        }
+    }
+}
+
+// مناسبات الشخص المختار كأزرار سريعة (لو ليه مناسبات مسجّلة).
+@Composable
+private fun PersonOccasionChips(current: Recipient?, onPick: (String) -> Unit) {
+    val occ = current?.occasions ?: emptyList()
+    if (occ.isEmpty()) return
+    Row(
+        modifier = Modifier.horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        occ.forEach { o ->
+            AssistChip(onClick = { onPick(o.label) }, label = { Text("🎉 ${o.label}") })
         }
     }
 }
 
 @Composable
-private fun HeaderBanner() {
+private fun HeaderBanner(current: Recipient?) {
+    val who = current?.let { it.name.ifBlank { Relations.labelOf(it.relation) } }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -274,7 +482,8 @@ private fun HeaderBanner() {
                 fontWeight = FontWeight.Bold,
             )
             Text(
-                "اختار اقتراح، عدّله، وابعته للي بتحب بضغطة",
+                if (who != null) "اختار اقتراح، عدّله، وابعته لـ$who بضغطة"
+                else "اختار اقتراح، عدّله، وابعته للي بتحب بضغطة",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimary,
             )
@@ -282,15 +491,25 @@ private fun HeaderBanner() {
     }
 }
 
+// نص زر الواتساب حسب الشخص المختار: "ابعت لأمي"، "ابعت لسوسو"، أو "ابعت للعيلة".
+private fun sendLabelFor(current: Recipient?): String {
+    if (current == null) return "📲 إرسال واتساب"
+    val rel = Relations.byId(current.relation)
+    val who = current.name.ifBlank { rel.label }
+    return if (current.relation.startsWith("group")) "📣 ابعت لـ$who" else "📲 ابعت لـ$who"
+}
+
 @Composable
 private fun SuggestionCard(
     index: Int,
     item: Suggestion,
+    sendLabel: String,
     onChoose: () -> Unit,
     onCopy: () -> Unit,
     onShare: () -> Unit,
     onWhatsApp: () -> Unit,
     onGroup: () -> Unit,
+    onRefine: (String) -> Unit,
 ) {
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(
@@ -311,14 +530,25 @@ private fun SuggestionCard(
             }
             Text(item.text, style = MaterialTheme.typography.bodyLarge)
 
+            // تحرير تكراري: نعدّل الاقتراح ده لحد ما يعجبك.
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                AssistChip(onClick = { onRefine("longer") }, label = { Text("➕ أطول") })
+                AssistChip(onClick = { onRefine("shorter") }, label = { Text("➖ أقصر") })
+                AssistChip(onClick = { onRefine("romantic") }, label = { Text("💘 أرومانسي") })
+                AssistChip(onClick = { onRefine("simpler") }, label = { Text("🌿 أبسط") })
+            }
+
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(
                     onClick = onWhatsApp,
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                ) { Text("📲 للشخص") }
+                ) { Text(sendLabel) }
                 FilledTonalButton(onClick = onGroup, modifier = Modifier.weight(1f)) {
-                    Text("📣 مجموعة")
+                    Text("📣 منتقي")
                 }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

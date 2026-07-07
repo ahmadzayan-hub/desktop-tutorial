@@ -7,6 +7,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- قراءة تقويم الموبايل (Google Calendar وغيره) لتغذية الاقتراحات بالمناسبات -->
     <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <!-- قراءة جهات الاتصال لاستيراد أعياد الميلاد (بموافقة المستخدم وقت الاستخدام) -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <!-- عشان نقدر نفتح واتساب بالـ intent -->
     <queries>
