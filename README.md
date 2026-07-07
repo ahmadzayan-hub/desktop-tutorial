@@ -2,12 +2,16 @@
 
 A premium, **UAE-ready bilingual (EN/AR) SaaS commerce platform** for
 personalised coffee gifts, live event coffee stations, and corporate
-appreciation campaigns — operated by **Beyond Connect General Trading L.L.C**.
+appreciation campaigns, operated by **Beyond Connect General Trading L.L.C**.
 
-This is the customer-facing storefront + a demo operations console. It is a
-single Vite + React app at the **repository root**, so Vercel and Netlify build
-it directly with no monorepo/subfolder configuration. It is also an installable
-**PWA** (add to home screen on Android/iOS).
+This is the customer-facing storefront + a demo operations console: a Vite +
+React app at the **repository root**, which Vercel and Netlify build directly
+with no subfolder configuration. It is also an installable **PWA** (add to home
+screen on Android/iOS).
+
+> This repository also hosts a second, independent product line (**Wisal**) in
+> sibling folders. The root build is Lahza only. See **[PROJECTS.md](./PROJECTS.md)**
+> for the full project map and how to deploy or split each project separately.
 
 > Mobile-first · conversion-focused · Arabic RTL-quality · UAE-compliance-ready.
 
