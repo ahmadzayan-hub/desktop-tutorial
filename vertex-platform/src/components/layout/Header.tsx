@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Logo } from '@/components/brand/Logo';
+import { useCommandPalette } from '@/components/common/CommandPalette';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/hooks/useLanguage';
 import { LanguageSwitcher } from './LanguageSwitcher';
@@ -16,6 +17,7 @@ interface HeaderProps {
 export function Header({ pageTitle, onMenuToggle, menuOpen = false }: HeaderProps) {
   const { t } = useLanguage();
   const { user, profile, logout } = useAuth();
+  const { open: openPalette } = useCommandPalette();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -71,6 +73,17 @@ export function Header({ pageTitle, onMenuToggle, menuOpen = false }: HeaderProp
       )}
 
       <div className="flex items-center gap-2 md:gap-3">
+        {user && (
+          <button
+            type="button"
+            onClick={openPalette}
+            aria-label={t('common.search')}
+            className="vertex-btn-secondary hidden items-center gap-2 px-3 py-1.5 text-xs sm:inline-flex"
+          >
+            <span aria-hidden="true">⌘K</span>
+            <span>{t('common.search')}</span>
+          </button>
+        )}
         <LanguageSwitcher />
 
         {user && (

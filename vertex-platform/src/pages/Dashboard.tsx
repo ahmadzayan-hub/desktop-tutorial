@@ -1,5 +1,5 @@
 import { AppShell } from '@/components/layout/AppShell';
-import { LoadingSpinner } from '@/components/common/LoadingSpinner';
+import { DashboardSkeleton } from '@/components/common/Skeleton';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { ComplianceTrendChart } from '@/components/dashboard/ComplianceTrendChart';
 import { SubmissionsByStatusChart } from '@/components/dashboard/SubmissionsByStatusChart';
@@ -39,7 +39,7 @@ export default function Dashboard() {
           )}
         </header>
 
-        {loading && <LoadingSpinner />}
+        {loading && <DashboardSkeleton />}
         {error && (
           <div role="alert" className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
             {error}

@@ -73,6 +73,34 @@ export function useSubmission(submissionId: string | undefined): State {
     void load();
   }, [load]);
 
+  // Realtime: reload the submission bundle whenever new findings, comments,
+  // or submission updates land for THIS submission. Cheap; the reload query
+  // batch is three selects and only runs when the row we care about changes.
+  useEffect(() => {
+    if (!submissionId) return;
+    const channel = supabase
+      .channel(`submission:${submissionId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'submissions', filter: `id=eq.${submissionId}` },
+        () => { void load(); }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'ai_findings', filter: `submission_id=eq.${submissionId}` },
+        () => { void load(); }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'comments', filter: `submission_id=eq.${submissionId}` },
+        () => { void load(); }
+      )
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [submissionId, load]);
+
   const runAnalysis = useCallback(async () => {
     if (!submission || !project) return;
     setError(null);

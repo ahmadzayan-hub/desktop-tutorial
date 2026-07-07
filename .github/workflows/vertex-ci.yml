@@ -1,0 +1,67 @@
+name: vertex-ci
+
+on:
+  pull_request:
+    paths:
+      - 'vertex-platform/**'
+      - '.github/workflows/vertex-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'vertex-platform/**'
+      - '.github/workflows/vertex-ci.yml'
+
+concurrency:
+  group: vertex-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: quality (typecheck, lint, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: vertex-platform
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: vertex-platform/package-lock.json
+
+      - name: Install (locked)
+        run: npm ci --no-audit --no-fund
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high || echo "::warning::npm audit found high or above vulnerabilities; review before merging"
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        env:
+          # Vite requires these at build time; use dummy values so the build passes
+          # in CI without leaking any real Supabase URL / key.
+          VITE_SUPABASE_URL: https://ci-placeholder.supabase.co
+          VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+        run: npm run build
+
+      - name: Upload dist artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vertex-dist-${{ github.sha }}
+          path: vertex-platform/dist
+          if-no-files-found: error
+          retention-days: 7
