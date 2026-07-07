@@ -17,16 +17,21 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
     override suspend fun doWork(): Result {
         val settings = Settings(applicationContext)
 
-        // (1) مناسبات الأشخاص النهاردة - مهمة، بتشتغل بغضّ النظر عن مفتاح التذكيرات.
-        val mmdd = DateUtil.todayMMDD()
+        // (1) مناسبات الأشخاص القريّبة - تنبيه مبكّر (خلال 3 أيام) بغضّ النظر عن مفتاح التذكيرات.
         settings.recipients.forEach { r ->
             r.occasions.forEach { o ->
-                if (o.date == mmdd) {
+                val days = DateUtil.daysUntilMMDD(o.date) ?: return@forEach
+                if (days <= 3) {
                     val who = r.name.ifBlank { "حد بتحبه" }
+                    val whenTxt = when (days) {
+                        0 -> "النهاردة"
+                        1 -> "بكرة"
+                        else -> "بعد $days أيام"
+                    }
                     Notifications.show(
                         applicationContext,
-                        "🎉 ${o.label} لـ$who",
-                        "النهاردة مناسبته! تحب أجهّزلك رسالة دافئة تبعتهاله؟",
+                        "🎀 ${o.label} لـ$who ($whenTxt)",
+                        "قربت مناسبته! تحب أجهّزلك رسالة أو أفكار هدية؟",
                         ("occ_" + r.id + o.label).hashCode(),
                     )
                 }

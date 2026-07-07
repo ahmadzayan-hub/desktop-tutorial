@@ -41,6 +41,44 @@ class SuggestionEngine(
         }
     }
 
+    // تحرير تكراري لاقتراح موجود (أطول/أقصر/أرومانسي/أبسط...). يرجّع نص واحد.
+    suspend fun refine(text: String, styleId: String): String {
+        val hint = when (styleId) {
+            "longer" -> "أطول شوية وأدفى، من غير حشو ولا تكرار"
+            "shorter" -> "أقصر وأكثف، في سطر أو اتنين بحد أقصى"
+            "romantic" -> "أرومانسي وأحنّ، مشاعر أوضح من غير مبالغة"
+            "simpler" -> "أبسط وأوضح، بكلمات يومية سهلة"
+            "formal" -> "أكتر احترام ورسمية شوية"
+            else -> "أحلى وأصدق"
+        }
+        val rel = Relations.byId(settings.currentRecipient()?.relation ?: "partner_wife")
+        val sys = "انت بتعيد صياغة رسالة قصيرة باللهجة المصرية العامية. " +
+            "حافظ على نفس المعنى والصدق والدفء، ورجّع النص بس من غير أي كلام قبله أو بعده."
+        val user = "أعد صياغة الرسالة دي بحيث تبقى $hint (النبرة تناسب ${rel.label}):\n\n$text"
+        return groq.complete(listOf(ChatMessage("system", sys), ChatMessage("user", user)), 0.7).trim()
+    }
+
+    // أفكار عملية للمناسبة (هدية/كارت/ورد/لمسة) مخصّصة بالشخصية. أفكار وفئة سعرية
+    // تقريبية بس - مفيش أسعار حقيقية (التطبيق مش متصفّح).
+    suspend fun giftIdeas(occasionLabel: String): String {
+        val r = settings.currentRecipient()
+        val rel = Relations.byId(r?.relation ?: "partner_wife")
+        val who = r?.name?.ifBlank { rel.label } ?: rel.label
+        val notes = r?.notes?.takeIf { it.isNotBlank() }
+        val sys = "انت مستشار لطيف بتقترح أفكار عملية لمناسبة. اكتب مصري بسيط. " +
+            "ماتخترعش أسعار حقيقية ولا أسماء محلات، اكتب أفكار وفئة سعرية تقريبية بس (رخيّص/متوسط)."
+        val user = buildString {
+            appendLine("المناسبة: $occasionLabel")
+            appendLine("الشخص: $who (${rel.label}).")
+            if (notes != null) appendLine("حاجات عنه تساعد في الاختيار: $notes")
+            appendLine()
+            appendLine("اقترح 3 أو 4 أفكار عملية تناسب شخصيته والمناسبة (هدية بسيطة/كارت/ورد/لفتة/طلعة).")
+            appendLine("كل فكرة في سطر تبدأ بإيموجي، ومعاها فئة سعرية تقريبية بين قوسين (رخيّص/متوسط).")
+            appendLine("خلّي فكرة على الأقل اقتصادية بلمسة شخصية. الأفكار بس من غير مقدّمة.")
+        }
+        return groq.complete(listOf(ChatMessage("system", sys), ChatMessage("user", user)), 0.8).trim()
+    }
+
     // اختيار موضوعين: تجنّب المستخدم مؤخراً + ترجيح بالوزن.
     private fun pickThemes(count: Int): List<String> {
         val weights = store.themeWeights()
