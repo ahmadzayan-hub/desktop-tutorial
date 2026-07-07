@@ -11,8 +11,8 @@ export function waLink(message?: string): string {
 
 export const WA_MESSAGES = {
   corporate: {
-    en: "Hello Beyond Coffee Moments I'd like to discuss a corporate appreciation campaign / event coffee station.",
-    ar: "مرحباً Beyond Coffee Moments أرغب في مناقشة حملة تقدير للموظفين / ركن قهوة تفاعلي لمناسبتنا.",
+    en: "Hello Lahza I'd like to discuss a corporate appreciation campaign / event coffee station.",
+    ar: "مرحباً Lahza أرغب في مناقشة حملة تقدير للموظفين / ركن قهوة تفاعلي لمناسبتنا.",
   },
   support: {
     en: "Hello I have a question about a personalised coffee gift order.",

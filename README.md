@@ -1,4 +1,4 @@
-# Beyond Coffee Moments
+# Lahza
 
 A premium, **UAE-ready bilingual (EN/AR) SaaS commerce platform** for
 personalised coffee gifts, live event coffee stations, and corporate
@@ -25,7 +25,7 @@ it directly with no monorepo/subfolder configuration. It is also an installable
 ## Quick start
 
 ```bash
-cd beyond-coffee-moments
+cd lahza
 npm install
 npm run dev        # http://localhost:5173
 npm run build      # tsc --noEmit + vite build

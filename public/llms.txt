@@ -1,4 +1,4 @@
-# Beyond Coffee Moments
+# Lahza
 
 > A UAE gifting and event-activation platform (operated by Beyond Connect General Trading L.L.C) that turns customer photos and memories into luxury personalised coffee gifts, live interactive event coffee stations, and corporate appreciation campaigns — with full English and Arabic support and delivery across all seven Emirates.
 
@@ -14,15 +14,15 @@
 - Compliance: VAT-inclusive consumer pricing; personalised goods are non-returnable except when faulty (UAE Consumer Protection Law); PDPL photo consent with 30-day source-image deletion.
 
 ## Pages
-- Home: https://beyondcoffeemoments.ae/
-- Customise a gift: https://beyondcoffeemoments.ae/customize
-- Corporate & events: https://beyondcoffeemoments.ae/corporate
-- Pricing: https://beyondcoffeemoments.ae/pricing
-- How it works: https://beyondcoffeemoments.ae/how-it-works
-- Delivery: https://beyondcoffeemoments.ae/delivery
-- FAQ: https://beyondcoffeemoments.ae/faq
-- Contact: https://beyondcoffeemoments.ae/contact
+- Home: https://lahza.ae/
+- Customise a gift: https://lahza.ae/customize
+- Corporate & events: https://lahza.ae/corporate
+- Pricing: https://lahza.ae/pricing
+- How it works: https://lahza.ae/how-it-works
+- Delivery: https://lahza.ae/delivery
+- FAQ: https://lahza.ae/faq
+- Contact: https://lahza.ae/contact
 
 ## Contact
-- Email: hello@beyondcoffeemoments.ae
-- Instagram: @beyondcoffeemoments
+- Email: hello@lahza.ae
+- Instagram: @lahzacoffee

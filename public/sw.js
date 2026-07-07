@@ -1,4 +1,4 @@
-/* Beyond Coffee Moments — service worker.
+/* Lahza — service worker.
    App-shell offline support:
    - precache the shell + brand assets on install
    - navigations: network-first, fall back to cached shell when offline

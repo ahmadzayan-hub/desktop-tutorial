@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, CheckCircle2, PartyPopper, MessageCircle } from "lucide-react";
 import { useI18n } from "@/i18n/I18nContext";
@@ -13,13 +13,43 @@ import {
 
 type Result = { ref: string; mode: "now" | "link" } | null;
 
+// Ephemeral draft persistence: keeps the in-progress design across an accidental
+// refresh so the customer never re-does their work. sessionStorage is per-tab
+// and cleared when the tab closes — the photo stays on-device, matching our
+// privacy stance (see docs/THREAT_MODEL.md).
+const DRAFT_KEY = "lahza.customize.draft";
+function loadDraft(): OrderDraft {
+  try {
+    const raw = typeof sessionStorage !== "undefined" && sessionStorage.getItem(DRAFT_KEY);
+    if (raw) return { ...INITIAL_DRAFT, ...(JSON.parse(raw) as Partial<OrderDraft>), imageOriginal: null };
+  } catch {
+    /* private mode / quota / bad JSON — fall back to a fresh draft */
+  }
+  return INITIAL_DRAFT;
+}
+
 export default function Customize() {
   const { t, isRtl } = useI18n();
   const [step, setStep] = useState(0);
-  const [draft, setDraft] = useState<OrderDraft>(INITIAL_DRAFT);
+  const [draft, setDraft] = useState<OrderDraft>(loadDraft);
   const [error, setError] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
   const [result, setResult] = useState<Result>(null);
+
+  // Save on every edit; clear once the order is placed.
+  useEffect(() => {
+    try {
+      if (result) {
+        sessionStorage.removeItem(DRAFT_KEY);
+        return;
+      }
+      const { imageOriginal: _drop, ...persist } = draft;
+      void _drop;
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify(persist));
+    } catch {
+      /* storage unavailable — persistence is best-effort */
+    }
+  }, [draft, result]);
 
   const update = (patch: Partial<OrderDraft>) => setDraft((d) => ({ ...d, ...patch }));
 
