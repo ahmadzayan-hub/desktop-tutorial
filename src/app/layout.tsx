@@ -58,10 +58,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Kufi+Arabic:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
           rel="stylesheet"
         />
-        {/* Prevent flash of wrong theme */}
+        {/* Prevent flash of wrong theme or wrong locale direction */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var k='tz_theme',v=localStorage.getItem(k);var d=v==='dark'||((v===null||v==='system')&&window.matchMedia('(prefers-color-scheme:dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();`
+            __html: `(function(){try{
+var k='tz_theme',v=localStorage.getItem(k);
+var d=v==='dark'||((v===null||v==='system')&&window.matchMedia('(prefers-color-scheme:dark)').matches);
+if(d)document.documentElement.classList.add('dark');
+var loc=localStorage.getItem('tz_locale')||'en';
+document.documentElement.lang=loc;
+document.documentElement.dir=loc==='ar'?'rtl':'ltr';
+}catch(e){}})();`
           }}
         />
       </head>

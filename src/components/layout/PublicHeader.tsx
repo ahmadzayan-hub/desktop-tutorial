@@ -3,10 +3,12 @@ import Link from "next/link";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { Menu, X, GraduationCap } from "lucide-react";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 
 export function PublicHeader() {
   const { t, locale, setLocale, dir } = useI18n();
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navLinks = [
@@ -29,15 +31,23 @@ export function PublicHeader() {
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
-            {navLinks.map(link => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="px-3 py-2 text-sm font-medium text-slate-600 hover:text-brand-700 rounded-lg hover:bg-brand-50 transition dark:text-slate-300 dark:hover:text-brand-400 dark:hover:bg-brand-950/40"
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map(link => {
+              const active = pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={active ? "page" : undefined}
+                  className={`px-3 py-2 text-sm font-medium rounded-lg transition ${
+                    active
+                      ? "text-brand-700 bg-brand-50 dark:text-brand-400 dark:bg-brand-950/40"
+                      : "text-slate-600 hover:text-brand-700 hover:bg-brand-50 dark:text-slate-300 dark:hover:text-brand-400 dark:hover:bg-brand-950/40"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Right actions */}
@@ -46,7 +56,7 @@ export function PublicHeader() {
             <button
               onClick={() => setLocale(locale === "en" ? "ar" : "en")}
               className="hidden sm:flex items-center px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 border border-slate-200 rounded-lg hover:bg-slate-50 transition dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800"
-              aria-label="Toggle language"
+              aria-label={locale === "en" ? "Switch to Arabic" : "Switch to English"}
             >
               {t("lang.toggle")}
             </button>
@@ -82,7 +92,12 @@ export function PublicHeader() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-lg dark:text-slate-300 dark:hover:bg-slate-800"
+                  aria-current={pathname === link.href ? "page" : undefined}
+                  className={`px-3 py-2.5 text-sm font-medium rounded-lg transition ${
+                    pathname === link.href
+                      ? "text-brand-700 bg-brand-50 dark:text-brand-400 dark:bg-brand-950/40"
+                      : "text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800"
+                  }`}
                 >
                   {link.label}
                 </Link>

@@ -1,15 +1,13 @@
 {
-  "name": "Tweenz AI — منصة التعلم الذكي",
+  "name": "Tweenz AI — Smart Learning Platform",
   "short_name": "Tweenz AI",
-  "description": "منصة ذكية لطلاب الماجستير — تدير مقرراتك وتلخّص محاضراتك وتساعدك على التفوق بالعربية والإنجليزية.",
+  "description": "AI-powered academic platform for MBA and university students. Manage courses, study with AI, and track your progress — in English and Arabic.",
   "start_url": "/dashboard",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "browser"],
   "background_color": "#eff6ff",
   "theme_color": "#1d4ed8",
   "orientation": "portrait-primary",
-  "lang": "ar",
-  "dir": "rtl",
   "id": "/",
   "scope": "/",
   "categories": ["education", "productivity"],
@@ -20,32 +18,41 @@
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
     { "src": "/icon.svg",     "sizes": "any",     "type": "image/svg+xml" }
   ],
-  "screenshots": [],
-  "shortcuts": [
+  "screenshots": [
     {
-      "name": "لوحة التحكم",
-      "short_name": "الرئيسية",
-      "url": "/dashboard",
-      "description": "لوحة التحكم الأكاديمية"
-    },
-    {
-      "name": "المُدرِّس الذكي",
-      "short_name": "المُدرِّس",
-      "url": "/tutor",
-      "description": "حوار مع المدرس الذكي"
-    },
-    {
-      "name": "حزم الدراسة",
-      "short_name": "دراسة",
-      "url": "/study-packs",
-      "description": "حزم الدراسة الذكية"
-    },
-    {
-      "name": "اسأل الماجستير",
-      "short_name": "اسأل",
-      "url": "/ask-mba",
-      "description": "وكيل الماجستير الذكي"
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Tweenz AI — Smart Learning Platform"
     }
   ],
-  "prefer_related_applications": false
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Home",
+      "url": "/dashboard",
+      "description": "Academic dashboard"
+    },
+    {
+      "name": "AI Tutor",
+      "short_name": "Tutor",
+      "url": "/study#tutor",
+      "description": "Chat with the AI tutor"
+    },
+    {
+      "name": "Study Packs",
+      "short_name": "Study",
+      "url": "/study#packs",
+      "description": "AI-generated study packs"
+    },
+    {
+      "name": "Ask My MBA",
+      "short_name": "Ask",
+      "url": "/ask-mba",
+      "description": "Strategic MBA AI agent"
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": []
 }
