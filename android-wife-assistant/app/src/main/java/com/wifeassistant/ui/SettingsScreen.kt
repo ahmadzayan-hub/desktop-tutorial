@@ -45,9 +45,12 @@ import com.wifeassistant.work.Scheduler
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(onBack: () -> Unit) {
+fun SettingsScreen(onBack: () -> Unit, onThemeChanged: () -> Unit = {}) {
     val context = LocalContext.current
     val settings = remember { Settings(context) }
+
+    var themeMode by remember { mutableStateOf(settings.themeMode) }
+    var dynamicColor by remember { mutableStateOf(settings.dynamicColor) }
 
     var groqKey by remember { mutableStateOf(settings.groqKey) }
     var myName by remember { mutableStateOf(settings.myName) }
@@ -137,6 +140,34 @@ fun SettingsScreen(onBack: () -> Unit) {
                         modifier = Modifier.weight(1f),
                     )
                 }
+            }
+
+            Section("المظهر")
+            Text("الوضع", style = MaterialTheme.typography.bodyMedium)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf("system" to "تلقائي", "light" to "فاتح", "dark" to "غامق").forEach { (id, label) ->
+                    FilterChip(
+                        selected = themeMode == id,
+                        onClick = {
+                            themeMode = id
+                            settings.themeMode = id
+                            onThemeChanged() // تطبيق فوري
+                        },
+                        label = { Text(label) },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("ألوان Material You (أندرويد 12+)", modifier = Modifier.weight(1f))
+                Switch(
+                    checked = dynamicColor,
+                    onCheckedChange = {
+                        dynamicColor = it
+                        settings.dynamicColor = it
+                        onThemeChanged() // تطبيق فوري
+                    },
+                )
             }
 
             Section("مواعيد الاقتراحات")
