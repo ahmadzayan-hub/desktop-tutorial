@@ -93,6 +93,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Preload the two Arabic display files so switching language
+            to AR does not flash unstyled text (FOUT). Two weights are
+            enough for the marketing hero and body; the rest come from
+            the same stylesheet. */}
+        <link
+          rel="preload"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+          href="https://fonts.gstatic.com/s/tajawal/v11/Iurf6YBj_oCad4k1nzGBC5xLhLE.woff2"
+        />
         {/* Curated EN + AR font stack used both on the marketing UI and as
             preview fonts in the Brand Kit / slide editor. Kept on a single
             CSS request so we hit one round-trip; subset to the weights the

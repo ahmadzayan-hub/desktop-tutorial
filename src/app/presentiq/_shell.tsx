@@ -46,6 +46,12 @@ export function PresentIqShell({ children }: { children: ReactNode }) {
 
   return (
     <div dir={dir} lang={lang} style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      {/* Skip-to-content link. Visible only when the tab-ring lands on
+          it (keyboard users), invisible for the mouse path. Required
+          for WCAG 2.1 SC 2.4.1 — Bypass Blocks. */}
+      <a href="#main" className="pq-skip-link">
+        {lang === "ar" ? "تخطّي إلى المحتوى" : "Skip to content"}
+      </a>
       <header
         className="pq-header sticky top-0 z-30"
         style={{

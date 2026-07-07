@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ShieldCheck,
   FileSliders,
@@ -55,6 +55,26 @@ export function Hero() {
   const [prompt, setPrompt] = useState("");
   const [slides, setSlides] = useState(5);
   const [tplCat, setTplCat] = useState<TplCategory>("all");
+  const [submitting, setSubmitting] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  // Global keyboard shortcut: Cmd/Ctrl + K focuses the composer.
+  // Standard "jump to input" muscle memory from Gamma / Linear / Slack.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      const mac = (e.metaKey && !e.ctrlKey);
+      const win = (e.ctrlKey && !e.metaKey);
+      if ((mac || win) && e.key.toLowerCase() === "k") {
+        // Ignore if the user is already typing in an input.
+        const tag = (document.activeElement?.tagName ?? "").toLowerCase();
+        if (tag === "input" || tag === "textarea" || tag === "select") return;
+        e.preventDefault();
+        textareaRef.current?.focus();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const placeholder = useMemo(
     () => (lang === "ar"
@@ -73,11 +93,16 @@ export function Hero() {
   ];
 
   function submit() {
+    if (submitting) return;
+    setSubmitting(true);
     const v = prompt.trim();
     const params = new URLSearchParams();
     if (v) params.set("prompt", v);
     params.set("slides", String(slides));
     params.set("mode", mode);
+    // No await needed; router.push is fire-and-forget. The state flag
+    // stops double-submits (double-tap / rapid Enter) between the click
+    // and the route transition.
     router.push(`/presentiq/projects/new?${params.toString()}`);
   }
 
@@ -160,12 +185,14 @@ export function Hero() {
           {/* Composer */}
           <div className="pq-liquid-card pq-composer-card pq-rise pq-rise-4" dir={lang === "ar" ? "rtl" : "ltr"}>
             <textarea
+              ref={textareaRef}
               className="pq-composer-textarea"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={onTextareaKey}
               placeholder={placeholder}
               aria-label={placeholder}
+              aria-describedby="pq-composer-hint"
               rows={2}
             />
             <div className="pq-composer-controls">
@@ -205,19 +232,46 @@ export function Hero() {
                 type="button"
                 className="pq-composer-send"
                 onClick={submit}
+                disabled={submitting}
+                aria-busy={submitting}
                 aria-label={lang === "ar" ? "ابدأ التوليد" : "Start generation"}
                 title={lang === "ar" ? "ابدأ" : "Start"}
               >
                 <ArrowUp aria-hidden size={16} strokeWidth={2.4} />
               </button>
             </div>
+            {/* Keyboard hint. Announced by aria-describedby on the
+                textarea so screen readers pick it up on focus, and
+                visually shown as a subtle shortcut chip. */}
+            <div id="pq-composer-hint" className="pq-composer-hint" aria-live="polite">
+              <kbd>{lang === "ar" ? "⌘" : "⌘"}</kbd>
+              <span>+</span>
+              <kbd>K</kbd>
+              <span className="pq-composer-hint-sep" aria-hidden>·</span>
+              <span>{lang === "ar" ? "للتركيز" : "to focus"}</span>
+              <span className="pq-composer-hint-sep" aria-hidden>·</span>
+              <kbd>{lang === "ar" ? "⌘" : "⌘"}</kbd>
+              <span>+</span>
+              <kbd>{lang === "ar" ? "Enter" : "Enter"}</kbd>
+              <span className="pq-composer-hint-sep" aria-hidden>·</span>
+              <span>{lang === "ar" ? "للإرسال" : "to send"}</span>
+            </div>
           </div>
 
-          {/* CTA row underneath the composer (magnetic + ghost) */}
+          {/* CTA row underneath the composer */}
           <div className="pq-hero-cta-row pq-rise pq-rise-5" style={{ marginTop: "1.5rem" }}>
-            <Magnetic as="a" href="/presentiq/projects/new" className="pq-btn pq-btn-liquid pq-btn-liquid-primary pq-btn-liquid-pill" style={{ padding: "0.85rem 1.6rem", fontSize: "0.95rem" }}>
-              {t("land.cta.start")} <span className="pq-flip" aria-hidden>→</span>
-            </Magnetic>
+            <button
+              type="button"
+              onClick={submit}
+              disabled={submitting}
+              aria-busy={submitting}
+              className="pq-btn pq-btn-liquid pq-btn-liquid-primary pq-btn-liquid-pill"
+              style={{ padding: "0.85rem 1.6rem", fontSize: "0.95rem" }}
+            >
+              {submitting
+                ? (lang === "ar" ? "جارٍ الفتح…" : "Opening…")
+                : (<>{t("land.cta.start")} <span aria-hidden>→</span></>)}
+            </button>
             <Magnetic as="a" href="/presentiq/dashboard" className="pq-btn pq-btn-liquid pq-btn-liquid-pill" style={{ padding: "0.85rem 1.4rem", fontSize: "0.9rem" }}>
               {t("land.cta.dashboard")}
             </Magnetic>
