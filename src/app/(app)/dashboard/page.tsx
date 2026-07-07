@@ -1,11 +1,12 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
+import { useI18n } from "@/lib/i18n/I18nProvider";
 import {
   BookOpen, Clock, Brain, Zap, ArrowRight, Flame,
   CheckCircle, AlertTriangle, Megaphone, CalendarCheck,
-  TrendingUp, Bot, Layers,
+  Bot, Layers,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -28,14 +29,8 @@ function RingProgress({ value, size = 48, stroke = 4, color = "#3b82f6" }: { val
   );
 }
 
-const riskColors: Record<string, "red"|"yellow"|"green"|"blue"> = {
-  overdue: "red", at_risk: "red", due_soon: "yellow", safe: "green",
-};
-const riskLabels: Record<string, string> = {
-  overdue: "Overdue", at_risk: "At Risk", due_soon: "Due Soon", safe: "Safe",
-};
-
 export default function DashboardPage() {
+  const { t } = useI18n();
   const [courses, setCourses]             = useState<Course[]>([]);
   const [deadlines, setDeadlines]         = useState<Deadline[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
@@ -58,8 +53,19 @@ export default function DashboardPage() {
   }, []);
 
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const greetingKey = hour < 12 ? "dashboard.greeting.morning" : hour < 17 ? "dashboard.greeting.afternoon" : "dashboard.greeting.evening";
+  const greeting = t(greetingKey as any, { name: profile?.full_name ?? "" }).replace(/, $/, "").replace(/،\s*$/, "");
   const urgent = deadlines.filter(d => d.risk === "overdue" || d.risk === "at_risk");
+
+  const riskColors: Record<string, "red"|"yellow"|"green"|"blue"> = {
+    overdue: "red", at_risk: "red", due_soon: "yellow", safe: "green",
+  };
+  const riskLabelKeys: Record<string, string> = {
+    overdue: "dashboard.overdue",
+    at_risk: "dashboard.at_risk",
+    due_soon: "dashboard.due_soon",
+    safe: "dashboard.safe",
+  };
 
   if (loading) return (
     <div className="space-y-5 animate-fade-in">
@@ -68,6 +74,10 @@ export default function DashboardPage() {
       <div className="skeleton h-40 rounded-2xl" />
     </div>
   );
+
+  const attentionMsg = urgent.length === 1
+    ? t("dashboard.items_need_attention" as any, { count: "1" })
+    : t("dashboard.items_need_attention_plural" as any, { count: String(urgent.length) });
 
   return (
     <div className="space-y-5 animate-fade-up">
@@ -79,27 +89,26 @@ export default function DashboardPage() {
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-start gap-5">
           <div className="flex-1">
             <p className="text-white/70 text-sm mb-1">{greeting} 👋</p>
-            <h1 className="text-2xl font-bold mb-1">{profile?.full_name ?? "Welcome back!"}</h1>
-            <p className="text-white/65 text-sm mb-4">MBA Year 2 · {courses.length} active courses</p>
+            <h1 className="text-2xl font-bold mb-1">{profile?.full_name ?? t("nav.dashboard")}</h1>
+            <p className="text-white/65 text-sm mb-4">MBA Year 2 · {courses.length} {t("dashboard.courses_active")}</p>
 
-            {/* Urgent alert */}
             {urgent.length > 0 && (
               <div className="flex items-center gap-2 bg-red-500/20 border border-red-400/40 rounded-xl px-3.5 py-2 mb-4 text-sm">
                 <AlertTriangle size={14} className="text-red-300 flex-shrink-0" />
-                <span className="font-semibold">{urgent.length} item{urgent.length > 1 ? "s" : ""} need your attention</span>
-                <Link href="/plan" className="ml-auto text-xs text-red-200 hover:text-white underline">View</Link>
+                <span className="font-semibold">{attentionMsg}</span>
+                <Link href="/plan" className="ml-auto text-xs text-red-200 hover:text-white underline">{t("common.view" as any)}</Link>
               </div>
             )}
 
             <div className="flex flex-wrap gap-2">
               <Link href="/study">
                 <button className="flex items-center gap-2 bg-white/20 hover:bg-white/30 border border-white/30 rounded-xl px-4 py-2 text-sm font-semibold transition-all hover:scale-105">
-                  <Brain size={14} /> Start Studying <ArrowRight size={12} />
+                  <Brain size={14} /> {t("dashboard.start_studying" as any)} <ArrowRight size={12} />
                 </button>
               </Link>
               <Link href="/plan">
                 <button className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl px-4 py-2 text-sm transition-all hover:scale-105">
-                  <CalendarCheck size={14} /> My Plan
+                  <CalendarCheck size={14} /> {t("dashboard.my_plan" as any)}
                 </button>
               </Link>
             </div>
@@ -112,11 +121,17 @@ export default function DashboardPage() {
                 <RingProgress value={72} size={40} stroke={4} color="#34d399" />
                 <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-white">72%</span>
               </div>
-              <div><p className="text-[10px] text-white/60">Readiness</p><p className="text-xs font-bold">Exam Ready</p></div>
+              <div>
+                <p className="text-[10px] text-white/60">{t("dashboard.readiness" as any)}</p>
+                <p className="text-xs font-bold">{t("dashboard.exam_ready" as any)}</p>
+              </div>
             </div>
             <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-2xl px-4 py-2.5 border border-white/20">
               <Flame size={18} className="text-orange-300 animate-pulse-soft" />
-              <div><p className="text-[10px] text-white/60">Streak</p><p className="text-xs font-bold">14 days 🔥</p></div>
+              <div>
+                <p className="text-[10px] text-white/60">{t("dashboard.streak" as any)}</p>
+                <p className="text-xs font-bold">14 {t("dashboard.streak" as any)} 🔥</p>
+              </div>
             </div>
           </div>
         </div>
@@ -132,17 +147,17 @@ export default function DashboardPage() {
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
                 <Clock size={13} className="text-white" />
               </div>
-              <h2 className="font-bold text-slate-900 dark:text-slate-100 text-sm">Deadlines This Week</h2>
+              <h2 className="font-bold text-slate-900 dark:text-slate-100 text-sm">{t("dashboard.deadlines_week" as any)}</h2>
             </div>
             <Link href="/plan" className="text-xs text-amber-600 dark:text-amber-400 font-semibold hover:underline flex items-center gap-1">
-              Full Plan <ArrowRight size={11} />
+              {t("dashboard.full_plan" as any)} <ArrowRight size={11} />
             </Link>
           </div>
 
           {deadlines.length === 0 ? (
             <div className="py-8 text-center">
               <CheckCircle className="w-9 h-9 mx-auto mb-2 text-emerald-400 opacity-60" />
-              <p className="text-sm text-slate-400">All caught up!</p>
+              <p className="text-sm text-slate-400">{t("dashboard.all_caught_up" as any)}</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -157,7 +172,7 @@ export default function DashboardPage() {
                       <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{d.title}</p>
                       <p className="text-xs text-slate-400 truncate">{d.course_name} · {format(new Date(d.due_date), "MMM d")}</p>
                     </div>
-                    <Badge color={riskColors[d.risk] || "gray"}>{riskLabels[d.risk]}</Badge>
+                    <Badge color={riskColors[d.risk] || "gray"}>{t(riskLabelKeys[d.risk] as any)}</Badge>
                   </div>
                 );
               })}
@@ -172,10 +187,10 @@ export default function DashboardPage() {
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-500 to-blue-600 flex items-center justify-center">
                 <BookOpen size={13} className="text-white" />
               </div>
-              <h2 className="font-bold text-slate-900 dark:text-slate-100 text-sm">My Courses</h2>
+              <h2 className="font-bold text-slate-900 dark:text-slate-100 text-sm">{t("dashboard.my_courses" as any)}</h2>
             </div>
             <Link href="/courses" className="text-xs text-brand-600 dark:text-brand-400 font-semibold hover:underline flex items-center gap-1">
-              All Courses <ArrowRight size={11} />
+              {t("dashboard.all_courses" as any)} <ArrowRight size={11} />
             </Link>
           </div>
           <div className="space-y-2.5">
@@ -213,26 +228,26 @@ export default function DashboardPage() {
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
             <Zap size={13} className="text-white" />
           </div>
-          <h2 className="font-bold text-slate-900 dark:text-slate-100 text-sm">Study Tools</h2>
+          <h2 className="font-bold text-slate-900 dark:text-slate-100 text-sm">{t("dashboard.study_tools" as any)}</h2>
           <Link href="/study" className="ml-auto text-xs text-violet-600 dark:text-violet-400 font-semibold hover:underline flex items-center gap-1">
-            All Tools <ArrowRight size={11} />
+            {t("dashboard.all_tools" as any)} <ArrowRight size={11} />
           </Link>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { href: "/study#tutor",      icon: <Bot size={20} />,    label: "AI Tutor",       sub: "Ask anything",        grad: "from-teal-500 to-cyan-500"       },
-            { href: "/study#flashcards", icon: <Layers size={20} />, label: "Flashcards",     sub: "18 due for review",   grad: "from-amber-500 to-orange-500"    },
-            { href: "/study#quizzes",    icon: <Brain size={20} />,  label: "Quiz Me",        sub: "Test your knowledge", grad: "from-violet-500 to-purple-600"   },
-            { href: "/study#packs",      icon: <BookOpen size={20}/>, label: "Study Packs",   sub: "AI-generated notes",  grad: "from-brand-500 to-blue-600"      },
-          ].map(t => (
-            <Link key={t.href} href={t.href}>
+            { href: "/study#tutor",      icon: <Bot size={20} />,     labelKey: "dashboard.tool.tutor",        subKey: "dashboard.tool.tutor_sub",        grad: "from-teal-500 to-cyan-500"    },
+            { href: "/study#flashcards", icon: <Layers size={20} />,  labelKey: "dashboard.tool.flashcards",   subKey: "dashboard.tool.flashcards_sub",   grad: "from-amber-500 to-orange-500" },
+            { href: "/study#quizzes",    icon: <Brain size={20} />,   labelKey: "dashboard.tool.quiz",         subKey: "dashboard.tool.quiz_sub",         grad: "from-violet-500 to-purple-600"},
+            { href: "/study#packs",      icon: <BookOpen size={20}/>, labelKey: "dashboard.tool.study_packs",  subKey: "dashboard.tool.study_packs_sub",  grad: "from-brand-500 to-blue-600"   },
+          ].map(tool => (
+            <Link key={tool.href} href={tool.href}>
               <div className="group flex flex-col gap-2 p-4 rounded-2xl bg-white/40 dark:bg-white/5 border border-white/60 dark:border-white/10 hover:bg-white/70 dark:hover:bg-white/10 transition-all hover:-translate-y-0.5 cursor-pointer">
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${t.grad} flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform`}>
-                  {t.icon}
+                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${tool.grad} flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform`}>
+                  {tool.icon}
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{t.label}</p>
-                  <p className="text-xs text-slate-400 mt-0.5">{t.sub}</p>
+                  <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{t(tool.labelKey as any)}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">{t(tool.subKey as any)}</p>
                 </div>
               </div>
             </Link>
@@ -248,7 +263,7 @@ export default function DashboardPage() {
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center">
                 <Megaphone size={13} className="text-white" />
               </div>
-              <h2 className="font-bold text-slate-900 dark:text-slate-100 text-sm">Recent Announcements</h2>
+              <h2 className="font-bold text-slate-900 dark:text-slate-100 text-sm">{t("dashboard.recent_announcements" as any)}</h2>
             </div>
           </div>
           <div className="space-y-2">
