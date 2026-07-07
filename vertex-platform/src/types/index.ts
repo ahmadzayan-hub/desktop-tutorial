@@ -144,6 +144,63 @@ export interface AiAnalysisResult {
   findings: Array<Omit<AiFinding, 'id' | 'submission_id' | 'created_at' | 'updated_at'>>;
 }
 
+export type ObligationType = 'deliverable' | 'payment' | 'renewal' | 'approval' | 'compliance';
+export type ObligationStatus = 'on_track' | 'at_risk' | 'overdue' | 'complete';
+export type RenewalStatus = 'active' | 'expiring_soon' | 'expired' | 'renewed';
+
+export interface KpiRecord {
+  id: string;
+  project_id: string;
+  submission_id: string | null;
+  kpi_category: string;
+  kpi_description: string | null;
+  penalty_per_unit_aed: number | null;
+  units_triggered: number;
+  penalty_amount_aed: number;
+  deduction_recommended: boolean;
+  deduction_reason: string | null;
+  deduction_approved: boolean;
+  approved_by: string | null;
+  month: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Obligation {
+  id: string;
+  project_id: string;
+  obligation_type: ObligationType;
+  description: string;
+  details: string | null;
+  due_date: string | null;
+  submitted_date: string | null;
+  approved_date: string | null;
+  status: ObligationStatus;
+  days_remaining: number | null;
+  alert_threshold_days: number;
+  critical_path_blocking: boolean;
+  kpi_leverage_text: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface InsurancePolicy {
+  id: string;
+  project_id: string;
+  coverage_type: string;
+  provider: string | null;
+  policy_number: string | null;
+  amount_aed: number | null;
+  expiry_date: string | null;
+  renewal_status: RenewalStatus;
+  renewal_evidence_url: string | null;
+  renewal_evidence_uploaded_date: string | null;
+  days_to_expiry: number | null;
+  alert_sent: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface AuthState {
   user: SupabaseUser | null;
   profile: VertexUser | null;

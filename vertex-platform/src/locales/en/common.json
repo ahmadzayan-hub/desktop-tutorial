@@ -331,6 +331,98 @@
     "search": "Search",
     "unknown": "Unknown"
   },
+  "kpiPage": {
+    "title": "KPI tracker",
+    "subtitle": "Monthly penalties, deductions and approvals across every project.",
+    "filters": {
+      "project": "Project",
+      "allProjects": "All projects",
+      "monthsBack": "Last {{count}} months"
+    },
+    "totals": {
+      "thisMonth": "This month",
+      "last12Months": "Last 12 months",
+      "openForApproval": "Open for approval",
+      "kpiCap": "Contract KPI cap"
+    },
+    "chart": "Penalty trend",
+    "table": {
+      "month": "Month",
+      "project": "Project",
+      "category": "Category",
+      "units": "Units",
+      "penalty": "Penalty (AED)",
+      "recommended": "Recommended",
+      "approved": "Approved",
+      "reason": "Reason",
+      "actions": "Actions"
+    },
+    "empty": "No KPI records match your filters yet.",
+    "approve": "Approve deduction",
+    "unapprove": "Revoke approval"
+  },
+  "obligationsPage": {
+    "title": "Obligations",
+    "subtitle": "Every deliverable, payment, renewal and approval on the critical path.",
+    "buckets": {
+      "overdue": "Overdue",
+      "at_risk": "At risk",
+      "on_track": "On track",
+      "complete": "Complete"
+    },
+    "meta": {
+      "project": "Project",
+      "type": "Type",
+      "due": "Due",
+      "submitted": "Submitted",
+      "approved": "Approved",
+      "daysRemaining": "Days remaining",
+      "critical": "Critical path",
+      "kpiLeverage": "KPI leverage"
+    },
+    "types": {
+      "deliverable": "Deliverable",
+      "payment": "Payment",
+      "renewal": "Renewal",
+      "approval": "Approval",
+      "compliance": "Compliance"
+    },
+    "empty": "No obligations tracked yet. Add one from the project detail page.",
+    "filters": {
+      "type": "Type",
+      "allTypes": "All types",
+      "project": "Project"
+    }
+  },
+  "insurancePage": {
+    "title": "Insurance renewals",
+    "subtitle": "Every active policy, its expiry, and the renewal evidence chain.",
+    "buckets": {
+      "expired": "Expired",
+      "expiring": "Expiring within 30 days",
+      "active": "Active",
+      "renewed": "Recently renewed"
+    },
+    "table": {
+      "project": "Project",
+      "coverage": "Coverage",
+      "provider": "Provider",
+      "policy": "Policy",
+      "amount": "Amount",
+      "expiry": "Expiry",
+      "daysToExpiry": "Days to expiry",
+      "status": "Status",
+      "evidence": "Evidence",
+      "uploadEvidence": "Upload evidence"
+    },
+    "empty": "No insurance policies tracked yet.",
+    "renewalStatus": {
+      "active": "Active",
+      "expiring_soon": "Expiring soon",
+      "expired": "Expired",
+      "renewed": "Renewed"
+    }
+  },
   "footer": {
     "copyright": "© {{year}} VERTEX. All rights reserved.",
     "version": "Version {{version}}"

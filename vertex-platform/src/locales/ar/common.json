@@ -331,6 +331,98 @@
     "search": "بحث",
     "unknown": "غير معروف"
   },
+  "kpiPage": {
+    "title": "متتبع مؤشرات الأداء",
+    "subtitle": "الغرامات الشهرية والخصومات والموافقات عبر كل المشاريع.",
+    "filters": {
+      "project": "المشروع",
+      "allProjects": "كل المشاريع",
+      "monthsBack": "آخر {{count}} أشهر"
+    },
+    "totals": {
+      "thisMonth": "هذا الشهر",
+      "last12Months": "آخر اثني عشر شهراً",
+      "openForApproval": "بانتظار الموافقة",
+      "kpiCap": "سقف مؤشرات العقد"
+    },
+    "chart": "اتجاه الغرامات",
+    "table": {
+      "month": "الشهر",
+      "project": "المشروع",
+      "category": "الفئة",
+      "units": "الوحدات",
+      "penalty": "الغرامة (درهم)",
+      "recommended": "موصى بها",
+      "approved": "معتمدة",
+      "reason": "السبب",
+      "actions": "الإجراءات"
+    },
+    "empty": "لا توجد سجلات مؤشرات أداء مطابقة لعوامل التصفية بعد.",
+    "approve": "اعتماد الخصم",
+    "unapprove": "سحب الاعتماد"
+  },
+  "obligationsPage": {
+    "title": "الالتزامات",
+    "subtitle": "كل مخرج ودفعة وتجديد وموافقة على المسار الحرج.",
+    "buckets": {
+      "overdue": "متأخِّرة",
+      "at_risk": "معرضة للخطر",
+      "on_track": "على المسار",
+      "complete": "مكتملة"
+    },
+    "meta": {
+      "project": "المشروع",
+      "type": "النوع",
+      "due": "الاستحقاق",
+      "submitted": "التسليم",
+      "approved": "الاعتماد",
+      "daysRemaining": "الأيام المتبقية",
+      "critical": "مسار حرج",
+      "kpiLeverage": "أثر على مؤشرات الأداء"
+    },
+    "types": {
+      "deliverable": "مُخرَج",
+      "payment": "دفعة",
+      "renewal": "تجديد",
+      "approval": "موافقة",
+      "compliance": "امتثال"
+    },
+    "empty": "لا توجد التزامات مسجَّلة بعد. أضف واحداً من صفحة تفاصيل المشروع.",
+    "filters": {
+      "type": "النوع",
+      "allTypes": "كل الأنواع",
+      "project": "المشروع"
+    }
+  },
+  "insurancePage": {
+    "title": "تجديدات التأمين",
+    "subtitle": "كل بوليصة نشطة، وتاريخ انتهائها، وسلسلة أدلة التجديد.",
+    "buckets": {
+      "expired": "منتهية",
+      "expiring": "تنتهي خلال ثلاثين يوماً",
+      "active": "نشطة",
+      "renewed": "جُدِّدت مؤخراً"
+    },
+    "table": {
+      "project": "المشروع",
+      "coverage": "التغطية",
+      "provider": "الجهة المصدرة",
+      "policy": "رقم البوليصة",
+      "amount": "المبلغ",
+      "expiry": "الانتهاء",
+      "daysToExpiry": "أيام حتى الانتهاء",
+      "status": "الحالة",
+      "evidence": "الدليل",
+      "uploadEvidence": "رفع دليل"
+    },
+    "empty": "لا توجد بوالص تأمين مسجَّلة بعد.",
+    "renewalStatus": {
+      "active": "نشطة",
+      "expiring_soon": "توشك على الانتهاء",
+      "expired": "منتهية",
+      "renewed": "مُجدَّدة"
+    }
+  },
   "footer": {
     "copyright": "© {{year}} VERTEX. جميع الحقوق محفوظة.",
     "version": "الإصدار {{version}}"

@@ -3,6 +3,38 @@
 Notable changes to the VERTEX platform. Semantic versioning
 (major.minor.patch) once we cut a 1.0.0 tag.
 
+## 0.4.0 - Session 5 - KPI, obligations, insurance
+
+Three new pages that turn VERTEX from a submission review app into an
+operational contract control tower.
+
+- `/kpi` - KPI tracker. Filter by project and window (3, 6, 12 months),
+  summary cards (this month, window total, open for approval, contract
+  KPI cap), penalty trend bar chart, full penalty table with per-row
+  admin approval and audit entries on approve or revoke.
+- `/obligations` - obligations grouped into four buckets (overdue,
+  at risk, on track, complete). Filter by project and type
+  (deliverable, payment, renewal, approval, compliance). Each row shows
+  description, project, type, due date, days remaining, critical path
+  chip, and the associated KPI leverage.
+- `/insurance` - insurance renewals grouped by bucket (expired,
+  expiring within 30 days, active, renewed). Upload evidence in place;
+  the file lands in the `submissions` bucket at
+  `<project_id>/insurance/<policy_id>/<file>`, `renewal_evidence_url`
+  is patched, `renewal_status` becomes `renewed`, and an audit entry
+  is written.
+- Hooks: `useKpiTracking`, `useObligations`, `useInsurance` (with
+  `uploadEvidence`).
+- Types: `KpiRecord`, `Obligation`, `InsurancePolicy`, plus enums
+  `ObligationType`, `ObligationStatus`, `RenewalStatus`.
+- Locales: `kpiPage`, `obligationsPage`, `insurancePage` sections
+  added in EN and AR with formal Arabic register.
+- Sidebar shows the three new destinations. Command palette lists them
+  in the static route hits.
+- Every new page is `React.lazy`. Bundle sizes on load:
+  KpiTracker 2.8 KB gzip, Obligations 1.9 KB gzip, InsuranceRenewals
+  2.2 KB gzip.
+
 ## 0.3.0 - Hardening
 
 Performance, resilience, and operations.

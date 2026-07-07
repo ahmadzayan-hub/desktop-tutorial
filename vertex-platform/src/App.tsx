@@ -18,6 +18,9 @@ const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const Upload = lazy(() => import('@/pages/Upload'));
 const SubmissionDetail = lazy(() => import('@/pages/SubmissionDetail'));
 const ProjectDetail = lazy(() => import('@/pages/ProjectDetail'));
+const KpiTracker = lazy(() => import('@/pages/KpiTracker'));
+const Obligations = lazy(() => import('@/pages/Obligations'));
+const InsuranceRenewals = lazy(() => import('@/pages/InsuranceRenewals'));
 const NotFound = lazy(() => import('@/pages/NotFound'));
 
 function LazyFallback() {
@@ -75,7 +78,23 @@ export default function App() {
                     path="/kpi"
                     element={
                       <ProtectedRoute>
-                        <Dashboard />
+                        <KpiTracker />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/obligations"
+                    element={
+                      <ProtectedRoute>
+                        <Obligations />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/insurance"
+                    element={
+                      <ProtectedRoute>
+                        <InsuranceRenewals />
                       </ProtectedRoute>
                     }
                   />

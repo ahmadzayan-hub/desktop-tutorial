@@ -19,7 +19,9 @@ export function Sidebar({ open, onClose }: SidebarProps) {
   const items: NavItem[] = [
     { to: '/dashboard', label: t('nav.dashboard'), icon: '▦' },
     { to: '/upload', label: t('nav.upload'), icon: '⤴' },
-    { to: '/kpi', label: t('nav.kpi'), icon: '◎' },
+    { to: '/kpi', label: t('kpiPage.title'), icon: '◎' },
+    { to: '/obligations', label: t('obligationsPage.title'), icon: '◈' },
+    { to: '/insurance', label: t('insurancePage.title'), icon: '◇' },
     { to: '/projects', label: t('nav.projects'), icon: '▣' },
     { to: '/reports', label: t('nav.reports'), icon: '☷' },
     { to: '/analytics', label: t('nav.analytics'), icon: '◉' },

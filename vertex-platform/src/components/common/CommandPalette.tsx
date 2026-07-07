@@ -31,9 +31,11 @@ export const useCommandPalette = () => useContext(Ctx);
 const ROUTE_HITS: Hit[] = [
   { kind: 'route', id: 'r-dashboard', title: 'Dashboard', href: '/dashboard' },
   { kind: 'route', id: 'r-upload', title: 'Upload submission', href: '/upload' },
+  { kind: 'route', id: 'r-kpi', title: 'KPI tracker', href: '/kpi' },
+  { kind: 'route', id: 'r-obligations', title: 'Obligations', href: '/obligations' },
+  { kind: 'route', id: 'r-insurance', title: 'Insurance renewals', href: '/insurance' },
   { kind: 'route', id: 'r-projects', title: 'Projects', href: '/projects' },
   { kind: 'route', id: 'r-reports', title: 'Reports', href: '/reports' },
-  { kind: 'route', id: 'r-kpi', title: 'KPI tracker', href: '/kpi' },
 ];
 
 function includesCI(hay: string, needle: string): boolean {
