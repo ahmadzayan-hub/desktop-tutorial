@@ -76,6 +76,7 @@ fun HomeScreen(
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val people by vm.people.collectAsStateWithLifecycle()
+    val ideas by vm.ideas.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
     var edited by remember { mutableStateOf("") }
@@ -184,6 +185,19 @@ fun HomeScreen(
                 Text("📅 مناسبة من أجندتي")
             }
 
+            // المناسبات الجاية عبر كل الأشخاص - تخطيط وتنبيه مبكّر + أفكار عملية.
+            UpcomingOccasions(
+                people = people,
+                onWrite = { rid, label ->
+                    vm.selectRecipient(rid)
+                    vm.generate("occasion", Occasion("person", label))
+                },
+                onIdeas = { rid, label ->
+                    vm.selectRecipient(rid)
+                    vm.loadGiftIdeas(label)
+                },
+            )
+
             if (showCal) {
                 AlertDialog(
                     onDismissRequest = { showCal = false },
@@ -239,6 +253,7 @@ fun HomeScreen(
                         else WhatsApp.send(context, current?.number.orEmpty(), item.text)
                     },
                     onGroup = { WhatsApp.chooser(context, item.text) },
+                    onRefine = { style -> vm.refine(idx, style) },
                 )
             }
 
@@ -267,6 +282,76 @@ fun HomeScreen(
             }
 
             Spacer(Modifier.height(24.dp))
+        }
+
+        // نافذة أفكار المناسبة (هدية/كارت/ورد/لمسة).
+        if (ideas.open) {
+            AlertDialog(
+                onDismissRequest = { vm.closeIdeas() },
+                title = { Text("🎁 أفكار لـ${ideas.title}") },
+                text = {
+                    if (ideas.loading) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            CircularProgressIndicator(modifier = Modifier.height(22.dp))
+                            Text("  بجهّزلك أفكار...")
+                        }
+                    } else {
+                        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                            Text(ideas.text)
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                "دي أفكار وفئة سعرية تقريبية - مش أسعار حقيقية لحظية.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                },
+                confirmButton = { TextButton(onClick = { vm.closeIdeas() }) { Text("تمام") } },
+            )
+        }
+    }
+}
+
+// المناسبات الجاية عبر كل الأشخاص (خلال ~45 يوم)، الأقرب الأول.
+@Composable
+private fun UpcomingOccasions(
+    people: PeopleState,
+    onWrite: (String, String) -> Unit,
+    onIdeas: (String, String) -> Unit,
+) {
+    data class Up(val rid: String, val name: String, val label: String, val days: Int)
+    val upcoming = people.recipients.flatMap { r ->
+        r.occasions.mapNotNull { o ->
+            com.wifeassistant.data.DateUtil.daysUntilMMDD(o.date)?.let { d ->
+                if (d <= 45) Up(r.id, r.name.ifBlank { Relations.labelOf(r.relation) }, o.label, d) else null
+            }
+        }
+    }.sortedBy { it.days }.take(4)
+
+    if (upcoming.isEmpty()) return
+
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text("🎀 مناسبات جايّة", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            upcoming.forEach { u ->
+                val whenTxt = when (u.days) {
+                    0 -> "النهاردة"
+                    1 -> "بكرة"
+                    else -> "بعد ${u.days} يوم"
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("${u.label} لـ${u.name} · $whenTxt", style = MaterialTheme.typography.bodyMedium)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        AssistChip(onClick = { onWrite(u.rid, u.label) }, label = { Text("✍️ اكتب") })
+                        AssistChip(onClick = { onIdeas(u.rid, u.label) }, label = { Text("🎁 أفكار") })
+                    }
+                }
+            }
         }
     }
 }
@@ -424,6 +509,7 @@ private fun SuggestionCard(
     onShare: () -> Unit,
     onWhatsApp: () -> Unit,
     onGroup: () -> Unit,
+    onRefine: (String) -> Unit,
 ) {
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(
@@ -443,6 +529,17 @@ private fun SuggestionCard(
                 )
             }
             Text(item.text, style = MaterialTheme.typography.bodyLarge)
+
+            // تحرير تكراري: نعدّل الاقتراح ده لحد ما يعجبك.
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                AssistChip(onClick = { onRefine("longer") }, label = { Text("➕ أطول") })
+                AssistChip(onClick = { onRefine("shorter") }, label = { Text("➖ أقصر") })
+                AssistChip(onClick = { onRefine("romantic") }, label = { Text("💘 أرومانسي") })
+                AssistChip(onClick = { onRefine("simpler") }, label = { Text("🌿 أبسط") })
+            }
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(

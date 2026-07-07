@@ -37,6 +37,14 @@ data class PeopleState(
     val current: Recipient? = null,
 )
 
+// حالة نافذة أفكار المناسبة.
+data class IdeasState(
+    val open: Boolean = false,
+    val loading: Boolean = false,
+    val title: String = "",
+    val text: String = "",
+)
+
 class HomeViewModel(app: Application) : AndroidViewModel(app) {
     private val settings = Settings(app)
     private val store = Store(app)
@@ -48,6 +56,10 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _people = MutableStateFlow(PeopleState())
     val people: StateFlow<PeopleState> = _people.asStateFlow()
+
+    // حالة أفكار المناسبة (لعرضها في نافذة). null = مقفولة.
+    private val _ideas = MutableStateFlow(IdeasState())
+    val ideas: StateFlow<IdeasState> = _ideas.asStateFlow()
 
     init { loadPending(); refreshRecipients() }
 
@@ -167,4 +179,42 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
         store.addFeedback(Feedback(DateUtil.todayISO(), _state.value.slot, themes(), "regen", null, rid()))
         generate(if (occ != null) "occasion" else _state.value.slot, occ, lastIntent, lastContext)
     }
+
+    // تحرير تكراري لاقتراح واحد (أطول/أقصر/أرومانسي/أبسط).
+    fun refine(idx: Int, styleId: String) {
+        val items = _state.value.items
+        if (idx !in items.indices) return
+        _state.value = _state.value.copy(loading = true, error = null, info = null)
+        viewModelScope.launch {
+            try {
+                val newText = engine.refine(items[idx].text, styleId)
+                val updated = items.toMutableList()
+                updated[idx] = updated[idx].copy(text = newText)
+                store.setPending(
+                    PendingRound(_state.value.slot, _state.value.themesShown, updated, _state.value.occasionLabel)
+                )
+                _state.value = _state.value.copy(items = updated, loading = false, info = "عدّلت الاقتراح ✍️")
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(loading = false, error = "التعديل مش متاح دلوقتي (محتاج نت + مفتاح)")
+            }
+        }
+    }
+
+    // أفكار عملية للمناسبة للشخص الحالي.
+    fun loadGiftIdeas(occasionLabel: String) {
+        _ideas.value = IdeasState(open = true, loading = true, title = occasionLabel)
+        viewModelScope.launch {
+            try {
+                val text = engine.giftIdeas(occasionLabel)
+                _ideas.value = IdeasState(open = true, loading = false, title = occasionLabel, text = text)
+            } catch (e: Exception) {
+                _ideas.value = IdeasState(
+                    open = true, loading = false, title = occasionLabel,
+                    text = "الأفكار مش متاحة دلوقتي (محتاج نت + مفتاح Groq).",
+                )
+            }
+        }
+    }
+
+    fun closeIdeas() { _ideas.value = IdeasState() }
 }
