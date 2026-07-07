@@ -125,9 +125,17 @@ fun PeopleScreen(onBack: () -> Unit) {
                     FilterChip(
                         selected = relation == rel.id,
                         onClick = { relation = rel.id },
-                        label = { Text(rel.label) },
+                        label = { Text("${rel.emoji} ${rel.label}") },
                     )
                 }
+            }
+            // معاينة حيّة: نبرة الرسالة بتتغيّر حسب العلاقة المختارة.
+            Relations.byId(relation).let { rel ->
+                Text(
+                    "نبرة الرسالة لـ${rel.label}: ${rel.tone}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
             OutlinedTextField(
                 value = number,
