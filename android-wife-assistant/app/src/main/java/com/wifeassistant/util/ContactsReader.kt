@@ -9,6 +9,28 @@ import android.provider.ContactsContract.CommonDataKinds.Phone
 // مصدر شرعي للمناسبات: البيانات على موبايل المستخدم نفسه، مش سحب من حد.
 object ContactsReader {
     data class ContactBirthday(val name: String, val number: String, val mmdd: String)
+    data class ContactNumber(val name: String, val number: String)
+
+    // كل جهات الاتصال اللي ليها رقم (اسم + رقم) - للإرسال الجماعي المخصّص.
+    fun allWithNumbers(context: Context): List<ContactNumber> {
+        val out = mutableListOf<ContactNumber>()
+        val seen = HashSet<String>()
+        val nameCol = ContactsContract.Contacts.DISPLAY_NAME
+        val projection = arrayOf(nameCol, Phone.NUMBER)
+        context.contentResolver.query(Phone.CONTENT_URI, projection, null, null, nameCol)
+            ?.use { c ->
+                val nameIdx = c.getColumnIndex(nameCol)
+                val numIdx = c.getColumnIndex(Phone.NUMBER)
+                while (c.moveToNext()) {
+                    val name = c.getString(nameIdx)?.trim().orEmpty()
+                    val number = c.getString(numIdx)?.filter { it.isDigit() }.orEmpty()
+                    if (name.isBlank() || number.isBlank()) continue
+                    if (!seen.add(number)) continue // نتجنّب تكرار نفس الرقم
+                    out.add(ContactNumber(name, number))
+                }
+            }
+        return out
+    }
 
     fun withBirthdays(context: Context): List<ContactBirthday> {
         val resolver = context.contentResolver

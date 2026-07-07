@@ -74,6 +74,7 @@ fun HomeScreen(
     onOpenStats: () -> Unit,
     onOpenHistory: () -> Unit,
     onOpenPeople: () -> Unit,
+    onOpenBroadcast: () -> Unit = {},
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val people by vm.people.collectAsStateWithLifecycle()
@@ -184,6 +185,9 @@ fun HomeScreen(
             }
             OutlinedButton(onClick = { openCalendar() }, modifier = Modifier.fillMaxWidth()) {
                 Text("📅 مناسبة من أجندتي")
+            }
+            OutlinedButton(onClick = onOpenBroadcast, modifier = Modifier.fillMaxWidth()) {
+                Text("📣 رسالة جماعية لجهات الاتصال")
             }
 
             // المناسبات الجاية عبر كل الأشخاص - تخطيط وتنبيه مبكّر + أفكار عملية.
