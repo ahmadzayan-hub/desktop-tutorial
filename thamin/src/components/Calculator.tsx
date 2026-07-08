@@ -22,6 +22,8 @@ interface Props {
   materials: MaterialOpt[];
   channels: { key: string; name: string }[];
   defaults: { targetMarginPct: number; minMarginPct: number; vatMode: string; rateMaxAgeHours: number };
+  initial?: Record<string, string>; // prefill from a saved product costing sheet
+  initialProductName?: string;
 }
 
 type Mode = 'quick' | 'advanced' | 'photo';
@@ -61,12 +63,17 @@ const emptyForm = {
   overrideReason: '',
 };
 
-export default function Calculator({ locale, isAdmin, materials, channels, defaults }: Props) {
+export default function Calculator({ locale, isAdmin, materials, channels, defaults, initial, initialProductName }: Props) {
   const t = dictionaries[locale];
   const params = useSearchParams();
-  const initialMode: Mode = params.get('mode') === 'photo' ? 'photo' : 'quick';
+  const initialMode: Mode =
+    params.get('mode') === 'photo' ? 'photo' : initial ? 'advanced' : 'quick';
   const [mode, setMode] = useState<Mode>(initialMode);
-  const [form, setForm] = useState({ ...emptyForm, targetMarginPct: String(defaults.targetMarginPct) });
+  const [form, setForm] = useState({
+    ...emptyForm,
+    targetMarginPct: String(defaults.targetMarginPct),
+    ...(initial ?? {}),
+  });
   const [result, setResult] = useState<PricingResult | null>(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -148,15 +155,32 @@ export default function Calculator({ locale, isAdmin, materials, channels, defau
     setResult(data.result);
   }
 
+  // Downscale to max 1280px JPEG before upload: faster on mobile data,
+  // faster vision analysis, and a much smaller database footprint.
+  async function toCompressedDataUri(file: File, maxDim = 1280, quality = 0.82): Promise<string> {
+    try {
+      const bitmap = await createImageBitmap(file);
+      const scale = Math.min(1, maxDim / Math.max(bitmap.width, bitmap.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+      canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+      canvas.getContext('2d')!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      return canvas.toDataURL('image/jpeg', quality);
+    } catch {
+      // fall back to the raw file when the browser cannot decode it
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(String(r.result));
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+    }
+  }
+
   async function analyzePhoto(file: File) {
     setAiError('');
     setEstimate(null);
-    const dataUri: string = await new Promise((resolve, reject) => {
-      const r = new FileReader();
-      r.onload = () => resolve(String(r.result));
-      r.onerror = reject;
-      r.readAsDataURL(file);
-    });
+    const dataUri = await toCompressedDataUri(file);
     setPhoto(dataUri);
     setAiBusy(true);
     const res = await fetch('/api/ai/vision', {
@@ -392,7 +416,7 @@ export default function Calculator({ locale, isAdmin, materials, channels, defau
       </button>
       {error && <p className="rounded-xl bg-red-50 p-3 text-sm font-medium text-red-700">{error}</p>}
 
-      {result && <PriceResult result={result} locale={locale} productName={form.productType} />}
+      {result && <PriceResult result={result} locale={locale} productName={initialProductName ?? form.productType} />}
     </div>
   );
 }

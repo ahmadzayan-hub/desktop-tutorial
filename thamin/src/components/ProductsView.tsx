@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { dictionaries, type Locale } from '@/lib/i18n/dict';
 
@@ -48,6 +49,28 @@ export default function ProductsView({
   const router = useRouter();
   const [error, setError] = useState('');
   const [busy, setBusy] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const ar = locale === 'ar';
+
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return products.filter((p) => {
+      if (statusFilter && p.approvalStatus !== statusFilter) return false;
+      if (!q) return true;
+      return (
+        p.sku.toLowerCase().includes(q) ||
+        p.name.toLowerCase().includes(q) ||
+        (p.nameAr ?? '').includes(query.trim())
+      );
+    });
+  }, [products, query, statusFilter]);
+
+  const statusCounts = useMemo(() => {
+    const c: Record<string, number> = {};
+    for (const p of products) c[p.approvalStatus] = (c[p.approvalStatus] ?? 0) + 1;
+    return c;
+  }, [products]);
 
   async function act(id: string, action: 'APPROVE' | 'REJECT' | 'SUBMIT', approvedPrice?: number | null) {
     setBusy(id);
@@ -83,20 +106,40 @@ export default function ProductsView({
 
   return (
     <div className="space-y-3">
-      <div className="flex justify-end">
-        <button className="btn-outline px-3 py-1.5 text-sm" onClick={exportCsv}>
+      <div className="flex flex-wrap items-center gap-2">
+        <input
+          className="input flex-1"
+          type="search"
+          placeholder={ar ? 'ابحث بالاسم أو رمز المنتج' : 'Search by name or SKU'}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <button className="btn-outline px-3 py-2 text-sm" onClick={exportCsv}>
           ⬇ {t.export} CSV
         </button>
       </div>
+      <div className="flex flex-wrap gap-1.5">
+        {(['', 'APPROVED', 'PENDING', 'DRAFT', 'REJECTED'] as const).map((st) => (
+          <button
+            key={st || 'all'}
+            onClick={() => setStatusFilter(st)}
+            className={`badge ${statusFilter === st ? 'bg-ink text-gold' : 'bg-white text-neutral-600 shadow-card'}`}
+          >
+            {st === ''
+              ? `${ar ? 'الكل' : 'All'} (${products.length})`
+              : `${st === 'APPROVED' ? t.approved : st === 'PENDING' ? t.pending : st === 'DRAFT' ? t.draft : t.rejected} (${statusCounts[st] ?? 0})`}
+          </button>
+        ))}
+      </div>
       {error && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</p>}
 
-      {products.length === 0 && (
+      {visible.length === 0 && (
         <p className="card text-center text-sm text-neutral-400">
-          {locale === 'ar' ? 'لا توجد منتجات بعد.' : 'No products yet.'}
+          {ar ? 'لا توجد منتجات مطابقة.' : 'No matching products.'}
         </p>
       )}
 
-      {products.map((p) => (
+      {visible.map((p) => (
         <div key={p.id} className="card">
           <div className="flex items-start justify-between gap-2">
             <div>
@@ -140,6 +183,9 @@ export default function ProductsView({
           </div>
 
           <div className="mt-3 flex flex-wrap gap-2">
+            <Link href={`/calculator?product=${encodeURIComponent(p.sku)}`} className="btn-gold px-3 py-1.5 text-xs">
+              {t.calculatePrice}
+            </Link>
             {p.approvalStatus === 'DRAFT' && (
               <button className="btn-outline px-3 py-1.5 text-xs" disabled={busy === p.id} onClick={() => act(p.id, 'SUBMIT')}>
                 {locale === 'ar' ? 'إرسال للاعتماد' : 'Submit for approval'}

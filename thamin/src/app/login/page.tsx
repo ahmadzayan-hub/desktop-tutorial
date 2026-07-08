@@ -46,9 +46,6 @@ function LoginForm() {
       <button className="btn-gold w-full" disabled={busy}>
         {busy ? '…' : 'Log in | تسجيل الدخول'}
       </button>
-      <p className="text-center text-xs text-neutral-400">
-        Demo: admin@beyondstyle.ae / Admin@123
-      </p>
     </form>
   );
 }
