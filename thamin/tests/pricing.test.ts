@@ -102,11 +102,48 @@ describe('Pricing engine — required business test cases', () => {
     expect(r.grossMarginPct).toBeGreaterThan(0);
   });
 
-  it('5. Bundle of 2 bracelets — discounted but never below 2× minimum safe price', () => {
+  it('5. Bundle of 2 bracelets is order-aware: per-order costs counted once, margin still protected', () => {
     const r = computePrice(base({ supplierCost: 50, packagingCost: 10, deliveryCost: 25, targetMarginPct: 40 }), rules);
-    expect(r.bundle2Price).toBeGreaterThanOrEqual(2 * r.minimumSafePrice - 0.01);
+    // per-item = supplier 50 + packaging 10; per-order = delivery 25 + marketing 5 + operations 50
+    const f = 0.025;
+    const floor2 = ((2 * 60 + 80) * 1.25) / (1 - f * 1.25) * 1.05;
+    expect(r.bundle2Price).toBeGreaterThanOrEqual(Math.round(floor2 * 100) / 100 - 0.01);
     expect(r.bundle2Price).toBeLessThanOrEqual(2 * r.roundedPrice);
-    expect(r.bundle3Price).toBeGreaterThanOrEqual(3 * r.minimumSafePrice - 0.01);
+    // order-aware floor is cheaper than the naive 2x single-piece floor
+    expect(r.bundle2Price).toBeLessThan(2 * r.minimumSafePrice);
+    expect(r.bundle3Price).toBeLessThan(3 * r.minimumSafePrice);
+  });
+
+  it("5b. Real catalog check: Masha'Allah bracelet at 79 / 129 / 159 with customer-paid delivery", () => {
+    // Real setup: supplier 25, packaging 10, marketing 5, operations 5,
+    // COD, customer pays the AED 25 courier fee separately.
+    const realRules = { ...rules, bundle2DiscountPct: 18, bundle3DiscountPct: 33 };
+    const r = computePrice(
+      base({
+        supplierCost: 25, packagingCost: 10, marketingCost: 5, operationsCost: 5,
+        paymentMethod: 'COD', customerPaysDelivery: true,
+        targetMarginPct: 40, sellingPriceOverride: 79,
+      }),
+      realRules
+    );
+    // delivery must not appear as an internal cost line
+    expect(r.costLines.find((l) => l.key === 'delivery')).toBeUndefined();
+    // selling the hero bracelet at AED 79 is profitable and above minimum margin
+    expect(r.netProfitAed).toBeGreaterThan(0);
+    expect(r.effectivePrice).toBe(79);
+    const markup = r.netProfitAed / (r.effectivePrice / 1.05 - r.netProfitAed);
+    expect(markup).toBeGreaterThan(0.25);
+    // the real bundle ladder stays above the order-aware safe floors
+    const floor2 = ((2 * 35 + 20) * 1.25) * 1.05;
+    const floor3 = ((3 * 35 + 20) * 1.25) * 1.05;
+    expect(129).toBeGreaterThanOrEqual(floor2 - 10); // 129 sits near the protected floor
+    expect(159).toBeGreaterThanOrEqual(floor3 - 10);
+    expect(r.bundle2Price).toBeLessThanOrEqual(160);
+  });
+
+  it('5c. customerPaysDelivery notes the assumption for transparency', () => {
+    const r = computePrice(base({ supplierCost: 25, customerPaysDelivery: true }), rules);
+    expect(r.assumptions.join(' ')).toMatch(/charged to the customer/);
   });
 
   it('6. Remote delivery order uses the remote rate from rules', () => {

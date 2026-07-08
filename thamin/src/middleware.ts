@@ -13,6 +13,7 @@ const PUBLIC_PATHS = [
   '/robots.txt',
   '/llms.txt',
   '/sitemap.xml',
+  '/offline.html',
 ];
 
 export function middleware(req: NextRequest) {

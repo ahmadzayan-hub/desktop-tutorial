@@ -36,6 +36,7 @@ const BodySchema = z.object({
     giftBoxCost: nonneg.optional(),
     deliveryCost: nonneg.optional(),
     remoteArea: z.boolean().optional(),
+    customerPaysDelivery: z.boolean().optional(),
     paymentMethod: z.enum(['CARD', 'COD', 'ZIINA', 'LINK', 'CASH']).optional(),
     paymentFeePct: z.number().min(0).max(30).optional(),
     marketingCost: nonneg.optional(),

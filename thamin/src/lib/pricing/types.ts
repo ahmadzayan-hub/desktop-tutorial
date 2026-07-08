@@ -54,6 +54,7 @@ export interface PricingInput {
   giftBoxCost?: number;
   deliveryCost?: number;
   remoteArea?: boolean;
+  customerPaysDelivery?: boolean; // courier fee charged to the customer on top
   paymentMethod?: PaymentMethod;
   paymentFeePct?: number; // % of selling price
   marketingCost?: number;

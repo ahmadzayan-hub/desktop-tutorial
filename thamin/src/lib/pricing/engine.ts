@@ -127,6 +127,12 @@ export function computePrice(
   if (input.channel?.deliveryCost !== undefined) {
     deliveryCost = input.channel.deliveryCost;
   }
+  // Beyond Style policy: the standard AED 25 courier fee is usually charged
+  // to the customer on top of the item price, so it is not an internal cost.
+  if (input.customerPaysDelivery) {
+    deliveryCost = 0;
+    assumptions.push('Delivery is charged to the customer separately (not included in cost)');
+  }
   if (deliveryCost >= rules.deliveryRemote) {
     warnings.push(
       warn(
@@ -263,14 +269,29 @@ export function computePrice(
   if (roundedPrice < minimumSafePrice) roundedPrice = r2(Math.max(finalRecommended, minimumSafePrice));
   trace.push(`Rounded retail price = ${roundedPrice} AED (floor: minimum safe ${minimumSafePrice} AED)`);
 
-  // ── bundles (margin-protected) ──────────────────────────────────────────
+  // ── bundles (order-aware, margin-protected) ─────────────────────────────
+  // A multi-piece order pays per-order costs (delivery, operations,
+  // marketing, ads, COD fee) once, not per piece. The bundle floor therefore
+  // solves the minimum-margin price on n × per-item costs + one set of
+  // per-order costs, which makes real ladders like 79 / 129 / 159 possible
+  // without breaking margin protection.
+  const PER_ORDER_KEYS = new Set(['delivery', 'operations', 'marketing', 'ads', 'codfee']);
+  const perItemCost = r2(lines.filter((l) => !PER_ORDER_KEYS.has(l.key)).reduce((s, l) => s + l.amount, 0));
+  const perOrderCost = r2(baseCost - perItemCost);
+  const bundleFloor = (n: number) => {
+    const mm = rules.minMarginPct / 100;
+    const d = 1 - f * (1 + mm);
+    return r2(((n * perItemCost + perOrderCost) * (1 + mm)) / d * grossMul);
+  };
   const bundle = (n: number, discountPct: number) => {
     const raw = roundedPrice * n * (1 - discountPct / 100);
-    const floor = minimumSafePrice * n;
-    return r2(Math.max(raw, floor));
+    return r2(Math.max(raw, bundleFloor(n)));
   };
   const bundle2Price = bundle(2, rules.bundle2DiscountPct);
   const bundle3Price = bundle(3, rules.bundle3DiscountPct);
+  trace.push(
+    `Bundles: per-item cost ${perItemCost} AED, per-order cost ${perOrderCost} AED (paid once). Buy 2 = ${bundle2Price} AED, buy 3 = ${bundle3Price} AED (floors at ${rules.minMarginPct}% margin: ${bundleFloor(2)} / ${bundleFloor(3)})`
+  );
 
   // ── effective price: override / discount scenarios ──────────────────────
   let effectivePrice = input.sellingPriceOverride ?? roundedPrice;

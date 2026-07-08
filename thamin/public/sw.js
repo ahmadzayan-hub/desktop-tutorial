@@ -1,6 +1,7 @@
-// Minimal PWA service worker: cache-first for static assets, network-first for pages/API.
-const CACHE = 'thamin-v1';
-const STATIC = ['/manifest.json', '/icon.svg'];
+// Thamin service worker: cache-first for static assets, network-first for
+// pages, offline fallback for navigations. API responses are never cached.
+const CACHE = 'thamin-v2';
+const STATIC = ['/manifest.json', '/icon.svg', '/icon-maskable.svg', '/offline.html'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(STATIC)));
@@ -27,6 +28,13 @@ self.addEventListener('fetch', (e) => {
         }
         return res;
       })
-      .catch(() => caches.match(e.request).then((m) => m || caches.match('/')))
+      .catch(async () => {
+        const cached = await caches.match(e.request);
+        if (cached) return cached;
+        if (e.request.mode === 'navigate') {
+          return caches.match('/offline.html');
+        }
+        return Response.error();
+      })
   );
 });

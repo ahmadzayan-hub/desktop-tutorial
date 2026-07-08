@@ -46,7 +46,7 @@ const emptyForm = {
   packagingCost: '',
   giftBoxCost: '',
   deliveryCost: '',
-  remoteArea: false,
+  deliveryMode: 'customer', // Beyond Style policy: courier fee is charged to the customer
   paymentMethod: 'CARD',
   paymentFeePct: '',
   marketingCost: '',
@@ -91,7 +91,8 @@ export default function Calculator({ locale, isAdmin, materials, channels, defau
       supplierCost: num(form.supplierCost),
       exchangeRate: num(form.exchangeRate) ?? 1,
       supplierCurrency: form.supplierCurrency,
-      remoteArea: form.remoteArea,
+      remoteArea: form.deliveryMode === 'remote',
+      customerPaysDelivery: form.deliveryMode === 'customer',
       paymentMethod: form.paymentMethod,
       paymentFeePct: num(form.paymentFeePct),
       deliveryCost: num(form.deliveryCost),
@@ -313,9 +314,10 @@ export default function Calculator({ locale, isAdmin, materials, channels, defau
         )}
         <div>
           <label className="label">{t.deliveryArea}</label>
-          <select className="input" value={form.remoteArea ? '1' : '0'} onChange={(e) => set('remoteArea', e.target.value === '1')}>
-            <option value="0">{t.standardUae}</option>
-            <option value="1">{t.remoteArea}</option>
+          <select className="input" value={form.deliveryMode} onChange={(e) => set('deliveryMode', e.target.value)}>
+            <option value="customer">{t.customerPaysDelivery}</option>
+            <option value="standard">{t.standardUae}</option>
+            <option value="remote">{t.remoteArea}</option>
           </select>
         </div>
         {field('targetMarginPct', t.targetMargin)}

@@ -71,6 +71,7 @@ const TOOLS: ToolDef[] = [
           giftBoxCost: { type: 'number' },
           deliveryCost: { type: 'number' },
           remoteArea: { type: 'boolean' },
+          customerPaysDelivery: { type: 'boolean', description: 'True when the courier fee is charged to the customer on top of the item price (the default Beyond Style policy)' },
           paymentMethod: { type: 'string', enum: ['CARD', 'COD', 'ZIINA', 'LINK', 'CASH'] },
           marketingCost: { type: 'number' },
           operationsCost: { type: 'number' },

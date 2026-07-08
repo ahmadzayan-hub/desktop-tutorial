@@ -1,4 +1,6 @@
 import AppShell from '@/components/AppShell';
+import ResolveAlertButton from '@/components/ResolveAlertButton';
+import { atLeast, getSession } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { getDict, getLocale, fmtAed } from '@/lib/i18n';
 import { loadRules } from '@/lib/rules';
@@ -10,6 +12,8 @@ export default async function DashboardPage() {
   const t = getDict(locale);
   const ar = locale === 'ar';
   const rules = await loadRules();
+  const session = getSession();
+  const canResolve = !!session && atLeast(session.role, 'MANAGER');
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
 
@@ -110,14 +114,21 @@ export default async function DashboardPage() {
 
       {/* alerts */}
       <div className="card mt-4" id="alerts">
-        <h2 className="mb-2 font-bold">{t.alerts}</h2>
+        <div className="mb-2 flex items-center justify-between">
+          <h2 className="font-bold">{t.alerts}</h2>
+          {canResolve && alerts.length > 0 && (
+            <ResolveAlertButton label={ar ? 'حل الكل' : 'Resolve all'} />
+          )}
+        </div>
         {alerts.length === 0 && (
           <p className="text-sm text-neutral-400">{ar ? 'لا توجد تنبيهات 🎉' : 'No open alerts 🎉'}</p>
         )}
         {alerts.map((a) => (
           <div key={a.id} className={`mb-2 rounded-xl p-3 text-sm ${a.severity === 'critical' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-800'}`}>
-            <span className="badge me-2 bg-white/60">{a.type}</span>
-            {ar && a.messageAr ? a.messageAr : a.message}
+            <div className="flex items-start justify-between gap-2">
+              <span><span className="badge me-2 bg-white/60">{a.type}</span>{ar && a.messageAr ? a.messageAr : a.message}</span>
+              {canResolve && <ResolveAlertButton id={a.id} label={ar ? 'حل' : 'Resolve'} />}
+            </div>
             <span className="num block text-xs opacity-60">{a.createdAt.toLocaleString('en-AE')}</span>
           </div>
         ))}
