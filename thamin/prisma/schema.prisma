@@ -258,3 +258,14 @@ model BrainMessage {
   toolCallsJson  String?
   createdAt      DateTime          @default(now())
 }
+
+// Web Push subscriptions for instant approval notifications
+model PushSubscription {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userId    String?
+  role      String? // role snapshot at subscribe time, used for targeting
+  createdAt DateTime @default(now())
+}

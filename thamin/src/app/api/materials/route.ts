@@ -13,6 +13,7 @@ const MaterialSchema = z.object({
   currency: z.string().default('AED'),
   source: z.string().default('manual'),
   riskNote: z.string().nullish(),
+  manualOverride: z.boolean().optional(),
 });
 
 export async function GET() {
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
     let saved;
     if (id) {
       const before = await prisma.material.findUnique({ where: { id } });
-      saved = await prisma.material.update({ where: { id }, data: { ...data, manualOverride: true } });
+      saved = await prisma.material.update({ where: { id }, data: { ...data, manualOverride: data.manualOverride ?? true } });
       await audit(session.userId, 'Material', id, 'UPDATE_RATE', { before, after: saved });
     } else {
       saved = await prisma.material.create({ data });

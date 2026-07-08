@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { AuthError, audit, requireRole } from '@/lib/auth';
+import { notifyApprovers } from '@/lib/push';
+import { storePhoto } from '@/lib/storage';
 
 const nonneg = z.number().min(0);
 
@@ -72,6 +74,7 @@ export async function POST(req: NextRequest) {
           data: { approvalStatus: 'PENDING' },
         });
         await audit(session.userId, 'Product', product.id, 'SUBMIT_FOR_APPROVAL');
+        notifyApprovers(); // fire-and-forget push to managers/admins
         return NextResponse.json({ product: updated });
       }
       requireRole('MANAGER'); // approve/reject requires manager+
@@ -93,6 +96,9 @@ export async function POST(req: NextRequest) {
 
     const body = ProductSchema.parse(raw);
     const { id, ...data } = body;
+    if (data.photoData?.startsWith('data:')) {
+      data.photoData = await storePhoto(data.photoData); // Supabase Storage when configured
+    }
     const saved = id
       ? await prisma.product.update({ where: { id }, data })
       : await prisma.product.create({ data: { ...data, createdById: session.userId } });

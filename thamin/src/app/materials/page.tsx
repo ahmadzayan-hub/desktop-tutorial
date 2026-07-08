@@ -1,5 +1,6 @@
 import AppShell from '@/components/AppShell';
 import MaterialsTable from '@/components/MaterialsTable';
+import RefreshRatesButton from '@/components/RefreshRatesButton';
 import { prisma } from '@/lib/db';
 import { getDict, getLocale } from '@/lib/i18n';
 import { getSession } from '@/lib/auth';
@@ -18,6 +19,9 @@ export default async function MaterialsPage() {
 
   return (
     <AppShell title={t.materialRates}>
+      {(session?.role === 'ADMIN' || session?.role === 'MANAGER') && (
+        <div className="mb-3"><RefreshRatesButton locale={locale} /></div>
+      )}
       <MaterialsTable
         locale={locale}
         canEdit={session?.role === 'ADMIN' || session?.role === 'MANAGER'}

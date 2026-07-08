@@ -1,6 +1,6 @@
 // Thamin service worker: cache-first for static assets, network-first for
 // pages, offline fallback for navigations. API responses are never cached.
-const CACHE = 'thamin-v2';
+const CACHE = 'thamin-v3';
 const STATIC = ['/manifest.json', '/icon.svg', '/icon-maskable.svg', '/offline.html'];
 
 self.addEventListener('install', (e) => {
@@ -36,5 +36,34 @@ self.addEventListener('fetch', (e) => {
         }
         return Response.error();
       })
+  );
+});
+
+// ── Web Push: pending approval notifications ────────────────────────────
+self.addEventListener('push', (e) => {
+  e.waitUntil(
+    self.registration.showNotification('ثمين | Thamin', {
+      body: 'لديك اعتمادات أسعار معلقة بانتظار المراجعة.\nYou have pending price approvals to review.',
+      icon: '/icon.svg',
+      badge: '/icon.svg',
+      tag: 'thamin-approvals',
+      data: { url: '/products?status=PENDING' },
+    })
+  );
+});
+
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const url = e.notification.data?.url || '/';
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      for (const c of list) {
+        if ('focus' in c) {
+          c.navigate(url);
+          return c.focus();
+        }
+      }
+      return clients.openWindow(url);
+    })
   );
 });

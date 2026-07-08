@@ -1,5 +1,6 @@
 import AppShell from '@/components/AppShell';
 import ProductsView from '@/components/ProductsView';
+import ImportCatalog from '@/components/ImportCatalog';
 import { prisma } from '@/lib/db';
 import { getDict, getLocale } from '@/lib/i18n';
 import { atLeast, getSession } from '@/lib/auth';
@@ -20,6 +21,9 @@ export default async function ProductsPage({ searchParams }: { searchParams: { s
 
   return (
     <AppShell title={t.products}>
+      {!!session && atLeast(session.role, 'MANAGER') && (
+        <div className="mb-3"><ImportCatalog locale={locale} /></div>
+      )}
       <ProductsView
         locale={locale}
         canApprove={!!session && atLeast(session.role, 'MANAGER')}
