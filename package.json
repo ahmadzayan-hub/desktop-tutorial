@@ -1,8 +1,23 @@
 {
-  "name": "mutabasir",
+  "name": "mutabasir-director-lens",
   "version": "0.1.0",
   "private": true,
-  "description": "Mutabasir · Government Executive Intelligence Platform",
+  "description": "Mutabasir · The Director's Lens — Bilingual Executive Intelligence Platform",
+  "homepage": "https://github.com/ahmadzayan-hub/desktop-tutorial/tree/mutabasir/director-lens-platform",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ahmadzayan-hub/desktop-tutorial.git",
+    "directory": "."
+  },
+  "keywords": [
+    "mutabasir",
+    "director-lens",
+    "executive-dashboard",
+    "bilingual-ar-en",
+    "on-device-ai",
+    "pmo",
+    "board-reporting"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
