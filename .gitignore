@@ -3,5 +3,11 @@ dist
 dist-ssr
 *.local
 .env
-.env.local
+.env*.local
+*.log
 .DS_Store
+.next
+out
+.vercel
+coverage
+*.tsbuildinfo

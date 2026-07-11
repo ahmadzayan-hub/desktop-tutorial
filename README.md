@@ -105,3 +105,14 @@ Built to the compliance brief in
 - Hosting/data residency: UAE cloud region for photos & invoice data; per-object
   lifecycle rules to auto-purge source images after fulfilment.
 - WhatsApp Business API via a BSP for order/utility/OTP messages.
+
+---
+
+## Also in this repository
+
+| Project | Path | What it is |
+| --- | --- | --- |
+| **Beyond Style UAE landing page** | [`landing/`](landing/) | Bilingual (Arabic-first/EN) static landing page for the personalized-jewelry brand — WhatsApp + Google Form ordering, no build step. Deployed to GitHub Pages by [`deploy-landing.yml`](.github/workflows/deploy-landing.yml). See [`landing/README.md`](landing/README.md). |
+| Android wife assistant | `android-wife-assistant/` | Native Android app (CI builds via [`android.yml`](.github/workflows/android.yml)) |
+| Telegram wife assistant | `telegram-wife-assistant/` | Telegram bot companion |
+| Wisal web | `wisal-web/` | Web app |
