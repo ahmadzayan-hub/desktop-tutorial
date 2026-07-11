@@ -1,46 +1,112 @@
-"use client";
+import { Link } from "react-router-dom";
+import { ShieldCheck, Mail, Phone, Instagram } from "lucide-react";
+import { useI18n } from "@/i18n/I18nContext";
+import { BRAND } from "@/lib/brand";
+import { BrandMark } from "./BrandMark";
 
-import { useI18n, useT } from "@/lib/i18n/I18nProvider";
-import { CONTACT_EMAIL, CONTACT_MAILTO } from "@/lib/contact";
+export function Footer() {
+  const { t } = useI18n();
 
-export default function Footer() {
-  const t = useT();
-  const { locale } = useI18n();
-  const year = new Date().getFullYear();
+  const explore = [
+    { to: "/customize", key: "nav.customize" },
+    { to: "/gallery", key: "nav.gallery" },
+    { to: "/corporate", key: "nav.corporate" },
+    { to: "/pricing", key: "nav.pricing" },
+    { to: "/how-it-works", key: "nav.howItWorks" },
+  ];
+  const support = [
+    { to: "/delivery", key: "nav.delivery" },
+    { to: "/faq", key: "nav.faq" },
+    { to: "/contact", key: "nav.contact" },
+    { to: "/console", key: "nav.admin" },
+  ];
+  const legal = [
+    { to: "/privacy", key: "legal.privacy.title" },
+    { to: "/terms", key: "legal.terms.title" },
+    { to: "/refund", key: "legal.refund.title" },
+  ];
 
   return (
-    <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 grid sm:grid-cols-2 gap-4 text-xs text-slate-500 dark:text-slate-400">
-        <div>
-          <div className="font-medium text-slate-700 dark:text-slate-200">{t("app.name")}</div>
-          <p className="mt-1">{t("footer.note")}</p>
-          <p className="mt-1 text-[11px]">© {year}</p>
+    <footer className="no-print mt-16 border-t border-coffee-100 bg-coffee-700 text-cream-100">
+      <div className="container-max py-12">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
+          {/* Brand + seller identity */}
+          <div className="lg:col-span-2">
+            <div className="[&_*]:!text-cream-50 [&_.text-gold-600]:!text-gold-400">
+              <BrandMark />
+            </div>
+            <p className="mt-4 max-w-sm text-sm text-cream-100/80">{t("footer.tagline")}</p>
+
+            <div className="mt-5 rounded-xl border border-cream-100/15 bg-white/5 p-4 text-xs text-cream-100/80">
+              <div className="mb-1 flex items-center gap-1.5 font-semibold text-cream-50">
+                <ShieldCheck className="h-4 w-4 text-gold-400" />
+                {t("footer.sellerIdentity")}
+              </div>
+              <p className="font-medium text-cream-50">{BRAND.legalName}</p>
+              <p>{BRAND.licenseAuthority}</p>
+              <p>
+                {t("footer.licence")}: {BRAND.licenseNumber} · {t("footer.trn")}: {BRAND.trn}
+              </p>
+              <p>{BRAND.address}</p>
+            </div>
+          </div>
+
+          <FooterCol title={t("footer.explore")} items={explore} t={t} />
+          <FooterCol title={t("footer.support")} items={support} t={t} />
+          <FooterCol title={t("footer.legalHeading")} items={legal} t={t} />
         </div>
-        <div className="sm:text-end">
-          <div className="font-medium text-slate-700 dark:text-slate-200">{t("footer.contact_title")}</div>
-          <p className="mt-1">
+
+        <div className="mt-10 flex flex-col gap-4 border-t border-cream-100/15 pt-6 text-xs text-cream-100/70 sm:flex-row sm:items-center sm:justify-between">
+          <p>{t("footer.secureNote")}</p>
+          <div className="flex items-center gap-4">
+            <a href={`mailto:${BRAND.email}`} className="flex items-center gap-1.5 hover:text-cream-50">
+              <Mail className="h-4 w-4" /> {BRAND.email}
+            </a>
+            <a href={`tel:${BRAND.phone.replace(/\s/g, "")}`} className="flex items-center gap-1.5 hover:text-cream-50">
+              <Phone className="h-4 w-4" /> {BRAND.phone}
+            </a>
             <a
-              href={CONTACT_MAILTO}
-              className="text-brand-700 dark:text-brand-300 hover:underline break-all"
-              aria-label={locale === "ar" ? `راسلنا على ${CONTACT_EMAIL}` : `Email us at ${CONTACT_EMAIL}`}
+              href={`https://instagram.com/${BRAND.instagram}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="hover:text-cream-50"
             >
-              {CONTACT_EMAIL}
+              <Instagram className="h-4 w-4" />
             </a>
-          </p>
-          <p className="mt-1">{t("footer.contact_note")}</p>
-          <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 sm:justify-end text-[11px]">
-            <a href="/privacy" className="text-brand-700 dark:text-brand-300 hover:underline">
-              {locale === "ar" ? "سياسة الخصوصية" : "Privacy policy"}
-            </a>
-            <a href="/learn" className="text-brand-700 dark:text-brand-300 hover:underline">
-              {locale === "ar" ? "تعلَّم" : "Learn"}
-            </a>
-            <a href="/settings" className="text-brand-700 dark:text-brand-300 hover:underline">
-              {locale === "ar" ? "الإعدادات" : "Settings"}
-            </a>
-          </p>
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-col gap-1 text-xs text-cream-100/60 sm:flex-row sm:justify-between">
+          <p>© {new Date().getFullYear()} {BRAND.legalName}. {t("footer.rights")}</p>
+          <p>{t("footer.madeIn")}</p>
         </div>
       </div>
     </footer>
+  );
+}
+
+function FooterCol({
+  title,
+  items,
+  t,
+}: {
+  title: string;
+  items: { to: string; key: string }[];
+  t: (k: string) => string;
+}) {
+  return (
+    <div>
+      <h3 className="text-xs font-bold uppercase tracking-wider text-gold-400">{title}</h3>
+      <ul className="mt-3 space-y-2 text-sm">
+        {items.map((i) => (
+          <li key={i.to}>
+            <Link to={i.to} className="text-cream-100/80 transition hover:text-cream-50">
+              {t(i.key)}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

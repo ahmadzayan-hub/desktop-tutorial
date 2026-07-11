@@ -1,22 +1,13 @@
-node_modules/
-.next/
-out/
-dist/
-build/
-.DS_Store
-tsconfig.tsbuildinfo
-
-# env
+node_modules
+dist
+dist-ssr
+*.local
 .env
 .env*.local
-
-# logs
 *.log
-npm-debug.log*
-
-# editor
-.vscode/
-.idea/
-
-# extension build
-extension/dist/
+.DS_Store
+.next
+out
+.vercel
+coverage
+*.tsbuildinfo

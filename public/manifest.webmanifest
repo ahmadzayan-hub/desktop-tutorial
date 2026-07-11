@@ -1,25 +1,24 @@
 {
-  "name": "Tweenz AI Learning OS",
-  "short_name": "Tweenz AI",
-  "description": "Your MBA study life, organized by AI. Bilingual AI academic platform.",
-  "start_url": "/dashboard",
-  "display": "standalone",
-  "background_color": "#f0f4ff",
-  "theme_color": "#2563eb",
-  "orientation": "portrait-primary",
+  "name": "Lahza",
+  "short_name": "Lahza",
+  "description": "Personalised coffee gifts, live event coffee stations and corporate appreciation campaigns across the UAE.",
   "lang": "en",
-  "dir": "ltr",
+  "dir": "auto",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#FBF6EC",
+  "theme_color": "#2A1B12",
+  "categories": ["shopping", "lifestyle", "food"],
   "icons": [
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/icon.svg",     "sizes": "any",     "type": "image/svg+xml" }
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
-  "screenshots": [],
-  "categories": ["education", "productivity"],
   "shortcuts": [
-    { "name": "Dashboard", "url": "/dashboard", "description": "Your academic dashboard" },
-    { "name": "AI Tutor", "url": "/tutor", "description": "Chat with your AI tutor" },
-    { "name": "Study Packs", "url": "/study-packs", "description": "Your AI study packs" },
-    { "name": "Ask My MBA", "url": "/ask-mba", "description": "Ask your MBA agent" }
+    { "name": "Customise a gift", "short_name": "Customise", "url": "/customize" },
+    { "name": "Corporate & events", "short_name": "Corporate", "url": "/corporate" },
+    { "name": "Operations console", "short_name": "Console", "url": "/console" }
   ]
 }

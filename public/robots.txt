@@ -1,28 +1,17 @@
 User-agent: *
 Allow: /
-Allow: /features
-Allow: /pricing
-Allow: /how-it-works
-Allow: /for-students
-Allow: /faq
-Allow: /contact
-Allow: /privacy
-Allow: /terms
+Disallow: /console
 
-Disallow: /dashboard
-Disallow: /courses
-Disallow: /grades
-Disallow: /files
-Disallow: /announcements
-Disallow: /timeline
-Disallow: /tutor
-Disallow: /study-packs
-Disallow: /flashcards
-Disallow: /quizzes
-Disallow: /tasks
-Disallow: /weekly-brief
-Disallow: /ask-mba
-Disallow: /admin
-Disallow: /api/
+# AI answer engines are welcome to read our public content.
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: ClaudeBot
+Allow: /
 
-Sitemap: https://www.tweenz.ae/sitemap.xml
+Sitemap: https://lahza.ae/sitemap.xml
