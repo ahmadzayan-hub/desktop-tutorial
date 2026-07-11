@@ -29,7 +29,7 @@ screen on Android/iOS).
 ## Quick start
 
 ```bash
-cd lahza
+# the Lahza app is the repository root — run these from the repo root
 npm install
 npm run dev        # http://localhost:5173
 npm run build      # tsc --noEmit + vite build
@@ -72,8 +72,9 @@ real provider (OpenAI / Anthropic / Gemini / Firefly).
 
 ## UAE compliance readiness
 
-Built to the compliance brief in
-`../3b802fdb-Beyond_Coffee_Moments…Compliance…Report.md`:
+Built to a UAE e-commerce compliance brief (Consumer Protection & E-Commerce
+Law, VAT/FTA invoicing, and PDPL for photo uploads). See
+[`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md) for the security view:
 
 - **Seller identity** (legal name, licence authority, licence no., TRN, address)
   shown in footer, contact, checkout and on the quotation — edit in
