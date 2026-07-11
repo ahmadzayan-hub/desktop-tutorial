@@ -1,14 +1,18 @@
 # Pitchora
 
-> *Previously: PresentIQ*
-
-**From a spark to a boardroom-ready deck, in minutes — with corporate
+**From a rough idea to a boardroom-ready deck, in minutes. Corporate
 standards enforced automatically.**
 
+- **Repository**: [`github.com/ahmadzayan-hub/desktop-tutorial`](https://github.com/ahmadzayan-hub/desktop-tutorial)
+- **Canonical branch**: `pitchora`
+- **Production**: `https://www.pitchora.ai`
+- **Ops runbook**: [`DEPLOY.md`](./DEPLOY.md)
+- **Security posture**: [`THREAT_MODEL.md`](./THREAT_MODEL.md) · [`SECURITY.md`](./SECURITY.md)
+
 Pitchora is the **idea-to-deck studio**: an AI agent platform that closes the
-gap between a half-formed idea and a polished, brand-governed, evidence-
-controlled, bilingual deck. It is not an LLM prompt wrapper — it is a
-multi-agent workflow that combines:
+gap between a rough idea and a polished, brand-governed, evidence-controlled,
+bilingual deck. It is not an LLM prompt wrapper. It is a multi-agent workflow
+that combines:
 
 1. Corporate brand governance
 2. Evidence-controlled content generation

@@ -3,10 +3,10 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
-  "installCommand": "npm install",
+  "installCommand": "npm ci",
   "outputDirectory": ".next",
-  "regions": ["iad1"],
-  "env": {
-    "NEXT_PUBLIC_DEMO_MODE": "true"
+  "regions": ["fra1"],
+  "github": {
+    "silent": true
   }
 }
