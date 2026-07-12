@@ -34,7 +34,7 @@
 - كل ما تتعدّل حاجة في `android-wife-assistant/` بيتبني لوحده، أو شغّله يدوياً من
   تبويب **Actions → Build Android APK → Run workflow**.
 - بعد ما يخلّص، نزّل الـ APK من:
-  - **Actions → آخر تشغيل → Artifacts → `wife-assistant-apk`**، أو
+  - **Actions → آخر تشغيل → Artifacts → `wisal-android`**، أو
   - **صفحة Releases → `android-latest`** (رابط ثابت لأحدث نسخة).
 - ثبّت الـ APK على موبايلك (اسمح بتثبيت من "مصادر غير معروفة" أول مرة).
 
