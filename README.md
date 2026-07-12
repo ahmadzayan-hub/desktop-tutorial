@@ -117,3 +117,4 @@ Law, VAT/FTA invoicing, and PDPL for photo uploads). See
 | Android wife assistant | `android-wife-assistant/` | Native Android app (CI builds via [`android.yml`](.github/workflows/android.yml)) |
 | Telegram wife assistant | `telegram-wife-assistant/` | Telegram bot companion |
 | Wisal web | `wisal-web/` | Web app |
+| **Beyond Style UAE — Order Control Console** | [`beyond-style-uae/`](beyond-style-uae/) | Self-contained Next.js order-control console (form intake → WhatsApp confirmation → live ops dashboard). Deploy separately with Root Directory `beyond-style-uae`. See [`beyond-style-uae/README.md`](beyond-style-uae/README.md) and [PROJECTS.md](./PROJECTS.md). |
