@@ -113,3 +113,18 @@ jobs:
             wisal.apk
             wisal.aab
           make_latest: true
+
+      # تنظيف: نشيل أي ملفات قديمة من الـ release (زي wife-assistant.apk) فيفضل
+      # فيه wisal.apk و wisal.aab بس - عشان رابط التنزيل يبقى نضيف.
+      - name: Prune stale release assets
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          api="https://api.github.com/repos/${{ github.repository }}"
+          rel=$(curl -sS -H "Authorization: Bearer $GH_TOKEN" "$api/releases/tags/android-latest")
+          ids=$(printf '%s' "$rel" | python3 -c "import sys,json; d=json.load(sys.stdin); [print(a['id']) for a in d.get('assets',[]) if a['name'] not in ('wisal.apk','wisal.aab')]")
+          for id in $ids; do
+            echo "Deleting stale asset id=$id"
+            curl -sS -X DELETE -H "Authorization: Bearer $GH_TOKEN" "$api/releases/assets/$id"
+          done
