@@ -1,0 +1,24 @@
+# Sub-app (separate Vite storefront). Excluded from the Wasl Next.js deploy so
+# it doesn't inflate the Vercel upload or shadow any file lookup.
+beyond-style-uae/
+
+# Test + coverage output.
+tests/
+coverage/
+.next/cache/
+vitest.config.ts
+tsconfig.tsbuildinfo
+
+# Editor / OS junk.
+.vscode/
+.idea/
+.DS_Store
+
+# Docs that don't need to ship on the edge.
+DEVELOPER_NOTES.md
+ROADMAP.md
+THREAT_MODEL.md
+
+# Local envs stay local.
+.env
+.env.*.local
