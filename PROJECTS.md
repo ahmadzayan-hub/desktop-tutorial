@@ -1,6 +1,6 @@
 # Projects in this repository
 
-This repository is a **multi-project workspace**, not a single app. It hosts two
+This repository is a **multi-project workspace**, not a single app. It hosts three
 independent product lines. They share no application code — each folder is
 self-contained and can be split into its own GitHub repository and deployment
 without touching the others.
@@ -32,14 +32,30 @@ and a Telegram bot.
 | `android-wife-assistant/` | Android app | Kotlin + Gradle | Google Play / signed APK |
 | `telegram-wife-assistant/` | Telegram bot | Node.js (PM2 `ecosystem.config.js`) | Any always-on host (VPS/Render/Railway) via PM2 |
 
+## Product line 3 — Beyond Style UAE (landing page)
+
+| | |
+| --- | --- |
+| **Path** | `landing/` |
+| **What** | Bilingual (Arabic-first/EN) static landing page for the personalised-jewelry brand; ordering via WhatsApp + a Google order form (no backend) |
+| **Stack** | Pure static HTML/CSS/JS (no build step) |
+| **Deploy** | **GitHub Pages** via `.github/workflows/deploy-landing.yml` (auto-deploys on pushes touching `landing/**`); also hostable on Vercel/Netlify/Cloudflare Pages |
+| **Standalone** | Yes — static files, host anywhere |
+
 `docs/` holds shared threat models (`THREAT_MODEL.md`, `THREAT_MODEL_WISAL.md`).
 
 ## No duplication
 
 There is **no duplicated project or copied application code** in the tree. Lahza
-lives only at the root (`src/`), and the three Wisal surfaces are distinct
-implementations (web / Android / bot) of the same product — verified: no shared
-or duplicated source folders across projects.
+lives only at the root (`src/`); the three Wisal surfaces are distinct
+implementations (web / Android / bot) of one product; and the Beyond Style UAE
+landing (`landing/`) is a separate static site for a different brand — verified:
+no shared or duplicated source folders across projects.
+
+> Two distinct static "landing" folders exist but are **not duplicates**:
+> `wisal-web/` markets the Wisal messaging app (with the APK download), while
+> `landing/` markets the Beyond Style UAE jewelry brand. Different products,
+> different content, different deploy targets.
 
 ## Deploy each project separately (no extraction required)
 
@@ -50,6 +66,8 @@ or duplicated source folders across projects.
   ecosystem.config.js` on any always-on host. Needs `GROQ_API_KEY` +
   `TELEGRAM_BOT_TOKEN` (see its `README.md`).
 - **android-wife-assistant** — open in Android Studio, or `./gradlew assembleRelease`.
+- **landing (Beyond Style UAE)** — already auto-deploys to GitHub Pages via
+  `deploy-landing.yml`; or host the `landing/` folder as-is on any static host.
 
 ## Split a project into its own GitHub repository (history-preserving)
 
@@ -58,7 +76,7 @@ To move any subfolder into a brand-new repo while keeping its git history:
 ```bash
 # 1. Split the folder into a standalone branch (keeps only its history)
 git subtree split --prefix=<folder> -b split-<folder>
-#    e.g. --prefix=wisal-web  |  --prefix=telegram-wife-assistant
+#    e.g. --prefix=wisal-web  |  --prefix=telegram-wife-assistant  |  --prefix=landing
 
 # 2. Create an empty new repo on GitHub, then push the split branch as main
 git push git@github.com:<you>/<new-repo>.git split-<folder>:main
