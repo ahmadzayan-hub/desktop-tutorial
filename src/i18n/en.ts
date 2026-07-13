@@ -159,6 +159,7 @@ export const en = {
       placeholder: "Your photo here",
       placeholderSub: "Upload an image to customise",
       socialReady: "Social-media ready mockup",
+      sample: "Sample",
     },
     message: {
       heading: "Add your gift message",

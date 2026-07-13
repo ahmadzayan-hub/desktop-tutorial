@@ -12,13 +12,21 @@ export function ProductPreview({
   surface,
   message,
   messageDir = "ltr",
+  placeholderImage = null,
+  sample = false,
 }: {
   image: string | null;
   surface: Surface;
   message?: string;
   messageDir?: "ltr" | "rtl";
+  /** Shown when there's no uploaded image, so the preview is never blank. */
+  placeholderImage?: string | null;
+  /** Show a small "sample" tag when the placeholder image is a demo photo. */
+  sample?: boolean;
 }) {
   const { t } = useI18n();
+  const shown = image ?? placeholderImage ?? null;
+  const isSample = !image && !!placeholderImage;
 
   return (
     <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-gradient-to-br from-cream-50 to-cream-200 shadow-inner">
@@ -65,10 +73,10 @@ export function ProductPreview({
             </>
           )}
 
-          {/* Uploaded image or placeholder */}
-          {image ? (
+          {/* Uploaded image, sample fill, or (last resort) prompt */}
+          {shown ? (
             <image
-              href={image}
+              href={shown}
               x={surface === "cup" ? 80 : surface === "sleeve" ? 70 : surface === "box" ? 95 : 110}
               y={surface === "cup" ? 85 : surface === "sleeve" ? 150 : surface === "box" ? 120 : 120}
               width={surface === "cup" ? 240 : surface === "sleeve" ? 260 : surface === "box" ? 210 : 180}
@@ -117,6 +125,12 @@ export function ProductPreview({
         <span className="h-2 w-2 rounded-full bg-[#25D366]" />
         {t("customize.preview.socialReady")}
       </span>
+
+      {sample && isSample && (
+        <span className="absolute end-4 top-4 rounded-full bg-coffee-700/85 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-cream-50 shadow-sm">
+          {t("customize.preview.sample")}
+        </span>
+      )}
     </div>
   );
 }

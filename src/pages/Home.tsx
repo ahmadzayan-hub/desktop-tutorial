@@ -8,7 +8,7 @@ import { TrustBar, StatStrip } from "@/components/TrustBar";
 import { Reviews } from "@/components/Reviews";
 import { Reveal } from "@/components/Reveal";
 import { ProductPreview } from "@/components/ProductPreview";
-import { GALLERY } from "@/lib/catalog";
+import { GALLERY, SAMPLE_PHOTOS } from "@/lib/catalog";
 import { GalleryTile } from "@/components/GalleryTile";
 
 export default function Home() {
@@ -62,7 +62,7 @@ export default function Home() {
           <div className="animate-fade-up [animation-delay:120ms]">
             <div className="relative mx-auto max-w-md">
               <div className="rounded-[2rem] border border-coffee-100 bg-cream-50 p-4 shadow-card">
-                <ProductPreview image={null} surface="cup" />
+                <ProductPreview image={null} surface="cup" placeholderImage={SAMPLE_PHOTOS[0]} sample />
               </div>
               <div className="absolute -start-3 top-8 rounded-2xl border border-coffee-100 bg-cream-50 px-3 py-2 shadow-soft">
                 <div className="text-sm leading-none text-gold-500">★★★★★</div>
@@ -119,8 +119,8 @@ export default function Home() {
           </Reveal>
           <Reveal delay={100}>
             <div className="grid grid-cols-2 gap-4">
-              <ProductPreview image={null} surface="box" />
-              <ProductPreview image={null} surface="sleeve" />
+              <ProductPreview image={null} surface="box" placeholderImage={SAMPLE_PHOTOS[1]} sample />
+              <ProductPreview image={null} surface="sleeve" placeholderImage={SAMPLE_PHOTOS[2]} sample />
             </div>
           </Reveal>
         </div>
