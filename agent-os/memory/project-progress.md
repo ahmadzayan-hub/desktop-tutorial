@@ -24,6 +24,9 @@
 - ✅ أمان: تشفير المفتاح (Keystore)، allowBackup=false، security headers، نموذج تهديدات.
 - ✅ CI: بناء APK + AAB تلقائي، وبناء مثبّت ويندوز (electron-builder).
 - ✅ تجهيز نشر Play: `com.wisal.app`، AAB، صفحة خصوصية، اسم تجاري «وصال».
+- ✅ Skills/Tools تفاعلية في الديسكتوب (نيّة تكتب فوراً، تحرير على آخر رسالة، أدوات حقيقية).
+- ✅ Memory حيّة: `agent-os/memory/sync.js` + workflow يجدّد سجل الجلسات من Git بعد كل دمج.
+- ✅ دليل نشر واحد (`docs/DEPLOY_WISAL.md`) يغطّي توقيع Play + نشر Vercel خطوة بخطوة.
 
 ## متبقّي / أفكار جاية
 - ⏳ توقيع release رسمي (يحتاج أسرار keystore من المستخدم) + نشر Play.
