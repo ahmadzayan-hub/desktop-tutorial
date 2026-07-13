@@ -161,6 +161,7 @@ export const ar: Dict = {
       placeholder: "صورتك هنا",
       placeholderSub: "ارفع صورة لتخصيصها",
       socialReady: "معاينة جاهزة لمواقع التواصل",
+      sample: "مثال",
     },
     message: {
       heading: "أضف رسالة الإهداء",

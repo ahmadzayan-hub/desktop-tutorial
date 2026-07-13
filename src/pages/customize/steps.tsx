@@ -6,7 +6,7 @@ import {
 import { useI18n } from "@/i18n/I18nContext";
 import { ProductPreview, type Surface } from "@/components/ProductPreview";
 import { EMIRATES } from "@/lib/brand";
-import { GIFT_PACKAGES } from "@/lib/catalog";
+import { GIFT_PACKAGES, SAMPLE_PHOTOS } from "@/lib/catalog";
 import { formatAed } from "@/lib/format";
 import { loadImage, assessQuality } from "@/lib/imageQuality";
 import { aiImageCleanup, aiAutoCrop, arabicNameAssist, generateGiftMessage, type Tone } from "@/lib/ai";
@@ -136,7 +136,7 @@ export function UploadStep({ draft, update }: StepProps) {
       </div>
 
       <div>
-        <ProductPreview image={draft.imageProcessed} surface="cup" />
+        <ProductPreview image={draft.imageProcessed} surface="cup" placeholderImage={SAMPLE_PHOTOS[0]} sample />
       </div>
     </div>
   );
@@ -174,6 +174,8 @@ export function PreviewStep({ draft, update }: StepProps) {
           surface={draft.surfaceView}
           message={draft.message}
           messageDir={draft.messageLang === "ar" ? "rtl" : "ltr"}
+          placeholderImage={SAMPLE_PHOTOS[1]}
+          sample
         />
       </div>
     </div>
@@ -294,6 +296,8 @@ export function MessageStep({ draft, update }: StepProps) {
           surface="card"
           message={draft.message}
           messageDir={draft.messageLang === "ar" ? "rtl" : "ltr"}
+          placeholderImage={SAMPLE_PHOTOS[3]}
+          sample
         />
       </div>
     </div>
@@ -422,6 +426,8 @@ export function ReviewStep({ draft, update, onEditDesign }: StepProps & { onEdit
           surface={draft.surfaceView === "card" ? "cup" : draft.surfaceView}
           message={draft.message}
           messageDir={draft.messageLang === "ar" ? "rtl" : "ltr"}
+          placeholderImage={SAMPLE_PHOTOS[0]}
+          sample
         />
         <button type="button" className="btn btn-ghost btn-sm mt-3" onClick={onEditDesign}>
           {t("customize.review.editDesign")}

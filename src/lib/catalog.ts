@@ -125,19 +125,22 @@ export interface GalleryItem {
   id: string;
   title: L;
   category: "personal" | "corporate" | "events";
-  hue: number; // decorative gradient seed (avoids external image weight / CLS)
+  img: string; // bundled product mockup (webp) — never a blank tile
 }
 
 export const GALLERY: GalleryItem[] = [
-  { id: "g1", title: { en: "Anniversary photo box", ar: "علبة صور ذكرى زواج" }, category: "personal", hue: 28 },
-  { id: "g2", title: { en: "Newborn keepsake set", ar: "طقم تذكار مولود" }, category: "personal", hue: 18 },
-  { id: "g3", title: { en: "Product launch station", ar: "ركن إطلاق منتج" }, category: "events", hue: 34 },
-  { id: "g4", title: { en: "Bank staff appreciation", ar: "تقدير موظفي بنك" }, category: "corporate", hue: 24 },
-  { id: "g5", title: { en: "Wedding majlis coffee", ar: "قهوة مجلس عرس" }, category: "events", hue: 30 },
-  { id: "g6", title: { en: "Graduation gift", ar: "هدية تخرّج" }, category: "personal", hue: 22 },
-  { id: "g7", title: { en: "Conference activation", ar: "تفعيل مؤتمر" }, category: "corporate", hue: 36 },
-  { id: "g8", title: { en: "Eid gifting campaign", ar: "حملة هدايا العيد" }, category: "corporate", hue: 26 },
+  { id: "g1", title: { en: "Anniversary photo box", ar: "علبة صور ذكرى زواج" }, category: "personal", img: "/gallery/g1.webp" },
+  { id: "g2", title: { en: "Newborn keepsake set", ar: "طقم تذكار مولود" }, category: "personal", img: "/gallery/g2.webp" },
+  { id: "g3", title: { en: "Product launch station", ar: "ركن إطلاق منتج" }, category: "events", img: "/gallery/g3.webp" },
+  { id: "g4", title: { en: "Bank staff appreciation", ar: "تقدير موظفي بنك" }, category: "corporate", img: "/gallery/g4.webp" },
+  { id: "g5", title: { en: "Wedding majlis coffee", ar: "قهوة مجلس عرس" }, category: "events", img: "/gallery/g5.webp" },
+  { id: "g6", title: { en: "Graduation gift", ar: "هدية تخرّج" }, category: "personal", img: "/gallery/g6.webp" },
+  { id: "g7", title: { en: "Conference activation", ar: "تفعيل مؤتمر" }, category: "corporate", img: "/gallery/g7.webp" },
+  { id: "g8", title: { en: "Eid gifting campaign", ar: "حملة هدايا العيد" }, category: "corporate", img: "/gallery/g8.webp" },
 ];
+
+/** Sample "customer photos" used to fill previews so they're never blank. */
+export const SAMPLE_PHOTOS = ["/samples/s1.webp", "/samples/s2.webp", "/samples/s3.webp", "/samples/s4.webp"];
 
 export interface Review {
   id: string;
