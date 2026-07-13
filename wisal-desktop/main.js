@@ -11,6 +11,7 @@ function createWindow() {
     minHeight: 600,
     backgroundColor: '#fff7fa',
     title: 'وصال — Wisal',
+    icon: path.join(__dirname, 'build', 'icon.png'),
     autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
