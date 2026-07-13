@@ -36,14 +36,64 @@ function daysUntil(mmdd) {
 
 // ---------- التنقّل ----------
 function show(view) {
-  ['home', 'people', 'history', 'settings', 'onboard'].forEach((v) => {
+  ['home', 'skills', 'tools', 'people', 'history', 'settings', 'onboard'].forEach((v) => {
     $('#view-' + v).classList.toggle('hidden', v !== view);
   });
   document.querySelectorAll('.nav-item').forEach((b) => b.classList.toggle('active', b.dataset.view === view));
   if (view === 'home') renderHome();
+  if (view === 'skills') renderSkills();
+  if (view === 'tools') renderTools();
   if (view === 'people') renderPeople();
   if (view === 'history') renderHistory();
   if (view === 'settings') renderSettings();
+  updateStatus();
+}
+
+// شريط حالة النظام (LLM / Brain / Memory).
+async function updateStatus() {
+  const bar = $('#statusbar'); if (!bar) return;
+  let st = {};
+  try { st = await call('stats:get'); } catch (e) { st = {}; }
+  bar.innerHTML = '';
+  const pill = (html) => bar.appendChild(el('<span class="pill">' + html + '</span>'));
+  pill(`<span class="dot ${st.hasKey ? '' : 'off'}"></span> LLM: <b>${esc((st.model || '').replace('-versatile', '').replace('-instant', ''))}</b>`);
+  pill(`🧠 Brain: <b>${st.people || 0}</b> شخص`);
+  pill(`🗄️ Memory: <b>${st.styleExamples || 0}</b> أمثلة أسلوب`);
+  pill(`⭐ <b>${st.favorites || 0}</b> مفضّلة`);
+}
+
+// 🧩 Skills — عرض المهارات (نيّات + تحرير).
+function renderSkills() {
+  const host = $('#view-skills'); host.innerHTML = '';
+  host.appendChild(el('<h1>🧩 Skills — المهارات</h1><p class="sub">المهارات اللي الوكيل بيطبّقها على الرسالة. استخدمها من شاشة Agents.</p>'));
+  host.appendChild(el('<h2>نيّات الرسالة</h2>'));
+  const g1 = el('<div class="mod-grid"></div>'); host.appendChild(g1);
+  META.intents.forEach((it) => {
+    g1.appendChild(el(`<div class="mod"><div class="mod-top"><span class="mod-ico">${it.emoji}</span> ${esc(it.label)}</div><p>${esc(it.hint)}</p><span class="tag">Intent Skill</span></div>`));
+  });
+  host.appendChild(el('<h2>مهارات التحرير التكراري</h2>'));
+  const g2 = el('<div class="mod-grid"></div>'); host.appendChild(g2);
+  [['➕', 'أطول', 'يوسّع الرسالة ويدفّيها من غير حشو'], ['➖', 'أقصر', 'يكثّف في سطر أو اتنين'], ['💘', 'أرومانسي', 'يزوّد الحنية من غير مبالغة'], ['🌿', 'أبسط', 'كلمات يومية أوضح']].forEach(([e2, l, d]) => {
+    g2.appendChild(el(`<div class="mod"><div class="mod-top"><span class="mod-ico">${e2}</span> ${l}</div><p>${d}</p><span class="tag">Refine Skill</span></div>`));
+  });
+}
+
+// 🔧 Tools (MCP) — عرض الأدوات.
+function renderTools() {
+  const host = $('#view-tools'); host.innerHTML = '';
+  host.appendChild(el('<h1>🔧 Tools — أدوات الوكيل</h1><p class="sub">الأدوات اللي الوكيل بينفّذ بيها، كلها بضغطة منك ومفيش إرسال تلقائي.</p>'));
+  const g = el('<div class="mod-grid"></div>'); host.appendChild(g);
+  const tools = [
+    ['💬', 'WhatsApp', 'يفتح الشات والرسالة جاهزة، وانت تبعت', 'مفعّلة'],
+    ['📋', 'Clipboard', 'نسخ الرسالة لأي مكان', 'مفعّلة'],
+    ['🌐', 'Browser', 'يفتح روابط الإرسال في متصفحك', 'مفعّلة'],
+    ['📇', 'Contacts', 'استيراد + بثّ مخصّص (على الموبايل)', 'موبايل'],
+    ['📅', 'Calendar', 'مناسبة من أجندتك (على الموبايل)', 'موبايل'],
+    ['🔔', 'Reminders', 'تذكير بالمواعيد (على الموبايل)', 'موبايل'],
+  ];
+  tools.forEach(([e2, n, d, s]) => {
+    g.appendChild(el(`<div class="mod"><div class="mod-top"><span class="mod-ico">${e2}</span> ${n}</div><p>${d}</p><span class="tag">${s}</span></div>`));
+  });
 }
 
 function applyTheme() { document.documentElement.setAttribute('data-theme', S.theme === 'dark' ? 'dark' : 'light'); }
@@ -56,7 +106,7 @@ function updateWhoBadge() {
 function renderHome() {
   const host = $('#view-home'); host.innerHTML = '';
   const r = currentRecipient();
-  host.appendChild(el(`<div class="banner"><h1>رسالة من القلب 💗</h1><p>${r ? 'اختار اقتراح، عدّله، وابعته لـ' + esc(whoName(r)) + ' بضغطة' : 'ضيف شخص من تبويب الأشخاص عشان تبدأ'}</p></div>`));
+  host.appendChild(el(`<div class="banner"><h1>🤖 Composer Agent</h1><p>${r ? 'الوكيل بيقترحلك رسالة لـ' + esc(whoName(r)) + '، تعدّلها وتبعتها بضغطة' : 'ضيف شخص في Brain عشان الوكيل يبدأ'}</p></div>`));
 
   // منتقي الأشخاص
   if (PEOPLE.length) {
@@ -187,7 +237,7 @@ async function openGiftIdeas(label) {
 let editingId = null;
 function renderPeople() {
   const host = $('#view-people'); host.innerHTML = '';
-  host.appendChild(el('<h1>الأشخاص 👨‍👩‍👧‍👦</h1><p class="sub">اللي بتحب تكتبلهم، وكل واحد بنبرته ولهجته.</p>'));
+  host.appendChild(el('<h1>🧠 Brain — العقل الثاني</h1><p class="sub">معرفة الوكيل عن كل شخص: العلاقة، النبرة، اللهجة، الملاحظات، المناسبات.</p>'));
 
   // فورمة
   const f = el('<div class="card"></div>');
@@ -274,7 +324,7 @@ function parseOcc(text) {
 // ---------- السجل ----------
 async function renderHistory() {
   const host = $('#view-history'); host.innerHTML = '';
-  host.appendChild(el('<h1>سجل الرسايل 📜</h1>'));
+  host.appendChild(el('<h1>🗄️ Memory — سجل الرسائل</h1><p class="sub">ذاكرة الوكيل من اختياراتك: كل رسالة عدّلتها أو اخترتها.</p>'));
   const store = await call('store:get');
   const all = (store.feedback || []).filter((f) => f.finalText).reverse();
   const favs = new Set(store.favorites || []);
@@ -306,7 +356,7 @@ async function renderHistory() {
 // ---------- الإعدادات ----------
 function renderSettings() {
   const host = $('#view-settings'); host.innerHTML = '';
-  host.appendChild(el('<h1>الإعدادات ⚙️</h1>'));
+  host.appendChild(el('<h1>✨ LLM — المحرّك والإعدادات</h1><p class="sub">مفتاح Groq، الموديل، النبرة، والمظهر. المفتاح بيتخزّن على جهازك بس.</p>'));
   const c = el('<div class="card"></div>');
   c.appendChild(el(`<label class="field"><span>مفتاح Groq (console.groq.com/keys)</span><input type="password" id="sKey" value="${esc(S.groqKey)}"></label>`));
   c.appendChild(el(`<label class="field"><span>اسمك</span><input type="text" id="sName" value="${esc(S.myName)}"></label>`));
@@ -346,7 +396,7 @@ function renderOnboard() {
   b.onclick = async () => { S = await call('settings:set', { groqKey: $('#oKey').value.trim(), myName: $('#oName').value.trim(), onboarded: true }); $('#view-onboard').classList.add('hidden'); show('people'); };
   c.appendChild(b);
   host.appendChild(c);
-  ['home', 'people', 'history', 'settings'].forEach((v) => $('#view-' + v).classList.add('hidden'));
+  ['home', 'skills', 'tools', 'people', 'history', 'settings'].forEach((v) => $('#view-' + v).classList.add('hidden'));
   $('#view-onboard').classList.remove('hidden');
 }
 
@@ -361,6 +411,7 @@ async function boot() {
   document.querySelectorAll('.nav-item').forEach((b) => (b.onclick = () => show(b.dataset.view)));
   $('#themeBtn').onclick = async () => { S = await call('settings:set', { theme: S.theme === 'dark' ? 'light' : 'dark' }); applyTheme(); };
   $('#modalClose').onclick = () => $('#modal').classList.add('hidden');
+  updateStatus();
   if (!S.onboarded) renderOnboard(); else show('home');
 }
 boot();

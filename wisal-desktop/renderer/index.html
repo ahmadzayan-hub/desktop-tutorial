@@ -3,19 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:; connect-src https://api.groq.com">
-  <title>وصال — Wisal</title>
+  <title>وصال — Wisal OS</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="app">
-    <!-- الشريط الجانبي (مناسب للّابتوب العريض) -->
+    <!-- شريط الوحدات (Agentic OS modules) -->
     <aside class="sidebar">
-      <div class="brand"><span class="logo">💗</span> <b>وصال</b></div>
+      <div class="brand"><span class="logo">💗</span> <b>وصال</b> <span class="os-tag">OS</span></div>
       <nav id="nav">
-        <button class="nav-item active" data-view="home">✨ الرئيسية</button>
-        <button class="nav-item" data-view="people">👨‍👩‍👧‍👦 الأشخاص</button>
-        <button class="nav-item" data-view="history">📜 السجل</button>
-        <button class="nav-item" data-view="settings">⚙️ الإعدادات</button>
+        <button class="nav-item active" data-view="home">🤖 Agents</button>
+        <button class="nav-item" data-view="skills">🧩 Skills</button>
+        <button class="nav-item" data-view="tools">🔧 Tools</button>
+        <button class="nav-item" data-view="people">🧠 Brain</button>
+        <button class="nav-item" data-view="history">🗄️ Memory</button>
+        <button class="nav-item" data-view="settings">✨ LLM</button>
       </nav>
       <div class="side-foot">
         <div id="whoBadge" class="who-badge"></div>
@@ -25,7 +27,10 @@
 
     <!-- المحتوى -->
     <main class="content">
+      <div id="statusbar" class="statusbar"></div>
       <section id="view-home" class="view"></section>
+      <section id="view-skills" class="view hidden"></section>
+      <section id="view-tools" class="view hidden"></section>
       <section id="view-people" class="view hidden"></section>
       <section id="view-history" class="view hidden"></section>
       <section id="view-settings" class="view hidden"></section>
@@ -33,7 +38,6 @@
     </main>
   </div>
 
-  <!-- نافذة أفكار المناسبة -->
   <div id="modal" class="modal hidden">
     <div class="modal-card">
       <div class="modal-head"><b id="modalTitle"></b><button id="modalClose" class="ghost small">✕</button></div>
@@ -42,7 +46,6 @@
   </div>
 
   <div id="toast" class="toast hidden"></div>
-
   <script src="renderer.js"></script>
 </body>
 </html>
