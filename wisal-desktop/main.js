@@ -42,6 +42,7 @@ function registerIpc() {
     'people:get': () => core.getPeople(),
     'people:set': (list) => core.setPeople(list),
     'meta:get': () => ({ relations: core.RELATIONS, dialects: core.DIALECTS, intents: core.INTENTS }),
+    'stats:get': () => core.stats(),
     'store:get': () => core.getStore(),
     'recipient:current': () => core.currentRecipient(),
     'generate': (opts) => core.generate(opts || {}),

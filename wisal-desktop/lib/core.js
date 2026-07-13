@@ -261,9 +261,22 @@ async function giftIdeas(occasionLabel) {
 
 function todayISO() { return new Date().toISOString().slice(0, 10); }
 
+// ملخّص حالة للنظام (شريط الحالة + تبويبات Memory/Brain).
+function stats() {
+  const s = getSettings(); const st = getStore(); const p = getPeople();
+  return {
+    model: s.model,
+    people: p.length,
+    styleExamples: (st.styleExamples || []).length,
+    feedback: (st.feedback || []).length,
+    favorites: (st.favorites || []).length,
+    hasKey: !!s.groqKey,
+  };
+}
+
 module.exports = {
   init, getSettings, setSettings, getPeople, setPeople, currentRecipient,
   RELATIONS, DIALECTS, INTENTS, relationById,
   getStore, addStyleExample, addFeedback, bumpTheme, toggleFavorite, deleteHistory, markContacted,
-  generate, refine, giftIdeas, todayISO,
+  generate, refine, giftIdeas, todayISO, stats,
 };
