@@ -62,37 +62,93 @@ async function updateStatus() {
   pill(`⭐ <b>${st.favorites || 0}</b> مفضّلة`);
 }
 
-// 🧩 Skills — عرض المهارات (نيّات + تحرير).
+// آخر رسالة اشتغل عليها الوكيل (للأدوات: نسخ/واتساب). بتتحدّث مع كل توليد/اختيار.
+let lastMessage = '';
+function setLastMessage(t) { if (t && t.trim()) lastMessage = t.trim(); }
+async function resolveLastMessage() {
+  if (lastMessage) return lastMessage;
+  if (currentSuggestions && currentSuggestions.items[0]) return currentSuggestions.items[0].text;
+  try { const st = await call('store:get'); const fb = (st.feedback || []).filter((f) => f.finalText); if (fb.length) return fb[fb.length - 1].finalText; } catch (e) { /* ignore */ }
+  return '';
+}
+
+// 🧩 Skills — مهارات فعّالة: كل بطاقة بتشتغل بضغطة.
 function renderSkills() {
   const host = $('#view-skills'); host.innerHTML = '';
-  host.appendChild(el('<h1>🧩 Skills — المهارات</h1><p class="sub">المهارات اللي الوكيل بيطبّقها على الرسالة. استخدمها من شاشة Agents.</p>'));
+  host.appendChild(el('<h1>🧩 Skills — المهارات</h1><p class="sub">دوس على أي مهارة وهي تشتغل على طول — النيّة بتوجّه الكتابة، والتحرير بيعدّل آخر اقتراح.</p>'));
+
   host.appendChild(el('<h2>نيّات الرسالة</h2>'));
   const g1 = el('<div class="mod-grid"></div>'); host.appendChild(g1);
   META.intents.forEach((it) => {
-    g1.appendChild(el(`<div class="mod"><div class="mod-top"><span class="mod-ico">${it.emoji}</span> ${esc(it.label)}</div><p>${esc(it.hint)}</p><span class="tag">Intent Skill</span></div>`));
+    const card = el(`<div class="mod"><div class="mod-top"><span class="mod-ico">${it.emoji}</span> ${esc(it.label)}</div><p>${esc(it.hint)}</p></div>`);
+    const b = el('<button class="chip">✍️ اكتب بالنيّة دي</button>');
+    b.onclick = async () => {
+      if (!currentRecipient()) { toast('ضيف شخص في Brain الأول'); show('people'); return; }
+      selIntent = it.id; show('home'); await doGenerate('manual');
+    };
+    card.appendChild(b); g1.appendChild(card);
   });
+
   host.appendChild(el('<h2>مهارات التحرير التكراري</h2>'));
   const g2 = el('<div class="mod-grid"></div>'); host.appendChild(g2);
-  [['➕', 'أطول', 'يوسّع الرسالة ويدفّيها من غير حشو'], ['➖', 'أقصر', 'يكثّف في سطر أو اتنين'], ['💘', 'أرومانسي', 'يزوّد الحنية من غير مبالغة'], ['🌿', 'أبسط', 'كلمات يومية أوضح']].forEach(([e2, l, d]) => {
-    g2.appendChild(el(`<div class="mod"><div class="mod-top"><span class="mod-ico">${e2}</span> ${l}</div><p>${d}</p><span class="tag">Refine Skill</span></div>`));
+  [['➕', 'أطول', 'يوسّع الرسالة ويدفّيها من غير حشو', 'longer'], ['➖', 'أقصر', 'يكثّف في سطر أو اتنين', 'shorter'], ['💘', 'أرومانسي', 'يزوّد الحنية من غير مبالغة', 'romantic'], ['🌿', 'أبسط', 'كلمات يومية أوضح', 'simpler']].forEach(([e2, l, d, sid]) => {
+    const card = el(`<div class="mod"><div class="mod-top"><span class="mod-ico">${e2}</span> ${l}</div><p>${d}</p></div>`);
+    const b = el('<button class="chip">✨ طبّق على آخر رسالة</button>');
+    b.onclick = async () => {
+      const base = await resolveLastMessage();
+      if (!base) { toast('اعمل اقتراح الأول من Agents'); show('home'); return; }
+      b.disabled = true;
+      try { const nt = await call('refine', { text: base, styleId: sid }); setLastMessage(nt); openResult(l, nt); }
+      catch (e) { toast('التعديل مش متاح دلوقتي (محتاج نت + مفتاح Groq)'); }
+      b.disabled = false;
+    };
+    card.appendChild(b); g2.appendChild(card);
   });
 }
 
-// 🔧 Tools (MCP) — عرض الأدوات.
+// عرض ناتج مهارة في المودال مع أزرار نسخ/واتساب.
+function openResult(title, text) {
+  $('#modalTitle').textContent = title;
+  const body = $('#modalBody'); body.innerHTML = '';
+  body.appendChild(el(`<div style="white-space:pre-wrap;margin-bottom:12px">${esc(text)}</div>`));
+  const row = el('<div class="row tight"></div>');
+  const cp = el('<button class="ghost small">📋 نسخ</button>'); cp.onclick = () => { navigator.clipboard.writeText(text); toast('اتنسخت ✅'); };
+  const wa = el('<button class="ghost small">📲 واتساب</button>'); wa.onclick = () => { sendWhatsApp(text, currentRecipient(), false); };
+  row.append(cp, wa); body.appendChild(row);
+  $('#modal').classList.remove('hidden');
+}
+
+// 🔧 Tools — أدوات فعّالة بضغطة (مفيش إرسال تلقائي لأي حد).
 function renderTools() {
   const host = $('#view-tools'); host.innerHTML = '';
-  host.appendChild(el('<h1>🔧 Tools — أدوات الوكيل</h1><p class="sub">الأدوات اللي الوكيل بينفّذ بيها، كلها بضغطة منك ومفيش إرسال تلقائي.</p>'));
+  host.appendChild(el('<h1>🔧 Tools — أدوات الوكيل</h1><p class="sub">كل أداة بتشتغل بضغطة منك — الرسالة تتجهّز وانت اللي تبعت.</p>'));
+  const r = currentRecipient();
   const g = el('<div class="mod-grid"></div>'); host.appendChild(g);
-  const tools = [
-    ['💬', 'WhatsApp', 'يفتح الشات والرسالة جاهزة، وانت تبعت', 'مفعّلة'],
-    ['📋', 'Clipboard', 'نسخ الرسالة لأي مكان', 'مفعّلة'],
-    ['🌐', 'Browser', 'يفتح روابط الإرسال في متصفحك', 'مفعّلة'],
-    ['📇', 'Contacts', 'استيراد + بثّ مخصّص (على الموبايل)', 'موبايل'],
-    ['📅', 'Calendar', 'مناسبة من أجندتك (على الموبايل)', 'موبايل'],
-    ['🔔', 'Reminders', 'تذكير بالمواعيد (على الموبايل)', 'موبايل'],
+  const desktopTools = [
+    ['💬', 'WhatsApp', r ? 'يفتح شات ' + esc(whoName(r)) + ' والرسالة جاهزة' : 'يفتح واتساب والرسالة جاهزة', 'فتح', async () => {
+      const t = await resolveLastMessage(); sendWhatsApp(t, currentRecipient(), false);
+    }],
+    ['📋', 'Clipboard', 'ينسخ آخر رسالة لأي مكان', 'نسخ', async () => {
+      const t = await resolveLastMessage(); if (!t) { toast('مفيش رسالة لسه — اعمل اقتراح'); return; }
+      navigator.clipboard.writeText(t); toast('اتنسخت ✅');
+    }],
+    ['🌐', 'Browser', 'يفتح لوحة مفاتيح Groq في متصفحك', 'فتح', async () => {
+      await call('openExternal', { url: 'https://console.groq.com/keys' });
+    }],
   ];
-  tools.forEach(([e2, n, d, s]) => {
-    g.appendChild(el(`<div class="mod"><div class="mod-top"><span class="mod-ico">${e2}</span> ${n}</div><p>${d}</p><span class="tag">${s}</span></div>`));
+  desktopTools.forEach(([e2, n, d, btn, fn]) => {
+    const card = el(`<div class="mod"><div class="mod-top"><span class="mod-ico">${e2}</span> ${n}</div><p>${d}</p></div>`);
+    const b = el(`<button class="chip">${btn}</button>`); b.onclick = fn;
+    card.appendChild(b); g.appendChild(card);
+  });
+
+  host.appendChild(el('<h2>أدوات الموبايل</h2><p class="sub">دي بتشتغل في نسخة الأندرويد (صلاحيات الجهاز).</p>'));
+  const g2 = el('<div class="mod-grid"></div>'); host.appendChild(g2);
+  [['📇', 'Contacts', 'استيراد جهات الاتصال + بثّ مخصّص باسم كل حد'], ['📅', 'Calendar', 'قراءة المناسبات من أجندتك'], ['🔔', 'Reminders', 'تذكير «ابعت بكرة» بالمواعيد']].forEach(([e2, n, d]) => {
+    const card = el(`<div class="mod"><div class="mod-top"><span class="mod-ico">${e2}</span> ${n}</div><p>${d}</p><span class="tag">موبايل</span></div>`);
+    const b = el('<button class="chip">📱 نزّل الأندرويد</button>');
+    b.onclick = () => call('openExternal', { url: 'https://github.com/ahmadzayan-hub/desktop-tutorial/releases/download/android-latest/wisal.apk' });
+    card.appendChild(b); g2.appendChild(card);
   });
 }
 
@@ -169,6 +225,7 @@ async function doGenerate(slot, occasionLabel) {
   try {
     const res = await call('generate', { slot, intentId: occasionLabel ? null : selIntent, context: renderHome._ctx });
     currentSuggestions = { items: res.items, themes: res.themes, slot };
+    if (res.items[0]) setLastMessage(res.items[0].text);
     if (res.note) toast(res.note);
     renderSuggestions();
   } catch (e) { if (out) out.innerHTML = ''; toast('حصل خطأ: ' + e.message); }
@@ -185,7 +242,7 @@ function renderSuggestions() {
       const c = el(`<button class="chip">${lbl}</button>`);
       c.onclick = async () => {
         c.disabled = true;
-        try { const nt = await call('refine', { text: item.text, styleId: sid }); item.text = nt; renderSuggestions(); }
+        try { const nt = await call('refine', { text: item.text, styleId: sid }); item.text = nt; setLastMessage(nt); renderSuggestions(); }
         catch (e) { toast('التعديل مش متاح دلوقتي'); c.disabled = false; }
       };
       refine.appendChild(c);
@@ -193,11 +250,12 @@ function renderSuggestions() {
     card.appendChild(refine);
     const actions = el('<div class="row tight"></div>');
     const wa = el(`<button class="btn">${isGroup ? '📣 ابعت للجروب' : '📲 ابعت لـ' + esc(whoName(r))}</button>`);
-    wa.onclick = () => sendWhatsApp(item.text, r, isGroup);
+    wa.onclick = () => { setLastMessage(item.text); sendWhatsApp(item.text, r, isGroup); };
     const copy = el('<button class="ghost">📋 نسخ</button>'); copy.onclick = () => { navigator.clipboard.writeText(item.text); toast('اتنسخت ✅'); };
     const pick = el('<button class="ghost">👍 اختار</button>');
     pick.onclick = async () => {
       await call('learn:choose', { text: item.text, theme: item.theme, recipientId: r ? r.id : '', slot: currentSuggestions.slot, themesShown: currentSuggestions.themes });
+      setLastMessage(item.text);
       toast('حفظت أسلوبك من الاختيار ده 👌');
     };
     actions.append(wa, copy, pick);
@@ -210,6 +268,7 @@ function renderSuggestions() {
   save.onclick = async () => {
     const t = $('#editBox').value.trim(); if (!t) return;
     await call('learn:edit', { text: t, theme: currentSuggestions.themes[0], recipientId: r ? r.id : '', slot: currentSuggestions.slot, themesShown: currentSuggestions.themes });
+    setLastMessage(t);
     $('#editBox').value = ''; toast('سجّلت نسختك وضفتها لأسلوبي 🌟');
   };
   edit.appendChild(save);
