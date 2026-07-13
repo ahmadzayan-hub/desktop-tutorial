@@ -18,9 +18,17 @@ export function Reviews() {
             <blockquote className="mt-3 flex-1 text-sm leading-relaxed text-coffee-700">
               “{pick(r.text)}”
             </blockquote>
-            <figcaption className="mt-4 text-sm font-semibold text-coffee-900">
-              {pick(r.name)}
-              <span className="ms-2 font-normal text-coffee-400">· {pick(r.location)}</span>
+            <figcaption className="mt-4 flex items-center gap-3">
+              <span
+                aria-hidden="true"
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-gold-400 to-gold-600 text-sm font-bold text-white shadow-soft"
+              >
+                {pick(r.name).trim().charAt(0)}
+              </span>
+              <span className="text-sm">
+                <span className="block font-semibold text-coffee-900">{pick(r.name)}</span>
+                <span className="text-coffee-400">{pick(r.location)}</span>
+              </span>
             </figcaption>
           </figure>
         </Reveal>
