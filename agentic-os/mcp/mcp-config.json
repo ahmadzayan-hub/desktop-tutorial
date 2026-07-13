@@ -1,0 +1,11 @@
+{
+  "_comment": "Agentic OS MCP configuration. purpose: declare MCP servers available to the OS. owner: Ahmed Zaian. last-updated: 2026-07-14. TODO: owner to populate real servers/auth; this is a template scaffold. Human approval required before any external write (see ../guardrails.md).",
+  "mcpServers": {
+    "example-readonly-server": {
+      "command": "TODO",
+      "args": [],
+      "env": {},
+      "_notes": "TODO: replace with a real server. Mark read vs write. External writes need in-session owner approval."
+    }
+  }
+}
