@@ -8,18 +8,20 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 # (path-prefix, domain, classification, confident)
+# Domain assignments below were owner-approved on 2026-07-14 (Checkpoint A):
+# Lahza -> bcgt, Wisal family -> personal, legacy agent-os/ stays as system.
 _RULES: list[tuple[str, str, str, bool]] = [
     ("agentic-os/", "system", "internal", True),
     (".github/", "system", "internal", True),
     ("docs/", "system", "internal", True),
-    ("agent-os/", "system", "internal", False),      # legacy workspace — ask-me
+    ("agent-os/", "system", "internal", True),       # legacy Wisal docs, kept in place
     ("landing/", "brand", "internal", True),          # Beyond Style UAE
-    ("wisal-web/", "personal", "confidential", False),
-    ("wisal-desktop/", "personal", "confidential", False),
-    ("android-wife-assistant/", "personal", "confidential", False),
-    ("telegram-wife-assistant/", "personal", "confidential", False),
-    ("src/", "bcgt", "confidential", False),          # Lahza app — ask-me
-    ("public/", "bcgt", "confidential", False),
+    ("wisal-web/", "personal", "confidential", True),
+    ("wisal-desktop/", "personal", "confidential", True),
+    ("android-wife-assistant/", "personal", "confidential", True),
+    ("telegram-wife-assistant/", "personal", "confidential", True),
+    ("src/", "bcgt", "confidential", True),           # Lahza app
+    ("public/", "bcgt", "confidential", True),
 ]
 
 _ROOT_INFRA = {

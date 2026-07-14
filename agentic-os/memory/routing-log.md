@@ -10,5 +10,4 @@ status: active
 
 # Routing log
 
-No routing events recorded yet.
-
+- 2026-07-14T05:17:19+00:00 `TASK-20260714-001` -> **light** — initial routing: task-type=triage -> cheapest capable role

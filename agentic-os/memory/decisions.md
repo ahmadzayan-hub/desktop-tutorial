@@ -19,3 +19,9 @@ status: active
   dataclasses; a minimal YAML-subset parser ships in utils/yaml_io.py.
 - D-004: Python 3.11 compatibility (environment constraint; spec asked 3.12).
 - D-005: SQLite at memory/state.db is authoritative; markdown is exported.
+
+## 2026-07-14 — Checkpoint A approval
+- D-006: Owner approved the migration-map defaults ("all"): Lahza -> bcgt,
+  Wisal family -> personal, legacy agent-os/ -> system (kept untouched),
+  landing/ -> brand. All 227 files keep in place; classifier confidence
+  updated accordingly. Recorded in the approvals table (TASK-20260714-001).

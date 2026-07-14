@@ -10,4 +10,4 @@ status: active
 
 # Progress
 
-- **system** — backlog: 2
+- **system** — done: 1, ready: 1

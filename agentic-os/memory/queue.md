@@ -10,5 +10,4 @@ status: active
 
 # Queue
 
-Queue is empty.
-
+- `TASK-20260714-002` [ready] (medium, system) Set cost ceilings + usage-type in config

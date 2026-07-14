@@ -18,3 +18,7 @@ status: active
   questions recorded in migration-map.md for the owner.
 - Handoff: owner to answer ask-me questions, set cost ceilings and
   usage-type in config, and review guardrails enforcement matrix.
+- Checkpoint A approved by owner ("all", 2026-07-14): defaults confirmed,
+  227 keep / 0 ask-me; TASK-20260714-001 verified and done.
+- Remaining open: TASK-20260714-002 (cost ceilings + usage-type — needs
+  actual numbers from the owner; not invented).
