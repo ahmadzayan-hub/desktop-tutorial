@@ -1,13 +1,18 @@
 /* وصال لسطح المكتب — تصميم مظبوط للّابتوب (شاشة عريضة) وويندوز. فاتح/غامق. */
 :root{
-  --rose:#E5397B; --plum:#7B4EE5; --ink:#201a1c; --muted:#6b5b60;
-  --bg:#fff7fa; --panel:#ffffff; --line:#f0dbe4; --side:#fbeef4;
-  --grad:linear-gradient(135deg,#E5397B,#7B4EE5);
-  --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(123,78,229,.06);
+  /* لوحة هادئة: لافندر/نعناعي/رملي مع لمسة وردية دافئة كأكسنت */
+  --rose:#E1668F; --plum:#8A76E6; --ink:#242232; --muted:#6f6b82;
+  --bg:#f3f5fb; --panel:#ffffff; --line:#e6e8f4; --side:#eef1fa;
+  --grad:linear-gradient(135deg,#E1668F 0%,#9E7BE6 55%,#6FA8C9 100%);
+  --shadow:0 1px 2px rgba(40,40,80,.05),0 10px 30px rgba(120,110,210,.08);
+  --shadow-3d:0 2px 4px rgba(40,40,80,.06),0 14px 28px rgba(120,110,210,.14),0 28px 60px rgba(110,168,201,.10);
+  --ripple:radial-gradient(circle, rgba(158,123,230,.30) 0%, rgba(111,168,201,.18) 45%, rgba(225,102,143,0) 72%);
 }
 :root[data-theme="dark"]{
-  --ink:#ece0e3; --muted:#b9a7ad; --bg:#191113; --panel:#211a1c; --line:#3a2f33; --side:#1f1518;
-  --shadow:0 1px 3px rgba(0,0,0,.4);
+  --ink:#e7e4f2; --muted:#a8a3bd; --bg:#141320; --panel:#1c1a2a; --line:#2f2c40; --side:#181626;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  --shadow-3d:0 2px 6px rgba(0,0,0,.5),0 18px 40px rgba(0,0,0,.45);
+  --ripple:radial-gradient(circle, rgba(158,123,230,.35) 0%, rgba(111,168,201,.20) 45%, rgba(225,102,143,0) 72%);
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -102,3 +107,31 @@ label.field span{display:block; font-size:13px; color:var(--muted); margin-botto
 .modal-body{white-space:pre-wrap}
 .spin{display:inline-block; width:16px; height:16px; border:2px solid var(--line); border-top-color:var(--rose); border-radius:50%; animation:spin .8s linear infinite; vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* عمق ثلاثي الأبعاد: طبقات ظل + رفعة ناعمة عند المرور */
+.content{perspective:1400px}
+.card,.mod,.list-item,.suggestion{transition:transform .25s cubic-bezier(.2,.7,.3,1), box-shadow .25s ease}
+.card:hover,.mod:hover,.suggestion:hover{transform:translateY(-3px)}
+.depth{box-shadow:var(--shadow-3d)}
+.depth:hover{transform:translateY(-4px) rotateX(1.4deg); box-shadow:var(--shadow-3d)}
+.btn{transition:transform .12s ease, filter .2s ease; box-shadow:0 6px 16px rgba(120,110,210,.20)}
+.btn:hover{filter:brightness(1.04)}
+.btn:active{transform:translateY(1px) scale(.99)}
+.mod:hover{box-shadow:var(--shadow-3d)}
+
+/* 💧 تأثير مائي عند النقر */
+.wc-ripple{
+  position:fixed; width:14px; height:14px; margin:-7px 0 0 -7px; border-radius:50%;
+  background:var(--ripple); pointer-events:none; z-index:9999;
+  animation:wcRipple .68s ease-out forwards; mix-blend-mode:multiply;
+}
+:root[data-theme="dark"] .wc-ripple{mix-blend-mode:screen}
+@keyframes wcRipple{
+  0%{transform:scale(.4); opacity:.85; filter:blur(1px)}
+  60%{opacity:.5}
+  100%{transform:scale(26); opacity:0; filter:blur(6px)}
+}
+@media (prefers-reduced-motion: reduce){ .wc-ripple{display:none} .card,.mod,.suggestion{transition:none} }
+
+/* رسائل الإرسال الجماعي */
+textarea.bc-msg{width:100%; min-height:70px; font-size:15px}

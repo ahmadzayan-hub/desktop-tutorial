@@ -261,6 +261,119 @@ async function giftIdeas(occasionLabel) {
 
 function todayISO() { return new Date().toISOString().slice(0, 10); }
 
+// ---------- المجموعات (شغل/مشروع/أسرة) ----------
+// كل مجموعة: { id, name, kind, members: [{ id, name, number, relation, dialect, tone, notes, relationship }] }
+const GROUP_KINDS = [
+  { id: 'work', label: 'شغل', emoji: '💼' },
+  { id: 'project', label: 'مشروع', emoji: '🚀' },
+  { id: 'family', label: 'أسرة', emoji: '👨‍👩‍👧‍👦' },
+  { id: 'friends', label: 'أصحاب', emoji: '🧑‍🤝‍🧑' },
+  { id: 'clients', label: 'عملاء', emoji: '🤝' },
+  { id: 'other', label: 'أخرى', emoji: '📇' },
+];
+function getGroups() { return readJson('groups.json', []); }
+function setGroups(list) { writeJson('groups.json', Array.isArray(list) ? list : []); return getGroups(); }
+
+// قارئ CSV بسيط ومتين (يتعامل مع علامات التنصيص والفواصل جوه الحقل).
+function parseCSV(text) {
+  const rows = []; let field = '', row = [], inQ = false; const s = String(text || '');
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (inQ) {
+      if (c === '"') { if (s[i + 1] === '"') { field += '"'; i++; } else inQ = false; }
+      else field += c;
+    } else if (c === '"') { inQ = true; }
+    else if (c === ',') { row.push(field); field = ''; }
+    else if (c === '\n' || c === '\r') {
+      if (field !== '' || row.length) { row.push(field); rows.push(row); row = []; field = ''; }
+      if (c === '\r' && s[i + 1] === '\n') i++;
+    } else field += c;
+  }
+  if (field !== '' || row.length) { row.push(field); rows.push(row); }
+  return rows;
+}
+
+// يحوّل نص CSV لأعضاء: يكتشف أعمدة الاسم/الرقم/العلاقة/الملاحظات من العناوين،
+// وإلا يفترض العمود الأول اسم والتاني رقم.
+function parseContactsCSV(text) {
+  const rows = parseCSV(text).filter((r) => r.some((c) => (c || '').trim() !== ''));
+  if (!rows.length) return [];
+  const norm = (x) => String(x || '').trim().toLowerCase();
+  const header = rows[0].map(norm);
+  const findCol = (re) => header.findIndex((h) => re.test(h));
+  let ni = findCol(/name|اسم|الاسم/), pi = findCol(/phone|mobile|number|whats|رقم|موبايل|هاتف|واتس/);
+  let ri = findCol(/relation|علاقة|صفة/), oi = findCol(/note|ملاحظ|عن|حاج/);
+  let start = 1;
+  if (ni < 0 && pi < 0) { ni = 0; pi = 1; ri = -1; oi = -1; start = 0; } // مفيش عناوين
+  const out = [];
+  for (let i = start; i < rows.length; i++) {
+    const r = rows[i];
+    const name = ((ni >= 0 ? r[ni] : r[0]) || '').trim();
+    const number = ((pi >= 0 ? r[pi] : r[1]) || '').trim().replace(/[^\d+]/g, '');
+    if (!name && !number) continue;
+    out.push({
+      id: 'm' + i + '_' + number.replace(/\D/g, '').slice(-6),
+      name: name || number, number,
+      relation: (ri >= 0 && r[ri] ? r[ri].trim() : ''),
+      notes: (oi >= 0 && r[oi] ? r[oi].trim() : ''),
+      dialect: 'egyptian', tone: '', relationship: '',
+    });
+  }
+  return out;
+}
+
+// ---------- تحليل الشخصية من معلومات ملصوقة (مش كشط سوشيال) ----------
+function safeJson(raw) {
+  try { const m = String(raw).match(/\{[\s\S]*\}/); return JSON.parse(m ? m[0] : raw); } catch (e) { return null; }
+}
+async function analyzePersona(info, url) {
+  const sys = [
+    'انت بتساعد المستخدم يخصّص رسالة لشخص. حلّل المعلومات اللي المستخدم بنفسه لصقها.',
+    'ملاحظة مهمة: انت ماتفتحش أي روابط ولا تكشط أي بيانات من الإنترنت — تحليلك من النص الملصوق بس.',
+    'رجّع JSON فقط بالمفاتيح دي:',
+    '{"summary":"سطر يلخّص شخصيته/اهتماماته","dialect":"egyptian|gulf|levantine|msa","tone":"وصف قصير للنبرة الأنسب","relationship":"صفة العلاقة المقترحة بينه وبين المُرسِل"}',
+    'من غير أي كلام خارج الـ JSON.',
+  ].join('\n');
+  const user = ['المعلومات اللي لصقها المستخدم:', String(info || '').trim(),
+    url ? ('رابط مذكور كمرجع فقط (ممنوع فتحه): ' + url) : '', '', 'رجّع JSON فقط.'].join('\n');
+  const raw = await groqComplete([{ role: 'system', content: sys }, { role: 'user', content: user }], 0.4);
+  return safeJson(raw);
+}
+
+// ---------- توليد رسالة واحدة مخصّصة لعضو ----------
+function buildUserSingle(recipient, theme, intent, context) {
+  const s = getSettings(); const parts = [];
+  const examples = styleExamplesFor(recipient && recipient.id ? recipient.id : '');
+  if (examples.length) {
+    parts.push('أمثلة من أسلوبي (قلّد الروح مش النص):');
+    parts.push(examples.map((e, i) => (i + 1) + ') ' + e.text).join('\n'));
+  }
+  if (s.myName) parts.push('اسم المُرسِل: ' + s.myName + '.');
+  if (recipient && recipient.name) parts.push('اسم المستقبل: ' + recipient.name + ' — نادِه باسمه.');
+  if (recipient && recipient.relationship) parts.push('صفة العلاقة بينهم: ' + recipient.relationship + '.');
+  if (recipient && recipient.notes) parts.push('معلومات عنه: ' + recipient.notes + '.');
+  if (context && context.trim()) parts.push('سياق مهم: ' + context.trim() + '.');
+  parts.push(intent ? ('نوع الرسالة: ' + intent.label + '. ' + intent.hint) : ('الموضوع: ' + theme + '.'));
+  parts.push('اكتب رسالة واحدة قصيرة مخصّصة له بالظبط، من غير مقدمات ولا خيارات — النص بس.');
+  return parts.join('\n');
+}
+async function generateOneFor(member, opts) {
+  const intent = intentById(opts && opts.intentId);
+  const themes = intent ? [intent.label] : pickThemes();
+  const recipient = Object.assign({ relation: 'group_friends', dialect: 'egyptian' }, member || {});
+  try {
+    const raw = await groqComplete([
+      { role: 'system', content: buildSystem(recipient, intent) },
+      { role: 'user', content: buildUserSingle(recipient, themes[0], intent, (opts && opts.context) || '') },
+    ], 0.85);
+    const text = String(raw).split('\n').map((l) => l.replace(/^[١٢12]\s*[-.)]\s*/, '').trim()).filter(Boolean)[0] || String(raw).trim();
+    return { text, offline: false };
+  } catch (e) {
+    const fb = fallbackTwo(recipient, intent)[0];
+    return { text: fb.text, offline: true };
+  }
+}
+
 // ملخّص حالة للنظام (شريط الحالة + تبويبات Memory/Brain).
 function stats() {
   const s = getSettings(); const st = getStore(); const p = getPeople();
@@ -276,7 +389,8 @@ function stats() {
 
 module.exports = {
   init, getSettings, setSettings, getPeople, setPeople, currentRecipient,
-  RELATIONS, DIALECTS, INTENTS, relationById,
+  RELATIONS, DIALECTS, INTENTS, GROUP_KINDS, relationById,
   getStore, addStyleExample, addFeedback, bumpTheme, toggleFavorite, deleteHistory, markContacted,
   generate, refine, giftIdeas, todayISO, stats,
+  getGroups, setGroups, parseContactsCSV, analyzePersona, generateOneFor,
 };
