@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,7 +41,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -79,10 +82,29 @@ fun BroadcastScreen(onBack: () -> Unit) {
     var sharedCtx by remember { mutableStateOf("") }
     var busy by remember { mutableStateOf(false) }
     var progress by remember { mutableStateOf(0) }
+    // نسخ/تصدير + معاينة + قوالب مفضّلة
+    val clipboard = LocalClipboardManager.current
+    var templates by remember { mutableStateOf(settings.broadcastTemplates) }
+    var previewText by remember { mutableStateOf("") }
+    var pendingExport by remember { mutableStateOf("") }
 
     fun toast(m: String) = Toast.makeText(context, m, Toast.LENGTH_LONG).show()
     fun personalize(name: String): String =
         template.replace("{الاسم}", name).replace("{name}", name).trim()
+    fun msgFor(c: ContactsReader.ContactNumber): String = aiMsgs[c.number] ?: personalize(c.name)
+    fun currentTargets(): List<ContactsReader.ContactNumber> {
+        val base = activeList.filter { query.isBlank() || it.name.contains(query.trim(), ignoreCase = true) }
+        return if (selected.isEmpty()) base else base.filter { selected.contains(it.number) }
+    }
+    fun allText(): String = currentTargets().joinToString("\n\n") { c ->
+        "— ${c.name}${if (c.number.isNotBlank()) " (${c.number})" else ""}\n${msgFor(c)}"
+    }
+    val exportLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri ->
+        if (uri != null) {
+            runCatching { context.contentResolver.openOutputStream(uri)?.use { it.write(pendingExport.toByteArray()) } }
+            toast("اتصدّر ✅")
+        }
+    }
 
     fun loadContacts() {
         activeList = runCatching { ContactsReader.allWithNumbers(context) }.getOrDefault(emptyList())
@@ -154,6 +176,24 @@ fun BroadcastScreen(onBack: () -> Unit) {
             toast("جهّزت $progress رسالة مخصّصة ✍️")
         }
     }
+    // معاينة: يولّد رسالة أول عضو بس عشان تشوف النبرة قبل ما تجهّز للكل.
+    fun preview() {
+        if (settings.groqKey.isBlank()) { toast("ضيف مفتاح Groq الأول"); return }
+        if (busy) return
+        val first = currentTargets().firstOrNull() ?: run { toast("مفيش أعضاء"); return }
+        scope.launch {
+            busy = true
+            previewText = runCatching { composer.oneFor(first.name, "", sharedCtx) }.getOrElse { personalize(first.name) }
+            busy = false
+        }
+    }
+    fun saveTemplate() {
+        val t = template.trim()
+        if (t.isBlank()) { toast("القالب فاضي"); return }
+        templates = (listOf(t) + templates).distinct().take(10)
+        settings.broadcastTemplates = templates
+        toast("اتحفظ القالب ⭐")
+    }
 
     val filtered = activeList.filter { query.isBlank() || it.name.contains(query.trim(), ignoreCase = true) }
 
@@ -205,6 +245,24 @@ fun BroadcastScreen(onBack: () -> Unit) {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+
+            // قوالب مفضّلة
+            Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                OutlinedButton(onClick = { saveTemplate() }) { Text("⭐ احفظ القالب") }
+                templates.forEach { t ->
+                    FilterChip(
+                        selected = template == t,
+                        onClick = { template = t },
+                        label = { Text(if (t.length > 22) t.take(22) + "…" else t) },
+                        trailingIcon = {
+                            Text("✕", modifier = Modifier.padding(start = 2.dp).clickable {
+                                templates = templates.filterNot { it == t }
+                                settings.broadcastTemplates = templates
+                            })
+                        },
+                    )
+                }
+            }
 
             // إرسال لرقم مش متسجّل
             ElevatedCard(modifier = Modifier.fillMaxWidth()) {
@@ -284,6 +342,26 @@ fun BroadcastScreen(onBack: () -> Unit) {
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+
+                // معاينة أول رسالة + نسخ الكل + تصدير
+                Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    OutlinedButton(onClick = { preview() }, enabled = !busy) { Text("👁️ معاينة") }
+                    OutlinedButton(onClick = {
+                        clipboard.setText(AnnotatedString(allText())); toast("اتنسخ الكل ✅")
+                    }) { Text("📋 نسخ الكل") }
+                    OutlinedButton(onClick = {
+                        pendingExport = allText()
+                        exportLauncher.launch("wisal-broadcast.txt")
+                    }) { Text("📤 تصدير") }
+                }
+                if (previewText.isNotBlank()) {
+                    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Text("👁️ معاينة أول رسالة", fontWeight = FontWeight.Bold)
+                            Text(previewText, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
+                }
 
                 // حفظ كمجموعة
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {

@@ -122,6 +122,14 @@ class Settings(context: Context) {
         }
         set(v) = prefs.edit().putString("broadcastGroups", json.encodeToString(v)).apply()
 
+    // قوالب رسائل مفضّلة (نص فيه {الاسم}) — تحفظها وترجعها بضغطة.
+    var broadcastTemplates: List<String>
+        get() {
+            val raw = prefs.getString("broadcastTemplates", null) ?: return emptyList()
+            return runCatching { json.decodeFromString<List<String>>(raw) }.getOrDefault(emptyList())
+        }
+        set(v) = prefs.edit().putString("broadcastTemplates", json.encodeToString(v)).apply()
+
     fun currentRecipient(): Recipient? {
         val list = recipients
         return list.firstOrNull { it.id == selectedRecipientId } ?: list.firstOrNull()
