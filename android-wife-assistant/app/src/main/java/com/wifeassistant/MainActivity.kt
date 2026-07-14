@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -35,6 +37,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wifeassistant.data.Settings
 import com.wifeassistant.ui.BroadcastScreen
 import com.wifeassistant.ui.HistoryScreen
+import com.wifeassistant.ui.waterRipple
 import com.wifeassistant.ui.HomeScreen
 import com.wifeassistant.ui.HomeViewModel
 import com.wifeassistant.ui.PeopleScreen
@@ -129,7 +132,12 @@ private fun AppRoot(onThemeChanged: () -> Unit = {}) {
             }
         },
     ) { pad ->
-        Box(modifier = Modifier.padding(pad)) {
+        Box(
+            modifier = Modifier
+                .padding(pad)
+                .fillMaxSize()
+                .waterRipple(MaterialTheme.colorScheme.tertiary),
+        ) {
             when (screen) {
                 "settings" -> SettingsScreen(onBack = { screen = "home" }, onThemeChanged = onThemeChanged)
                 "stats" -> StatsScreen(onBack = { screen = "home" })

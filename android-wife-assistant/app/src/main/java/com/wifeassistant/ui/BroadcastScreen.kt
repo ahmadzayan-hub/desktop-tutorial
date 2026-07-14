@@ -34,8 +34,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -43,11 +45,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.wifeassistant.data.BroadcastGroup
+import com.wifeassistant.data.GroupComposer
 import com.wifeassistant.data.GroupMember
 import com.wifeassistant.data.Settings
 import com.wifeassistant.util.ContactsReader
 import com.wifeassistant.util.Csv
 import com.wifeassistant.util.WhatsApp
+import kotlinx.coroutines.launch
 
 // رسالة جماعية مخصّصة: استورد ناسك (جهات الاتصال أو ملف CSV) أو اختار مجموعة محفوظة،
 // والتطبيق يجهّز الرسالة باسم كل واحد — وانت تبعت بضغطة لكل شخص (بيفتح شاته والرسالة
@@ -68,6 +72,13 @@ fun BroadcastScreen(onBack: () -> Unit) {
     var groupName by remember { mutableStateOf("") }
     var groupKind by remember { mutableStateOf("work") }
     var unknownNum by remember { mutableStateOf("") }
+    // تخصيص بالذكاء: رسالة LLM لكل عضو (بالرقم كمفتاح) + سياق مشترك + حالة الشغل.
+    val scope = rememberCoroutineScope()
+    val composer = remember { GroupComposer(settings) }
+    val aiMsgs = remember { mutableStateMapOf<String, String>() }
+    var sharedCtx by remember { mutableStateOf("") }
+    var busy by remember { mutableStateOf(false) }
+    var progress by remember { mutableStateOf(0) }
 
     fun toast(m: String) = Toast.makeText(context, m, Toast.LENGTH_LONG).show()
     fun personalize(name: String): String =
@@ -124,6 +135,24 @@ fun BroadcastScreen(onBack: () -> Unit) {
     fun deleteGroup(g: BroadcastGroup) {
         groups = groups.filterNot { it.id == g.id }
         settings.broadcastGroups = groups
+    }
+    // يولّد رسالة مخصّصة بالـ LLM لكل عضو (المحدّدين أو الكل، بحد أقصى 60).
+    fun aiGenerate() {
+        if (settings.groqKey.isBlank()) { toast("ضيف مفتاح Groq من الإعدادات الأول"); return }
+        if (busy) return
+        val base = activeList.filter { query.isBlank() || it.name.contains(query.trim(), ignoreCase = true) }
+        val targets = (if (selected.isEmpty()) base else base.filter { selected.contains(it.number) }).take(60)
+        if (targets.isEmpty()) { toast("مفيش أعضاء"); return }
+        scope.launch {
+            busy = true; progress = 0
+            for (c in targets) {
+                aiMsgs[c.number] = runCatching { composer.oneFor(c.name, "", sharedCtx) }
+                    .getOrElse { personalize(c.name) }
+                progress += 1
+            }
+            busy = false
+            toast("جهّزت $progress رسالة مخصّصة ✍️")
+        }
     }
 
     val filtered = activeList.filter { query.isBlank() || it.name.contains(query.trim(), ignoreCase = true) }
@@ -229,9 +258,31 @@ fun BroadcastScreen(onBack: () -> Unit) {
                 )
                 val selCount = if (selected.isEmpty()) filtered.size else selected.size
                 Text(
-                    "${filtered.size} جهة · هيتحفظ في المجموعة: $selCount",
+                    "${filtered.size} جهة · المستهدَف: $selCount",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
+                )
+
+                // تخصيص بالذكاء الاصطناعي لكل عضو
+                OutlinedTextField(
+                    value = sharedCtx,
+                    onValueChange = { sharedCtx = it },
+                    label = { Text("سياق مشترك للرسائل (اختياري)") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(onClick = { aiGenerate() }, enabled = !busy) {
+                        Text(if (busy) "بيجهّز... $progress" else "✨ خصّص بالذكاء")
+                    }
+                    if (aiMsgs.isNotEmpty()) {
+                        OutlinedButton(onClick = { aiMsgs.clear() }) { Text("ارجع للقالب") }
+                    }
+                }
+                Text(
+                    "بالذكاء: كل واحد بياخد رسالة تخصّه بالاسم والسياق. من غير ذكاء: بيستخدم القالب فوق مع {الاسم}.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 // حفظ كمجموعة
@@ -258,6 +309,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
 
                 filtered.take(300).forEach { c ->
                     val isSel = selected.contains(c.number)
+                    val msg = aiMsgs[c.number] ?: personalize(c.name)
                     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                             Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
@@ -265,14 +317,15 @@ fun BroadcastScreen(onBack: () -> Unit) {
                                     if (isSel) selected.remove(c.number) else selected.add(c.number)
                                 })
                                 Text(c.name, fontWeight = FontWeight.Bold)
+                                if (aiMsgs.containsKey(c.number)) Text("  ✨", style = MaterialTheme.typography.bodySmall)
                             }
                             Text(
-                                personalize(c.name),
+                                msg,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                             OutlinedButton(
-                                onClick = { WhatsApp.send(context, c.number, personalize(c.name), cc) },
+                                onClick = { WhatsApp.send(context, c.number, msg, cc) },
                                 modifier = Modifier.fillMaxWidth(),
                             ) { Text("📲 ابعت لـ${c.name}") }
                         }
