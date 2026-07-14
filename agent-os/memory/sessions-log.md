@@ -43,7 +43,8 @@
 
 | التاريخ | الميلستون | commit |
 | --- | --- | --- |
-| 2026-07-13 | Agentic OS: workspace structure (agent-os/) + Wisal desktop OS shell | `84749d2` |
+| 2026-07-14 | Agent-OS: interactive Skills/Tools, live Memory sync, deploy guide (#67) | `d79ad16` |
+| 2026-07-14 | Agentic OS: workspace structure (agent-os/) + Wisal desktop OS shell (#65) | `d8f1ff4` |
 | 2026-07-14 | Desktop custom icon + Windows download buttons on landing (#64) | `86f8d0c` |
 | 2026-07-13 | feat(media): fill every gallery tile & preview with real imagery (#63) | `156d37b` |
 | 2026-07-12 | Add Wisal desktop app for Windows (Electron) + CI installer build (#62) | `d27e71a` |
@@ -67,7 +68,6 @@
 | 2026-07-06 | feat(android): per-person occasions + calendar integration + expressive emoji | `7053612` |
 | 2026-07-06 | feat(android): onboarding + backup/restore + groups + WhatsApp chooser | `c602e40` |
 | 2026-07-05 | feat(android): bottom navigation + relation avatars + Relations tests | `7a1ce8f` |
-| 2026-07-05 | feat(android): family connection pivot — multi-recipient + per-relation tone | `495e080` |
 
 > بيتولّد أوتوماتيك بواسطة `agent-os/memory/sync.js` — متعدّلش القسم ده بإيدك.
 
