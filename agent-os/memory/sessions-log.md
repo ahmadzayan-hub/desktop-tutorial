@@ -43,6 +43,7 @@
 
 | التاريخ | الميلستون | commit |
 | --- | --- | --- |
+| 2026-07-14 | Android broadcast UX: copy-all/export, preview-first, favorite templates (#73) | `815b69a` |
 | 2026-07-14 | Review fixes: phone-normalize bug + testable util + desktop parity + bulk cap (#72) | `a4bc92c` |
 | 2026-07-14 | Android: AI-personalized message per member + watercolor tap effect (#71) | `3f13af6` |
 | 2026-07-14 | Android: group broadcast — country code, CSV import, saved groups, unknown-number send (#70) | `701329e` |
@@ -67,7 +68,6 @@
 | 2026-07-07 | Make the home screen adapt reactively to the selected recipient (#37) | `5a9e258` |
 | 2026-07-06 | Add GitHub Pages workflow to deploy the landing page | `2d5fe49` |
 | 2026-07-07 | Auto-increment Android versionCode from CI build number (#34) | `89a6085` |
-| 2026-07-06 | Add secure key storage, contact reminders, home widget, security headers (#31) | `09b4a6c` |
 
 > بيتولّد أوتوماتيك بواسطة `agent-os/memory/sync.js` — متعدّلش القسم ده بإيدك.
 
