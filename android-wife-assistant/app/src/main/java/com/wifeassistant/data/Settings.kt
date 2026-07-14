@@ -108,6 +108,20 @@ class Settings(context: Context) {
         get() = prefs.getString("selectedRecipientId", "").orEmpty()
         set(v) = prefs.edit().putString("selectedRecipientId", v).apply()
 
+    // ---- الإرسال الجماعي ----
+    // كود الدولة الافتراضي (أرقام بس، زي "20") — بيتكمّل للأرقام المستوردة من غير مقدمة.
+    var defaultCountryCode: String
+        get() = prefs.getString("defaultCountryCode", "20") ?: "20"
+        set(v) = prefs.edit().putString("defaultCountryCode", v.filter { it.isDigit() }).apply()
+
+    // مجموعات الإرسال المحفوظة (شغل/مشروع/أسرة...).
+    var broadcastGroups: List<BroadcastGroup>
+        get() {
+            val raw = prefs.getString("broadcastGroups", null) ?: return emptyList()
+            return runCatching { json.decodeFromString<List<BroadcastGroup>>(raw) }.getOrDefault(emptyList())
+        }
+        set(v) = prefs.edit().putString("broadcastGroups", json.encodeToString(v)).apply()
+
     fun currentRecipient(): Recipient? {
         val list = recipients
         return list.firstOrNull { it.id == selectedRecipientId } ?: list.firstOrNull()

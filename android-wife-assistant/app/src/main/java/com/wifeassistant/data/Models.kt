@@ -89,3 +89,16 @@ data class GenerationResult(
 
 // مناسبة النهاردة.
 data class Occasion(val key: String, val label: String)
+
+// عضو في مجموعة إرسال (اسم + رقم). مصدره جهات الاتصال أو ملف CSV.
+@Serializable
+data class GroupMember(val name: String, val number: String)
+
+// مجموعة إرسال (شغل/مشروع/أسرة...) — تجميعة ناس بتبعتلهم رسالة مخصّصة بضغطة لكل واحد.
+@Serializable
+data class BroadcastGroup(
+    val id: String,
+    val name: String,
+    val kind: String = "work",   // work/project/family/friends/clients/other
+    val members: List<GroupMember> = emptyList(),
+)
