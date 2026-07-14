@@ -155,7 +155,7 @@ function renderTools() {
 }
 
 // 📣 Groups / Broadcast — استيراد + مجموعات + تخصيص + طابور بضغطة لكل شخص.
-let BC = { groupId: null, intentId: null, context: '', results: {}, busy: false };
+let BC = { groupId: null, intentId: null, context: '', results: {}, busy: false, cc: '' };
 function kindMeta(id) { return (META.groupKinds || []).find((k) => k.id === id) || { emoji: '📇', label: id }; }
 function bcGroup() { return GROUPS.find((g) => g.id === BC.groupId) || null; }
 async function saveGroups() { GROUPS = await call('groups:set', GROUPS); }
@@ -185,10 +185,14 @@ function renderBroadcast() {
   if (!g) { host.appendChild(el('<p class="muted">ابدأ بإنشاء مجموعة (شغل/مشروع/أسرة) وضيف ناسها.</p>')); return; }
 
   // إعداد المجموعة
+  if (BC.cc === '' || BC.cc == null) BC.cc = S.countryCode || '20';
   const setup = el('<div class="card depth"></div>');
   const nameRow = el('<label class="field"><span>اسم المجموعة</span><input type="text" id="gName"></label>');
   setup.appendChild(nameRow); $('#gName', nameRow).value = g.name;
   $('#gName', nameRow).onchange = async (e) => { g.name = e.target.value.trim() || g.name; await saveGroups(); };
+  const ccRow = el('<label class="field"><span>كود الدولة الافتراضي (للأرقام المحلية الناقصة)</span><input type="text" id="gCc"></label>');
+  setup.appendChild(ccRow); $('#gCc', ccRow).value = BC.cc;
+  $('#gCc', ccRow).oninput = (e) => { BC.cc = e.target.value.replace(/\D/g, ''); S = Object.assign(S, { countryCode: BC.cc }); call('settings:set', { countryCode: BC.cc }); };
   setup.appendChild(el('<div class="muted" style="margin-bottom:4px">نوع المجموعة</div>'));
   const kchips = el('<div class="chips" style="margin-bottom:6px"></div>');
   (META.groupKinds || []).forEach((k) => {
@@ -291,7 +295,7 @@ function bcRenderResults(g) {
     card.appendChild(ta);
     const actions = el('<div class="row tight" style="margin-top:8px"></div>');
     const wa = el(`<button class="btn">📲 ابعت لـ${esc(m.name)}</button>`);
-    wa.onclick = () => { const t = ta.value; setLastMessage(t); sendWhatsApp(t, { number: m.number, name: m.name }, false); };
+    wa.onclick = () => { const t = ta.value; setLastMessage(t); sendWhatsApp(t, { number: m.number, name: m.name }, false, BC.cc); };
     const cp = el('<button class="ghost">📋 نسخ</button>'); cp.onclick = () => { navigator.clipboard.writeText(ta.value); toast('اتنسخت ✅'); };
     actions.append(wa, cp);
     card.appendChild(actions);
@@ -299,14 +303,17 @@ function bcRenderResults(g) {
   });
 }
 
+const BC_MAX = 50; // سقف التوليد الجماعي في المرة الواحدة (حماية للوقت والتكلفة).
 async function bcGenerateAll(g) {
   if (BC.busy) return;
   BC.context = $('#bcCtx') ? $('#bcCtx').value : BC.context;
+  const targets = g.members.slice(0, BC_MAX);
+  if (g.members.length > BC_MAX) toast('هجهّز أول ' + BC_MAX + ' — كرّر للباقي');
   BC.busy = true; BC.results = {};
   const out = $('#bcOut');
   let done = 0;
-  for (const m of g.members) {
-    if (out) out.innerHTML = `<div class="card"><span class="spin"></span> بكتب رسائل مخصّصة... ${done}/${g.members.length}</div>`;
+  for (const m of targets) {
+    if (out) out.innerHTML = `<div class="card"><span class="spin"></span> بكتب رسائل مخصّصة... ${done}/${targets.length}</div>`;
     try { const r = await call('group:one', { member: m, intentId: BC.intentId, context: BC.context }); BC.results[m.id] = r.text; }
     catch (e) { BC.results[m.id] = ''; }
     done++;
@@ -505,9 +512,23 @@ function renderSuggestions() {
   out.appendChild(edit);
 }
 
-function sendWhatsApp(text, r, isGroup) {
+// تطبيع رقم لـ wa.me: يكمّل كود الدولة للأرقام المحلية، ويسيب الدولي زي ما هو.
+function normalizeNum(raw, cc) {
+  const s = String(raw == null ? '' : raw).trim();
+  let d = s.replace(/\D/g, '');
+  if (!d) return d;
+  if (s.startsWith('+')) return d;
+  if (d.startsWith('00')) return d.slice(2);
+  const code = String(cc || '').replace(/\D/g, '');
+  if (!code) return d;
+  d = d.replace(/^0+/, '');
+  if (!d.startsWith(code)) d = code + d;
+  return d;
+}
+function sendWhatsApp(text, r, isGroup, cc) {
   const enc = encodeURIComponent(text);
-  const num = r && r.number ? String(r.number).replace(/\D/g, '') : '';
+  const raw = r && r.number ? r.number : '';
+  const num = cc ? normalizeNum(raw, cc) : String(raw).replace(/\D/g, '');
   const url = (!isGroup && num) ? ('https://wa.me/' + num + '?text=' + enc) : ('https://wa.me/?text=' + enc);
   call('openExternal', { url });
 }

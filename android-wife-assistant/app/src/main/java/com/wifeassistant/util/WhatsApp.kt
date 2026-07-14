@@ -9,23 +9,10 @@ import java.net.URLEncoder
 // إرسال لواتساب - بيفتح الشات والرسالة جاهزة مكتوبة، وانت تدوس Send.
 // مفيش إرسال تلقائي: الضغطة الأخيرة بإيدك (مشروع وآمن ومتوافق مع الشروط).
 object WhatsApp {
-    // يكمّل كود الدولة لو الرقم محلي (بيبدأ بصفر أو من غير كود). cc أرقام بس زي "20".
-    // لو الرقم كان دولي أصلاً (بيبدأ بـ +) نسيبه زي ما هو.
-    fun normalize(rawNumber: String, cc: String): String {
-        var d = rawNumber.filter { it.isDigit() }
-        if (d.isEmpty()) return d
-        if (rawNumber.trim().startsWith("+")) return d
-        val code = cc.filter { it.isDigit() }
-        if (code.isNotEmpty()) {
-            d = d.trimStart('0')
-            if (!d.startsWith(code)) d = code + d
-        }
-        return d
-    }
-
     // إرسال لجهة اتصال محددة (رقم مباشر). cc اختياري — لو موجود بنكمّل كود الدولة.
+    // منطق التطبيع في Phone.normalize (نقي ومختبَر).
     fun send(context: Context, rawNumber: String, text: String, cc: String = "") {
-        val digits = if (cc.isNotBlank()) normalize(rawNumber, cc) else rawNumber.filter { it.isDigit() }
+        val digits = if (cc.isNotBlank()) Phone.normalize(rawNumber, cc) else rawNumber.filter { it.isDigit() }
         if (digits.isEmpty()) {
             Toast.makeText(context, "رقم واتساب الشخص مش متسجّل - ظبّطه من الأشخاص", Toast.LENGTH_LONG).show()
             return
