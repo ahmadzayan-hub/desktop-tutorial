@@ -43,6 +43,7 @@
 
 | التاريخ | الميلستون | commit |
 | --- | --- | --- |
+| 2026-07-14 | Review fixes: phone-normalize bug + testable util + desktop parity + bulk cap (#72) | `a4bc92c` |
 | 2026-07-14 | Android: AI-personalized message per member + watercolor tap effect (#71) | `3f13af6` |
 | 2026-07-14 | Android: group broadcast — country code, CSV import, saved groups, unknown-number send (#70) | `701329e` |
 | 2026-07-14 | Desktop: group broadcast (import + persona) + 3D/watercolor redesign (#69) | `cd6cc1e` |
@@ -67,7 +68,6 @@
 | 2026-07-06 | Add GitHub Pages workflow to deploy the landing page | `2d5fe49` |
 | 2026-07-07 | Auto-increment Android versionCode from CI build number (#34) | `89a6085` |
 | 2026-07-06 | Add secure key storage, contact reminders, home widget, security headers (#31) | `09b4a6c` |
-| 2026-07-06 | feat: هوية "وصال" + موقع هبوط mobile-first (SEO/AIO) + تنظيف اللغة | `a828e0c` |
 
 > بيتولّد أوتوماتيك بواسطة `agent-os/memory/sync.js` — متعدّلش القسم ده بإيدك.
 
