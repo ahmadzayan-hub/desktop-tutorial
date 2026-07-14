@@ -1,6 +1,7 @@
 'use strict';
-const { app, BrowserWindow, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, dialog } = require('electron');
 const path = require('path');
+const fs = require('fs');
 const core = require('./lib/core');
 
 function createWindow() {
@@ -41,8 +42,24 @@ function registerIpc() {
     'settings:set': (patch) => core.setSettings(patch),
     'people:get': () => core.getPeople(),
     'people:set': (list) => core.setPeople(list),
-    'meta:get': () => ({ relations: core.RELATIONS, dialects: core.DIALECTS, intents: core.INTENTS }),
+    'meta:get': () => ({ relations: core.RELATIONS, dialects: core.DIALECTS, intents: core.INTENTS, groupKinds: core.GROUP_KINDS }),
     'stats:get': () => core.stats(),
+    // المجموعات + الاستيراد + التحليل + التوليد الجماعي
+    'groups:get': () => core.getGroups(),
+    'groups:set': (list) => core.setGroups(list),
+    'persona:analyze': ({ info, url }) => core.analyzePersona(info, url),
+    'group:one': ({ member, intentId, context }) => core.generateOneFor(member, { intentId, context }),
+    'csv:pick': async () => {
+      const r = await dialog.showOpenDialog({ properties: ['openFile'], filters: [{ name: 'جهات اتصال', extensions: ['csv', 'txt'] }] });
+      if (r.canceled || !r.filePaths[0]) return null;
+      return core.parseContactsCSV(fs.readFileSync(r.filePaths[0], 'utf8'));
+    },
+    'export:save': async ({ filename, content }) => {
+      const r = await dialog.showSaveDialog({ defaultPath: filename || 'wisal-messages.txt' });
+      if (r.canceled || !r.filePath) return false;
+      fs.writeFileSync(r.filePath, String(content == null ? '' : content), 'utf8');
+      return true;
+    },
     'store:get': () => core.getStore(),
     'recipient:current': () => core.currentRecipient(),
     'generate': (opts) => core.generate(opts || {}),

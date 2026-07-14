@@ -11,8 +11,9 @@ const el = (html) => { const t = document.createElement('template'); t.innerHTML
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 let S = {}; // settings
-let META = { relations: [], dialects: [], intents: [] };
+let META = { relations: [], dialects: [], intents: [], groupKinds: [] };
 let PEOPLE = [];
+let GROUPS = [];
 let currentSuggestions = null; // {items, themes, slot}
 let selIntent = null;
 
@@ -36,13 +37,14 @@ function daysUntil(mmdd) {
 
 // ---------- التنقّل ----------
 function show(view) {
-  ['home', 'skills', 'tools', 'people', 'history', 'settings', 'onboard'].forEach((v) => {
+  ['home', 'skills', 'tools', 'broadcast', 'people', 'history', 'settings', 'onboard'].forEach((v) => {
     $('#view-' + v).classList.toggle('hidden', v !== view);
   });
   document.querySelectorAll('.nav-item').forEach((b) => b.classList.toggle('active', b.dataset.view === view));
   if (view === 'home') renderHome();
   if (view === 'skills') renderSkills();
   if (view === 'tools') renderTools();
+  if (view === 'broadcast') renderBroadcast();
   if (view === 'people') renderPeople();
   if (view === 'history') renderHistory();
   if (view === 'settings') renderSettings();
@@ -150,6 +152,234 @@ function renderTools() {
     b.onclick = () => call('openExternal', { url: 'https://github.com/ahmadzayan-hub/desktop-tutorial/releases/download/android-latest/wisal.apk' });
     card.appendChild(b); g2.appendChild(card);
   });
+}
+
+// 📣 Groups / Broadcast — استيراد + مجموعات + تخصيص + طابور بضغطة لكل شخص.
+let BC = { groupId: null, intentId: null, context: '', results: {}, busy: false };
+function kindMeta(id) { return (META.groupKinds || []).find((k) => k.id === id) || { emoji: '📇', label: id }; }
+function bcGroup() { return GROUPS.find((g) => g.id === BC.groupId) || null; }
+async function saveGroups() { GROUPS = await call('groups:set', GROUPS); }
+
+function renderBroadcast() {
+  const host = $('#view-broadcast'); host.innerHTML = '';
+  host.appendChild(el('<div class="banner"><h1>📣 Groups — إرسال جماعي مخصّص</h1><p>استورد ناسك أو اختارهم في مجموعة، والوكيل يكتب رسالة تخصّ كل واحد — وانت تبعت بضغطة لكل شخص (بدون بلاست تلقائي).</p></div>'));
+
+  // شريط المجموعات
+  const bar = el('<div class="card"></div>');
+  bar.appendChild(el('<div class="muted" style="margin-bottom:8px">مجموعاتك</div>'));
+  const chips = el('<div class="chips"></div>'); bar.appendChild(chips);
+  GROUPS.forEach((g) => {
+    const c = el(`<button class="chip ${g.id === BC.groupId ? 'sel' : ''}">${kindMeta(g.kind).emoji} ${esc(g.name)} · ${(g.members || []).length}</button>`);
+    c.onclick = () => { BC.groupId = g.id; BC.results = {}; renderBroadcast(); };
+    chips.appendChild(c);
+  });
+  const add = el('<button class="chip">➕ مجموعة جديدة</button>');
+  add.onclick = async () => {
+    const g = { id: 'g' + Date.now(), name: 'مجموعة جديدة', kind: 'work', members: [] };
+    GROUPS.push(g); await saveGroups(); BC.groupId = g.id; BC.results = {}; renderBroadcast();
+  };
+  chips.appendChild(add);
+  host.appendChild(bar);
+
+  const g = bcGroup();
+  if (!g) { host.appendChild(el('<p class="muted">ابدأ بإنشاء مجموعة (شغل/مشروع/أسرة) وضيف ناسها.</p>')); return; }
+
+  // إعداد المجموعة
+  const setup = el('<div class="card depth"></div>');
+  const nameRow = el('<label class="field"><span>اسم المجموعة</span><input type="text" id="gName"></label>');
+  setup.appendChild(nameRow); $('#gName', nameRow).value = g.name;
+  $('#gName', nameRow).onchange = async (e) => { g.name = e.target.value.trim() || g.name; await saveGroups(); };
+  setup.appendChild(el('<div class="muted" style="margin-bottom:4px">نوع المجموعة</div>'));
+  const kchips = el('<div class="chips" style="margin-bottom:6px"></div>');
+  (META.groupKinds || []).forEach((k) => {
+    const c = el(`<button class="chip ${g.kind === k.id ? 'sel' : ''}">${k.emoji} ${esc(k.label)}</button>`);
+    c.onclick = async () => { g.kind = k.id; await saveGroups(); renderBroadcast(); };
+    kchips.appendChild(c);
+  });
+  setup.appendChild(kchips);
+  // أزرار الاستيراد
+  const imp = el('<div class="row" style="margin-top:6px"></div>');
+  const csvBtn = el('<button class="ghost">📁 استيراد CSV</button>');
+  csvBtn.onclick = async () => {
+    try {
+      const list = await call('csv:pick');
+      if (!list) return;
+      bcAddMembers(g, list); await saveGroups(); renderBroadcast(); toast('اتضاف ' + list.length + ' جهة ✅');
+    } catch (e) { toast('تعذّر قراءة الملف'); }
+  };
+  const brainBtn = el('<button class="ghost">👥 من Brain</button>');
+  brainBtn.onclick = async () => {
+    if (!PEOPLE.length) { toast('مفيش ناس في Brain'); return; }
+    bcAddMembers(g, PEOPLE.map((p) => ({ id: 'p_' + p.id, name: whoName(p), number: p.number || '', relation: p.relation, dialect: p.dialect || 'egyptian', tone: p.tone || '', notes: p.notes || '', relationship: relLabel(p.relation) })));
+    await saveGroups(); renderBroadcast(); toast('اتضافوا من Brain ✅');
+  };
+  const manBtn = el('<button class="ghost">➕ يدوي</button>');
+  manBtn.onclick = async () => { bcAddMembers(g, [{ id: 'm' + Date.now(), name: 'اسم جديد', number: '', relation: '', dialect: 'egyptian', tone: '', notes: '', relationship: '' }]); await saveGroups(); renderBroadcast(); };
+  const delG = el('<button class="ghost">🗑️ حذف المجموعة</button>');
+  delG.onclick = async () => { GROUPS = GROUPS.filter((x) => x.id !== g.id); await saveGroups(); BC.groupId = null; renderBroadcast(); };
+  imp.append(csvBtn, brainBtn, manBtn, delG);
+  setup.appendChild(imp);
+  host.appendChild(setup);
+
+  // الأعضاء
+  host.appendChild(el(`<h2>الأعضاء (${(g.members || []).length})</h2>`));
+  if (!(g.members || []).length) host.appendChild(el('<p class="muted">لسه مفيش حد. استورد CSV أو ضيف من Brain.</p>'));
+  (g.members || []).forEach((m) => {
+    const item = el(`<div class="list-item depth"><div class="person-card"><div><div class="name">${esc(m.name)}</div><div class="muted">${esc(m.number || 'بدون رقم')}${m.relationship ? ' · ' + esc(m.relationship) : ''}${m.dialect ? ' · ' + esc((META.dialects.find((d) => d.id === m.dialect) || {}).label || m.dialect) : ''}</div></div><div class="row tight"></div></div></div>`);
+    const acts = $('.row', item);
+    const an = el('<button class="ghost small">🔎 تحليل</button>'); an.onclick = () => openPersona(g, m);
+    const ed = el('<button class="ghost small">✏️</button>'); ed.onclick = () => openMemberEdit(g, m);
+    const rm = el('<button class="ghost small">🗑️</button>'); rm.onclick = async () => { g.members = g.members.filter((x) => x.id !== m.id); delete BC.results[m.id]; await saveGroups(); renderBroadcast(); };
+    acts.append(an, ed, rm);
+    host.appendChild(item);
+  });
+  if (!(g.members || []).length) return;
+
+  // التأليف
+  const comp = el('<div class="card depth"></div>');
+  comp.appendChild(el('<div class="muted" style="margin-bottom:6px">نيّة الرسالة (اختياري)</div>'));
+  const ich = el('<div class="chips" style="margin-bottom:10px"></div>');
+  META.intents.forEach((it) => {
+    const c = el(`<button class="chip ${BC.intentId === it.id ? 'sel' : ''}">${it.emoji} ${esc(it.label)}</button>`);
+    c.onclick = () => { BC.intentId = BC.intentId === it.id ? null : it.id; renderBroadcast(); };
+    ich.appendChild(c);
+  });
+  comp.appendChild(ich);
+  const ctx = el('<label class="field"><span>سياق مشترك للكل (اختياري)</span><textarea id="bcCtx"></textarea></label>');
+  comp.appendChild(ctx); $('#bcCtx', ctx).value = BC.context;
+  const genRow = el('<div class="row"></div>');
+  const genBtn = el(`<button class="btn">✨ جهّز رسالة مخصّصة لكل شخص (${g.members.length})</button>`);
+  genBtn.onclick = () => bcGenerateAll(g);
+  genRow.appendChild(genBtn);
+  comp.appendChild(genRow);
+  host.appendChild(comp);
+
+  // النتائج
+  const doneCount = g.members.filter((m) => BC.results[m.id]).length;
+  if (doneCount) {
+    const tools = el(`<div class="row" style="margin:6px 0 12px"><span class="grow muted">جاهز ${doneCount}/${g.members.length}</span></div>`);
+    const copyAll = el('<button class="ghost small">📋 نسخ الكل</button>');
+    copyAll.onclick = () => { navigator.clipboard.writeText(bcExportText(g)); toast('اتنسخ الكل ✅'); };
+    const exp = el('<button class="ghost small">📤 تصدير ملف</button>');
+    exp.onclick = async () => { const ok = await call('export:save', { filename: (g.name || 'group') + '-messages.txt', content: bcExportText(g) }); if (ok) toast('اتصدّر ✅'); };
+    tools.append(copyAll, exp);
+    host.appendChild(tools);
+  }
+  const out = el('<div id="bcOut"></div>'); host.appendChild(out);
+  bcRenderResults(g);
+}
+
+function bcAddMembers(g, list) {
+  g.members = g.members || [];
+  const seen = new Set(g.members.map((m) => (m.number || '').replace(/\D/g, '')).filter(Boolean));
+  list.forEach((m) => {
+    const key = (m.number || '').replace(/\D/g, '');
+    if (key && seen.has(key)) return;
+    if (key) seen.add(key);
+    g.members.push(Object.assign({ id: m.id || ('m' + Date.now() + '_' + g.members.length), dialect: 'egyptian', relation: '', tone: '', notes: '', relationship: '' }, m));
+  });
+}
+
+function bcRenderResults(g) {
+  const out = $('#bcOut'); if (!out) return; out.innerHTML = '';
+  g.members.forEach((m) => {
+    const txt = BC.results[m.id];
+    if (!txt) return;
+    const card = el(`<div class="suggestion depth"><span class="theme">${esc(m.name)}${m.number ? ' · ' + esc(m.number) : ''}</span></div>`);
+    const ta = el('<textarea class="bc-msg"></textarea>'); ta.value = txt;
+    ta.onchange = () => { BC.results[m.id] = ta.value; };
+    card.appendChild(ta);
+    const actions = el('<div class="row tight" style="margin-top:8px"></div>');
+    const wa = el(`<button class="btn">📲 ابعت لـ${esc(m.name)}</button>`);
+    wa.onclick = () => { const t = ta.value; setLastMessage(t); sendWhatsApp(t, { number: m.number, name: m.name }, false); };
+    const cp = el('<button class="ghost">📋 نسخ</button>'); cp.onclick = () => { navigator.clipboard.writeText(ta.value); toast('اتنسخت ✅'); };
+    actions.append(wa, cp);
+    card.appendChild(actions);
+    out.appendChild(card);
+  });
+}
+
+async function bcGenerateAll(g) {
+  if (BC.busy) return;
+  BC.context = $('#bcCtx') ? $('#bcCtx').value : BC.context;
+  BC.busy = true; BC.results = {};
+  const out = $('#bcOut');
+  let done = 0;
+  for (const m of g.members) {
+    if (out) out.innerHTML = `<div class="card"><span class="spin"></span> بكتب رسائل مخصّصة... ${done}/${g.members.length}</div>`;
+    try { const r = await call('group:one', { member: m, intentId: BC.intentId, context: BC.context }); BC.results[m.id] = r.text; }
+    catch (e) { BC.results[m.id] = ''; }
+    done++;
+  }
+  BC.busy = false;
+  toast('جهّزت ' + done + ' رسالة ✍️');
+  renderBroadcast();
+}
+
+function bcExportText(g) {
+  return g.members.filter((m) => BC.results[m.id]).map((m) => `— ${m.name}${m.number ? ' (' + m.number + ')' : ''}\n${BC.results[m.id]}`).join('\n\n');
+}
+
+// مودال تحليل شخصية العضو من معلومات ملصوقة (مش كشط سوشيال).
+function openPersona(g, m) {
+  $('#modalTitle').textContent = '🔎 تحليل شخصية — ' + m.name;
+  const body = $('#modalBody'); body.innerHTML = '';
+  body.appendChild(el('<p class="muted">الصق نبذة/معلومات عنه (أو محتوى من صفحته أنت ناسخه). البرنامج يحلّل النص ده بس — مايفتحش روابط ولا يكشط بيانات.</p>'));
+  body.appendChild(el('<label class="field"><span>رابط كمرجع (اختياري)</span><input type="text" id="pmUrl" placeholder="https://..."></label>'));
+  body.appendChild(el('<label class="field"><span>الصق معلومات عنه</span><textarea id="pmInfo" style="min-height:120px"></textarea></label>'));
+  const row = el('<div class="row"></div>');
+  const go = el('<button class="btn">✨ حلّل وخصّص</button>');
+  const outp = el('<div class="muted" style="margin-top:10px"></div>');
+  go.onclick = async () => {
+    const info = $('#pmInfo').value.trim(); if (!info) { toast('الصق معلومات الأول'); return; }
+    go.disabled = true; outp.innerHTML = '<span class="spin"></span> بحلّل...';
+    try {
+      const p = await call('persona:analyze', { info, url: $('#pmUrl').value.trim() });
+      if (p) {
+        if (p.dialect) m.dialect = p.dialect;
+        if (p.tone) m.tone = p.tone;
+        if (p.relationship) m.relationship = p.relationship;
+        m.notes = [m.notes, p.summary].filter(Boolean).join(' — ');
+        await saveGroups();
+        outp.innerHTML = '✅ ' + esc(p.summary || 'اتحدّث') + '<br>اللهجة: ' + esc(p.dialect || '') + ' · النبرة: ' + esc(p.tone || '');
+        toast('خصّصت ملفه 🌟');
+      } else outp.textContent = 'مش قادر أحلّل دلوقتي.';
+    } catch (e) { outp.textContent = 'محتاج نت + مفتاح Groq.'; }
+    go.disabled = false;
+  };
+  row.appendChild(go); body.appendChild(row); body.appendChild(outp);
+  $('#modal').classList.remove('hidden');
+}
+
+function openMemberEdit(g, m) {
+  $('#modalTitle').textContent = '✏️ تعديل — ' + m.name;
+  const body = $('#modalBody'); body.innerHTML = '';
+  body.appendChild(el('<label class="field"><span>الاسم</span><input type="text" id="meName"></label>'));
+  body.appendChild(el('<label class="field"><span>رقم واتساب (دولي بأرقام)</span><input type="text" id="meNum"></label>'));
+  body.appendChild(el('<label class="field"><span>صفة العلاقة</span><input type="text" id="meRel"></label>'));
+  body.appendChild(el('<label class="field"><span>ملاحظات</span><textarea id="meNotes"></textarea></label>'));
+  body.appendChild(el('<div class="muted" style="margin-bottom:4px">اللهجة</div>'));
+  const dch = el('<div class="chips" style="margin-bottom:10px"></div>');
+  META.dialects.forEach((d) => { const c = el(`<button class="chip ${m.dialect === d.id ? 'sel' : ''}">${esc(d.label)}</button>`); c.onclick = () => { m.dialect = d.id; Array.from(dch.children).forEach((x, i) => x.classList.toggle('sel', META.dialects[i].id === m.dialect)); }; dch.appendChild(c); });
+  body.appendChild(dch);
+  $('#meName', body).value = m.name || ''; $('#meNum', body).value = m.number || '';
+  $('#meRel', body).value = m.relationship || ''; $('#meNotes', body).value = m.notes || '';
+  const save = el('<button class="btn">💾 حفظ</button>');
+  save.onclick = async () => {
+    m.name = $('#meName').value.trim() || m.name; m.number = $('#meNum').value.trim().replace(/[^\d+]/g, '');
+    m.relationship = $('#meRel').value.trim(); m.notes = $('#meNotes').value.trim();
+    await saveGroups(); $('#modal').classList.add('hidden'); renderBroadcast(); toast('اتحفظ ✅');
+  };
+  body.appendChild(save);
+  $('#modal').classList.remove('hidden');
+}
+
+// 💧 تأثير مائي (watercolor ripple) عند النقر.
+function waterRipple(x, y) {
+  const r = document.createElement('span'); r.className = 'wc-ripple';
+  r.style.left = x + 'px'; r.style.top = y + 'px';
+  document.body.appendChild(r);
+  setTimeout(() => r.remove(), 700);
 }
 
 function applyTheme() { document.documentElement.setAttribute('data-theme', S.theme === 'dark' ? 'dark' : 'light'); }
@@ -464,9 +694,12 @@ async function boot() {
   S = await call('settings:get');
   META = await call('meta:get');
   PEOPLE = await call('people:get');
+  try { GROUPS = await call('groups:get'); } catch (e) { GROUPS = []; }
   formState = defForm();
   applyTheme();
   updateWhoBadge();
+  // تأثير مائي عند أي نقر (خفيف، مايعطّلش التفاعل).
+  document.addEventListener('pointerdown', (e) => { if (e.isPrimary !== false) waterRipple(e.clientX, e.clientY); }, { passive: true });
   document.querySelectorAll('.nav-item').forEach((b) => (b.onclick = () => show(b.dataset.view)));
   $('#themeBtn').onclick = async () => { S = await call('settings:set', { theme: S.theme === 'dark' ? 'light' : 'dark' }); applyTheme(); };
   $('#modalClose').onclick = () => $('#modal').classList.add('hidden');
