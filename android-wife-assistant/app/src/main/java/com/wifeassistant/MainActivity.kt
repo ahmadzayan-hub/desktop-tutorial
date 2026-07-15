@@ -40,6 +40,7 @@ import com.wifeassistant.ui.HomeScreen
 import com.wifeassistant.ui.HomeViewModel
 import com.wifeassistant.ui.PeopleScreen
 import com.wifeassistant.ui.SettingsScreen
+import com.wifeassistant.ui.SmartReplyScreen
 import com.wifeassistant.ui.StatsScreen
 import com.wifeassistant.ui.WelcomeScreen
 import com.wifeassistant.ui.theme.WifeAssistantTheme
@@ -141,6 +142,7 @@ private fun AppRoot(onThemeChanged: () -> Unit = {}) {
                 "history" -> HistoryScreen(onBack = { screen = "home" })
                 "people" -> PeopleScreen(onBack = { screen = "home" })
                 "broadcast" -> BroadcastScreen(onBack = { screen = "home" })
+                "reply" -> SmartReplyScreen(onBack = { screen = "home" })
                 else -> HomeScreen(
                     vm = vm,
                     onOpenSettings = { screen = "settings" },
@@ -148,6 +150,7 @@ private fun AppRoot(onThemeChanged: () -> Unit = {}) {
                     onOpenHistory = { screen = "history" },
                     onOpenPeople = { screen = "people" },
                     onOpenBroadcast = { screen = "broadcast" },
+                    onOpenReply = { screen = "reply" },
                 )
             }
         }
