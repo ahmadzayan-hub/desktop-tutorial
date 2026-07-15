@@ -56,6 +56,10 @@ import com.wifeassistant.util.Csv
 import com.wifeassistant.util.WhatsApp
 import kotlinx.coroutines.launch
 
+// عضو في قائمة الإرسال بمعرّف فريد (id) — عشان الاختيار والرسائل الذكية تتربط بالشخص
+// نفسه مش برقمه (ممكن يكون فاضي أو مكرّر من CSV).
+private data class BcMember(val id: String, val name: String, val number: String)
+
 // رسالة جماعية مخصّصة: استورد ناسك (جهات الاتصال أو ملف CSV) أو اختار مجموعة محفوظة،
 // والتطبيق يجهّز الرسالة باسم كل واحد — وانت تبعت بضغطة لكل شخص (بيفتح شاته والرسالة
 // جاهزة). كود الدولة الافتراضي بيتكمّل للأرقام الناقصة. مفيش إرسال تلقائي — آمن ومشروع.
@@ -68,7 +72,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
     var cc by remember { mutableStateOf(settings.defaultCountryCode) }
     var template by remember { mutableStateOf("كل سنة وانت طيّب يا {الاسم} 🌙🤍") }
     var query by remember { mutableStateOf("") }
-    var activeList by remember { mutableStateOf<List<ContactsReader.ContactNumber>>(emptyList()) }
+    var activeList by remember { mutableStateOf<List<BcMember>>(emptyList()) }
     var loaded by remember { mutableStateOf(false) }
     var groups by remember { mutableStateOf(settings.broadcastGroups) }
     val selected = remember { mutableStateListOf<String>() }
@@ -91,10 +95,10 @@ fun BroadcastScreen(onBack: () -> Unit) {
     fun toast(m: String) = Toast.makeText(context, m, Toast.LENGTH_LONG).show()
     fun personalize(name: String): String =
         template.replace("{الاسم}", name).replace("{name}", name).trim()
-    fun msgFor(c: ContactsReader.ContactNumber): String = aiMsgs[c.number] ?: personalize(c.name)
-    fun currentTargets(): List<ContactsReader.ContactNumber> {
+    fun msgFor(c: BcMember): String = aiMsgs[c.id] ?: personalize(c.name)
+    fun currentTargets(): List<BcMember> {
         val base = activeList.filter { query.isBlank() || it.name.contains(query.trim(), ignoreCase = true) }
-        return if (selected.isEmpty()) base else base.filter { selected.contains(it.number) }
+        return if (selected.isEmpty()) base else base.filter { selected.contains(it.id) }
     }
     fun allText(): String = currentTargets().joinToString("\n\n") { c ->
         "— ${c.name}${if (c.number.isNotBlank()) " (${c.number})" else ""}\n${msgFor(c)}"
@@ -106,10 +110,13 @@ fun BroadcastScreen(onBack: () -> Unit) {
         }
     }
 
+    // عند أي تحميل جديد: نمسح الاختيار والرسائل الذكية والمعاينة القديمة.
+    fun resetForNewList() { selected.clear(); aiMsgs.clear(); previewText = "" }
     fun loadContacts() {
         activeList = runCatching { ContactsReader.allWithNumbers(context) }.getOrDefault(emptyList())
+            .mapIndexed { i, c -> BcMember("c$i", c.name, c.number) }
         loaded = true
-        selected.clear()
+        resetForNewList()
         if (activeList.isEmpty()) toast("مفيش جهات اتصال بأرقام")
     }
     val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -125,9 +132,9 @@ fun BroadcastScreen(onBack: () -> Unit) {
                 context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
             }.getOrNull().orEmpty()
             val rows = Csv.parse(text)
-            activeList = rows.map { ContactsReader.ContactNumber(it.name, it.number) }
+            activeList = rows.mapIndexed { i, r -> BcMember("v$i", r.name, r.number) }
             loaded = true
-            selected.clear()
+            resetForNewList()
             toast(if (rows.isEmpty()) "الملف فاضي أو غير مقروء" else "اتحمّل ${rows.size} جهة ✅")
         }
     }
@@ -138,7 +145,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
     fun saveGroup() {
         val nm = groupName.trim()
         if (nm.isBlank()) { toast("اكتب اسم المجموعة"); return }
-        val chosen = if (selected.isNotEmpty()) activeList.filter { selected.contains(it.number) } else activeList
+        val chosen = if (selected.isNotEmpty()) activeList.filter { selected.contains(it.id) } else activeList
         if (chosen.isEmpty()) { toast("مفيش أعضاء للحفظ"); return }
         val g = BroadcastGroup(
             id = "g" + System.currentTimeMillis(), name = nm, kind = groupKind,
@@ -150,9 +157,9 @@ fun BroadcastScreen(onBack: () -> Unit) {
         toast("اتحفظت المجموعة (${chosen.size}) ✅")
     }
     fun loadGroup(g: BroadcastGroup) {
-        activeList = g.members.map { ContactsReader.ContactNumber(it.name, it.number) }
+        activeList = g.members.mapIndexed { i, m -> BcMember("g$i", m.name, m.number) }
         loaded = true
-        selected.clear()
+        resetForNewList()
     }
     fun deleteGroup(g: BroadcastGroup) {
         groups = groups.filterNot { it.id == g.id }
@@ -162,13 +169,12 @@ fun BroadcastScreen(onBack: () -> Unit) {
     fun aiGenerate() {
         if (settings.groqKey.isBlank()) { toast("ضيف مفتاح Groq من الإعدادات الأول"); return }
         if (busy) return
-        val base = activeList.filter { query.isBlank() || it.name.contains(query.trim(), ignoreCase = true) }
-        val targets = (if (selected.isEmpty()) base else base.filter { selected.contains(it.number) }).take(60)
+        val targets = currentTargets().take(60)
         if (targets.isEmpty()) { toast("مفيش أعضاء"); return }
         scope.launch {
             busy = true; progress = 0
             for (c in targets) {
-                aiMsgs[c.number] = runCatching { composer.oneFor(c.name, "", sharedCtx) }
+                aiMsgs[c.id] = runCatching { composer.oneFor(c.name, "", sharedCtx) }
                     .getOrElse { personalize(c.name) }
                 progress += 1
             }
@@ -386,16 +392,16 @@ fun BroadcastScreen(onBack: () -> Unit) {
                 }
 
                 filtered.take(300).forEach { c ->
-                    val isSel = selected.contains(c.number)
-                    val msg = aiMsgs[c.number] ?: personalize(c.name)
+                    val isSel = selected.contains(c.id)
+                    val msg = aiMsgs[c.id] ?: personalize(c.name)
                     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                             Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
                                 Checkbox(checked = isSel, onCheckedChange = {
-                                    if (isSel) selected.remove(c.number) else selected.add(c.number)
+                                    if (isSel) selected.remove(c.id) else selected.add(c.id)
                                 })
                                 Text(c.name, fontWeight = FontWeight.Bold)
-                                if (aiMsgs.containsKey(c.number)) Text("  ✨", style = MaterialTheme.typography.bodySmall)
+                                if (aiMsgs.containsKey(c.id)) Text("  ✨", style = MaterialTheme.typography.bodySmall)
                             }
                             Text(
                                 msg,

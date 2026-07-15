@@ -221,10 +221,15 @@ async function generate(opts) {
   const recipient = currentRecipient();
   const intent = intentById(opts && opts.intentId);
   const themes = intent ? [intent.label, intent.label] : pickThemes();
+  // الخانة (صباحي/مسائي) بتضيف لمسة للسياق عشان الاقتراح يختلف فعلاً حسب الوقت.
+  const slot = (opts && opts.slot) || 'manual';
+  let ctx = (opts && opts.context) || '';
+  if (slot === 'morning') ctx = ('لمسة صباحية (صباح الخير). ' + ctx).trim();
+  else if (slot === 'evening') ctx = ('لمسة مسائية (تصبح على خير). ' + ctx).trim();
   try {
     const raw = await groqComplete([
       { role: 'system', content: buildSystem(recipient, intent) },
-      { role: 'user', content: buildUser(recipient, themes, intent, (opts && opts.context) || '') },
+      { role: 'user', content: buildUser(recipient, themes, intent, ctx) },
     ]);
     return { items: parseTwo(raw, themes), themes, offline: false, note: null };
   } catch (e) {

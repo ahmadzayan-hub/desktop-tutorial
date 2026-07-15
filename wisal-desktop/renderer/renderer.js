@@ -449,10 +449,13 @@ function renderHome() {
 }
 
 async function doGenerate(slot, occasionLabel) {
-  renderHome._ctx = $('#ctx') ? $('#ctx').value : '';
+  const baseCtx = $('#ctx') ? $('#ctx').value : '';
+  renderHome._ctx = baseCtx;
+  // نمرّر المناسبة للـ backend كسياق عشان الرسالة تبقى مخصّصة ليها فعلاً.
+  const ctx = occasionLabel ? ('المناسبة: ' + occasionLabel + '. ' + baseCtx).trim() : baseCtx;
   const out = $('#sugOut'); if (out) out.innerHTML = '<div class="card"><span class="spin"></span> بكتب لك اقتراحين...</div>';
   try {
-    const res = await call('generate', { slot, intentId: occasionLabel ? null : selIntent, context: renderHome._ctx });
+    const res = await call('generate', { slot, intentId: occasionLabel ? null : selIntent, context: ctx });
     currentSuggestions = { items: res.items, themes: res.themes, slot };
     if (res.items[0]) setLastMessage(res.items[0].text);
     if (res.note) toast(res.note);
