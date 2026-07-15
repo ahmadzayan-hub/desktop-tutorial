@@ -110,11 +110,13 @@ fun BroadcastScreen(onBack: () -> Unit) {
         }
     }
 
+    // عند أي تحميل جديد: نمسح الاختيار والرسائل الذكية والمعاينة القديمة.
+    fun resetForNewList() { selected.clear(); aiMsgs.clear(); previewText = "" }
     fun loadContacts() {
         activeList = runCatching { ContactsReader.allWithNumbers(context) }.getOrDefault(emptyList())
             .mapIndexed { i, c -> BcMember("c$i", c.name, c.number) }
         loaded = true
-        selected.clear()
+        resetForNewList()
         if (activeList.isEmpty()) toast("مفيش جهات اتصال بأرقام")
     }
     val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -132,7 +134,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
             val rows = Csv.parse(text)
             activeList = rows.mapIndexed { i, r -> BcMember("v$i", r.name, r.number) }
             loaded = true
-            selected.clear()
+            resetForNewList()
             toast(if (rows.isEmpty()) "الملف فاضي أو غير مقروء" else "اتحمّل ${rows.size} جهة ✅")
         }
     }
@@ -157,7 +159,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
     fun loadGroup(g: BroadcastGroup) {
         activeList = g.members.mapIndexed { i, m -> BcMember("g$i", m.name, m.number) }
         loaded = true
-        selected.clear()
+        resetForNewList()
     }
     fun deleteGroup(g: BroadcastGroup) {
         groups = groups.filterNot { it.id == g.id }
