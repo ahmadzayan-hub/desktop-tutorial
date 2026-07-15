@@ -6,13 +6,11 @@
   --grad:linear-gradient(135deg,#E1668F 0%,#9E7BE6 55%,#6FA8C9 100%);
   --shadow:0 1px 2px rgba(40,40,80,.05),0 10px 30px rgba(120,110,210,.08);
   --shadow-3d:0 2px 4px rgba(40,40,80,.06),0 14px 28px rgba(120,110,210,.14),0 28px 60px rgba(110,168,201,.10);
-  --ripple:radial-gradient(circle, rgba(158,123,230,.30) 0%, rgba(111,168,201,.18) 45%, rgba(225,102,143,0) 72%);
 }
 :root[data-theme="dark"]{
   --ink:#e7e4f2; --muted:#a8a3bd; --bg:#141320; --panel:#1c1a2a; --line:#2f2c40; --side:#181626;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
   --shadow-3d:0 2px 6px rgba(0,0,0,.5),0 18px 40px rgba(0,0,0,.45);
-  --ripple:radial-gradient(circle, rgba(158,123,230,.35) 0%, rgba(111,168,201,.20) 45%, rgba(225,102,143,0) 72%);
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -119,19 +117,7 @@ label.field span{display:block; font-size:13px; color:var(--muted); margin-botto
 .btn:active{transform:translateY(1px) scale(.99)}
 .mod:hover{box-shadow:var(--shadow-3d)}
 
-/* 💧 تأثير مائي عند النقر */
-.wc-ripple{
-  position:fixed; width:14px; height:14px; margin:-7px 0 0 -7px; border-radius:50%;
-  background:var(--ripple); pointer-events:none; z-index:9999;
-  animation:wcRipple .68s ease-out forwards; mix-blend-mode:multiply;
-}
-:root[data-theme="dark"] .wc-ripple{mix-blend-mode:screen}
-@keyframes wcRipple{
-  0%{transform:scale(.4); opacity:.85; filter:blur(1px)}
-  60%{opacity:.5}
-  100%{transform:scale(26); opacity:0; filter:blur(6px)}
-}
-@media (prefers-reduced-motion: reduce){ .wc-ripple{display:none} .card,.mod,.suggestion{transition:none} }
+@media (prefers-reduced-motion: reduce){ .card,.mod,.suggestion{transition:none} }
 
 /* رسائل الإرسال الجماعي */
 textarea.bc-msg{width:100%; min-height:70px; font-size:15px}

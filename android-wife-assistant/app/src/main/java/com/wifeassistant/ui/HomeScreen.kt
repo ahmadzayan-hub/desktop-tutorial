@@ -24,6 +24,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -80,6 +81,7 @@ fun HomeScreen(
     val state by vm.state.collectAsStateWithLifecycle()
     val people by vm.people.collectAsStateWithLifecycle()
     val ideas by vm.ideas.collectAsStateWithLifecycle()
+    val next by vm.nextAction.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
     var edited by remember { mutableStateOf("") }
@@ -135,6 +137,7 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             HeaderBanner(current)
+            next?.let { na -> NextActionCard(na) { vm.writeToNext(na) } }
             RecipientSwitcher(
                 people = people,
                 onSelect = { vm.selectRecipient(it) },
@@ -507,6 +510,43 @@ private fun HeaderBanner(current: Recipient?) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimary,
             )
+        }
+    }
+}
+
+// 💡 اللفتة الجاية: البرنامج بيرشّح مين تطمّن عليه (مناسبة قريّبة أو بقالك فترة) بضغطة كتابة.
+@Composable
+private fun NextActionCard(a: NextAction, onWrite: () -> Unit) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+        ),
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    "💡 اللفتة الجاية",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
+                Text(
+                    a.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
+                Text(
+                    a.reason,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
+            }
+            FilledTonalButton(onClick = onWrite) { Text("✍️ اكتبله") }
         }
     }
 }

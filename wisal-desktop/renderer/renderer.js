@@ -381,14 +381,6 @@ function openMemberEdit(g, m) {
   $('#modal').classList.remove('hidden');
 }
 
-// 💧 تأثير مائي (watercolor ripple) عند النقر.
-function waterRipple(x, y) {
-  const r = document.createElement('span'); r.className = 'wc-ripple';
-  r.style.left = x + 'px'; r.style.top = y + 'px';
-  document.body.appendChild(r);
-  setTimeout(() => r.remove(), 700);
-}
-
 function applyTheme() { document.documentElement.setAttribute('data-theme', S.theme === 'dark' ? 'dark' : 'light'); }
 function updateWhoBadge() {
   const r = currentRecipient();
@@ -719,8 +711,6 @@ async function boot() {
   formState = defForm();
   applyTheme();
   updateWhoBadge();
-  // تأثير مائي عند أي نقر (خفيف، مايعطّلش التفاعل).
-  document.addEventListener('pointerdown', (e) => { if (e.isPrimary !== false) waterRipple(e.clientX, e.clientY); }, { passive: true });
   document.querySelectorAll('.nav-item').forEach((b) => (b.onclick = () => show(b.dataset.view)));
   $('#themeBtn').onclick = async () => { S = await call('settings:set', { theme: S.theme === 'dark' ? 'light' : 'dark' }); applyTheme(); };
   $('#modalClose').onclick = () => $('#modal').classList.add('hidden');
