@@ -18,7 +18,6 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -37,7 +36,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wifeassistant.data.Settings
 import com.wifeassistant.ui.BroadcastScreen
 import com.wifeassistant.ui.HistoryScreen
-import com.wifeassistant.ui.waterRipple
 import com.wifeassistant.ui.HomeScreen
 import com.wifeassistant.ui.HomeViewModel
 import com.wifeassistant.ui.PeopleScreen
@@ -135,8 +133,7 @@ private fun AppRoot(onThemeChanged: () -> Unit = {}) {
         Box(
             modifier = Modifier
                 .padding(pad)
-                .fillMaxSize()
-                .waterRipple(MaterialTheme.colorScheme.tertiary),
+                .fillMaxSize(),
         ) {
             when (screen) {
                 "settings" -> SettingsScreen(onBack = { screen = "home" }, onThemeChanged = onThemeChanged)

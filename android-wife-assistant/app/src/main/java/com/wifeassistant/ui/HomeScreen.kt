@@ -49,6 +49,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -470,30 +471,39 @@ private fun PersonOccasionChips(current: Recipient?, onPick: (String) -> Unit) {
 @Composable
 private fun HeaderBanner(current: Recipient?) {
     val who = current?.let { it.name.ifBlank { Relations.labelOf(it.relation) } }
+    val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
+    val greeting = when (hour) {
+        in 5..11 -> "صباح الخير 🌅"
+        in 12..16 -> "نهارك سعيد ☀️"
+        in 17..21 -> "مساء الخير 🌙"
+        else -> "سهرة هنيّة ✨"
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(24.dp))
+            .shadow(12.dp, RoundedCornerShape(28.dp))
+            .clip(RoundedCornerShape(28.dp))
             .background(
-                Brush.horizontalGradient(
+                Brush.linearGradient(
                     listOf(
                         MaterialTheme.colorScheme.primary,
                         MaterialTheme.colorScheme.secondary,
+                        MaterialTheme.colorScheme.tertiary,
                     )
                 )
             )
-            .padding(20.dp),
+            .padding(22.dp),
     ) {
         Column {
             Text(
-                "رسالة من القلب 💗",
+                greeting,
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold,
             )
             Text(
-                if (who != null) "اختار اقتراح، عدّله، وابعته لـ$who بضغطة"
-                else "اختار اقتراح، عدّله، وابعته للي بتحب بضغطة",
+                if (who != null) "مين تحب تطمّن عليه؟ ابعت لـ$who بكلمة حلوة 💗"
+                else "مين تحب تفاجئه بكلمة حلوة النهاردة؟ 💗",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimary,
             )
