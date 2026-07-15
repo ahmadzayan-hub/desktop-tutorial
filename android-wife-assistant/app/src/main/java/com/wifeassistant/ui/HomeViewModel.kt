@@ -45,6 +45,14 @@ data class IdeasState(
     val text: String = "",
 )
 
+// «اللفتة الجاية»: البرنامج يرشّح تلقائيًا مين تطمّن عليه (مناسبة قريّبة أو بقالك فترة).
+data class NextAction(
+    val recipientId: String,
+    val name: String,
+    val reason: String,
+    val occasionLabel: String? = null,
+)
+
 class HomeViewModel(app: Application) : AndroidViewModel(app) {
     private val settings = Settings(app)
     private val store = Store(app)
@@ -61,6 +69,10 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
     private val _ideas = MutableStateFlow(IdeasState())
     val ideas: StateFlow<IdeasState> = _ideas.asStateFlow()
 
+    // اللفتة الجاية المقترحة (null = مفيش اقتراح دلوقتي).
+    private val _nextAction = MutableStateFlow<NextAction?>(null)
+    val nextAction: StateFlow<NextAction?> = _nextAction.asStateFlow()
+
     init { loadPending(); refreshRecipients() }
 
     // نقرأ الأشخاص والشخص المختار من الإعدادات - بننده دي كل ما نفتح الشاشة
@@ -71,6 +83,57 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
             selectedId = settings.selectedRecipientId,
             current = settings.currentRecipient(),
         )
+        updateNextAction()
+    }
+
+    // كام يوم لحد أقرب حصول للمناسبة MM-DD (بتتكرر كل سنة)، أو null.
+    private fun daysUntilMmDd(mmdd: String): Long? {
+        val m = Regex("^(\\d{2})-(\\d{2})$").find(mmdd) ?: return null
+        return runCatching {
+            val today = DateUtil.today()
+            var next = java.time.LocalDate.of(today.year, m.groupValues[1].toInt(), m.groupValues[2].toInt())
+            if (next.isBefore(today)) next = next.plusYears(1)
+            java.time.temporal.ChronoUnit.DAYS.between(today, next)
+        }.getOrNull()
+    }
+
+    // يرشّح اللفتة الجاية: أولوية لأقرب مناسبة خلال 10 أيام، وإلا أطول شخص من غير تواصل.
+    private fun updateNextAction() {
+        val recips = settings.recipients
+        if (recips.isEmpty()) { _nextAction.value = null; return }
+
+        val soonest = recips
+            .flatMap { r -> r.occasions.mapNotNull { o -> daysUntilMmDd(o.date)?.let { Triple(r, o.label, it) } } }
+            .filter { it.third in 0..10 }
+            .minByOrNull { it.third }
+        if (soonest != null) {
+            val (r, label, days) = soonest
+            val name = r.name.ifBlank { Relations.labelOf(r.relation) }
+            val whenTxt = when (days) { 0L -> "النهاردة"; 1L -> "بكرة"; else -> "بعد $days يوم" }
+            _nextAction.value = NextAction(r.id, name, "🎀 $label $whenTxt", label)
+            return
+        }
+
+        val threshold = settings.reminderDays.toLong()
+        val stale = recips
+            .map { it to (store.daysSinceContact(it.id) ?: Long.MAX_VALUE) }
+            .filter { it.second >= threshold }
+            .maxByOrNull { it.second }
+        _nextAction.value = if (stale == null) null else {
+            val (r, d) = stale
+            val name = r.name.ifBlank { Relations.labelOf(r.relation) }
+            val reason = if (d == Long.MAX_VALUE) "لسه ما كلّمتوش — ابدأ بكلمة حلوة" else "بقالك $d يوم ما كلّمته"
+            NextAction(r.id, name, reason, null)
+        }
+    }
+
+    // تنفيذ اللفتة الجاية: يختار الشخص ويبدأ يكتبله على طول.
+    fun writeToNext(a: NextAction) {
+        settings.selectedRecipientId = a.recipientId
+        store.clearPending()
+        refreshRecipients()
+        if (a.occasionLabel != null) generate("occasion", Occasion("person", a.occasionLabel))
+        else generate("manual")
     }
 
     // اختيار شخص من الشاشة الرئيسية مباشرة: كل الخيارات (النبرة، الرقم، المناسبات،
@@ -152,6 +215,7 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
         )
         store.markContacted(rid())
         store.clearPending()
+        updateNextAction()
         _state.value = _state.value.copy(info = "حفظت أسلوبك من الاختيار ده 👌")
     }
 
@@ -164,6 +228,7 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
         store.addFeedback(Feedback(DateUtil.todayISO(), _state.value.slot, themes(), "edited", t, rid()))
         store.markContacted(rid())
         store.clearPending()
+        updateNextAction()
         _state.value = _state.value.copy(info = "سجّلت نسختك المعدّلة وضفتها لأسلوبي 🌟")
     }
 
