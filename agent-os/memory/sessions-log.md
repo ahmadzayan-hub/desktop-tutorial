@@ -43,6 +43,7 @@
 
 | التاريخ | الميلستون | commit |
 | --- | --- | --- |
+| 2026-07-15 | Smart: proactive next-best-action on Android home + remove desktop tap effect (#75) | `954d4a0` |
 | 2026-07-15 | Android: Material 3 Expressive redesign (modern 3D), remove tap effect, smarter hero (#74) | `53fc862` |
 | 2026-07-14 | Android broadcast UX: copy-all/export, preview-first, favorite templates (#73) | `815b69a` |
 | 2026-07-14 | Review fixes: phone-normalize bug + testable util + desktop parity + bulk cap (#72) | `a4bc92c` |
@@ -67,7 +68,6 @@
 | 2026-07-07 | rebrand: Lahza (لحظة) + resilient customisation draft (#39) | `6335af6` |
 | 2026-07-07 | v2 P0: message-intent picker, quick context box, offline fallback bank (#40) | `45ac466` |
 | 2026-07-07 | Make the home screen adapt reactively to the selected recipient (#37) | `5a9e258` |
-| 2026-07-06 | Add GitHub Pages workflow to deploy the landing page | `2d5fe49` |
 
 > بيتولّد أوتوماتيك بواسطة `agent-os/memory/sync.js` — متعدّلش القسم ده بإيدك.
 
