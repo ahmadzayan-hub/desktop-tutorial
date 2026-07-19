@@ -86,30 +86,20 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
         updateNextAction()
     }
 
-    // كام يوم لحد أقرب حصول للمناسبة MM-DD (بتتكرر كل سنة)، أو null.
-    private fun daysUntilMmDd(mmdd: String): Long? {
-        val m = Regex("^(\\d{2})-(\\d{2})$").find(mmdd) ?: return null
-        return runCatching {
-            val today = DateUtil.today()
-            var next = java.time.LocalDate.of(today.year, m.groupValues[1].toInt(), m.groupValues[2].toInt())
-            if (next.isBefore(today)) next = next.plusYears(1)
-            java.time.temporal.ChronoUnit.DAYS.between(today, next)
-        }.getOrNull()
-    }
-
     // يرشّح اللفتة الجاية: أولوية لأقرب مناسبة خلال 10 أيام، وإلا أطول شخص من غير تواصل.
+    // حساب أيام المناسبة من DateUtil.daysUntilMMDD (موجود ومختبَر) بدل تكرار المنطق.
     private fun updateNextAction() {
         val recips = settings.recipients
         if (recips.isEmpty()) { _nextAction.value = null; return }
 
         val soonest = recips
-            .flatMap { r -> r.occasions.mapNotNull { o -> daysUntilMmDd(o.date)?.let { Triple(r, o.label, it) } } }
+            .flatMap { r -> r.occasions.mapNotNull { o -> DateUtil.daysUntilMMDD(o.date)?.let { Triple(r, o.label, it) } } }
             .filter { it.third in 0..10 }
             .minByOrNull { it.third }
         if (soonest != null) {
             val (r, label, days) = soonest
             val name = r.name.ifBlank { Relations.labelOf(r.relation) }
-            val whenTxt = when (days) { 0L -> "النهاردة"; 1L -> "بكرة"; else -> "بعد $days يوم" }
+            val whenTxt = when (days) { 0 -> "النهاردة"; 1 -> "بكرة"; else -> "بعد $days يوم" }
             _nextAction.value = NextAction(r.id, name, "🎀 $label $whenTxt", label)
             return
         }
