@@ -45,8 +45,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -89,6 +93,7 @@ fun HomeScreen(
     var selectedIntent by remember { mutableStateOf<String?>(null) }
     var contextText by remember { mutableStateOf("") }
     val snackbar = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     // كل ما نرجع للشاشة نحدّث قائمة الأشخاص (ممكن اتغيّرت من شاشة الأشخاص).
     LaunchedEffect(Unit) { vm.refreshRecipients() }
@@ -98,8 +103,12 @@ fun HomeScreen(
     var calEvents by remember { mutableStateOf<List<String>>(emptyList()) }
     var showCal by remember { mutableStateOf(false) }
     fun loadCalendar() {
-        calEvents = CalendarReader.events(context).map { it.title }
-        showCal = true
+        // قراءة التقويم في الخلفية (IO) — عشان ما نهنّجش الواجهة.
+        scope.launch {
+            val titles = withContext(Dispatchers.IO) { CalendarReader.events(context).map { it.title } }
+            calEvents = titles
+            showCal = true
+        }
     }
     val calPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
