@@ -40,27 +40,16 @@ class SmartReply(
             appendLine("٢- <الرد التاني>")
         }
         return try {
-            parseTwo(groq.complete(listOf(ChatMessage("system", sys), ChatMessage("user", user)), 0.85))
+            // نستخدم نفس محلّل الاقتراحين المختبَر بدل تكرار المنطق.
+            SuggestionEngine.parseTwo(
+                groq.complete(listOf(ChatMessage("system", sys), ChatMessage("user", user)), 0.85),
+                listOf("رد", "رد"),
+            )
         } catch (e: Exception) {
             listOf(
                 Suggestion("وصلتني رسالتك وسعدت بيها جدًا، ربنا يخليك ليا 🤍", "رد"),
                 Suggestion("كلامك دايمًا بيفرق معايا، متشكّر من قلبي 💗", "رد"),
             )
         }
-    }
-
-    private fun parseTwo(raw: String): List<Suggestion> {
-        val re = Regex("^[١٢12]\\s*[-.)]\\s*(.+)$")
-        val nums = raw.lines().mapNotNull { l -> re.find(l.trim())?.groupValues?.get(1)?.trim() }
-        val a: String
-        val b: String
-        if (nums.size >= 2) {
-            a = nums[0]; b = nums[1]
-        } else {
-            val clean = raw.lines().map { it.replace(Regex("^[١٢12]\\s*[-.)]\\s*"), "").trim() }.filter { it.isNotBlank() }
-            a = clean.getOrNull(0) ?: raw.trim()
-            b = clean.getOrNull(1) ?: a
-        }
-        return listOf(Suggestion(a, "رد"), Suggestion(b, "رد"))
     }
 }

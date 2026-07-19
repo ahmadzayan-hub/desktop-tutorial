@@ -54,7 +54,9 @@ import com.wifeassistant.data.Settings
 import com.wifeassistant.util.ContactsReader
 import com.wifeassistant.util.Csv
 import com.wifeassistant.util.WhatsApp
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 // عضو في قائمة الإرسال بمعرّف فريد (id) — عشان الاختيار والرسائل الذكية تتربط بالشخص
 // نفسه مش برقمه (ممكن يكون فاضي أو مكرّر من CSV).
@@ -113,11 +115,16 @@ fun BroadcastScreen(onBack: () -> Unit) {
     // عند أي تحميل جديد: نمسح الاختيار والرسائل الذكية والمعاينة القديمة.
     fun resetForNewList() { selected.clear(); aiMsgs.clear(); previewText = "" }
     fun loadContacts() {
-        activeList = runCatching { ContactsReader.allWithNumbers(context) }.getOrDefault(emptyList())
-            .mapIndexed { i, c -> BcMember("c$i", c.name, c.number) }
-        loaded = true
-        resetForNewList()
-        if (activeList.isEmpty()) toast("مفيش جهات اتصال بأرقام")
+        // قراءة جهات الاتصال في الخلفية (IO) عشان ما نهنّجش الواجهة مع دفتر أرقام كبير.
+        scope.launch {
+            val raw = withContext(Dispatchers.IO) {
+                runCatching { ContactsReader.allWithNumbers(context) }.getOrDefault(emptyList())
+            }
+            activeList = raw.mapIndexed { i, c -> BcMember("c$i", c.name, c.number) }
+            loaded = true
+            resetForNewList()
+            if (activeList.isEmpty()) toast("مفيش جهات اتصال بأرقام")
+        }
     }
     val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         if (granted) loadContacts() else toast("محتاج إذن جهات الاتصال")
@@ -127,11 +134,14 @@ fun BroadcastScreen(onBack: () -> Unit) {
         if (ok) loadContacts() else permission.launch(Manifest.permission.READ_CONTACTS)
     }
     val csvLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        if (uri != null) {
-            val text = runCatching {
-                context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
-            }.getOrNull().orEmpty()
-            val rows = Csv.parse(text)
+        if (uri != null) scope.launch {
+            // قراءة الملف وتحليله في الخلفية (ممكن يكون كبير).
+            val rows = withContext(Dispatchers.IO) {
+                val text = runCatching {
+                    context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
+                }.getOrNull().orEmpty()
+                Csv.parse(text)
+            }
             activeList = rows.mapIndexed { i, r -> BcMember("v$i", r.name, r.number) }
             loaded = true
             resetForNewList()

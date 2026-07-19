@@ -88,7 +88,10 @@ jobs:
           cp app/build/outputs/apk/release/app-release.apk ../wisal.apk
           cp app/build/outputs/bundle/release/app-release.aab ../wisal.aab
 
+      # اختياري: أرشيف الـ CI. مش بيوقف الـ pipeline لو مساحة أرشيف الـ Actions
+      # اتملت — التنزيل الأساسي بيتنشر على release ثابت تحت (android-latest).
       - name: Upload artifacts
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: wisal-android
@@ -96,6 +99,7 @@ jobs:
             wisal.apk
             wisal.aab
           if-no-files-found: error
+          retention-days: 5
 
       # رابط تنزيل ثابت: أحدث نسخة دايماً على release واحد اسمه android-latest.
       - name: Publish rolling release (latest build)
