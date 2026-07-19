@@ -43,6 +43,7 @@
 
 | التاريخ | الميلستون | commit |
 | --- | --- | --- |
+| 2026-07-20 | Transformation audit: P1 main-thread IO fix, P2 DRY+tests, CI resilience (#78) | `e003da2` |
 | 2026-07-15 | Smart feature: رد ذكي — suggest replies to a received message (#77) | `6cb47b5` |
 | 2026-07-15 | Debug review fixes: desktop occasion/slot, Android member-key collision, re-import state (#76) | `b03807c` |
 | 2026-07-15 | Smart: proactive next-best-action on Android home + remove desktop tap effect (#75) | `954d4a0` |
@@ -67,7 +68,6 @@
 | 2026-07-07 | v2: iterative refinement, upcoming-occasion planning + advance alerts, gift ideas (#43) | `d527113` |
 | 2026-07-07 | v2: import birthdays from device contacts + history search/filter/favorites (#42) | `72d739b` |
 | 2026-07-07 | AI persona analysis: analyze pasted info to fill profile + occasions (#41) | `adde0af` |
-| 2026-07-07 | rebrand: Lahza (لحظة) + resilient customisation draft (#39) | `6335af6` |
 
 > بيتولّد أوتوماتيك بواسطة `agent-os/memory/sync.js` — متعدّلش القسم ده بإيدك.
 
