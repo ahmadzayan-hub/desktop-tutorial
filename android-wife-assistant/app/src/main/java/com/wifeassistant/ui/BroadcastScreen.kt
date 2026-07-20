@@ -43,6 +43,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -271,10 +273,13 @@ fun BroadcastScreen(onBack: () -> Unit) {
                         onClick = { template = t },
                         label = { Text(if (t.length > 22) t.take(22) + "…" else t) },
                         trailingIcon = {
-                            Text("✕", modifier = Modifier.padding(start = 2.dp).clickable {
-                                templates = templates.filterNot { it == t }
-                                settings.broadcastTemplates = templates
-                            })
+                            Text("✕", modifier = Modifier
+                                .padding(start = 2.dp)
+                                .semantics { contentDescription = "حذف القالب" }
+                                .clickable {
+                                    templates = templates.filterNot { it == t }
+                                    settings.broadcastTemplates = templates
+                                })
                         },
                     )
                 }
@@ -407,9 +412,11 @@ fun BroadcastScreen(onBack: () -> Unit) {
                     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                             Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                                Checkbox(checked = isSel, onCheckedChange = {
-                                    if (isSel) selected.remove(c.id) else selected.add(c.id)
-                                })
+                                Checkbox(
+                                    checked = isSel,
+                                    onCheckedChange = { if (isSel) selected.remove(c.id) else selected.add(c.id) },
+                                    modifier = Modifier.semantics { contentDescription = "اختيار ${c.name}" },
+                                )
                                 Text(c.name, fontWeight = FontWeight.Bold)
                                 if (aiMsgs.containsKey(c.id)) Text("  ✨", style = MaterialTheme.typography.bodySmall)
                             }

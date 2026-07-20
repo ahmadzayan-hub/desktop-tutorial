@@ -52,11 +52,20 @@ fun WelcomeScreen(onStart: () -> Unit) {
         WelcomePoint("👨‍👩‍👧‍👦", "لكل قرايبك", "شريك/شريكة، ابن، بنت، أم، أب، أخ، أخت - وكمان مجموعات.")
         WelcomePoint("💬", "كلام من القلب", "اقتراحات دافئة باللهجة المصرية، بنبرة مناسبة لكل علاقة.")
         WelcomePoint("🧠", "بيتعلّم منك", "كل ما تختار وتعدّل، الرسايل تقرب من أسلوبك أكتر.")
-        WelcomePoint("🔒", "خصوصيتك أولاً", "كل حاجة على موبايلك، مفيش سيرفر، والإرسال بإيدك انت.")
+        WelcomePoint(
+            "🔒", "خصوصيتك أولاً",
+            "بياناتك (الأشخاص والرسايل) متخزّنة على موبايلك بس. وقت التوليد، نص الرسالة بيتبعت لمزوّد الذكاء (Groq) عشان يقترحلك — ومفيش إرسال تلقائي لأي حد، انت اللي بتبعت بإيدك.",
+        )
 
         Text(
             "افتكر إن كلمة حلوة في وقتها بتقرّب القلوب 💞",
             style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        Text(
+            "بضغطك على «يلا نبدأ» بتوافق إن نص الرسالة يتبعت لمزوّد الذكاء (Groq) وقت التوليد فقط.",
+            style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
