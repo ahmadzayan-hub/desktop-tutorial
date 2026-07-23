@@ -1,7 +1,12 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
+import { notFound } from "next/navigation";
 import { Card, CardBody, CardHeader } from "@/components/presentiq/ui/Card";
 import { Badge } from "@/components/presentiq/ui/Badge";
+
+// Force dynamic rendering so response headers are not baked at build.
+export const dynamic = "force-dynamic";
 
 async function fetchProject(id: string) {
   const h = headers();
@@ -16,9 +21,31 @@ async function fetchProject(id: string) {
   return res.json();
 }
 
+/**
+ * Metadata phase runs BEFORE the page's async body starts streaming, so
+ * calling `notFound()` here sets a real HTTP 404 status. Calling it
+ * inside the page component only rendered the branded UI but let
+ * Next.js flush 200 first — Google would then keep indexing the
+ * "project not found" URL as a live page.
+ */
+export async function generateMetadata(
+  { params }: { params: { id: string } },
+): Promise<Metadata> {
+  const data = await fetchProject(params.id);
+  if (!data) notFound();
+  return {
+    title: data.project?.title ? `${data.project.title} · Project` : "Project",
+    robots: { index: false, follow: false },
+  };
+}
+
 export default async function ProjectPage({ params }: { params: { id: string } }) {
   const data = await fetchProject(params.id);
-  if (!data) return <div className="text-sm text-zinc-500">Project not found.</div>;
+  // notFound() throws so Next.js returns HTTP 404 and renders the
+  // nearest not-found.tsx boundary. Previously we returned a bare
+  // <div>Project not found</div> at HTTP 200, which meant Google
+  // indexed every dead project URL as a real page.
+  if (!data) notFound();
   const { project, files, slides, versions } = data;
 
   return (

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { getRequestContext, getSupabase, isDemoContext, writeAudit } from "@/lib/presentiq";
-import { fail, json } from "@/lib/presentiq/api/response";
+import { fail, failValidation, json } from "@/lib/presentiq/api/response";
 import { createBrandKit as createDemoBrandKit, listBrandKits as listDemoBrandKits } from "@/lib/presentiq/demo/store";
 
 const CreateSchema = z.object({
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
   if (!["owner", "admin", "editor"].includes(ctx.role)) return fail("forbidden", "insufficient role", 403);
 
   const parsed = CreateSchema.safeParse(await req.json().catch(() => ({})));
-  if (!parsed.success) return fail("invalid_input", "validation failed", 400, parsed.error.issues);
+  if (!parsed.success) return failValidation("Please check the highlighted fields.", parsed.error.issues);
 
   if (isDemoContext(ctx)) {
     const kit = createDemoBrandKit({

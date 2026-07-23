@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { fail, json } from "@/lib/presentiq/api/response";
+import { fail, failValidation, json } from "@/lib/presentiq/api/response";
 import { recordFeedback } from "@/lib/presentiq/demo/store";
 import { PQ_CONTACT_EMAIL } from "@/lib/presentiq/config";
 
@@ -12,7 +12,7 @@ const Schema = z.object({
 
 export async function POST(req: Request) {
   const parsed = Schema.safeParse(await req.json().catch(() => ({})));
-  if (!parsed.success) return fail("invalid_input", "validation failed", 400, parsed.error.issues);
+  if (!parsed.success) return failValidation("Please check the highlighted fields.", parsed.error.issues);
 
   const row = recordFeedback({
     email: parsed.data.email,

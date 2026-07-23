@@ -1,6 +1,6 @@
 import { getRequestContext, getSupabase, isDemoContext, writeAudit } from "@/lib/presentiq";
 import { BriefSchema } from "@/lib/presentiq/types";
-import { fail, json } from "@/lib/presentiq/api/response";
+import { fail, failValidation, json } from "@/lib/presentiq/api/response";
 import { createProject as createDemoProject, listProjects as listDemoProjects } from "@/lib/presentiq/demo/store";
 
 export async function GET() {
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
   const ctx = await getRequestContext();
   if (!["owner", "admin", "editor"].includes(ctx.role)) return fail("forbidden", "insufficient role", 403);
   const parsed = BriefSchema.safeParse(await req.json().catch(() => ({})));
-  if (!parsed.success) return fail("invalid_input", "validation failed", 400, parsed.error.issues);
+  if (!parsed.success) return failValidation("Please check the highlighted fields.", parsed.error.issues);
 
   if (isDemoContext(ctx)) {
     const project = createDemoProject({
