@@ -1,0 +1,54 @@
+name: Wisal web CI
+
+# Static-content sanity checks for wisal-web/. No build step (pure HTML/CSS/JS);
+# we validate that the deployable files parse cleanly and that key SEO/PWA
+# assets stay in sync (robots, sitemap, manifest, llms.txt).
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "wisal-web/**"
+      - ".github/workflows/wisal-web-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "wisal-web/**"
+      - ".github/workflows/wisal-web-ci.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wisal-web-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: wisal-web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Verify required files exist
+        run: |
+          set -e
+          for f in index.html privacy.html manifest.webmanifest robots.txt sitemap.xml llms.txt vercel.json; do
+            test -f "$f" || { echo "::error::missing $f"; exit 1; }
+          done
+      - name: HTML syntax check (html-validate)
+        run: |
+          npx --yes html-validate index.html privacy.html \
+            --config '{"extends":["html-validate:recommended"],"rules":{"attr-quotes":"off","void-style":"off","no-inline-style":"off","no-trailing-whitespace":"off","attribute-boolean-style":"off","element-required-attributes":"off","no-implicit-close":"off","wcag/h30":"off","wcag/h32":"off","wcag/h36":"off","wcag/h37":"off","wcag/h63":"off","wcag/h67":"off","wcag/h71":"off"}}'
+      - name: JSON is valid (manifest + vercel.json)
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('manifest.webmanifest','utf8'))"
+          node -e "JSON.parse(require('fs').readFileSync('vercel.json','utf8'))"
+      - name: XML sitemap parses
+        run: |
+          npx --yes xml-formatter --input sitemap.xml >/dev/null

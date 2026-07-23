@@ -3,7 +3,7 @@
   "short_name": "Lahza",
   "description": "Personalised coffee gifts, live event coffee stations and corporate appreciation campaigns across the UAE.",
   "lang": "en",
-  "dir": "auto",
+  "dir": "ltr",
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
