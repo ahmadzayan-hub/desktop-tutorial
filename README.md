@@ -3,11 +3,28 @@
 **From a rough idea to a boardroom-ready deck, in minutes. Corporate
 standards enforced automatically.**
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fahmadzayan-hub%2Fdesktop-tutorial%2Ftree%2Fpitchora&project-name=pitchora&repository-name=pitchora&env=NEXT_PUBLIC_DEMO_MODE&envDescription=Set%20to%20%22true%22%20to%20run%20the%20app%20with%20deterministic%20sample%20data%20and%20no%20external%20integrations.%20Leave%20unset%20once%20you%27ve%20wired%20Supabase%20%2B%20Stripe%20%2B%20an%20AI%20provider.&envLink=https%3A%2F%2Fgithub.com%2Fahmadzayan-hub%2Fdesktop-tutorial%2Fblob%2Fpitchora%2F.env.example&demo-title=Pitchora&demo-description=AI%20boardroom%20presentation%20studio.%20Editable%20PPTX%20out%2C%20Arabic%20RTL%20native%2C%2010-dimension%20readiness%20score.&demo-url=https%3A%2F%2Fwww.pitchora.ai%2Fpresentiq)
+
+One click ships the canonical `pitchora` branch to a fresh Vercel
+project. The only env var you must set is `NEXT_PUBLIC_DEMO_MODE=true`
+so the app runs end-to-end without any third-party credentials. Wire
+Supabase / Stripe / an AI provider later when you're ready.
+
+**From the phone:** tap the Deploy button above → sign in to Vercel →
+name the project `pitchora` → set `NEXT_PUBLIC_DEMO_MODE=true` →
+Deploy. Ninety seconds later you get a `https://pitchora-*.vercel.app`
+URL. Open it in Chrome and tap "Install the app" from the mobile
+Install section to add Pitchora to your home screen as a native
+Android-style PWA.
+
+---
+
 - **Repository**: [`github.com/ahmadzayan-hub/desktop-tutorial`](https://github.com/ahmadzayan-hub/desktop-tutorial)
 - **Canonical branch**: `pitchora`
 - **Production**: `https://www.pitchora.ai`
 - **Ops runbook**: [`DEPLOY.md`](./DEPLOY.md)
 - **Security posture**: [`THREAT_MODEL.md`](./THREAT_MODEL.md) · [`SECURITY.md`](./SECURITY.md)
+- **Product audit**: [`AUDIT.md`](./AUDIT.md)
 
 Pitchora is the **idea-to-deck studio**: an AI agent platform that closes the
 gap between a rough idea and a polished, brand-governed, evidence-controlled,
