@@ -43,6 +43,7 @@
 
 | التاريخ | الميلستون | commit |
 | --- | --- | --- |
+| 2026-07-23 | feat(checkout): actually deliver the completed order to the business (WhatsApp) | `176ec43` |
 | 2026-07-21 | Add V0.2: live KPI entry, full bilingual UI, snapshot save/load | `78f2947` |
 | 2026-07-12 | Add generic Annual Operational Plan 2026 V0.1 (single self-contained HTML) | `e08e330` |
 | 2026-07-20 | Transformation audit: P1 main-thread IO fix, P2 DRY+tests, CI resilience (#78) | `e003da2` |
@@ -67,7 +68,6 @@
 | 2026-07-07 | v2: personalized WhatsApp broadcast to contacts (one tap per person) (#51) | `754456c` |
 | 2026-07-07 | v2: per-person tone/dialect + photo, and "remind me to send tomorrow" (#49) | `cd48a24` |
 | 2026-07-07 | v2: Material You dynamic color + user theme switch (auto/light/dark) (#46) | `e03047f` |
-| 2026-07-07 | v2: iterative refinement, upcoming-occasion planning + advance alerts, gift ideas (#43) | `d527113` |
 
 > بيتولّد أوتوماتيك بواسطة `agent-os/memory/sync.js` — متعدّلش القسم ده بإيدك.
 
