@@ -3,7 +3,7 @@ import { MessageCircle, Mail, Phone, Clock, ShieldCheck, CheckCircle2 } from "lu
 import { useI18n } from "@/i18n/I18nContext";
 import { Seo } from "@/components/Seo";
 import { Section, SectionHeader } from "@/components/Section";
-import { BRAND } from "@/lib/brand";
+import { BRAND, registrationLine } from "@/lib/brand";
 import { waLink, WA_MESSAGES } from "@/lib/whatsapp";
 
 export default function Contact() {
@@ -48,7 +48,9 @@ export default function Contact() {
               </div>
               <p className="font-medium text-coffee-800">{BRAND.legalName}</p>
               <p>{BRAND.licenseAuthority}</p>
-              <p>{t("footer.licence")}: {BRAND.licenseNumber} · {t("footer.trn")}: {BRAND.trn}</p>
+              {registrationLine(t("footer.licence"), t("footer.trn")) && (
+                <p>{registrationLine(t("footer.licence"), t("footer.trn"))}</p>
+              )}
             </div>
           </div>
 

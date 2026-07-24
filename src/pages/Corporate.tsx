@@ -9,7 +9,7 @@ import { Section, SectionHeader } from "@/components/Section";
 import { Reveal } from "@/components/Reveal";
 import { EVENT_PACKAGES } from "@/lib/catalog";
 import { formatAed } from "@/lib/format";
-import { BRAND } from "@/lib/brand";
+import { BRAND, sellerValueSet } from "@/lib/brand";
 import { waLink } from "@/lib/whatsapp";
 import { makeRef } from "@/lib/id";
 import { recommendEventPackage } from "@/lib/ai";
@@ -231,7 +231,9 @@ function QuotationView({ quote, onEdit }: { quote: Quotation & { form: CorpForm 
             <p className="font-serif text-2xl font-bold text-coffee-900">{BRAND.name}</p>
             <p className="text-xs text-coffee-500">{BRAND.legalName}</p>
             <p className="text-xs text-coffee-500">{BRAND.licenseAuthority}</p>
-            <p className="text-xs text-coffee-500">{t("footer.trn")}: {BRAND.trn}</p>
+            {sellerValueSet(BRAND.trn) && (
+              <p className="text-xs text-coffee-500">{t("footer.trn")}: {BRAND.trn}</p>
+            )}
           </div>
           <div className="text-end">
             <p className="text-lg font-bold uppercase tracking-wide text-gold-600">{t("corporate.quote.title")}</p>
