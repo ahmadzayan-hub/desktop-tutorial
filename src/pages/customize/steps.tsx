@@ -489,10 +489,10 @@ export function PaymentStep({ draft, onPay }: { draft: OrderDraft; onPay: (mode:
         <p className="text-xs text-coffee-400">{t("common.vatIncluded")}</p>
 
         <button type="button" className="btn btn-primary mt-6 w-full justify-center" onClick={() => onPay("now")}>
-          <CreditCard className="h-4 w-4" /> {t("customize.pay.payNow")}
+          <MessageCircle className="h-4 w-4" /> {t("customize.pay.payNow")}
         </button>
         <button type="button" className="btn btn-outline mt-3 w-full justify-center" onClick={() => onPay("link")}>
-          <MessageCircle className="h-4 w-4" /> {t("customize.pay.requestLink")}
+          <CreditCard className="h-4 w-4" /> {t("customize.pay.requestLink")}
         </button>
 
         <p className="mt-4 text-xs text-coffee-500">{t("customize.pay.methods")}</p>

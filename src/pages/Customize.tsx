@@ -6,6 +6,8 @@ import { Seo } from "@/components/Seo";
 import { Stepper } from "@/components/Stepper";
 import { moderateImage } from "@/lib/ai";
 import { makeRef } from "@/lib/id";
+import { waLink } from "@/lib/whatsapp";
+import { buildOrderMessage } from "./customize/orderMessage";
 import { INITIAL_DRAFT, STEP_KEYS, type OrderDraft } from "./customize/types";
 import {
   UploadStep, PreviewStep, MessageStep, PackageStep, DeliveryStep, ReviewStep, PaymentStep,
@@ -29,7 +31,7 @@ function loadDraft(): OrderDraft {
 }
 
 export default function Customize() {
-  const { t, isRtl } = useI18n();
+  const { t, isRtl, lang } = useI18n();
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<OrderDraft>(loadDraft);
   const [error, setError] = useState<string | null>(null);
@@ -102,8 +104,18 @@ export default function Customize() {
     setStep((s) => Math.max(s - 1, 0));
   }
 
+  // Hand the finished order to the business over WhatsApp (the app's ordering
+  // model — no backend). Opening on the click gesture avoids popup blocking; the
+  // success screen also offers a manual "open WhatsApp" fallback in case it was
+  // blocked, so a completed order is never silently lost.
   function pay(mode: "now" | "link") {
-    setResult({ ref: makeRef("BCM"), mode });
+    const ref = makeRef("LHZ");
+    try {
+      window.open(waLink(buildOrderMessage(draft, ref, lang, mode)), "_blank", "noopener,noreferrer");
+    } catch {
+      /* fallback button on the success screen */
+    }
+    setResult({ ref, mode });
   }
 
   function reset() {
@@ -130,8 +142,16 @@ export default function Customize() {
             {isNow ? t("customize.pay.successSub", { ref: result.ref }) : t("customize.pay.linkSentSub", { ref: result.ref })}
           </p>
           <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-            <button type="button" className="btn btn-primary" onClick={reset}>{t("customize.pay.newOrder")}</button>
-            <Link to="/" className="btn btn-outline">{t("common.backHome")}</Link>
+            <a
+              className="btn btn-primary"
+              href={waLink(buildOrderMessage(draft, result.ref, lang, result.mode))}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <MessageCircle className="h-4 w-4" /> {t("customize.pay.openWhatsApp")}
+            </a>
+            <button type="button" className="btn btn-outline" onClick={reset}>{t("customize.pay.newOrder")}</button>
+            <Link to="/" className="btn btn-ghost">{t("common.backHome")}</Link>
           </div>
         </div>
       </div>
