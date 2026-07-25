@@ -27,6 +27,26 @@ export const BRAND = {
   photoRetentionDays: 30, // uploaded source images auto-deleted after this
 } as const;
 
+/**
+ * A seller-identity value counts as "set" only when it holds a real value and
+ * not an unset `TODO` placeholder. The storefront must never show customers an
+ * unconfigured trade licence or TRN — that is both a trust failure and a UAE
+ * e-commerce/VAT disclosure failure. Until the owner fills the real values in
+ * BRAND, the disclosure lines omit them instead of printing "TODO-…".
+ */
+export function sellerValueSet(v: string): boolean {
+  return v.length > 0 && !v.startsWith("TODO");
+}
+
+/** Licence + TRN disclosure, omitting any value not configured yet. Empty when
+ *  neither is set, so callers can skip rendering the line entirely. */
+export function registrationLine(licenceLabel: string, trnLabel: string): string {
+  const parts: string[] = [];
+  if (sellerValueSet(BRAND.licenseNumber)) parts.push(`${licenceLabel}: ${BRAND.licenseNumber}`);
+  if (sellerValueSet(BRAND.trn)) parts.push(`${trnLabel}: ${BRAND.trn}`);
+  return parts.join(" · ");
+}
+
 export const EMIRATES = [
   { id: "dubai", en: "Dubai", ar: "دبي", sameDay: true },
   { id: "abudhabi", en: "Abu Dhabi", ar: "أبوظبي", sameDay: false },

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ShieldCheck, Mail, Phone, Instagram } from "lucide-react";
 import { useI18n } from "@/i18n/I18nContext";
-import { BRAND } from "@/lib/brand";
+import { BRAND, registrationLine } from "@/lib/brand";
 import { BrandMark } from "./BrandMark";
 
 export function Footer() {
@@ -44,9 +44,9 @@ export function Footer() {
               </div>
               <p className="font-medium text-cream-50">{BRAND.legalName}</p>
               <p>{BRAND.licenseAuthority}</p>
-              <p>
-                {t("footer.licence")}: {BRAND.licenseNumber} · {t("footer.trn")}: {BRAND.trn}
-              </p>
+              {registrationLine(t("footer.licence"), t("footer.trn")) && (
+                <p>{registrationLine(t("footer.licence"), t("footer.trn"))}</p>
+              )}
               <p>{BRAND.address}</p>
             </div>
           </div>
