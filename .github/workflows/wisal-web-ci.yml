@@ -42,9 +42,9 @@ jobs:
             test -f "$f" || { echo "::error::missing $f"; exit 1; }
           done
       - name: HTML syntax check (html-validate)
-        run: |
-          npx --yes html-validate index.html privacy.html \
-            --config '{"extends":["html-validate:recommended"],"rules":{"attr-quotes":"off","void-style":"off","no-inline-style":"off","no-trailing-whitespace":"off","attribute-boolean-style":"off","element-required-attributes":"off","no-implicit-close":"off","wcag/h30":"off","wcag/h32":"off","wcag/h36":"off","wcag/h37":"off","wcag/h63":"off","wcag/h67":"off","wcag/h71":"off"}}'
+        # Uses the .htmlvalidate.json config in wisal-web/ — same file local dev
+        # can point at with `npx html-validate index.html privacy.html`.
+        run: npx --yes html-validate index.html privacy.html
       - name: JSON is valid (manifest + vercel.json)
         run: |
           node -e "JSON.parse(require('fs').readFileSync('manifest.webmanifest','utf8'))"

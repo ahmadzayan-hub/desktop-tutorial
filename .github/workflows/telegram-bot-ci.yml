@@ -1,0 +1,53 @@
+name: Wisal Telegram bot CI
+
+# Runs the node --test suite in telegram-wife-assistant/ on every PR + push to
+# main that touches the bot. No network calls: the tests use in-process mocks
+# for the LLM provider and telegram send, so this never contacts Telegram or Groq.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "telegram-wife-assistant/**"
+      - ".github/workflows/telegram-bot-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "telegram-wife-assistant/**"
+      - ".github/workflows/telegram-bot-ci.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: telegram-bot-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: telegram-wife-assistant
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: telegram-wife-assistant/package-lock.json
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit --no-fund
+      - name: Node test suite
+        # Explicitly do NOT export TELEGRAM_BOT_TOKEN or GROQ_API_KEY here so a
+        # regression that accidentally reaches out to the real network fails
+        # loudly instead of silently spending credits.
+        run: npm test
+      - name: Smoke — demo without sending
+        # `npm run demo` uses the mock provider when GROQ_API_KEY is unset. It
+        # exercises the generate + occasion flow end-to-end and confirms no
+        # network side effects fire in the happy path.
+        env:
+          GROQ_API_KEY: ""
+        run: npm run demo
