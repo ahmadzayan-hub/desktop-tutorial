@@ -21,14 +21,26 @@ interface StepProps {
 }
 
 /* ----------------------------- 1. Upload ----------------------------- */
+const MAX_UPLOAD_MB = 10;
+
 export function UploadStep({ draft, update }: StepProps) {
   const { t } = useI18n();
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [imgEl, setImgEl] = useState<HTMLImageElement | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   async function handleFile(file: File) {
+    setUploadError(null);
+    if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
+      setUploadError(t("customize.upload.tooLarge", { max: MAX_UPLOAD_MB }));
+      return;
+    }
     setBusy(true);
+    // Revoke the previous object URL before creating a new one so re-uploads
+    // do not leak blobs into memory. `loadImage` may reject; if it does, we
+    // still want to release the URL, hence the try/finally + explicit revoke.
+    if (draft.imageOriginal) URL.revokeObjectURL(draft.imageOriginal);
     const url = URL.createObjectURL(file);
     try {
       const img = await loadImage(url);
@@ -41,6 +53,9 @@ export function UploadStep({ draft, update }: StepProps) {
         assessment,
         moderationBlocked: false,
       });
+    } catch {
+      URL.revokeObjectURL(url);
+      setUploadError(t("customize.upload.loadFailed"));
     } finally {
       setBusy(false);
     }
@@ -78,8 +93,14 @@ export function UploadStep({ draft, update }: StepProps) {
         />
 
         {busy && (
-          <p className="mt-3 flex items-center gap-2 text-sm text-coffee-500">
+          <p className="mt-3 flex items-center gap-2 text-sm text-coffee-500" role="status" aria-live="polite">
             <RefreshCw className="h-4 w-4 animate-spin" /> {t("customize.upload.qualityChecking")}
+          </p>
+        )}
+
+        {uploadError && (
+          <p className="mt-3 rounded-xl bg-red-50 px-4 py-2 text-sm text-red-700" role="alert">
+            {uploadError}
           </p>
         )}
 
@@ -151,11 +172,12 @@ export function PreviewStep({ draft, update }: StepProps) {
       <div>
         <h2 className="font-serif text-2xl font-bold text-coffee-900">{t("customize.preview.heading")}</h2>
         <p className="mt-1 text-sm text-coffee-600">{t("customize.preview.sub")}</p>
-        <div className="mt-5 grid grid-cols-2 gap-2">
+        <div role="group" aria-label={t("customize.preview.heading")} className="mt-5 grid grid-cols-2 gap-2">
           {SURFACES.map((s) => (
             <button
               key={s}
               type="button"
+              aria-pressed={draft.surfaceView === s}
               onClick={() => update({ surfaceView: s })}
               className={`rounded-xl border px-4 py-3 text-sm font-semibold transition ${
                 draft.surfaceView === s
@@ -199,11 +221,12 @@ export function MessageStep({ draft, update }: StepProps) {
         {/* language */}
         <div className="mt-4">
           <span className="field-label">{t("customize.message.langLabel")}</span>
-          <div className="inline-flex rounded-full border border-coffee-100 bg-white p-0.5 text-sm font-semibold">
+          <div role="group" aria-label={t("customize.message.langLabel")} className="inline-flex rounded-full border border-coffee-100 bg-white p-0.5 text-sm font-semibold">
             {(["en", "ar"] as const).map((l) => (
               <button
                 key={l}
                 type="button"
+                aria-pressed={draft.messageLang === l}
                 onClick={() => update({ messageLang: l })}
                 className={`rounded-full px-4 py-1.5 ${draft.messageLang === l ? "bg-coffee-700 text-cream-50" : "text-coffee-600"} ${l === "ar" ? "font-arabic" : ""}`}
               >
@@ -399,7 +422,16 @@ export function DeliveryStep({ draft, update }: StepProps) {
         </div>
         <div>
           <label className="field-label" htmlFor="dphone">{t("customize.delivery.recipientPhone")}</label>
-          <input id="dphone" className="field" inputMode="tel" placeholder="+971 5X XXX XXXX" value={draft.deliverPhone} onChange={(e) => update({ deliverPhone: e.target.value })} />
+          <input
+            id="dphone"
+            className="field"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            placeholder="+971 5X XXX XXXX"
+            value={draft.deliverPhone}
+            onChange={(e) => update({ deliverPhone: e.target.value })}
+          />
         </div>
       </div>
       <label className="mt-4 flex cursor-pointer items-center gap-2 text-sm text-coffee-600">

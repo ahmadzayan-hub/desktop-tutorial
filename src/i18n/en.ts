@@ -148,6 +148,8 @@ export const en = {
       qualityWarn: "This image is a little low-resolution. It may look soft when printed.",
       qualityBad: "This image is too small to print well. Please choose a higher-resolution photo.",
       moderationBad: "This image can't be used. Please choose another photo.",
+      tooLarge: "That photo is over {max} MB. Please choose a smaller file.",
+      loadFailed: "We couldn't read that image. Please try a different file.",
       aiCleanup: "AI cleanup",
       aiCleanupHint: "Auto-enhance lighting & sharpness",
       autoCrop: "Auto-crop for cup",
