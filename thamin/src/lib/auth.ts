@@ -15,7 +15,14 @@ const COOKIE = 'bsp_session';
 const MAX_AGE_S = 60 * 60 * 24 * 7; // 7 days
 
 function secret(): string {
-  return process.env.AUTH_SECRET || 'dev-only-secret-change-in-production';
+  const s = process.env.AUTH_SECRET;
+  if (s) return s;
+  if (process.env.NODE_ENV === 'production') {
+    // Never sign sessions with a known fallback in production: forged
+    // cookies would grant any role. Fail closed instead.
+    throw new Error('AUTH_SECRET must be set in production');
+  }
+  return 'dev-only-secret-change-in-production';
 }
 
 function sign(payload: string): string {

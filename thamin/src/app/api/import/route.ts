@@ -60,7 +60,8 @@ export async function POST(req: NextRequest) {
             ...data,
             // an updated cost or price puts the sheet back through review
             approvalStatus:
-              item.cost !== existing.supplierQuote || item.price !== existing.finalPrice
+              (item.cost !== undefined && item.cost !== existing.supplierQuote) ||
+              (item.price !== undefined && item.price !== existing.finalPrice)
                 ? 'PENDING'
                 : existing.approvalStatus,
           },
@@ -87,7 +88,7 @@ export async function POST(req: NextRequest) {
     await audit(session.userId, 'Product', null, 'IMPORT_CATALOG', {
       after: { filename, sheet: sheetName, created, updated, skipped },
     });
-    if (created + updated > 0) notifyApprovers(); // fire-and-forget
+    if (created + updated > 0) await notifyApprovers(); // awaited: serverless-safe
     return NextResponse.json({ sheet: sheetName, created, updated, skipped, total: items.length });
   } catch (e) {
     if (e instanceof AuthError) return NextResponse.json({ error: e.message }, { status: e.status });

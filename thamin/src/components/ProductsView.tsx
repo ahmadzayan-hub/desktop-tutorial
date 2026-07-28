@@ -100,7 +100,7 @@ export default function ProductsView({
       .join('\n');
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
-    a.download = 'beyond-style-costing.csv';
+    a.download = 'thamin-costing.csv';
     a.click();
   }
 

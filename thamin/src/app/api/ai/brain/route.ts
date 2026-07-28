@@ -31,6 +31,10 @@ export async function POST(req: NextRequest) {
           include: { messages: { orderBy: { createdAt: 'asc' }, take: 30 } },
         })
       : null;
+    // Ownership check: never continue another user's conversation memory.
+    if (convo && convo.userId && convo.userId !== session.userId) {
+      convo = null;
+    }
     if (!convo) {
       convo = await prisma.brainConversation.create({
         data: { userId: session.userId, title: message.slice(0, 80) },

@@ -57,29 +57,51 @@ export async function POST(req: NextRequest) {
       vatAmount = Math.round(((total * vatRate) / (1 + vatRate)) * 100) / 100;
     }
 
-    const count = await prisma.quote.count();
-    const number = `BSQ-${new Date().getFullYear()}-${String(count + 1).padStart(4, '0')}`;
-    const validUntil = new Date(Date.now() + rules.quoteValidityHours * 36e5);
+    // Approval threshold: quotes above the configured amount are a financial
+    // commitment that needs a manager. Sales can prepare them but not send.
+    const threshold = (await prisma.businessRules.findUnique({ where: { id: 'default' } }))
+      ?.approvalThresholdAed;
+    if (threshold && total > threshold && session.role === 'SALES') {
+      return NextResponse.json(
+        {
+          error: `This quote (${total} AED) is above the approval threshold of ${threshold} AED. A manager must create or approve it. | هذا العرض أعلى من حد الاعتماد، ويلزم إنشاؤه أو اعتماده من المدير.`,
+        },
+        { status: 403 }
+      );
+    }
 
-    const quote = await prisma.quote.create({
-      data: {
-        number,
-        customerName: body.customerName,
-        customerPhone: body.customerPhone,
-        channelKey: body.channelKey,
-        language: body.language,
-        itemsJson: JSON.stringify(items),
-        subtotal,
-        deliveryCost: body.deliveryCost,
-        vatAmount,
-        vatMode: body.vatMode,
-        total,
-        validUntil,
-        deliveryDays: body.deliveryDays,
-        createdById: session.userId,
-      },
-    });
-    await audit(session.userId, 'Quote', quote.id, 'CREATE', { after: { number, total } });
+    const validUntil = new Date(Date.now() + rules.quoteValidityHours * 36e5);
+    const data = {
+      customerName: body.customerName,
+      customerPhone: body.customerPhone,
+      channelKey: body.channelKey,
+      language: body.language,
+      itemsJson: JSON.stringify(items),
+      subtotal,
+      deliveryCost: body.deliveryCost,
+      vatAmount,
+      vatMode: body.vatMode,
+      total,
+      validUntil,
+      deliveryDays: body.deliveryDays,
+      createdById: session.userId,
+    };
+
+    // Sequential quote numbers can collide under concurrent creation
+    // (unique constraint). Retry with the next number instead of failing.
+    let quote;
+    for (let attempt = 0; ; attempt++) {
+      const count = await prisma.quote.count();
+      const number = `BSQ-${new Date().getFullYear()}-${String(count + 1 + attempt).padStart(4, '0')}`;
+      try {
+        quote = await prisma.quote.create({ data: { number, ...data } });
+        break;
+      } catch (err) {
+        const unique = (err as { code?: string })?.code === 'P2002';
+        if (!unique || attempt >= 4) throw err;
+      }
+    }
+    await audit(session.userId, 'Quote', quote.id, 'CREATE', { after: { number: quote.number, total } });
     return NextResponse.json({ quote });
   } catch (e) {
     if (e instanceof AuthError) return NextResponse.json({ error: e.message }, { status: e.status });

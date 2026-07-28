@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
           data: { approvalStatus: 'PENDING' },
         });
         await audit(session.userId, 'Product', product.id, 'SUBMIT_FOR_APPROVAL');
-        notifyApprovers(); // fire-and-forget push to managers/admins
+        await notifyApprovers(); // awaited: serverless platforms drop floating promises
         return NextResponse.json({ product: updated });
       }
       requireRole('MANAGER'); // approve/reject requires manager+

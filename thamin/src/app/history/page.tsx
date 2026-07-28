@@ -30,7 +30,8 @@ export default async function HistoryPage() {
           </thead>
           <tbody>
             {calcs.map((c) => {
-              const warnings = JSON.parse(c.warningsJson) as { severity: string }[];
+              let warnings: { severity: string }[] = [];
+              try { warnings = JSON.parse(c.warningsJson); } catch { /* tolerate legacy rows */ }
               const hasCritical = warnings.some((w) => w.severity === 'critical');
               return (
                 <tr key={c.id} className="border-b border-neutral-100 last:border-0">
