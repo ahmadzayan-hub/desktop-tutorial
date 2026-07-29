@@ -1,0 +1,66 @@
+name: Beyond Style UAE landing CI
+
+# Static-content sanity checks for the landing/ tree. HTML validates, the JSON
+# config and sitemap parse, and the JSON-LD blocks are well-formed. Deploy
+# itself is handled separately by deploy-landing.yml.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "landing/**"
+      - ".github/workflows/landing-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "landing/**"
+      - ".github/workflows/landing-ci.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: landing-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: landing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Verify required files exist
+        run: |
+          set -e
+          for f in index.html favicon.svg config/site.config.json robots.txt sitemap.xml .htmlvalidate.json; do
+            test -f "$f" || { echo "::error::missing $f"; exit 1; }
+          done
+      - name: HTML syntax check (html-validate)
+        run: npx --yes html-validate index.html
+      - name: JSON is valid (site config)
+        run: node -e "JSON.parse(require('fs').readFileSync('config/site.config.json','utf8'))"
+      - name: XML sitemap parses
+        run: npx --yes xml-formatter --input sitemap.xml >/dev/null
+      - name: JSON-LD blocks parse
+        # Extract every <script type="application/ld+json"> block and JSON.parse
+        # each one so a stray trailing comma or missing quote fails the PR check.
+        run: |
+          node -e '
+            const fs = require("fs");
+            const html = fs.readFileSync("index.html", "utf8");
+            const re = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g;
+            let m, n = 0;
+            while ((m = re.exec(html))) {
+              n++;
+              try { JSON.parse(m[1]); }
+              catch (e) { console.error("JSON-LD block " + n + " invalid:", e.message); process.exit(1); }
+            }
+            if (n === 0) { console.error("no JSON-LD blocks found"); process.exit(1); }
+            console.log("OK, " + n + " JSON-LD block(s) parsed");
+          '
