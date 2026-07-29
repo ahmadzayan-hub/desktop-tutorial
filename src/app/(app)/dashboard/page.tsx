@@ -38,16 +38,19 @@ export default function DashboardPage() {
   const [loading, setLoading]             = useState(true);
 
   useEffect(() => {
+    const safe = (p: Promise<Response>) =>
+      p.then(r => r.ok ? r.json() : null).catch(() => null);
+
     Promise.all([
-      fetch("/api/courses"),
-      fetch("/api/deadlines?view=week"),
-      fetch("/api/announcements?limit=3"),
-      fetch("/api/profile"),
-    ]).then(async ([cR, dR, aR, pR]) => {
-      if (cR.ok) setCourses(await cR.json());
-      if (dR.ok) setDeadlines(await dR.json());
-      if (aR.ok) setAnnouncements(await aR.json());
-      if (pR.ok) setProfile(await pR.json());
+      safe(fetch("/api/courses")),
+      safe(fetch("/api/deadlines?view=week")),
+      safe(fetch("/api/announcements?limit=3")),
+      safe(fetch("/api/profile")),
+    ]).then(([courses, deadlines, announcements, profile]) => {
+      if (courses)       setCourses(courses);
+      if (deadlines)     setDeadlines(deadlines);
+      if (announcements) setAnnouncements(announcements);
+      if (profile)       setProfile(profile);
       setLoading(false);
     });
   }, []);
@@ -130,7 +133,7 @@ export default function DashboardPage() {
               <Flame size={18} className="text-orange-300 animate-pulse-soft" />
               <div>
                 <p className="text-[10px] text-white/60">{t("dashboard.streak" as any)}</p>
-                <p className="text-xs font-bold">14 {t("dashboard.streak" as any)} 🔥</p>
+                <p className="text-xs font-bold">14 🔥</p>
               </div>
             </div>
           </div>

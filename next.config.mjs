@@ -25,8 +25,8 @@ const CSP = [
   // Fonts: self + data URIs + Google Fonts CDN
   "font-src 'self' data: https://fonts.gstatic.com",
   "img-src 'self' data: blob:",
-  // API calls allowed only to self and Supabase
-  `connect-src 'self' https://*.supabase.co https://api.openai.com wss://*.supabase.co`,
+  // API calls allowed only to self, Supabase, and Anthropic
+  `connect-src 'self' https://*.supabase.co https://api.openai.com https://api.anthropic.com wss://*.supabase.co`,
   // No plugins, no object embeds
   "object-src 'none'",
   // Frames: only self (e.g. PWA install prompt)

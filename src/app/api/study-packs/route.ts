@@ -108,7 +108,7 @@ ${content.slice(0, 8000)}`;
 
     // Log AI usage
     await supabase.from("ai_usage_logs").insert({ user_id: userId, operation: "study_pack", model: process.env.AI_MODEL ?? "claude-sonnet-4-6", input_tokens: Math.ceil(content.length / 4), output_tokens: 1000, success: true });
-    await supabase.from("subscriptions").update({ ai_queries_used: supabase.raw("ai_queries_used + 1") }).eq("user_id", userId);
+    await supabase.rpc("increment_ai_queries", { uid: userId });
 
   } catch (err) {
     await supabase.from("study_packs").update({ status: "failed" }).eq("id", packId);
