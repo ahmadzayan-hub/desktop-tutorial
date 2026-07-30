@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient, getUser } from "@/lib/db/supabase-server";
 import { demoDeadlines } from "@/lib/demo";
+import { z } from "zod";
+
+const DeadlineSchema = z.object({
+  title: z.string().min(1).max(300),
+  course_id: z.string().uuid().nullable().optional(),
+  due_date: z.string().datetime(),
+  type: z.enum(["assignment", "exam", "quiz", "project", "presentation", "other"]).optional(),
+  description: z.string().max(1000).optional(),
+  risk: z.enum(["safe", "at_risk", "critical"]).optional(),
+});
 
 export async function GET(req: NextRequest) {
   const view = req.nextUrl.searchParams.get("view") ?? "week";
@@ -20,13 +30,18 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  let body: unknown;
+  try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid JSON" }, { status: 400 }); }
+
+  const parsed = DeadlineSchema.safeParse(body);
+  if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 422 });
+
   if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
-    const body = await req.json();
-    return NextResponse.json({ id: `dl-${Date.now()}`, user_id: "demo-user", risk: "safe", is_done: false, ...body, created_at: new Date().toISOString() }, { status: 201 });
+    return NextResponse.json({ id: `dl-${Date.now()}`, user_id: "demo-user", risk: "safe", is_done: false, ...parsed.data, created_at: new Date().toISOString() }, { status: 201 });
   }
-  const body = await req.json();
   const supabase = createClient();
-  const { data, error } = await supabase.from("deadlines").insert({ ...body, user_id: user.id }).select().single();
+  const { data, error } = await supabase.from("deadlines").insert({ ...parsed.data, user_id: user.id }).select().single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json(data, { status: 201 });
 }

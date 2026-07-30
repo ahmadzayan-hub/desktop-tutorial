@@ -15,7 +15,16 @@ export async function GET(req: NextRequest, { params }: { params: { chatId: stri
 }
 
 export async function POST(req: NextRequest, { params }: { params: { chatId: string } }) {
-  const { content, course_id } = await req.json();
+  let parsed: { content: string; course_id?: string };
+  try {
+    const body = await req.json();
+    if (!body.content || typeof body.content !== "string") throw new Error("content required");
+    if (body.content.length > 4000) return NextResponse.json({ error: "Message too long (max 4000 characters)" }, { status: 422 });
+    parsed = { content: body.content.trim(), course_id: body.course_id };
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message ?? "Invalid request" }, { status: 400 });
+  }
+  const { content, course_id } = parsed;
   if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
     const reply = `Great question! Based on your uploaded course materials, here's what I found:\n\n**Key insight**: ${content.length > 30 ? "Your question relates to a core MBA concept covered in your study packs." : "This concept is foundational to your MBA program."}\n\nFor a deeper dive, I recommend opening the relevant Study Pack — your Porter's Five Forces and DCF Valuation packs have comprehensive coverage of related frameworks.\n\n*Note: This is a demo response. Connect a real AI provider in settings to get live, context-aware tutoring from your actual uploaded files.*`;
     return NextResponse.json({ id: `msg-${Date.now()}`, chat_id: params.chatId, role: "assistant", content: reply, citations: [], is_grounded: false, created_at: new Date().toISOString() });
