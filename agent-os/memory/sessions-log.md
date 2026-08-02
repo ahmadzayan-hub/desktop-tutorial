@@ -43,6 +43,7 @@
 
 | التاريخ | الميلستون | commit |
 | --- | --- | --- |
+| 2026-08-02 | Privacy transparency + accessibility labels + CI signing status (#90) | `b36d99b` |
 | 2026-07-23 | feat(checkout): actually deliver the completed order to the business (WhatsApp) | `176ec43` |
 | 2026-07-21 | Add V0.2: live KPI entry, full bilingual UI, snapshot save/load | `78f2947` |
 | 2026-07-12 | Add generic Annual Operational Plan 2026 V0.1 (single self-contained HTML) | `e08e330` |
@@ -67,7 +68,6 @@
 | 2026-07-07 | Prep Play Store release: com.wisal.app id, AAB build, wisal.apk naming (#52) | `305677a` |
 | 2026-07-07 | v2: personalized WhatsApp broadcast to contacts (one tap per person) (#51) | `754456c` |
 | 2026-07-07 | v2: per-person tone/dialect + photo, and "remind me to send tomorrow" (#49) | `cd48a24` |
-| 2026-07-07 | v2: Material You dynamic color + user theme switch (auto/light/dark) (#46) | `e03047f` |
 
 > بيتولّد أوتوماتيك بواسطة `agent-os/memory/sync.js` — متعدّلش القسم ده بإيدك.
 
