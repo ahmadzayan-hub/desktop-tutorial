@@ -3,6 +3,32 @@
 Notable changes to the VERTEX platform. Semantic versioning
 (major.minor.patch) once we cut a 1.0.0 tag.
 
+## 0.6.1 - Quality pass
+
+Targeted fixes after a full audit.
+
+- `useSubmission` realtime: debounce reloads with a 250 ms trailing
+  timer so a burst of postgres_changes events (e.g. the analyzer
+  inserting five findings at once) collapses to a single reload
+  instead of five parallel three-select round-trips.
+- `useKpiTracking`: replace `new Date().toISOString().slice(0, 7)`
+  with local `getFullYear/getMonth` so a UAE user at 03:00 local time
+  is not shifted into last month's bucket because UTC has already
+  rolled over.
+- `NotFound` page: parity with the rest of the app - skip link,
+  header with Logo + LanguageSwitcher, semantic `<main id="main">`,
+  and a smart Go-home link (`/dashboard` when authenticated,
+  otherwise `/`).
+- Component tests: `SeverityBadge` and `StatCard` under
+  `tests/unit/*.test.tsx` (44/44 unit tests total).
+- Vitest config: pin `react` / `react-dom` / `react-i18next` /
+  `i18next` / `react-router-dom` to `vertex-platform/node_modules`
+  via aliases + `server.deps.inline` so a duplicate React copy in the
+  repo root does not break hooks in tests.
+- `.env.example`: dropped `VITE_CLAUDE_API_KEY` (would leak into the
+  browser bundle). Documented `VITE_AI_PROVIDER` (`mock` or `edge`)
+  and pointed provider secrets at Supabase.
+
 ## 0.6.0 - Testing suite - vitest + Playwright
 
 - Vitest is wired with jsdom, coverage via v8, and a light setup file

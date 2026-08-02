@@ -49,7 +49,10 @@ export function useKpiTracking({ projectId, monthsBack = 12 }: Filters = {}): St
   }, [load]);
 
   const totalThisMonth = useMemo(() => {
-    const key = new Date().toISOString().slice(0, 7);
+    // Use local calendar (not toISOString) so a UAE user at 03:00 local time
+    // is not counted against "last month" because UTC has already rolled over.
+    const now = new Date();
+    const key = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     return records
       .filter((r) => (r.month ?? '').startsWith(key))
       .reduce((s, r) => s + Number(r.penalty_amount_aed ?? 0), 0);

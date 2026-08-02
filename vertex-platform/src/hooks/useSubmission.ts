@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { supabase } from '@/utils/supabase';
 import type {
@@ -74,29 +74,40 @@ export function useSubmission(submissionId: string | undefined): State {
   }, [load]);
 
   // Realtime: reload the submission bundle whenever new findings, comments,
-  // or submission updates land for THIS submission. Cheap; the reload query
-  // batch is three selects and only runs when the row we care about changes.
+  // or submission updates land for THIS submission. Debounced with a 250 ms
+  // trailing timer so a burst of inserts (for example, the analyzer writing
+  // five findings in one go) collapses to a single reload instead of five
+  // parallel three-select round-trips.
+  const debounceRef = useRef<number | null>(null);
   useEffect(() => {
     if (!submissionId) return;
+    const scheduleReload = () => {
+      if (debounceRef.current !== null) window.clearTimeout(debounceRef.current);
+      debounceRef.current = window.setTimeout(() => {
+        debounceRef.current = null;
+        void load();
+      }, 250);
+    };
     const channel = supabase
       .channel(`submission:${submissionId}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'submissions', filter: `id=eq.${submissionId}` },
-        () => { void load(); }
+        scheduleReload
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'ai_findings', filter: `submission_id=eq.${submissionId}` },
-        () => { void load(); }
+        scheduleReload
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'comments', filter: `submission_id=eq.${submissionId}` },
-        () => { void load(); }
+        scheduleReload
       )
       .subscribe();
     return () => {
+      if (debounceRef.current !== null) window.clearTimeout(debounceRef.current);
       void supabase.removeChannel(channel);
     };
   }, [submissionId, load]);
