@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Loader2 } from "lucide-react";
 import { useLocale } from "@/lib/i18n/locale-provider";
 import type { BriefAudience, DbProject } from "@/types/database";
 import {
@@ -314,8 +313,10 @@ export function ProjectPipeline({ project }: Props) {
 
   if (!hydrated) {
     return (
-      <div className="flex justify-center py-10 text-slate-400">
-        <Loader2 className="h-5 w-5 animate-spin" />
+      <div className="space-y-5" aria-busy>
+        <div className="h-14 animate-pulse rounded-2xl bg-slate-100" />
+        <div className="h-64 animate-pulse rounded-2xl bg-slate-100" />
+        <div className="h-40 animate-pulse rounded-2xl bg-slate-100" />
       </div>
     );
   }

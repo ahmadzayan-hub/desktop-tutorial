@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { LocaleProvider } from "@/lib/i18n/locale-provider";
 import { ToastProvider } from "@/components/ui/toast";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
+import { OfflineBanner } from "@/components/pwa/offline-banner";
 import "./globals.css";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://mutabasir.ae";
@@ -174,6 +175,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-slate-50 text-slate-900 antialiased">
         <LocaleProvider>
+          <OfflineBanner />
           <ToastProvider>{children}</ToastProvider>
           <InstallPrompt />
         </LocaleProvider>

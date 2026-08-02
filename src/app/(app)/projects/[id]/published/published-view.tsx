@@ -70,10 +70,12 @@ export function PublishedView({ project }: Props) {
           </div>
         )}
 
-        {!state || !brief || !snapshot ? (
+        {state === null ? (
           <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500 shadow-sm">
-            {t.pipeline.publish.empty}
+            {isAr ? "جارٍ التحميل…" : "Loading…"}
           </div>
+        ) : !brief || !snapshot ? (
+          <EmptyPublished project={project} />
         ) : (
           <motion.article
             initial={{ opacity: 0, y: 10 }}
@@ -201,6 +203,34 @@ export function PublishedView({ project }: Props) {
             </footer>
           </motion.article>
         )}
+      </div>
+    </div>
+  );
+}
+
+function EmptyPublished({ project }: { project: DbProject }) {
+  const { locale } = useLocale();
+  const isAr = locale === "ar";
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-10 shadow-sm">
+      <div className="mx-auto max-w-md text-center">
+        <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-full bg-slate-100 text-slate-500">
+          <FileText className="h-5 w-5" />
+        </div>
+        <h1 className="display-tight text-lg font-semibold text-brand-navy">
+          {isAr ? "لا توجد لقطة منشورة بعد" : "No published snapshot yet"}
+        </h1>
+        <p className="mt-2 text-sm leading-relaxed text-slate-600">
+          {isAr
+            ? "تُخزَّن لقطات النشر محلّياً في المتصفّح الذي أُنشئت منه. إن كنت تفتح هذا الرابط من جهازٍ آخر، أو نافذة خاصّة، أو مسحت بيانات الموقع، فلن تظهر اللقطة هنا. عد إلى صفحة المشروع وانشر لقطةً جديدة."
+            : "Published snapshots live in the browser they were created on. If you're on a different device, in a private window, or cleared site data, the snapshot won't appear here. Return to the project and publish a fresh snapshot."}
+        </p>
+        <a
+          href={`/projects/${project.id}`}
+          className="mt-5 inline-flex items-center justify-center rounded-md bg-brand-navy px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-navy/90"
+        >
+          {isAr ? "افتح المشروع" : "Open project"}
+        </a>
       </div>
     </div>
   );
