@@ -14,8 +14,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -227,14 +228,17 @@ fun BroadcastScreen(onBack: () -> Unit) {
             )
         },
     ) { padding ->
-        Column(
+        // LazyColumn: القائمة بترسم كسول (lazy) فما بنرسمش كل الكروت مرة واحدة —
+        // تحسين أداء وذاكرة كبير مع عدد جهات اتصال كبير. الهيدر في item واحد.
+        LazyColumn(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
+          item {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             // كود الدولة + نص الرسالة
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 OutlinedTextField(
@@ -405,8 +409,13 @@ fun BroadcastScreen(onBack: () -> Unit) {
                         }
                     }
                 }
+            } // نهاية if (loaded) لأدوات الهيدر
+            } // نهاية Column الهيدر
+          } // نهاية item الهيدر
 
-                filtered.take(300).forEach { c ->
+          // قائمة جهات الاتصال — عناصر كسولة بمفتاح ثابت لكل صف.
+          if (loaded) {
+            items(filtered.take(300), key = { it.id }) { c ->
                     val isSel = selected.contains(c.id)
                     val msg = aiMsgs[c.id] ?: personalize(c.name)
                     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
@@ -431,8 +440,8 @@ fun BroadcastScreen(onBack: () -> Unit) {
                             ) { Text("📲 ابعت لـ${c.name}") }
                         }
                     }
-                }
             }
+          }
         }
     }
 }
