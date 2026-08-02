@@ -113,6 +113,17 @@ class Store(context: Context) {
         }.getOrNull()
     }
 
+    // أيام آخر تواصل لكذا شخص بقراءة واحدة للملف — أسرع بكتير من نداء لكل شخص.
+    fun daysSinceContact(recipientIds: List<String>): Map<String, Long?> {
+        val map = read().lastContactedPerRecipient
+        val today = DateUtil.today()
+        return recipientIds.associateWith { id ->
+            map[id]?.let {
+                runCatching { java.time.temporal.ChronoUnit.DAYS.between(java.time.LocalDate.parse(it), today) }.getOrNull()
+            }
+        }
+    }
+
     // ---- الجولة المعلّقة (بين الإشعار والواجهة) ----
     fun getPending(): PendingRound? = read().pending
 

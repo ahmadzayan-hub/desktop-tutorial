@@ -105,8 +105,9 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
         }
 
         val threshold = settings.reminderDays.toLong()
+        val daysMap = store.daysSinceContact(recips.map { it.id }) // قراءة واحدة للملف
         val stale = recips
-            .map { it to (store.daysSinceContact(it.id) ?: Long.MAX_VALUE) }
+            .map { it to (daysMap[it.id] ?: Long.MAX_VALUE) }
             .filter { it.second >= threshold }
             .maxByOrNull { it.second }
         _nextAction.value = if (stale == null) null else {
