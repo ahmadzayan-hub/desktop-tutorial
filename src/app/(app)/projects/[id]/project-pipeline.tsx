@@ -34,6 +34,8 @@ import { AiEngineCard } from "./_pipeline/ai-engine-card";
 import { ExtractCard } from "./_pipeline/extract-card";
 import { BriefCard } from "./_pipeline/brief-card";
 import { PublishCard, type QualitySummary } from "./_pipeline/publish-card";
+import { AgentPanel } from "@/components/agents/agent-panel";
+import { orchestrateAgents } from "@/lib/agents/orchestrator";
 
 interface Props {
   project: DbProject;
@@ -296,6 +298,19 @@ export function ProjectPipeline({ project }: Props) {
 
   const latestBrief = state.briefs[0] ?? null;
 
+  // Multi-agent orchestration — deterministic, recomputes whenever
+  // facts or the latest brief change.
+  const agentReport = useMemo(
+    () =>
+      orchestrateAgents({
+        subject: project.subject,
+        facts: state.facts,
+        brief_text_en: latestBrief?.text_en,
+        brief_text_ar: latestBrief?.text_ar,
+      }),
+    [project.subject, state.facts, latestBrief],
+  );
+
   // Quality gate
   const quality: QualitySummary = useMemo(() => {
     const has_documents = state.documents.length > 0;
@@ -405,15 +420,26 @@ export function ProjectPipeline({ project }: Props) {
           )}
 
           {active === "extract" && (
-            <ExtractCard
-              facts={state.facts}
-              documents={state.documents}
-              meta={extractionMeta}
-              running={extracting}
-              canRun={state.documents.length > 0}
-              onRun={handleExtract}
-              onToggleVerified={toggleVerified}
-            />
+            <>
+              <ExtractCard
+                facts={state.facts}
+                documents={state.documents}
+                meta={extractionMeta}
+                running={extracting}
+                canRun={state.documents.length > 0}
+                onRun={handleExtract}
+                onToggleVerified={toggleVerified}
+              />
+              {state.facts.length > 0 && (
+                <AgentPanel
+                  reports={agentReport.reports}
+                  documents={state.documents}
+                  pageLabel={(n: number) =>
+                    t.pipeline.extract.page.replace("{n}", String(n))
+                  }
+                />
+              )}
+            </>
           )}
 
           {active === "brief" && (
