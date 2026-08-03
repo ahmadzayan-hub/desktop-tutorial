@@ -14,6 +14,19 @@ class CloudApiClientTest {
         assertTrue(j.contains("أهلا يا فندم"))
     }
 
+    @Test fun buildsTemplateJson() {
+        val j = CloudApiClient.buildTemplateJson("00201001234567", "hello_world", "en_US")
+        assertTrue(j.contains("\"to\":\"00201001234567\""))
+        assertTrue(j.contains("\"type\":\"template\""))
+        assertTrue(j.contains("\"name\":\"hello_world\""))
+        assertTrue(j.contains("\"code\":\"en_US\""))
+    }
+
+    @Test fun templateLanguageDefaultsToArabic() {
+        val j = CloudApiClient.buildTemplateJson("971500000000", "welcome", "")
+        assertTrue(j.contains("\"code\":\"ar\""))
+    }
+
     @Test fun notConfiguredWhenBlank() {
         assertFalse(CloudApiClient("", "").isConfigured())
         assertFalse(CloudApiClient("https://x/api/send", "").isConfigured())

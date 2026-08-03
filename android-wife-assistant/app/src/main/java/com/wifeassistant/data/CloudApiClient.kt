@@ -8,6 +8,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonObject
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -26,10 +27,17 @@ class CloudApiClient(private val endpoint: String, private val apiKey: String) {
 
     fun isConfigured(): Boolean = endpoint.isNotBlank() && apiKey.isNotBlank()
 
-    // بيبعت رسالة نصية لرقم. بيرجّع Result: نجاح بمعرّف الرسالة، أو فشل برسالة خطأ.
-    suspend fun sendText(to: String, text: String): Result<String> = withContext(Dispatchers.IO) {
+    // نص حر (بيشتغل جوّه نافذة 24 ساعة من آخر رسالة بعتها العميل).
+    suspend fun sendText(to: String, text: String): Result<String> = post(buildSendJson(to, text))
+
+    // قالب معتمد من Meta (بيشتغل خارج الـ24 ساعة كمان). language مثلاً "ar" أو "en_US".
+    suspend fun sendTemplate(to: String, name: String, language: String): Result<String> =
+        post(buildTemplateJson(to, name, language))
+
+    // POST مشترك للعقد بتاع الباك-إند: يرجّع معرّف الرسالة أو رسالة خطأ واضحة.
+    private suspend fun post(bodyJson: String): Result<String> = withContext(Dispatchers.IO) {
         if (!isConfigured()) return@withContext Result.failure(IllegalStateException("Business API مش متظبّط"))
-        val body = buildSendJson(to, text).toRequestBody("application/json".toMediaType())
+        val body = bodyJson.toRequestBody("application/json".toMediaType())
         val req = Request.Builder()
             .url(endpoint)
             .addHeader("x-api-key", apiKey)
@@ -52,11 +60,21 @@ class CloudApiClient(private val endpoint: String, private val apiKey: String) {
     }
 
     companion object {
-        // بناء جسم الطلب — دالة نقية عشان تتختبر (نفس عقد الباك-إند).
+        // بناء جسم النص — دالة نقية عشان تتختبر (نفس عقد الباك-إند).
         fun buildSendJson(to: String, text: String): String = buildJsonObject {
             put("to", to.filter { it.isDigit() })
             put("type", "text")
             put("text", text)
+        }.toString()
+
+        // بناء جسم القالب — دالة نقية.
+        fun buildTemplateJson(to: String, name: String, language: String): String = buildJsonObject {
+            put("to", to.filter { it.isDigit() })
+            put("type", "template")
+            putJsonObject("template") {
+                put("name", name)
+                putJsonObject("language") { put("code", language.ifBlank { "ar" }) }
+            }
         }.toString()
     }
 }

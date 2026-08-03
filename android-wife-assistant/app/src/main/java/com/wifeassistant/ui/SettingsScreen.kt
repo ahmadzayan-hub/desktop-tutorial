@@ -62,6 +62,8 @@ fun SettingsScreen(onBack: () -> Unit, onThemeChanged: () -> Unit = {}) {
     var evening by remember { mutableStateOf(settings.eveningTime) }
     var reminders by remember { mutableStateOf(settings.reminders) }
     var reminderDays by remember { mutableStateOf(settings.reminderDays.toString()) }
+    var apiEndpoint by remember { mutableStateOf(settings.businessApiEndpoint) }
+    var apiKey by remember { mutableStateOf(settings.businessApiKey) }
     var showRestore by remember { mutableStateOf(false) }
     var restoreText by remember { mutableStateOf("") }
 
@@ -208,6 +210,28 @@ fun SettingsScreen(onBack: () -> Unit, onThemeChanged: () -> Unit = {}) {
                 )
             }
 
+            Section("WhatsApp Business API (متقدّم)")
+            Text(
+                "للإرسال الآلي المشروع للعملاء عبر Cloud API من Meta. سيبها فاضية لو مش محتاجها — " +
+                    "هيفضل الإرسال بفتح واتساب بضغطة يدوية. خطوات النشر في wisal-cloud-api/README.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            OutlinedTextField(
+                value = apiEndpoint,
+                onValueChange = { apiEndpoint = it },
+                label = { Text("Endpoint (…/api/send)") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            OutlinedTextField(
+                value = apiKey,
+                onValueChange = { apiKey = it },
+                label = { Text("APP_API_KEY") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
             Section("نسخة احتياطية واستعادة")
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(
@@ -237,6 +261,8 @@ fun SettingsScreen(onBack: () -> Unit, onThemeChanged: () -> Unit = {}) {
                     settings.eveningTime = evening.trim()
                     settings.reminders = reminders
                     reminderDays.toIntOrNull()?.let { settings.reminderDays = it }
+                    settings.businessApiEndpoint = apiEndpoint
+                    settings.businessApiKey = apiKey
                     Scheduler.scheduleDaily(context)
                     Toast.makeText(context, "اتحفظ ✅", Toast.LENGTH_SHORT).show()
                     onBack()
