@@ -65,6 +65,8 @@ android {
 
     testOptions {
         unitTests.isReturnDefaultValues = true
+        // Robolectric محتاج موارد أندرويد عشان يشغّل اختبارات طبقة البيانات على الـ JVM.
+        unitTests.isIncludeAndroidResources = true
     }
 }
 
@@ -91,4 +93,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 
     testImplementation("junit:junit:4.13.2")
+    // اختبارات طبقة البيانات على الـ JVM (بدون emulator) — بتحرس دوران JSON اللي R8 ممكن يكسره.
+    testImplementation("org.robolectric:robolectric:4.14.1")
+    testImplementation("androidx.test:core-ktx:1.6.1")
 }
