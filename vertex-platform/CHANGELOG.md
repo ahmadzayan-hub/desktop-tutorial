@@ -3,6 +3,34 @@
 Notable changes to the VERTEX platform. Semantic versioning
 (major.minor.patch) once we cut a 1.0.0 tag.
 
+## 0.6.2 - Hardening round 2
+
+Follow-up from the audit list. Every item is a real defence-in-depth
+change, not cosmetics.
+
+- CSP is tighter. `img-src` is now `'self' data: blob:
+  https://*.supabase.co` (was any HTTPS). `connect-src` dropped
+  `https://api.anthropic.com` and `https://api.openai.com` since real
+  provider calls go through the Supabase Edge Function; the browser
+  no longer needs a hole to reach the AIs directly.
+- Edge Function `analyze-submission` now rate-limits at 5 analyses
+  per rolling minute per user id (falls back to client IP without a
+  JWT). Excess requests get a 429 with a `Retry-After` header.
+- Bundle size regression gate at `scripts/bundle-size-check.mjs`
+  runs in CI (`npm run bundle:check`) right after `npm run build`.
+  Each chunk family (index / react / router / i18n / supabase /
+  charts / pdf / plus every per-page lazy chunk) has an explicit
+  gzip ceiling. A careless dependency import fails the check
+  instead of silently shipping 200 KB gzip.
+- `docs/BACKUPS.md` documents daily managed backups, weekly manual
+  `pg_dump`, nightly storage mirror, the restore drill, and
+  retention.
+- `docs/FOLLOWUPS.md` lists PDF Arabic font embedding, authenticated
+  e2e, server-side upload validation, backup automation, and chart
+  bundle split with explicit owners and target versions.
+- `tsconfig.json`: `ignoreDeprecations: "5.0"` so the build survives
+  TypeScript 7's deprecation warning on `baseUrl`.
+
 ## 0.6.1 - Quality pass
 
 Targeted fixes after a full audit.

@@ -54,6 +54,27 @@ const cors = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
+// In-memory rate limiter. Each Deno isolate keeps its own bucket map; on
+// Supabase's autoscaled runtime this means the effective cap is looser than
+// RATE_LIMIT_MAX x isolates, but it still throttles pathological loops from
+// one client. For a hard per-user cap, back this by a Postgres table.
+const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const rateBuckets = new Map<string, number[]>();
+
+function rateLimitAllows(userId: string): { ok: true } | { ok: false; retryAfterSec: number } {
+  const now = Date.now();
+  const cutoff = now - RATE_LIMIT_WINDOW_MS;
+  const bucket = (rateBuckets.get(userId) ?? []).filter((t) => t > cutoff);
+  if (bucket.length >= RATE_LIMIT_MAX) {
+    const retryAfterSec = Math.ceil((bucket[0] + RATE_LIMIT_WINDOW_MS - now) / 1000);
+    return { ok: false, retryAfterSec: Math.max(1, retryAfterSec) };
+  }
+  bucket.push(now);
+  rateBuckets.set(userId, bucket);
+  return { ok: true };
+}
+
 // deno-lint-ignore no-explicit-any
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
@@ -89,6 +110,31 @@ Deno.serve(async (req: Request) => {
       status: 400,
       headers: { 'content-type': 'application/json', ...cors },
     });
+  }
+
+  // Rate limit: identify the caller from their JWT and cap analyses per
+  // rolling minute. Falls back to the client IP when no JWT is present.
+  const {
+    data: { user: caller },
+  } = await asUser.auth.getUser();
+  const rateKey =
+    caller?.id ??
+    req.headers.get('cf-connecting-ip') ??
+    req.headers.get('x-forwarded-for') ??
+    'anon';
+  const rate = rateLimitAllows(rateKey);
+  if (!rate.ok) {
+    return new Response(
+      JSON.stringify({ error: 'Too many analyses. Try again shortly.' }),
+      {
+        status: 429,
+        headers: {
+          'content-type': 'application/json',
+          'retry-after': String(rate.retryAfterSec),
+          ...cors,
+        },
+      }
+    );
   }
 
   // 1. Load submission + project through the caller's JWT.

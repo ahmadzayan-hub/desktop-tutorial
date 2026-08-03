@@ -58,6 +58,9 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
         run: npm run build
 
+      - name: Bundle size gate
+        run: npm run bundle:check
+
       - name: Upload dist artifact
         if: success()
         uses: actions/upload-artifact@v4
