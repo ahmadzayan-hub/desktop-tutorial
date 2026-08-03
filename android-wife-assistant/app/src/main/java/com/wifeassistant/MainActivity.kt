@@ -38,6 +38,7 @@ import com.wifeassistant.data.Settings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.wifeassistant.ui.BroadcastScreen
+import com.wifeassistant.ui.DraftPolishScreen
 import com.wifeassistant.ui.HistoryScreen
 import com.wifeassistant.ui.HomeScreen
 import com.wifeassistant.ui.HomeViewModel
@@ -147,6 +148,7 @@ private fun AppRoot(onThemeChanged: () -> Unit = {}) {
                 "people" -> PeopleScreen(onBack = { screen = "home" })
                 "broadcast" -> BroadcastScreen(onBack = { screen = "home" })
                 "reply" -> SmartReplyScreen(onBack = { screen = "home" })
+                "polish" -> DraftPolishScreen(onBack = { screen = "home" })
                 else -> HomeScreen(
                     vm = vm,
                     onOpenSettings = { screen = "settings" },
@@ -155,6 +157,7 @@ private fun AppRoot(onThemeChanged: () -> Unit = {}) {
                     onOpenPeople = { screen = "people" },
                     onOpenBroadcast = { screen = "broadcast" },
                     onOpenReply = { screen = "reply" },
+                    onOpenPolish = { screen = "polish" },
                 )
             }
         }

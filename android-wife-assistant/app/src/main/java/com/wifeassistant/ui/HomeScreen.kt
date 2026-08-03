@@ -82,6 +82,7 @@ fun HomeScreen(
     onOpenPeople: () -> Unit,
     onOpenBroadcast: () -> Unit = {},
     onOpenReply: () -> Unit = {},
+    onOpenPolish: () -> Unit = {},
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val people by vm.people.collectAsStateWithLifecycle()
@@ -202,6 +203,9 @@ fun HomeScreen(
             }
             OutlinedButton(onClick = onOpenReply, modifier = Modifier.fillMaxWidth()) {
                 Text("💬 رد ذكي على رسالة وصلتك")
+            }
+            OutlinedButton(onClick = onOpenPolish, modifier = Modifier.fillMaxWidth()) {
+                Text("✨ حسّن رسالتي قبل ما أبعتها")
             }
             OutlinedButton(onClick = onOpenBroadcast, modifier = Modifier.fillMaxWidth()) {
                 Text("📣 رسالة جماعية لجهات الاتصال")
