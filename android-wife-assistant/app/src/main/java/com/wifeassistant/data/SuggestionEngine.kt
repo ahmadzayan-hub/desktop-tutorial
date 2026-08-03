@@ -120,6 +120,8 @@ class SuggestionEngine(
         // نبرة ولهجة خاصة بالشخص لو موجودة، غير كده الافتراضي.
         val tone = recipient?.tone?.takeIf { it.isNotBlank() } ?: rel.tone
         val dialect = AppConstants.dialectPhrase(recipient?.dialect ?: "egyptian")
+        // لغة الرسالة حسب لغة الشخص الأولى (auto: نكشف من اسمه).
+        val lang = Lang.resolve(recipient?.language, recipient?.name)
         val lines = mutableListOf(
             "انت بتساعد شخص يكتب رسالة قصيرة ${rel.toAddr} (${rel.label}) بـ$dialect.",
             "النبرة المناسبة: $tone.",
@@ -143,6 +145,8 @@ class SuggestionEngine(
             lines.add("نوع الرسالة المطلوب: ${intent.label}. ${intent.hint}")
         }
         lines.add("هدفك: اقتراح هو يبعته بنفسه ${rel.toAddr} عشان يقرّب ويقوّي الترابط.")
+        // لو لغة الشخص إنجليزي، نحقن توجيه غالب في الأول عشان يكتب بالإنجليزي بالكامل.
+        if (lang == Lang.EN) lines.add(0, Lang.promptDirective(Lang.EN))
         return lines.joinToString("\n")
     }
 

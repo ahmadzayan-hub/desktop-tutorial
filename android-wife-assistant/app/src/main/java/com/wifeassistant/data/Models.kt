@@ -18,6 +18,7 @@ data class Recipient(
     val social: String = "",     // روابط حساباته (مرجع سريع، ما بتتسحبش تلقائياً)
     val tone: String = "",       // نبرة خاصة بيه (فاضي = نبرة العلاقة الافتراضية)
     val dialect: String = "egyptian", // لهجة الرسالة له (مصري/خليجي/شامي/فصحى)
+    val language: String = "auto",    // لغة الرسالة حسب لغته الأولى: auto/ar/en
     val photoPath: String = "",  // صورة محلية (اختارها المستخدم من المعرض)
 )
 

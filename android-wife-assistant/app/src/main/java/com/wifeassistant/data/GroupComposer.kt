@@ -29,8 +29,11 @@ class GroupComposer(private val settings: Settings) {
             if (context.isNotBlank()) appendLine("سياق مهم للرسالة: $context.")
             append("اكتب الرسالة دلوقتي.")
         }
+        // لغة الرسالة: نكشفها من اسم العضو والسياق (عربي/إنجليزي) — للعملاء الأجانب.
+        val lang = Lang.resolve(null, name, context)
+        val sysFinal = if (lang == Lang.EN) Lang.promptDirective(Lang.EN) + " " + sys else sys
         val raw = groq.complete(
-            listOf(ChatMessage("system", sys), ChatMessage("user", user)),
+            listOf(ChatMessage("system", sysFinal), ChatMessage("user", user)),
             temperature = 0.85,
         )
         // أول سطر غير فاضي، بعد شيل أي ترقيم زي "١-".

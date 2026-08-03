@@ -13,8 +13,11 @@ class SmartReply(
         val dialect = AppConstants.dialectPhrase(recipient?.dialect ?: "egyptian")
         val name = recipient?.name?.takeIf { it.isNotBlank() }
         val examples = store.styleExamples(recipient?.id ?: "").takeLast(AppConstants.STYLE_EXAMPLES_MAX)
+        // لغة الرد حسب لغة الشخص: تفضيله، وإلا نكشف من نص الرسالة اللي وصلت أو اسمه.
+        val lang = Lang.resolve(recipient?.language, received, name)
 
         val sys = buildString {
+            if (lang == Lang.EN) { append(Lang.promptDirective(Lang.EN)); append(" ") }
             append("انت بتساعد شخص يرد على رسالة وصلته من ${rel.label} بـ$dialect. ")
             append("النبرة المناسبة: $tone. ")
             append("اكتب كإنسان حقيقي بمشاعر صادقة، ردّ قصير طبيعي يخاطب اللي الرسالة قالته بالظبط، من غير ما تعيد كلامها حرفيًا. ")

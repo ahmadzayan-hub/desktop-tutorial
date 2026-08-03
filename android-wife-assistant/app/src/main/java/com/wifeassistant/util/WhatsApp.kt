@@ -41,8 +41,13 @@ object WhatsApp {
             return try { context.startActivity(intent); true } catch (e: Exception) { false }
         }
         val ok = if (businessApp) {
-            // نجرّب واتساب Business الأول، وإلا نرجع للعادي (بدون تحديد باكدج).
-            launch(PKG_BUSINESS) || launch(null)
+            // نجرّب واتساب Business الأول؛ لو مش متثبّت نرجع للعادي ونوضّح للمستخدم.
+            if (launch(PKG_BUSINESS)) true
+            else {
+                val fell = launch(null)
+                if (fell) Toast.makeText(context, "واتساب Business مش متثبّت — فتحنا واتساب العادي", Toast.LENGTH_LONG).show()
+                fell
+            }
         } else {
             launch(null)
         }

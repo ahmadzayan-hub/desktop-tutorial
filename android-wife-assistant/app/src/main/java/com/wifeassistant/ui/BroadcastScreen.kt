@@ -185,8 +185,10 @@ fun BroadcastScreen(onBack: () -> Unit) {
     fun aiGenerate() {
         if (settings.groqKey.isBlank()) { toast("ضيف مفتاح Groq من الإعدادات الأول"); return }
         if (busy) return
-        val targets = currentTargets().take(60)
+        val all = currentTargets()
+        val targets = all.take(60)
         if (targets.isEmpty()) { toast("مفيش أعضاء"); return }
+        if (all.size > 60) toast("هنجهّز أول 60 (الأقصى للدفعة) — كرّر للباقي")
         scope.launch {
             busy = true; progress = 0
             for (c in targets) {

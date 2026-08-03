@@ -16,8 +16,11 @@ class DraftPolish(
         val dialect = AppConstants.dialectPhrase(recipient?.dialect ?: "egyptian")
         val name = recipient?.name?.takeIf { it.isNotBlank() }
         val examples = store.styleExamples(recipient?.id ?: "").takeLast(AppConstants.STYLE_EXAMPLES_MAX)
+        // لغة النسخة المحسّنة حسب لغة الشخص: تفضيله، وإلا نكشف من مسوّدتك أو اسمه.
+        val lang = Lang.resolve(recipient?.language, clean, name)
 
         val sys = buildString {
+            if (lang == Lang.EN) { append(Lang.promptDirective(Lang.EN)); append(" ") }
             append("انت بتساعد شخص يحسّن رسالة هو كاتبها بنفسه عشان يبعتها لـ${rel.label} بـ$dialect. ")
             append("النبرة المناسبة: $tone. ")
             append("حافظ على نفس قصده ومعناه ومعلوماته بالظبط — بس خلّي الصياغة أدفأ وأطبع وأصدق، ")

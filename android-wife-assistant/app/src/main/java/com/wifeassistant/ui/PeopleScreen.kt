@@ -83,6 +83,7 @@ fun PeopleScreen(onBack: () -> Unit) {
     var editingId by remember { mutableStateOf<String?>(null) }
     var tone by remember { mutableStateOf("") }
     var dialect by remember { mutableStateOf("egyptian") }
+    var language by remember { mutableStateOf("auto") }
     var photoPath by remember { mutableStateOf("") }
     // معرّف ثابت للفورمة عشان نربط الصورة بالشخص حتى لو لسه ما اتحفظش.
     var workingId by remember { mutableStateOf(UUID.randomUUID().toString()) }
@@ -120,7 +121,7 @@ fun PeopleScreen(onBack: () -> Unit) {
 
     fun clearForm() {
         name = ""; number = ""; notes = ""; occText = ""; social = ""; pasteInfo = ""
-        tone = ""; dialect = "egyptian"; photoPath = ""
+        tone = ""; dialect = "egyptian"; language = "auto"; photoPath = ""
         workingId = UUID.randomUUID().toString()
         relation = Relations.ALL.first().id; editingId = null
     }
@@ -167,7 +168,7 @@ fun PeopleScreen(onBack: () -> Unit) {
                 Recipient(
                     id = workingId, name = name.trim(), relation = relation,
                     number = number.trim(), notes = notes.trim(), occasions = occs, social = social.trim(),
-                    tone = tone.trim(), dialect = dialect, photoPath = photoPath,
+                    tone = tone.trim(), dialect = dialect, language = language, photoPath = photoPath,
                 )
             )
         } else {
@@ -175,7 +176,7 @@ fun PeopleScreen(onBack: () -> Unit) {
             if (i >= 0) list[i] = list[i].copy(
                 name = name.trim(), relation = relation, number = number.trim(),
                 notes = notes.trim(), occasions = occs, social = social.trim(),
-                tone = tone.trim(), dialect = dialect, photoPath = photoPath,
+                tone = tone.trim(), dialect = dialect, language = language, photoPath = photoPath,
             )
         }
         settings.recipients = list
@@ -268,6 +269,21 @@ fun PeopleScreen(onBack: () -> Unit) {
                     FilterChip(
                         selected = dialect == id,
                         onClick = { dialect = id },
+                        label = { Text(label) },
+                    )
+                }
+            }
+
+            // لغة الرسالة حسب لغته الأولى: تلقائي (نكشفها) / عربي / إنجليزي.
+            Text("لغة الرسالة (حسب لغته الأولى)", style = MaterialTheme.typography.bodyMedium)
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                listOf("auto" to "🌐 تلقائي", "ar" to "🇪🇬 عربي", "en" to "🇬🇧 إنجليزي").forEach { (id, label) ->
+                    FilterChip(
+                        selected = language == id,
+                        onClick = { language = id },
                         label = { Text(label) },
                     )
                 }
@@ -408,7 +424,7 @@ fun PeopleScreen(onBack: () -> Unit) {
                                 name = p.name; relation = p.relation; number = p.number; notes = p.notes
                                 occText = p.occasions.joinToString("\n") { "${it.label}=${it.date}" }
                                 social = p.social; pasteInfo = ""
-                                tone = p.tone; dialect = p.dialect; photoPath = p.photoPath
+                                tone = p.tone; dialect = p.dialect; language = p.language; photoPath = p.photoPath
                                 workingId = p.id; editingId = p.id
                             }) { Text("تعديل") }
                             TextButton(onClick = {
