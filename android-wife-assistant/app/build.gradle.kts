@@ -96,4 +96,8 @@ dependencies {
     // اختبارات طبقة البيانات على الـ JVM (بدون emulator) — بتحرس دوران JSON اللي R8 ممكن يكسره.
     testImplementation("org.robolectric:robolectric:4.14.1")
     testImplementation("androidx.test:core-ktx:1.6.1")
+    // اختبار Compose UI على الـ JVM عبر Robolectric (smoke) — بيتأكد إن الـ UI بيركّب ويتفاعل.
+    testImplementation(composeBom)
+    testImplementation("androidx.compose.ui:ui-test-junit4")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
