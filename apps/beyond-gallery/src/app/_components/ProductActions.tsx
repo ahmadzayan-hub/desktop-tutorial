@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 import { useCart } from "./Cart";
 import { useWishlist } from "./Wishlist";
 import { CartIcon, HeartIcon, WhatsAppIcon } from "./icons";
@@ -18,9 +19,15 @@ export default function ProductActions({
   waHref: string;
 }) {
   const { add, items } = useCart();
-  const { isWished, toggleWish } = useWishlist();
+  const { isWished, toggleWish, trackView } = useWishlist();
   const inCart = items.some((i) => i.productId === productId);
   const wished = isWished(productId);
+
+  // Track this product view so the storefront's "Recently viewed" strip
+  // can surface it on the customer's next visit to the home page.
+  useEffect(() => {
+    trackView(productId);
+  }, [productId, trackView]);
 
   return (
     <div className="mt-7 flex flex-col sm:flex-row gap-2.5">
