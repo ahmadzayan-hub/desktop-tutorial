@@ -21,9 +21,11 @@ export interface ModelOption {
   description_ar: string;
 }
 
-// Curated list of small, mobile-friendly instruct-tuned models.
-// IDs match @mlc-ai/web-llm prebuilt model catalogue. Ordered smallest →
-// largest so the AI panel surfaces the most mobile-friendly choice first.
+// Curated catalogue of on-device instruct models, all present in the
+// installed @mlc-ai/web-llm prebuilt list. Ordered smallest → largest so
+// the AI panel surfaces mobile-friendly choices first. Sizes are the
+// approximate weight-file downloads; the WebGPU runtime buffers add on
+// top of that at load time.
 export const MODEL_OPTIONS: ModelOption[] = [
   {
     id: "Qwen2.5-0.5B-Instruct-q4f16_1-MLC",
@@ -31,18 +33,59 @@ export const MODEL_OPTIONS: ModelOption[] = [
     size_mb: 360,
     notes: "Smallest · ~360 MB",
     description_en:
-      "Smallest model · ideal for older phones · solid for short extractions.",
+      "Smallest model. Ideal for older phones and quick extractions.",
     description_ar:
-      "أصغر نموذج · مناسب للهواتف الأقدم · يكفي للاستخراجات القصيرة.",
+      "أصغر نموذج. مناسبٌ للهواتف الأقدم والاستخراجات السريعة.",
+  },
+  {
+    id: "SmolLM2-360M-Instruct-q4f16_1-MLC",
+    label: "SmolLM2 · 360M",
+    size_mb: 260,
+    notes: "Ultralight · ~260 MB",
+    description_en:
+      "Ultralight fallback. Fastest download on constrained networks.",
+    description_ar:
+      "خيارٌ فائق الخفّة. أسرع تنزيلٍ على الشبكات المحدودة.",
   },
   {
     id: "Llama-3.2-1B-Instruct-q4f32_1-MLC",
-    label: "Llama 3.2 · 1B (recommended)",
+    label: "Llama 3.2 · 1B",
     size_mb: 712,
-    notes: "Best mobile balance · ~700 MB",
+    notes: "Mobile balance · ~700 MB",
     description_en:
-      "Best balance of quality and speed on most modern phones.",
-    description_ar: "أفضل توازن بين الجودة والسرعة لمعظم الهواتف الحديثة.",
+      "Good balance of quality and speed on modern phones with ≥4 GB RAM.",
+    description_ar:
+      "توازنٌ جيّد بين الجودة والسرعة على الهواتف الحديثة بذاكرة ٤ ج.ب فأكثر.",
+  },
+  {
+    id: "Qwen2.5-1.5B-Instruct-q4f16_1-MLC",
+    label: "Qwen 2.5 · 1.5B (recommended)",
+    size_mb: 950,
+    notes: "Best quality-to-size · ~950 MB",
+    description_en:
+      "Recommended for extraction quality. Needs ≥6 GB RAM.",
+    description_ar:
+      "الخيار الموصى به لجودة الاستخراج. يتطلّب ذاكرةً ≥ ٦ ج.ب.",
+  },
+  {
+    id: "gemma-2-2b-it-q4f16_1-MLC",
+    label: "Gemma 2 · 2B",
+    size_mb: 1400,
+    notes: "Google's small · ~1.4 GB",
+    description_en:
+      "Google's compact instruct model. Stronger reasoning; needs ≥6 GB RAM.",
+    description_ar:
+      "نموذج Google المضغوط. استدلالٌ أقوى؛ يتطلّب ذاكرةً ≥ ٦ ج.ب.",
+  },
+  {
+    id: "Llama-3.2-3B-Instruct-q4f16_1-MLC",
+    label: "Llama 3.2 · 3B",
+    size_mb: 1800,
+    notes: "Mid-desktop · ~1.8 GB",
+    description_en:
+      "High-quality mid-size model. Best on desktop or 8 GB+ tablets.",
+    description_ar:
+      "نموذجٌ متوسطٌ عالي الجودة. الأفضل على سطح المكتب أو الأجهزة اللوحية ذات الذاكرة ≥ ٨ ج.ب.",
   },
   {
     id: "Phi-3.5-mini-instruct-q4f16_1-MLC",
@@ -50,9 +93,9 @@ export const MODEL_OPTIONS: ModelOption[] = [
     size_mb: 2200,
     notes: "Highest quality · ~2.2 GB",
     description_en:
-      "Highest extraction quality · WebGPU required · desktop preferred.",
+      "Highest extraction quality. WebGPU required, desktop preferred.",
     description_ar:
-      "أعلى جودة استخراج · يتطلّب WebGPU · يُفضّل سطح المكتب.",
+      "أعلى جودة استخراج. يتطلّب WebGPU؛ يُفضَّل سطح المكتب.",
   },
 ];
 

@@ -19,6 +19,7 @@ import { MetricRing } from "@/components/data-viz/metric-ring";
 import { ConfidenceBar } from "@/components/data-viz/confidence-bar";
 import { useLocale } from "@/lib/i18n/locale-provider";
 import { formatDate } from "@/lib/utils/dates";
+import { formatNumber, formatRatio } from "@/lib/utils/numbers";
 import { cn } from "@/lib/utils/cn";
 import type { DbProject } from "@/types/database";
 import { loadPipeline, type PipelineState } from "@/lib/store/pipeline-store";
@@ -186,24 +187,35 @@ export function PublishedView({ project }: Props) {
               </div>
             </header>
 
-            {/* Key metrics band — quality ring + confidence distribution */}
-            <section className="grid gap-6 border-b border-slate-100 bg-slate-50/60 px-8 py-6 sm:grid-cols-[auto_1fr] sm:items-center print:bg-white">
-              <MetricRing
-                value={snapshot.quality.score / 5}
-                label={isAr ? "بوّابة الجودة" : "Quality gate"}
-                sublabel={`${snapshot.quality.score}/5`}
-                tone={snapshot.quality.score >= 4 ? "emerald" : snapshot.quality.score >= 3 ? "gold" : "amber"}
-              />
+            {/* Key metrics band — quality ring + confidence distribution.
+                Stacks vertically on mobile so nothing overflows on 360-wide
+                screens; side-by-side from sm+. */}
+            <section className="grid gap-5 border-b border-slate-100 bg-slate-50/60 px-5 py-5 sm:grid-cols-[auto_1fr] sm:items-center sm:gap-6 sm:px-8 sm:py-6 print:bg-white">
+              <div className="mx-auto sm:mx-0">
+                <MetricRing
+                  value={snapshot.quality.score / 5}
+                  label={isAr ? "بوّابة الجودة" : "Quality gate"}
+                  sublabel={formatRatio(snapshot.quality.score, 5, locale)}
+                  tone={
+                    snapshot.quality.score >= 4
+                      ? "emerald"
+                      : snapshot.quality.score >= 3
+                        ? "gold"
+                        : "amber"
+                  }
+                  locale={locale}
+                />
+              </div>
               <div className="space-y-2">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-500">
                     {isAr ? "توزيع الثقة" : "Confidence mix"}
                   </p>
                   <p className="text-[11px] text-slate-500">
-                    {state.facts.length}{" "}
+                    {formatNumber(state.facts.length, locale)}{" "}
                     {isAr ? "واقعة" : state.facts.length === 1 ? "fact" : "facts"}{" "}
                     ·{" "}
-                    {state.documents.length}{" "}
+                    {formatNumber(state.documents.length, locale)}{" "}
                     {isAr ? "مستند" : state.documents.length === 1 ? "document" : "documents"}
                   </p>
                 </div>
@@ -263,12 +275,12 @@ export function PublishedView({ project }: Props) {
                   <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
                   {isAr ? "بوابة الجودة · " : "Quality gate · "}
                   <span className="font-semibold text-brand-navy">
-                    {snapshot.quality.score}/5
+                    {formatRatio(snapshot.quality.score, 5, locale)}
                   </span>
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <FileText className="h-3.5 w-3.5" />
-                  {state.documents.length}{" "}
+                  {formatNumber(state.documents.length, locale)}{" "}
                   {isAr ? "مستند" : "document(s)"}
                 </span>
                 <span className="font-mono">

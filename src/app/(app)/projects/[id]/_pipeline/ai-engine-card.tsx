@@ -1,7 +1,15 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { AlertCircle, CheckCircle2, Cpu, Download, Loader2 } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Cpu,
+  Download,
+  Loader2,
+  RefreshCw,
+} from "lucide-react";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
@@ -28,11 +36,32 @@ export function AiEngineCard({
   const isAr = locale === "ar";
   const status: LlmStatus = progress.status;
   const selected =
-    AVAILABLE_MODELS.find((m) => m.id === selectedModelId) ?? AVAILABLE_MODELS[1]!;
+    AVAILABLE_MODELS.find((m) => m.id === selectedModelId) ?? AVAILABLE_MODELS[0]!;
 
   const badge = statusBadge(status, progress, t);
   const busy =
     status === "downloading" || status === "loading" || status === "checking_support";
+
+  // Elapsed-seconds counter while busy, so users can see progress even
+  // when the percentage momentarily stalls (shader modules step is
+  // notoriously bursty on mobile WebGPU).
+  const [elapsed, setElapsed] = useState(0);
+  const startRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (!busy) {
+      startRef.current = null;
+      setElapsed(0);
+      return;
+    }
+    startRef.current = Date.now();
+    setElapsed(0);
+    const id = window.setInterval(() => {
+      if (startRef.current) {
+        setElapsed(Math.floor((Date.now() - startRef.current) / 1000));
+      }
+    }, 500);
+    return () => window.clearInterval(id);
+  }, [busy]);
 
   return (
     <Section
@@ -40,22 +69,29 @@ export function AiEngineCard({
       title={t.pipeline.ai.title}
       hint={t.pipeline.ai.privacyNote}
     >
-      <div
-        className={cn(
-          "inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-medium",
-          badge.color,
+      <div className="flex flex-wrap items-center gap-2">
+        <span
+          className={cn(
+            "inline-flex max-w-full items-center gap-2 rounded-full px-3 py-1 text-[11px] font-medium",
+            badge.color,
+          )}
+        >
+          {busy ? (
+            <Loader2 className="h-3 w-3 shrink-0 animate-spin" />
+          ) : status === "ready" ? (
+            <CheckCircle2 className="h-3 w-3 shrink-0" />
+          ) : status === "unsupported" || status === "error" ? (
+            <AlertCircle className="h-3 w-3 shrink-0" />
+          ) : (
+            <Cpu className="h-3 w-3 shrink-0" />
+          )}
+          <span className="min-w-0 truncate">{badge.label}</span>
+        </span>
+        {busy && elapsed > 0 && (
+          <span className="text-[11px] font-medium text-slate-500">
+            {isAr ? `منذ ${elapsed} ث` : `${elapsed}s elapsed`}
+          </span>
         )}
-      >
-        {busy ? (
-          <Loader2 className="h-3 w-3 animate-spin" />
-        ) : status === "ready" ? (
-          <CheckCircle2 className="h-3 w-3" />
-        ) : status === "unsupported" || status === "error" ? (
-          <AlertCircle className="h-3 w-3" />
-        ) : (
-          <Cpu className="h-3 w-3" />
-        )}
-        {badge.label}
       </div>
 
       {busy && (
@@ -69,7 +105,7 @@ export function AiEngineCard({
       )}
 
       <div className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
-        <div>
+        <div className="min-w-0">
           <label className="block text-xs font-medium text-slate-500">
             {t.pipeline.ai.select}
           </label>
@@ -77,7 +113,7 @@ export function AiEngineCard({
             value={selectedModelId}
             onChange={(e) => onSelectModel(e.target.value)}
             disabled={busy}
-            className="mt-1"
+            className="mt-1 w-full"
           >
             {AVAILABLE_MODELS.map((m) => (
               <option key={m.id} value={m.id}>
@@ -89,10 +125,15 @@ export function AiEngineCard({
             {isAr ? selected.description_ar : selected.description_en}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {status === "ready" ? (
             <Button variant="secondary" size="sm" onClick={onUnload}>
               {t.pipeline.ai.unload}
+            </Button>
+          ) : status === "error" ? (
+            <Button size="sm" onClick={onLoad} disabled={busy}>
+              <RefreshCw className="h-3.5 w-3.5" />
+              {isAr ? "أعد المحاولة" : "Retry"}
             </Button>
           ) : (
             <Button
@@ -107,7 +148,7 @@ export function AiEngineCard({
         </div>
       </div>
 
-      <p className="mt-3 text-[11px] text-slate-400">
+      <p className="mt-3 text-[11px] leading-relaxed text-slate-400">
         {t.pipeline.ai.warning.replace("{size}", `${Math.round(selected.size_mb)} MB`)}
       </p>
     </Section>

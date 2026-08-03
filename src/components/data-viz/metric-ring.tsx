@@ -1,6 +1,9 @@
 // Zero-dependency SVG donut ring for a 0..1 score, with an optional
 // centred label. Uses stroke-dasharray so we don't need any charting
-// library. Respects `prefers-reduced-motion` by skipping the tween.
+// library. Locale-aware percentage rendering (Eastern-Arabic digits
+// when Arabic).
+
+import { formatPercent } from "@/lib/utils/numbers";
 
 interface Props {
   value: number; // 0..1
@@ -9,6 +12,7 @@ interface Props {
   label?: string;
   sublabel?: string;
   tone?: "gold" | "emerald" | "amber" | "navy";
+  locale?: "en" | "ar";
 }
 
 const TONE: Record<NonNullable<Props["tone"]>, { arc: string; track: string; text: string }> = {
@@ -25,6 +29,7 @@ export function MetricRing({
   label,
   sublabel,
   tone = "navy",
+  locale = "en",
 }: Props) {
   const clamped = Math.max(0, Math.min(1, value));
   const r = (size - strokeWidth) / 2;
@@ -34,16 +39,13 @@ export function MetricRing({
   const cx = size / 2;
   const cy = size / 2;
   const palette = TONE[tone];
+  const pct = formatPercent(clamped, locale);
 
   return (
     <div
       className="inline-flex flex-col items-center gap-1"
       role="img"
-      aria-label={
-        label
-          ? `${label}: ${Math.round(clamped * 100)}%`
-          : `${Math.round(clamped * 100)}%`
-      }
+      aria-label={label ? `${label}: ${pct}` : pct}
     >
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden>
         <circle
@@ -72,10 +74,10 @@ export function MetricRing({
           textAnchor="middle"
           fill={palette.text}
           fontWeight="700"
-          fontSize={size * 0.28}
+          fontSize={size * 0.26}
           fontFamily="ui-sans-serif, system-ui, sans-serif"
         >
-          {Math.round(clamped * 100)}%
+          {pct}
         </text>
       </svg>
       {(label || sublabel) && (

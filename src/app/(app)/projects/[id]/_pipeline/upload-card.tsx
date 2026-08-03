@@ -3,7 +3,7 @@
 import type { RefObject } from "react";
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { FileText, FileUp, Loader2, Trash2 } from "lucide-react";
+import { AlertTriangle, FileText, FileUp, Loader2, Trash2 } from "lucide-react";
 import { Section, Empty } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
 import { useLocale } from "@/lib/i18n/locale-provider";
@@ -14,6 +14,7 @@ interface Props {
   documents: PipelineDocument[];
   parsing: boolean;
   pages: Record<string, number>;
+  errors?: Record<string, string>;
   onPick: () => void;
   onFiles: (f: FileList | null) => void;
   onRemove: (id: string) => void;
@@ -24,6 +25,7 @@ export function UploadCard({
   documents,
   parsing,
   pages,
+  errors = {},
   onPick,
   onFiles,
   onRemove,
@@ -124,6 +126,12 @@ export function UploadCard({
                           : t.pipeline.upload.textOnly}{" "}
                         · <span className="uppercase">{d.document_type}</span>
                       </p>
+                      {errors[d.id] && (
+                        <p className="mt-1 inline-flex items-center gap-1 rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-700">
+                          <AlertTriangle className="h-3 w-3" />
+                          {errors[d.id]}
+                        </p>
+                      )}
                     </div>
                     <Button
                       variant="ghost"

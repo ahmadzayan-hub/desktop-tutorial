@@ -56,6 +56,7 @@ export function ProjectPipeline({ project }: Props) {
   // Per-document parsed text — not persisted (localStorage quota).
   const [docTexts, setDocTexts] = useState<Record<string, string>>({});
   const [docPages, setDocPages] = useState<Record<string, number>>({});
+  const [docErrors, setDocErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     setState(loadPipeline(project.id));
@@ -81,14 +82,36 @@ export function ProjectPipeline({ project }: Props) {
     const newDocs: PipelineDocument[] = [];
     const newTexts: Record<string, string> = {};
     const newPages: Record<string, number> = {};
+    const newErrors: Record<string, string> = {};
     for (const file of queue) {
       const cls = classifyByFilename(file.name);
       const id = newId("doc");
-      const preview = await readFilePreview(file);
-      const parsed = await extractText(file);
+      let preview: string | null = null;
+      let parsed: {
+        text: string;
+        pages: number;
+        truncated: boolean;
+        error?: string;
+      } = { text: "", pages: 0, truncated: false };
+      try {
+        preview = await readFilePreview(file);
+        parsed = await extractText(file);
+      } catch (err) {
+        // Belt-and-braces: extractText already catches internally, but
+        // a bad File object (unreadable stream) can still throw here.
+        parsed = {
+          text: "",
+          pages: 0,
+          truncated: false,
+          error: err instanceof Error ? err.message : String(err),
+        };
+      }
       if (parsed.text) {
         newTexts[id] = parsed.text;
         newPages[id] = parsed.pages;
+      }
+      if (parsed.error) {
+        newErrors[id] = parsed.error;
       }
       newDocs.push({
         id,
@@ -108,6 +131,7 @@ export function ProjectPipeline({ project }: Props) {
     setState((s) => ({ ...s, documents: [...s.documents, ...newDocs] }));
     setDocTexts((m) => ({ ...m, ...newTexts }));
     setDocPages((m) => ({ ...m, ...newPages }));
+    setDocErrors((m) => ({ ...m, ...newErrors }));
     setParsing(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
@@ -123,6 +147,10 @@ export function ProjectPipeline({ project }: Props) {
       return rest;
     });
     setDocPages((m) => {
+      const { [id]: _omit, ...rest } = m;
+      return rest;
+    });
+    setDocErrors((m) => {
       const { [id]: _omit, ...rest } = m;
       return rest;
     });
@@ -360,6 +388,7 @@ export function ProjectPipeline({ project }: Props) {
                 documents={state.documents}
                 parsing={parsing}
                 pages={docPages}
+                errors={docErrors}
                 onPick={() => fileInputRef.current?.click()}
                 onFiles={handleFiles}
                 onRemove={removeDocument}
