@@ -557,6 +557,9 @@ function renderPeople() {
   f.appendChild(el('<div class="muted" style="margin-bottom:4px">اللهجة</div>'));
   const dchips = el('<div class="chips" style="margin-bottom:10px" id="dChips"></div>');
   f.appendChild(dchips);
+  f.appendChild(el('<div class="muted" style="margin-bottom:4px">لغة الرسالة (حسب لغته الأولى)</div>'));
+  const lchips = el('<div class="chips" style="margin-bottom:10px" id="langChips"></div>');
+  f.appendChild(lchips);
   f.appendChild(el('<label class="field"><span>نبرة خاصة بيه (اختياري)</span><input type="text" id="pTone"></label>'));
   const actions = el('<div class="row"></div>');
   const saveBtn = el(`<button class="btn">${editingId ? '💾 حفظ التعديل' : '➕ إضافة'}</button>`);
@@ -576,8 +579,15 @@ function renderPeople() {
     c.onclick = () => { formState.dialect = d.id; syncForm(); renderDialectChips(); };
     dchips.appendChild(c);
   });
+  const LANGS = [{ id: 'auto', label: '🌐 تلقائي' }, { id: 'ar', label: '🇪🇬 عربي' }, { id: 'en', label: '🇬🇧 إنجليزي' }];
+  LANGS.forEach((L) => {
+    const c = el(`<button class="chip ${(formState.language || 'auto') === L.id ? 'sel' : ''}">${esc(L.label)}</button>`);
+    c.onclick = () => { formState.language = L.id; syncForm(); renderLangChips(); };
+    lchips.appendChild(c);
+  });
   function renderRelChips() { Array.from(rchips.children).forEach((c, i) => c.classList.toggle('sel', META.relations[i].id === formState.relation)); }
   function renderDialectChips() { Array.from(dchips.children).forEach((c, i) => c.classList.toggle('sel', META.dialects[i].id === formState.dialect)); }
+  function renderLangChips() { Array.from(lchips.children).forEach((c, i) => c.classList.toggle('sel', LANGS[i].id === (formState.language || 'auto'))); }
 
   // تعبئة الحقول
   $('#pName', f).value = formState.name; $('#pNum', f).value = formState.number;
@@ -591,9 +601,9 @@ function renderPeople() {
     const list = PEOPLE.slice();
     if (editingId) {
       const i = list.findIndex((x) => x.id === editingId);
-      if (i >= 0) list[i] = Object.assign({}, list[i], { name: formState.name.trim(), relation: formState.relation, number: formState.number.trim(), notes: formState.notes.trim(), occasions: occs, tone: formState.tone.trim(), dialect: formState.dialect });
+      if (i >= 0) list[i] = Object.assign({}, list[i], { name: formState.name.trim(), relation: formState.relation, number: formState.number.trim(), notes: formState.notes.trim(), occasions: occs, tone: formState.tone.trim(), dialect: formState.dialect, language: formState.language || 'auto' });
     } else {
-      list.push({ id: 'p' + Date.now(), name: formState.name.trim(), relation: formState.relation, number: formState.number.trim(), notes: formState.notes.trim(), occasions: occs, tone: formState.tone.trim(), dialect: formState.dialect });
+      list.push({ id: 'p' + Date.now(), name: formState.name.trim(), relation: formState.relation, number: formState.number.trim(), notes: formState.notes.trim(), occasions: occs, tone: formState.tone.trim(), dialect: formState.dialect, language: formState.language || 'auto' });
     }
     PEOPLE = await call('people:set', list);
     if (!S.selectedRecipientId && PEOPLE[0]) S = await call('settings:set', { selectedRecipientId: PEOPLE[0].id });
@@ -608,13 +618,13 @@ function renderPeople() {
     const item = el(`<div class="list-item"><div class="person-card"><div class="name">${sel ? '✅ ' : ''}${relEmoji(p.relation)} ${esc(whoName(p))} · ${esc(relLabel(p.relation))}</div><div class="row tight"></div></div></div>`);
     const acts = $('.row', item);
     const ch = el('<button class="ghost small">اختار</button>'); ch.onclick = async () => { S = await call('settings:set', { selectedRecipientId: p.id }); updateWhoBadge(); show('home'); };
-    const ed = el('<button class="ghost small">تعديل</button>'); ed.onclick = () => { editingId = p.id; formState = { name: p.name || '', relation: p.relation, number: p.number || '', notes: p.notes || '', occText: (p.occasions || []).map((o) => o.label + '=' + o.date).join('\n'), tone: p.tone || '', dialect: p.dialect || 'egyptian' }; renderPeople(); };
+    const ed = el('<button class="ghost small">تعديل</button>'); ed.onclick = () => { editingId = p.id; formState = { name: p.name || '', relation: p.relation, number: p.number || '', notes: p.notes || '', occText: (p.occasions || []).map((o) => o.label + '=' + o.date).join('\n'), tone: p.tone || '', dialect: p.dialect || 'egyptian', language: p.language || 'auto' }; renderPeople(); };
     const del = el('<button class="ghost small">حذف</button>'); del.onclick = async () => { const list = PEOPLE.filter((x) => x.id !== p.id); PEOPLE = await call('people:set', list); if (S.selectedRecipientId === p.id) S = await call('settings:set', { selectedRecipientId: (PEOPLE[0] && PEOPLE[0].id) || '' }); updateWhoBadge(); renderPeople(); };
     acts.append(ch, ed, del);
     host.appendChild(item);
   });
 }
-function defForm() { return { name: '', relation: (META.relations[0] || {}).id || 'partner_wife', number: '', notes: '', occText: '', tone: '', dialect: 'egyptian' }; }
+function defForm() { return { name: '', relation: (META.relations[0] || {}).id || 'partner_wife', number: '', notes: '', occText: '', tone: '', dialect: 'egyptian', language: 'auto' }; }
 let formState = defForm();
 function syncForm() {}
 function syncFromInputs(f) { formState.name = $('#pName', f).value; formState.number = $('#pNum', f).value; formState.notes = $('#pNotes', f).value; formState.occText = $('#pOcc', f).value; formState.tone = $('#pTone', f).value; }

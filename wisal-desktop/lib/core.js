@@ -62,6 +62,30 @@ function dialectPhrase(id) {
   return 'اللهجة المصرية العامية';
 }
 
+// ---------- اللغة (عربي/إنجليزي حسب لغة المستقبل) — نظير Lang في أندرويد ----------
+function detectLang(text) {
+  if (!text) return null;
+  let ar = 0, la = 0;
+  for (const ch of String(text)) {
+    const c = ch.codePointAt(0);
+    if ((c >= 0x0600 && c <= 0x06FF) || (c >= 0x0750 && c <= 0x077F) || (c >= 0x08A0 && c <= 0x08FF)) ar++;
+    else if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')) la++;
+  }
+  if (ar === 0 && la === 0) return null;
+  return ar >= la ? 'ar' : 'en';
+}
+function resolveLang(pref) {
+  const p = (pref || '').toLowerCase();
+  if (p === 'ar' || p === 'en') return p;
+  for (let i = 1; i < arguments.length; i++) { const d = detectLang(arguments[i]); if (d) return d; }
+  return 'ar';
+}
+function langDirective(lang) {
+  return lang === 'en'
+    ? "IMPORTANT: The recipient's first language is English. Write the ENTIRE message in natural, warm English. Do NOT use Arabic. Ignore any Arabic-dialect instruction."
+    : '';
+}
+
 // ---------- النيّات ----------
 const INTENTS = [
   { id: 'apology', label: 'اعتذار', emoji: '🕊️', hint: 'رسالة اعتذار صادقة بتصالح وتكسر الزعل من غير تبرير زيادة.' },
@@ -72,6 +96,7 @@ const INTENTS = [
   { id: 'reassure', label: 'طمأنة', emoji: '🫂', hint: 'طمأنة وتهدئة قلق، إنك جنبه.' },
   { id: 'support', label: 'دعم', emoji: '💪', hint: 'تشجيع ودعم وثقة في قدراته.' },
   { id: 'dua', label: 'دعاء', emoji: '🤲', hint: 'دعاء من القلب بالخير والصحة.' },
+  { id: 'reconnect', label: 'إعادة تواصل', emoji: '🌉', hint: 'رسالة بسيطة تكسر برود المسافة بعد فترة انقطاع، بتفتح الكلام بلطف من غير عتاب، بتحسّسه إنك افتكرته ووحشك.' },
 ];
 function intentById(id) { return INTENTS.find((i) => i.id === id) || null; }
 
@@ -135,13 +160,22 @@ async function groqComplete(messages, temperature) {
 }
 
 // ---------- بناء البرومبت ----------
-function buildSystem(recipient, intent) {
+function buildSystem(recipient, intent, opts) {
+  opts = opts || {};
   const rel = relationById(recipient ? recipient.relation : 'partner_wife');
   const s = getSettings();
-  const tone = (recipient && recipient.tone) ? recipient.tone : rel.tone;
+  const business = !!opts.business;
+  const tone = business
+    ? 'محترمة ودّية واضحة ومهنية، بتقدّم متابعة/قيمة حقيقية من غير مبالغة عاطفية ولا ضغط بيع'
+    : ((recipient && recipient.tone) ? recipient.tone : rel.tone);
   const dialect = dialectPhrase(recipient ? recipient.dialect : 'egyptian');
+  // لغة الرسالة حسب لغة الشخص الأولى (auto: نكشف من اسمه).
+  const lang = resolveLang(recipient ? recipient.language : '', recipient ? recipient.name : '');
+  const firstLine = business
+    ? ('انت بتكتب رسالة قصيرة لعميل عنده محادثة شغّالة معاك بـ' + dialect + '.')
+    : ('انت بتساعد شخص يكتب رسالة قصيرة ' + rel.toAddr + ' (' + rel.label + ') بـ' + dialect + '.');
   const lines = [
-    'انت بتساعد شخص يكتب رسالة قصيرة ' + rel.toAddr + ' (' + rel.label + ') بـ' + dialect + '.',
+    firstLine,
     'النبرة المناسبة: ' + tone + '.',
     'اكتب كإنسان حقيقي بمشاعر صادقة ودفء - مش كلام آلة.',
     s.messageLength === 'medium' ? '- الرسالة من سطرين لـ 3 أسطر.' : '- الرسالة قصيرة: سطر أو سطرين بحد أقصى.',
@@ -149,8 +183,10 @@ function buildSystem(recipient, intent) {
     '- صدق وبساطة من غير مبالغة ولا كلام مصنوع.',
     s.emoji ? '- استخدم إيموجي أو اتنين معبّرين بذوق.' : '- من غير إيموجي خالص.',
   ];
-  if (s.humor) lines.push('- لمسة خفيفة من الدُعابة اللطيفة.');
+  if (s.humor && !business) lines.push('- لمسة خفيفة من الدُعابة اللطيفة.');
   if (intent) lines.push('نوع الرسالة المطلوب: ' + intent.label + '. ' + intent.hint);
+  // لو لغة الشخص إنجليزي، نحقن توجيه غالب في الأول عشان يكتب بالإنجليزي بالكامل.
+  if (lang === 'en') lines.unshift(langDirective('en'));
   return lines.join('\n');
 }
 
@@ -366,9 +402,10 @@ async function generateOneFor(member, opts) {
   const intent = intentById(opts && opts.intentId);
   const themes = intent ? [intent.label] : pickThemes();
   const recipient = Object.assign({ relation: 'group_friends', dialect: 'egyptian' }, member || {});
+  const business = !!(opts && opts.business);
   try {
     const raw = await groqComplete([
-      { role: 'system', content: buildSystem(recipient, intent) },
+      { role: 'system', content: buildSystem(recipient, intent, { business: business }) },
       { role: 'user', content: buildUserSingle(recipient, themes[0], intent, (opts && opts.context) || '') },
     ], 0.85);
     const text = String(raw).split('\n').map((l) => l.replace(/^[١٢12]\s*[-.)]\s*/, '').trim()).filter(Boolean)[0] || String(raw).trim();
@@ -398,4 +435,5 @@ module.exports = {
   getStore, addStyleExample, addFeedback, bumpTheme, toggleFavorite, deleteHistory, markContacted,
   generate, refine, giftIdeas, todayISO, stats,
   getGroups, setGroups, parseContactsCSV, analyzePersona, generateOneFor,
+  detectLang, resolveLang, langDirective, dialectPhrase, intentById,
 };
