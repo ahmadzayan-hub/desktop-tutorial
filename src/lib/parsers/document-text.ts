@@ -1,8 +1,15 @@
 // Client-side document text extraction. Runs entirely in the browser — no
 // upload, no server, no third-party API. PDFs via pdfjs-dist, DOCX via
 // mammoth, plain text via FileReader.
+//
+// Mobile-aware: caps per-doc text at 30k chars (down from 60k) so a
+// project with many documents doesn't balloon React state on low-RAM
+// phones, and yields to the browser between PDF pages so long PDFs
+// don't lock the main thread.
 
 "use client";
+
+import { yieldToBrowser } from "@/lib/utils/yield";
 
 export interface ParseResult {
   text: string;
@@ -10,7 +17,7 @@ export interface ParseResult {
   truncated: boolean;
 }
 
-const MAX_CHARS = 60_000; // ~12k tokens, safe for small on-device LLMs
+const MAX_CHARS = 30_000; // ~7.5k tokens, mobile-safe for small on-device LLMs
 
 export async function extractText(file: File): Promise<ParseResult> {
   const name = file.name.toLowerCase();
@@ -39,8 +46,9 @@ function truncate(text: string, pages: number): ParseResult {
 
 async function parsePdf(file: File): Promise<ParseResult> {
   const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  // Use unpkg-hosted worker so we don't have to bundle/serve it ourselves.
-  // pdfjs-dist 4.x exports its version via the `version` constant.
+  // CDN-hosted worker matching the installed version. Runs in a Web
+  // Worker off the main thread — this is what keeps pdfjs from
+  // freezing the browser during layout extraction.
   pdfjs.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
   const buffer = await file.arrayBuffer();
   const loadingTask = pdfjs.getDocument({ data: new Uint8Array(buffer) });
@@ -56,6 +64,9 @@ async function parsePdf(file: File): Promise<ParseResult> {
       .filter(Boolean)
       .join(" ");
     combined += `\n\n[page ${i}]\n${pageText}`;
+    // Yield to the browser every few pages so long PDFs don't lock the
+    // main thread on constrained mobiles (System UI "not responding").
+    if (i % 3 === 0) await yieldToBrowser();
   }
   return truncate(combined.trim(), pdf.numPages);
 }

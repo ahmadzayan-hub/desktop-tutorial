@@ -59,7 +59,12 @@ export const MODEL_OPTIONS: ModelOption[] = [
 // Alias used by the pipeline UI.
 export const AVAILABLE_MODELS = MODEL_OPTIONS;
 
-export const DEFAULT_MODEL_ID = MODEL_OPTIONS[1]!.id;
+// Default to the smallest model (Qwen 2.5 0.5B, ~360 MB) so we don't
+// OOM low-RAM Android WebViews on first tap. Users can upgrade to
+// Llama 3.2 1B or Phi 3.5 mini from the AI Engine card. The freeze
+// we observed in production was traceable to a 700 MB model download
+// landing on a 3 GB-RAM device.
+export const DEFAULT_MODEL_ID = MODEL_OPTIONS[0]!.id;
 
 export type EngineStatus =
   | { phase: "idle" }

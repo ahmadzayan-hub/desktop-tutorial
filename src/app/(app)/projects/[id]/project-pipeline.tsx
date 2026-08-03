@@ -15,8 +15,10 @@ import {
   savePipeline,
 } from "@/lib/store/pipeline-store";
 import { newId } from "@/lib/utils/ids";
+import { yieldToBrowser, hasEnoughRamForLargeModel } from "@/lib/utils/yield";
 import { extractText } from "@/lib/parsers/document-text";
 import {
+  AVAILABLE_MODELS,
   DEFAULT_MODEL_ID,
   type LlmProgress,
   ensureEngine,
@@ -99,6 +101,9 @@ export function ProjectPipeline({ project }: Props) {
         preview_text: preview ?? parsed.text.slice(0, 500) ?? null,
         created_at: new Date().toISOString(),
       });
+      // Yield to the browser between files so long batches don't lock
+      // the main thread on constrained mobiles (System UI freeze).
+      await yieldToBrowser();
     }
     setState((s) => ({ ...s, documents: [...s.documents, ...newDocs] }));
     setDocTexts((m) => ({ ...m, ...newTexts }));
@@ -136,6 +141,21 @@ export function ProjectPipeline({ project }: Props) {
   );
 
   async function handleLoadModel() {
+    // Gate large model downloads by device RAM. A 700 MB+ model on a
+    // 3 GB Android freezes the WebView (System UI stops responding).
+    const chosen = AVAILABLE_MODELS.find((m) => m.id === selectedModelId);
+    const needsBigRam = (chosen?.size_mb ?? 0) > 500;
+    if (needsBigRam && !hasEnoughRamForLargeModel(4)) {
+      const confirmed =
+        typeof window !== "undefined"
+          ? window.confirm(
+              locale === "ar"
+                ? "هذا النموذج كبير (أكبر من ٥٠٠ ميجابايت) وقد يُثقل الأجهزة المحمولة ويسبّب تجمّد النظام. هل تريد المتابعة؟"
+                : "This model is large (>500 MB) and may overwhelm mobile devices, causing the system UI to freeze. Continue anyway?",
+            )
+          : true;
+      if (!confirmed) return;
+    }
     try {
       await ensureEngine(selectedModelId, (s) => {
         setLlmProgress(adaptEngineStatus(s, selectedModelId));
