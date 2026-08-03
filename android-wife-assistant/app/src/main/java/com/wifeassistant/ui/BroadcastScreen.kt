@@ -94,6 +94,9 @@ fun BroadcastScreen(onBack: () -> Unit) {
     var newSenderChannel by remember { mutableStateOf("whatsapp") }
     var newSenderCc by remember { mutableStateOf("") }
     var newSenderSig by remember { mutableStateOf("") }
+    // (متقدّم) باك-إند WhatsApp Business Cloud API — إرسال آلي مشروع لو اتظبّط.
+    var apiEndpoint by remember { mutableStateOf(settings.businessApiEndpoint) }
+    var apiKey by remember { mutableStateOf(settings.businessApiKey) }
     // تخصيص بالذكاء: رسالة LLM لكل عضو (بالرقم كمفتاح) + سياق مشترك + حالة الشغل.
     val scope = rememberCoroutineScope()
     val composer = remember { GroupComposer(settings) }
@@ -256,6 +259,16 @@ fun BroadcastScreen(onBack: () -> Unit) {
         settings.senderAccounts = senders
         if (selectedSenderId == a.id) { selectedSenderId = ""; settings.selectedSenderId = "" }
     }
+    // إرسال آلي عبر باك-إند وصال (Cloud API) — بديل مشروع لفتح واتساب اليدوي.
+    val cloudConfigured = apiEndpoint.isNotBlank() && apiKey.isNotBlank()
+    fun sendViaApi(to: String, text: String) {
+        if (to.filter { it.isDigit() }.isEmpty()) { toast("رقم العميل ناقص"); return }
+        scope.launch {
+            val res = com.wifeassistant.data.CloudApiClient(apiEndpoint, apiKey).sendText(to, text)
+            res.onSuccess { toast("اتبعت عبر Business API ✅") }
+                .onFailure { toast("فشل الإرسال: ${it.message}") }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -324,6 +337,37 @@ fun BroadcastScreen(onBack: () -> Unit) {
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary,
                 )
+                // (متقدّم) باك-إند Cloud API: إرسال آلي مشروع عبر Meta لو ظبّطت endpoint + مفتاح.
+                ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text("🚀 Business API (متقدّم — اختياري)", fontWeight = FontWeight.Bold)
+                        Text(
+                            "لإرسال آلي مشروع عبر WhatsApp Business Cloud API. سيب الخانتين فاضيين لو مش محتاجه — " +
+                                "هيفضل الإرسال بفتح واتساب اليدوي. راجع wisal-cloud-api/README.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        OutlinedTextField(
+                            value = apiEndpoint,
+                            onValueChange = { apiEndpoint = it },
+                            label = { Text("Endpoint (…/api/send)") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        OutlinedTextField(
+                            value = apiKey,
+                            onValueChange = { apiKey = it },
+                            label = { Text("APP_API_KEY") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        Button(onClick = {
+                            settings.businessApiEndpoint = apiEndpoint
+                            settings.businessApiKey = apiKey
+                            toast(if (cloudConfigured) "اتحفظ إعداد Business API ✅" else "اتمسح الإعداد")
+                        }) { Text("💾 احفظ الإعداد") }
+                    }
+                }
             }
 
             // أبعت من: حساباتك (إمارات/مصر/أعمال). الاختيار بيظبط الكود + التوقيع + التطبيق الهدف.
@@ -555,6 +599,13 @@ fun BroadcastScreen(onBack: () -> Unit) {
                                 onClick = { WhatsApp.send(context, c.number, withSig(msg), cc, businessApp = useBusinessApp) },
                                 modifier = Modifier.fillMaxWidth(),
                             ) { Text(if (useBusinessApp) "💼 رد على ${c.name}" else "📲 ابعت لـ${c.name}") }
+                            // إرسال آلي عبر Cloud API — بيظهر بس لو المستخدم ظبّط الباك-إند.
+                            if (businessMode && cloudConfigured) {
+                                Button(
+                                    onClick = { sendViaApi(c.number, withSig(msg)) },
+                                    modifier = Modifier.fillMaxWidth(),
+                                ) { Text("🚀 ابعت عبر Business API") }
+                            }
                         }
                     }
             }

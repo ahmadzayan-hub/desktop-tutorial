@@ -143,6 +143,16 @@ class Settings(context: Context) {
         get() = prefs.getString("selectedSenderId", "").orEmpty()
         set(v) = prefs.edit().putString("selectedSenderId", v).apply()
 
+    // (متقدّم) باك-إند WhatsApp Business Cloud API — إرسال آلي مشروع للعملاء.
+    // فاضي = مطفي (بنرجع لفتح واتساب اليدوي). التوكن الحقيقي لـ Meta بيفضل على السيرفر.
+    var businessApiEndpoint: String
+        get() = prefs.getString("businessApiEndpoint", "").orEmpty()
+        set(v) = prefs.edit().putString("businessApiEndpoint", v.trim()).apply()
+
+    var businessApiKey: String
+        get() = prefs.getString("businessApiKey", "").orEmpty()
+        set(v) = prefs.edit().putString("businessApiKey", v.trim()).apply()
+
     fun currentRecipient(): Recipient? {
         val list = recipients
         return list.firstOrNull { it.id == selectedRecipientId } ?: list.firstOrNull()
