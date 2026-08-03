@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { CheckCircle2, Cpu, Database, Hammer, ShieldCheck, User } from "lucide-react";
 import { Section } from "@/components/ui/section";
+import { SelfTestPanel } from "./self-test-panel";
 import { useLocale } from "@/lib/i18n/locale-provider";
 import { cn } from "@/lib/utils/cn";
 
@@ -127,6 +128,14 @@ export function SettingsView({
               />
             </dl>
           </Section>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+        >
+          <SelfTestPanel />
         </motion.div>
       </div>
     </div>
