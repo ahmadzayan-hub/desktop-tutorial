@@ -16,6 +16,14 @@ object DateUtil {
 
     fun daysAgoISO(days: Long): String = today().minusDays(days).toString()
 
+    // كام يوم فاضل لتاريخ ثابت YYYY-MM-DD (0 = النهاردة، >0 مستقبل).
+    // null لو التاريخ غلط أو عدّى (مناسبة الأعياد اليدوية بتكون لسنة معيّنة).
+    fun daysUntilYMD(ymd: String): Int? = runCatching {
+        val d = LocalDate.parse(ymd)
+        val days = java.time.temporal.ChronoUnit.DAYS.between(today(), d).toInt()
+        if (days < 0) null else days
+    }.getOrNull()
+
     // كام يوم فاضل لمناسبة سنوية بصيغة MM-DD (0 = النهاردة). null لو التاريخ غلط.
     fun daysUntilMMDD(mmdd: String): Int? {
         val parts = mmdd.split("-")

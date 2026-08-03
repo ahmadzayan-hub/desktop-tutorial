@@ -23,4 +23,24 @@ class DateUtilTest {
         val d = DateUtil.daysUntilMMDD("12-25")
         assertTrue(d != null && d in 0..366)
     }
+
+    // daysUntilYMD: تاريخ ثابت YYYY-MM-DD (للمناسبات العامة القريّبة).
+    @Test fun ymdTodayIsZero() {
+        assertEquals(0, DateUtil.daysUntilYMD(DateUtil.todayISO()))
+    }
+
+    @Test fun ymdPastReturnsNull() {
+        assertNull(DateUtil.daysUntilYMD("2000-01-01")) // عدّى خلاص
+    }
+
+    @Test fun ymdFutureIsPositive() {
+        val d = DateUtil.daysUntilYMD("2999-12-31")
+        assertTrue(d != null && d > 0)
+    }
+
+    @Test fun ymdInvalidReturnsNull() {
+        assertNull(DateUtil.daysUntilYMD("2026-13-40"))
+        assertNull(DateUtil.daysUntilYMD("garbage"))
+        assertNull(DateUtil.daysUntilYMD(""))
+    }
 }

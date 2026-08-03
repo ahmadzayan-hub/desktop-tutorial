@@ -5,8 +5,17 @@ package com.wifeassistant.data
 class GroupComposer(private val settings: Settings) {
     private val groq = GroqClient(settings)
 
-    suspend fun oneFor(name: String, notes: String, context: String): String {
-        val sys = buildString {
+    suspend fun oneFor(name: String, notes: String, context: String, business: Boolean = false): String {
+        val sys = if (business) buildString {
+            // نبرة أعمال: للردّ على عميل عنده محادثة شغّالة معاك — محترمة ودافئة
+            // وواضحة، من غير مبالغة عاطفية. رسالة واحدة قصيرة تنفع رد شخصي.
+            append("انت بتكتب رسالة قصيرة لعميل اسمه ")
+            append(name.ifBlank { "حضرتك" })
+            append(" عنده محادثة شغّالة مع صاحب العمل. النبرة محترمة ودّية واضحة ومهنية، ")
+            append("بتخاطبه باسمه وبتقدّم متابعة/قيمة حقيقية من غير مبالغة عاطفية ولا ضغط بيع. ")
+            append("رسالة واحدة قصيرة (سطر أو اتنين)، من غير مقدمات ولا خيارات ولا شرح، النص بس. ")
+            if (settings.emoji) append("ممكن إيموجي واحد بذوق على الأكتر.") else append("من غير إيموجي.")
+        } else buildString {
             append("انت بتكتب رسالة قصيرة دافئة وصادقة باللهجة المصرية لشخص اسمه ")
             append(name.ifBlank { "صاحبي" })
             append(". اكتب كإنسان حقيقي — رسالة واحدة قصيرة (سطر أو اتنين)، ")

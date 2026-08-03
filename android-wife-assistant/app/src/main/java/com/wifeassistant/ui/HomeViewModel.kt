@@ -123,8 +123,10 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
         settings.selectedRecipientId = a.recipientId
         store.clearPending()
         refreshRecipients()
+        // لو مناسبة → توليد مناسبة؛ غير كده دي «لفتة إعادة تواصل» فبنوجّه التوليد
+        // بنيّة reconnect عشان تطلع رسالة تكسر البرود بلطف.
         if (a.occasionLabel != null) generate("occasion", Occasion("person", a.occasionLabel))
-        else generate("manual")
+        else generate("manual", intentId = "reconnect")
     }
 
     // اختيار شخص من الشاشة الرئيسية مباشرة: كل الخيارات (النبرة، الرقم، المناسبات،

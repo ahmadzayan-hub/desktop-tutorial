@@ -620,6 +620,18 @@ private fun SuggestionCard(
                 AssistChip(onClick = onRemind, label = { Text("⏰ ذكّرني بكرة") })
             }
 
+            // نبرة سريعة: نفس الرسالة بمزاج مختلف بضغطة واحدة.
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                AssistChip(onClick = { onRefine("playful") }, label = { Text("😄 مرح") })
+                AssistChip(onClick = { onRefine("serious") }, label = { Text("🎯 جاد") })
+                AssistChip(onClick = { onRefine("apology") }, label = { Text("🕊️ اعتذار") })
+                AssistChip(onClick = { onRefine("grateful") }, label = { Text("🙏 امتنان") })
+                AssistChip(onClick = { onRefine("reassure") }, label = { Text("🫂 طمأنة") })
+            }
+
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(
                     onClick = onWhatsApp,

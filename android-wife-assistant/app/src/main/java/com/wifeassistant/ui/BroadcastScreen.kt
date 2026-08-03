@@ -84,6 +84,9 @@ fun BroadcastScreen(onBack: () -> Unit) {
     var groupName by remember { mutableStateOf("") }
     var groupKind by remember { mutableStateOf("work") }
     var unknownNum by remember { mutableStateOf("") }
+    // وضع الأعمال: الردود بتفتح في واتساب Business والنبرة مهنية دافئة — للعملاء
+    // اللي عندهم محادثة شغّالة معاك (رد شخصي بضغطة، من غير إرسال جماعي تلقائي).
+    var businessMode by remember { mutableStateOf(false) }
     // تخصيص بالذكاء: رسالة LLM لكل عضو (بالرقم كمفتاح) + سياق مشترك + حالة الشغل.
     val scope = rememberCoroutineScope()
     val composer = remember { GroupComposer(settings) }
@@ -187,7 +190,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
         scope.launch {
             busy = true; progress = 0
             for (c in targets) {
-                aiMsgs[c.id] = runCatching { composer.oneFor(c.name, "", sharedCtx) }
+                aiMsgs[c.id] = runCatching { composer.oneFor(c.name, "", sharedCtx, business = businessMode) }
                     .getOrElse { personalize(c.name) }
                 progress += 1
             }
@@ -202,7 +205,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
         val first = currentTargets().firstOrNull() ?: run { toast("مفيش أعضاء"); return }
         scope.launch {
             busy = true
-            previewText = runCatching { composer.oneFor(first.name, "", sharedCtx) }.getOrElse { personalize(first.name) }
+            previewText = runCatching { composer.oneFor(first.name, "", sharedCtx, business = businessMode) }.getOrElse { personalize(first.name) }
             busy = false
         }
     }
@@ -268,6 +271,23 @@ fun BroadcastScreen(onBack: () -> Unit) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
+            // وضع الأعمال (واتساب Business): للردّ على العملاء اللي عندهم محادثة معاك.
+            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                FilterChip(
+                    selected = businessMode,
+                    onClick = { businessMode = !businessMode },
+                    label = { Text(if (businessMode) "💼 وضع الأعمال: مفعّل" else "💼 وضع الأعمال") },
+                )
+            }
+            if (businessMode) {
+                Text(
+                    "للردّ على عملاء واتساب Business اللي عندهم محادثة شغّالة معاك: الرسالة بتتفتح في واتساب Business " +
+                        "بنبرة مهنية دافئة، وانت تدوس Send لكل واحد. متبعتش رسائل مجهّلة لناس ما كلّموكش — ده بيعرّض رقمك للحظر.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
+
             // قوالب مفضّلة
             Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 OutlinedButton(onClick = { saveTemplate() }) { Text("⭐ احفظ القالب") }
@@ -303,7 +323,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
                         )
                         Button(onClick = {
                             if (unknownNum.filter { it.isDigit() }.isEmpty()) toast("اكتب الرقم")
-                            else WhatsApp.send(context, unknownNum, personalize(""), cc)
+                            else WhatsApp.send(context, unknownNum, personalize(""), cc, businessApp = businessMode)
                         }) { Text("📲 ابعت") }
                     }
                 }
@@ -435,9 +455,9 @@ fun BroadcastScreen(onBack: () -> Unit) {
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                             OutlinedButton(
-                                onClick = { WhatsApp.send(context, c.number, msg, cc) },
+                                onClick = { WhatsApp.send(context, c.number, msg, cc, businessApp = businessMode) },
                                 modifier = Modifier.fillMaxWidth(),
-                            ) { Text("📲 ابعت لـ${c.name}") }
+                            ) { Text(if (businessMode) "💼 رد على ${c.name}" else "📲 ابعت لـ${c.name}") }
                         }
                     }
             }

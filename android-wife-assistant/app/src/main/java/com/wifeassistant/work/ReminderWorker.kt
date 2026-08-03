@@ -38,6 +38,25 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
             }
         }
 
+        // (1ب) مناسبات عامة قريّبة من الإعدادات (عيد/مناسبة موسمية) — تنبيه مبكّر خلال 3 أيام.
+        settings.occasions.forEach { occ ->
+            if (!occ.enabled) return@forEach
+            val days = when (occ.type) {
+                "fixed" -> occ.date?.takeIf { it != "MM-DD" }?.let { DateUtil.daysUntilMMDD(it) }
+                "manual" -> occ.dates.mapNotNull { DateUtil.daysUntilYMD(it) }.filter { it in 0..3 }.minOrNull()
+                else -> null
+            }
+            if (days != null && days in 0..3) {
+                val whenTxt = when (days) { 0 -> "النهاردة"; 1 -> "بكرة"; else -> "بعد $days أيام" }
+                Notifications.show(
+                    applicationContext,
+                    "🗓️ ${occ.label} ($whenTxt)",
+                    "مناسبة قربت — تحب أجهّزلك رسالة تليق بيها؟",
+                    ("gocc_" + occ.label).hashCode(),
+                )
+            }
+        }
+
         if (!settings.reminders) return Result.success()
 
         val store = Store(applicationContext)
