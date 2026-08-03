@@ -87,6 +87,13 @@ fun BroadcastScreen(onBack: () -> Unit) {
     // وضع الأعمال: الردود بتفتح في واتساب Business والنبرة مهنية دافئة — للعملاء
     // اللي عندهم محادثة شغّالة معاك (رد شخصي بضغطة، من غير إرسال جماعي تلقائي).
     var businessMode by remember { mutableStateOf(false) }
+    // حسابات المُرسِل (أرقامك: إمارات/مصر/أعمال) + الحساب المختار + فورمة إضافة حساب.
+    var senders by remember { mutableStateOf(settings.senderAccounts) }
+    var selectedSenderId by remember { mutableStateOf(settings.selectedSenderId) }
+    var newSenderLabel by remember { mutableStateOf("") }
+    var newSenderChannel by remember { mutableStateOf("whatsapp") }
+    var newSenderCc by remember { mutableStateOf("") }
+    var newSenderSig by remember { mutableStateOf("") }
     // تخصيص بالذكاء: رسالة LLM لكل عضو (بالرقم كمفتاح) + سياق مشترك + حالة الشغل.
     val scope = rememberCoroutineScope()
     val composer = remember { GroupComposer(settings) }
@@ -221,6 +228,35 @@ fun BroadcastScreen(onBack: () -> Unit) {
 
     val filtered = activeList.filter { query.isBlank() || it.name.contains(query.trim(), ignoreCase = true) }
 
+    // الحساب المختار للإرسال (لو فيه). بيحدّد: التطبيق الهدف (عادي/Business) + التوقيع.
+    val selectedSender = senders.firstOrNull { it.id == selectedSenderId }
+    val useBusinessApp = businessMode || selectedSender?.channel == "whatsapp_business"
+    val sig = selectedSender?.signature.orEmpty()
+    fun withSig(t: String): String = if (sig.isBlank()) t else "$t\n$sig"
+    fun selectSender(a: com.wifeassistant.data.SenderAccount) {
+        selectedSenderId = a.id
+        settings.selectedSenderId = a.id
+        if (a.countryCode.isNotBlank()) { cc = a.countryCode.filter { it.isDigit() }; settings.defaultCountryCode = cc }
+    }
+    fun addSender() {
+        val lbl = newSenderLabel.trim()
+        if (lbl.isBlank()) { toast("اكتب اسم الحساب"); return }
+        val a = com.wifeassistant.data.SenderAccount(
+            id = "s" + System.currentTimeMillis(), label = lbl, channel = newSenderChannel,
+            countryCode = newSenderCc.filter { it.isDigit() }, signature = newSenderSig.trim(),
+        )
+        senders = senders + a
+        settings.senderAccounts = senders
+        newSenderLabel = ""; newSenderCc = ""; newSenderSig = ""; newSenderChannel = "whatsapp"
+        selectSender(a)
+        toast("اتضاف حساب ${a.label} ✅")
+    }
+    fun deleteSender(a: com.wifeassistant.data.SenderAccount) {
+        senders = senders.filterNot { it.id == a.id }
+        settings.senderAccounts = senders
+        if (selectedSenderId == a.id) { selectedSenderId = ""; settings.selectedSenderId = "" }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -290,6 +326,65 @@ fun BroadcastScreen(onBack: () -> Unit) {
                 )
             }
 
+            // أبعت من: حساباتك (إمارات/مصر/أعمال). الاختيار بيظبط الكود + التوقيع + التطبيق الهدف.
+            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("📱 أبعت من (حساباتك)", fontWeight = FontWeight.Bold)
+                    if (senders.isNotEmpty()) {
+                        Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            senders.forEach { a ->
+                                FilterChip(
+                                    selected = selectedSenderId == a.id,
+                                    onClick = { selectSender(a) },
+                                    label = { Text("${if (a.channel == "whatsapp_business") "💼" else "📱"} ${a.label}") },
+                                    trailingIcon = {
+                                        Text("✕", modifier = Modifier
+                                            .padding(start = 2.dp)
+                                            .semantics { contentDescription = "حذف الحساب" }
+                                            .clickable { deleteSender(a) })
+                                    },
+                                )
+                            }
+                        }
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(
+                            value = newSenderLabel,
+                            onValueChange = { newSenderLabel = it },
+                            label = { Text("اسم الحساب (مثلاً: الأعمال)") },
+                            singleLine = true,
+                            modifier = Modifier.weight(1f),
+                        )
+                        OutlinedTextField(
+                            value = newSenderCc,
+                            onValueChange = { newSenderCc = it.filter { ch -> ch.isDigit() } },
+                            label = { Text("كود") },
+                            singleLine = true,
+                            modifier = Modifier.width(90.dp),
+                        )
+                    }
+                    Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        listOf("whatsapp" to "📱 واتساب", "whatsapp_business" to "💼 Business").forEach { (id, label) ->
+                            FilterChip(selected = newSenderChannel == id, onClick = { newSenderChannel = id }, label = { Text(label) })
+                        }
+                    }
+                    OutlinedTextField(
+                        value = newSenderSig,
+                        onValueChange = { newSenderSig = it },
+                        label = { Text("توقيع آخر الرسالة (اختياري)") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Button(onClick = { addSender() }) { Text("＋ أضف حساب") }
+                    Text(
+                        "ملاحظة: رقمين واتساب شخصيين بيبقوا في نفس التطبيق — الاختيار هنا بيظبط الكود والتوقيع والتطبيق الهدف " +
+                            "(عادي/Business). البرنامج مايقدرش يبدّل بين رقمين جوّه نفس واتساب — ده قيد واتساب نفسه.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+
             // قوالب مفضّلة
             Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 OutlinedButton(onClick = { saveTemplate() }) { Text("⭐ احفظ القالب") }
@@ -325,7 +420,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
                         )
                         Button(onClick = {
                             if (unknownNum.filter { it.isDigit() }.isEmpty()) toast("اكتب الرقم")
-                            else WhatsApp.send(context, unknownNum, personalize(""), cc, businessApp = businessMode)
+                            else WhatsApp.send(context, unknownNum, withSig(personalize("")), cc, businessApp = useBusinessApp)
                         }) { Text("📲 ابعت") }
                     }
                 }
@@ -457,9 +552,9 @@ fun BroadcastScreen(onBack: () -> Unit) {
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                             OutlinedButton(
-                                onClick = { WhatsApp.send(context, c.number, msg, cc, businessApp = businessMode) },
+                                onClick = { WhatsApp.send(context, c.number, withSig(msg), cc, businessApp = useBusinessApp) },
                                 modifier = Modifier.fillMaxWidth(),
-                            ) { Text(if (businessMode) "💼 رد على ${c.name}" else "📲 ابعت لـ${c.name}") }
+                            ) { Text(if (useBusinessApp) "💼 رد على ${c.name}" else "📲 ابعت لـ${c.name}") }
                         }
                     }
             }

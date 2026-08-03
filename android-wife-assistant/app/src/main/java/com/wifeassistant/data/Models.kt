@@ -95,6 +95,19 @@ data class Occasion(val key: String, val label: String)
 @Serializable
 data class GroupMember(val name: String, val number: String)
 
+// حساب مُرسِل (رقم واتساب بتاعك). المستخدم ممكن يكون عنده كذا رقم (إمارات/مصر/أعمال).
+// channel بيحدّد التطبيق اللي بيتفتح: واتساب عادي أو واتساب Business.
+// ملاحظة: رقمين واتساب شخصيين على نفس التطبيق مايتفرّقش برمجيًا — ده قيد واتساب نفسه
+// (محتاج تطبيق مزدوج/شريحتين على الجهاز). الحساب هنا بيظبط الكود والتوقيع والتطبيق الهدف.
+@Serializable
+data class SenderAccount(
+    val id: String,
+    val label: String,                 // "الإمارات" / "مصر" / "الأعمال"
+    val channel: String = "whatsapp",  // whatsapp / whatsapp_business
+    val countryCode: String = "",      // كود الدولة الافتراضي لأرقام الحساب ده
+    val signature: String = "",        // توقيع بيتزاد آخر الرسالة (اختياري)
+)
+
 // مجموعة إرسال (شغل/مشروع/أسرة...) — تجميعة ناس بتبعتلهم رسالة مخصّصة بضغطة لكل واحد.
 @Serializable
 data class BroadcastGroup(

@@ -130,6 +130,19 @@ class Settings(context: Context) {
         }
         set(v) = prefs.edit().putString("broadcastTemplates", json.encodeToString(v)).apply()
 
+    // حسابات المُرسِل (أرقام واتساب بتاعتك: إمارات/مصر/أعمال...).
+    var senderAccounts: List<SenderAccount>
+        get() {
+            val raw = prefs.getString("senderAccounts", null) ?: return emptyList()
+            return runCatching { json.decodeFromString<List<SenderAccount>>(raw) }.getOrDefault(emptyList())
+        }
+        set(v) = prefs.edit().putString("senderAccounts", json.encodeToString(v)).apply()
+
+    // الحساب المختار حاليًا للإرسال منه.
+    var selectedSenderId: String
+        get() = prefs.getString("selectedSenderId", "").orEmpty()
+        set(v) = prefs.edit().putString("selectedSenderId", v).apply()
+
     fun currentRecipient(): Recipient? {
         val list = recipients
         return list.firstOrNull { it.id == selectedRecipientId } ?: list.firstOrNull()
