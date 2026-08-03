@@ -44,6 +44,7 @@ import com.wifeassistant.data.Settings
 import com.wifeassistant.data.SmartReply
 import com.wifeassistant.data.Store
 import com.wifeassistant.data.Suggestion
+import com.wifeassistant.util.SocialShare
 import com.wifeassistant.util.WhatsApp
 import kotlinx.coroutines.launch
 
@@ -160,6 +161,18 @@ fun SmartReplyScreen(onBack: () -> Unit) {
                             Button(onClick = { learn(s.text, "pick"); sendReply(s.text) }) { Text("📲 ابعت") }
                             OutlinedButton(onClick = { clipboard.setText(AnnotatedString(s.text)); toast("اتنسخت ✅") }) { Text("📋 نسخ") }
                             OutlinedButton(onClick = { learn(s.text, "pick"); toast("حفظت أسلوبك 👌") }) { Text("👍 اختار") }
+                        }
+                        // شارك عبر منصّة تانية: بننسخ الرد ونفتح التطبيق (المنصّات مابتقبلش نص جاهز في اللينك).
+                        Row(
+                            modifier = Modifier.horizontalScroll(rememberScrollState()),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        ) {
+                            SocialShare.CHANNELS.forEach { (ch, label) ->
+                                OutlinedButton(onClick = {
+                                    learn(s.text, "pick")
+                                    SocialShare.openWithText(context, ch, recipient?.social.orEmpty(), s.text)
+                                }) { Text(label) }
+                            }
                         }
                     }
                 }

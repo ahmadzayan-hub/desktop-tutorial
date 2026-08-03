@@ -97,6 +97,9 @@ fun BroadcastScreen(onBack: () -> Unit) {
     // (متقدّم) باك-إند WhatsApp Business Cloud API — إرسال آلي مشروع لو اتظبّط.
     var apiEndpoint by remember { mutableStateOf(settings.businessApiEndpoint) }
     var apiKey by remember { mutableStateOf(settings.businessApiKey) }
+    // قالب معتمد (اختياري) — بيشتغل خارج نافذة 24 ساعة كمان.
+    var templateName by remember { mutableStateOf("") }
+    var templateLang by remember { mutableStateOf("ar") }
     // تخصيص بالذكاء: رسالة LLM لكل عضو (بالرقم كمفتاح) + سياق مشترك + حالة الشغل.
     val scope = rememberCoroutineScope()
     val composer = remember { GroupComposer(settings) }
@@ -269,6 +272,16 @@ fun BroadcastScreen(onBack: () -> Unit) {
                 .onFailure { toast("فشل الإرسال: ${it.message}") }
         }
     }
+    // إرسال قالب معتمد (خارج نافذة 24 ساعة). القالب لازم يكون معتمد من Meta بنفس الاسم.
+    fun sendTemplateViaApi(to: String) {
+        if (to.filter { it.isDigit() }.isEmpty()) { toast("رقم العميل ناقص"); return }
+        scope.launch {
+            val res = com.wifeassistant.data.CloudApiClient(apiEndpoint, apiKey)
+                .sendTemplate(to, templateName.trim(), templateLang.trim())
+            res.onSuccess { toast("اتبعت قالب ✅") }
+                .onFailure { toast("فشل الإرسال: ${it.message}") }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -366,6 +379,29 @@ fun BroadcastScreen(onBack: () -> Unit) {
                             settings.businessApiKey = apiKey
                             toast(if (cloudConfigured) "اتحفظ إعداد Business API ✅" else "اتمسح الإعداد")
                         }) { Text("💾 احفظ الإعداد") }
+
+                        // قالب معتمد (اختياري) — للإرسال خارج نافذة 24 ساعة.
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedTextField(
+                                value = templateName,
+                                onValueChange = { templateName = it },
+                                label = { Text("اسم قالب معتمد (اختياري)") },
+                                singleLine = true,
+                                modifier = Modifier.weight(1f),
+                            )
+                            OutlinedTextField(
+                                value = templateLang,
+                                onValueChange = { templateLang = it },
+                                label = { Text("لغة") },
+                                singleLine = true,
+                                modifier = Modifier.width(90.dp),
+                            )
+                        }
+                        Text(
+                            "لو حطيت اسم قالب معتمد من Meta، هيظهر زر «ابعت قالب» لكل عميل — بيشتغل حتى خارج الـ24 ساعة.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
                 }
             }
@@ -605,6 +641,12 @@ fun BroadcastScreen(onBack: () -> Unit) {
                                     onClick = { sendViaApi(c.number, withSig(msg)) },
                                     modifier = Modifier.fillMaxWidth(),
                                 ) { Text("🚀 ابعت عبر Business API") }
+                                if (templateName.isNotBlank()) {
+                                    OutlinedButton(
+                                        onClick = { sendTemplateViaApi(c.number) },
+                                        modifier = Modifier.fillMaxWidth(),
+                                    ) { Text("📋 ابعت قالب: ${templateName.trim()}") }
+                                }
                             }
                         }
                     }
