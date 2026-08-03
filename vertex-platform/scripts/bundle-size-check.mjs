@@ -33,7 +33,8 @@ const LIMITS = [
   { family: 'KpiTracker',         maxKB: 10  },
   { family: 'Obligations',        maxKB: 6   },
   { family: 'InsuranceRenewals',  maxKB: 6   },
-  { family: 'Analytics',          maxKB: 8   },
+  { family: 'Analytics',          maxKB: 4   }, // page shell (cards only)
+  { family: 'AnalyticsCharts',    maxKB: 6   }, // chart panel (lazy)
   { family: 'Reports',            maxKB: 8   },
 ];
 

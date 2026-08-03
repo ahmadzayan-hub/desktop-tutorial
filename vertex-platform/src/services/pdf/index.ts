@@ -1,6 +1,8 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+import { pickFontFor } from './arabicFont';
+
 import type {
   Submission,
   Project,
@@ -80,11 +82,14 @@ export interface SubmissionReportInput {
   t: T;
   brand: ReportBrand;
   pageLabel: string;
+  language?: 'en' | 'ar';
 }
 
 export function generateSubmissionReport(input: SubmissionReportInput): void {
-  const { submission, project, findings, t, brand, pageLabel } = input;
+  const { submission, project, findings, t, brand, pageLabel, language = 'en' } = input;
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  const bodyFont = pickFontFor(doc, language);
+  doc.setFont(bodyFont);
   drawHeader(doc, brand, submission.document_name);
 
   doc.setFontSize(9);
@@ -153,11 +158,13 @@ export interface ProjectReportInput {
   t: T;
   brand: ReportBrand;
   pageLabel: string;
+  language?: 'en' | 'ar';
 }
 
 export function generateProjectReport(input: ProjectReportInput): void {
-  const { project, submissions, obligations, kpi, insurance, t, brand, pageLabel } = input;
+  const { project, submissions, obligations, kpi, insurance, t, brand, pageLabel, language = 'en' } = input;
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  doc.setFont(pickFontFor(doc, language));
   drawHeader(doc, brand, project.name);
 
   autoTable(doc, {
@@ -273,7 +280,7 @@ export function generateProjectReport(input: ProjectReportInput): void {
 }
 
 /** Utility: pull the data needed for a report and generate. */
-export async function generateSubmissionReportById(id: string, t: T, brand: ReportBrand, pageLabel: string) {
+export async function generateSubmissionReportById(id: string, t: T, brand: ReportBrand, pageLabel: string, language: 'en' | 'ar' = 'en') {
   const { data: sub, error } = await supabase.from('submissions').select('*').eq('id', id).maybeSingle();
   if (error || !sub) throw error ?? new Error('submission not found');
   const [{ data: project }, { data: findings }] = await Promise.all([
@@ -287,6 +294,7 @@ export async function generateSubmissionReportById(id: string, t: T, brand: Repo
     t,
     brand,
     pageLabel,
+    language,
   });
   await logAuditEvent({
     action: 'report.submission',
@@ -296,7 +304,7 @@ export async function generateSubmissionReportById(id: string, t: T, brand: Repo
   });
 }
 
-export async function generateProjectReportById(id: string, t: T, brand: ReportBrand, pageLabel: string) {
+export async function generateProjectReportById(id: string, t: T, brand: ReportBrand, pageLabel: string, language: 'en' | 'ar' = 'en') {
   const { data: project, error } = await supabase.from('projects').select('*').eq('id', id).maybeSingle();
   if (error || !project) throw error ?? new Error('project not found');
   const [subs, obls, kpis, ins] = await Promise.all([
@@ -314,6 +322,7 @@ export async function generateProjectReportById(id: string, t: T, brand: ReportB
     t,
     brand,
     pageLabel,
+    language,
   });
   await logAuditEvent({
     action: 'report.project',

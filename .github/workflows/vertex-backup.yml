@@ -1,0 +1,103 @@
+name: vertex-backup
+
+# Nightly backup of the VERTEX production Supabase project.
+#
+# Uploads two artefacts to the workflow run:
+#   1. vertex-pgdump-YYYY-MM-DD.dump    (custom-format Postgres dump)
+#   2. vertex-storage-YYYY-MM-DD.tar.gz (submissions bucket mirror)
+#
+# Artefacts stay for 30 days. For 12-month retention, push them onward
+# to S3 Glacier in a follow-up step or copy them into 1Password.
+#
+# Required repository secrets:
+#   VERTEX_SUPABASE_ACCESS_TOKEN   personal access token (Account settings)
+#   VERTEX_SUPABASE_PROJECT_REF    project ref, e.g. `abcdefghijkl`
+#   VERTEX_SUPABASE_DB_PASSWORD    Postgres password (Project settings > Database)
+
+on:
+  schedule:
+    # 22:00 UTC = 02:00 UAE, off-peak.
+    - cron: '0 22 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: vertex-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    name: nightly database + storage backup
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: github.repository == 'ahmadzayan-hub/desktop-tutorial'
+
+    steps:
+      - name: Checkout (shallow)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            vertex-platform/supabase
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Compute date stamp
+        id: stamp
+        run: echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+
+      - name: Postgres dump (custom format)
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.VERTEX_SUPABASE_ACCESS_TOKEN }}
+          PGPASSWORD: ${{ secrets.VERTEX_SUPABASE_DB_PASSWORD }}
+          PROJECT_REF: ${{ secrets.VERTEX_SUPABASE_PROJECT_REF }}
+        run: |
+          set -eo pipefail
+          PGHOST="db.${PROJECT_REF}.supabase.co"
+          echo "Dumping ${PGHOST} into vertex-pgdump-${{ steps.stamp.outputs.date }}.dump"
+          pg_dump \
+            --host "${PGHOST}" \
+            --port 5432 \
+            --username postgres \
+            --dbname postgres \
+            --format=custom \
+            --no-owner \
+            --no-acl \
+            --file "vertex-pgdump-${{ steps.stamp.outputs.date }}.dump"
+
+      - name: Mirror submissions bucket
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.VERTEX_SUPABASE_ACCESS_TOKEN }}
+          PROJECT_REF: ${{ secrets.VERTEX_SUPABASE_PROJECT_REF }}
+        run: |
+          set -eo pipefail
+          mkdir -p mirror
+          supabase storage cp --recursive \
+            "ss:///submissions" \
+            "./mirror/" \
+            --project-ref "${PROJECT_REF}" \
+            --experimental
+          tar -czf "vertex-storage-${{ steps.stamp.outputs.date }}.tar.gz" mirror
+
+      - name: Upload database dump
+        uses: actions/upload-artifact@v4
+        with:
+          name: vertex-pgdump-${{ steps.stamp.outputs.date }}
+          path: vertex-pgdump-${{ steps.stamp.outputs.date }}.dump
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload storage mirror
+        uses: actions/upload-artifact@v4
+        with:
+          name: vertex-storage-${{ steps.stamp.outputs.date }}
+          path: vertex-storage-${{ steps.stamp.outputs.date }}.tar.gz
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Report
+        run: |
+          echo "Backup completed for ${{ steps.stamp.outputs.date }}."
+          echo "See docs/BACKUPS.md for the restore drill."

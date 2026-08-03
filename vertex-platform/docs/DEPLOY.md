@@ -21,6 +21,7 @@ Reviewers should be able to break staging without paging on-call.
 2. In each Supabase SQL editor, run in order:
    - `vertex-platform/supabase/migrations/0001_vertex_init.sql`
    - `vertex-platform/supabase/migrations/0002_session2.sql`
+   - `vertex-platform/supabase/migrations/0003_server_upload_validation.sql`
 3. Deploy the Edge Function:
    ```
    supabase link --project-ref <ref>

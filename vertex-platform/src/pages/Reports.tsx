@@ -11,7 +11,7 @@ import { generateSubmissionReportById, generateProjectReportById } from '@/servi
 type ReportType = 'submission' | 'project';
 
 export default function ReportsPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { projects, loading: projLoading } = useProjects();
   const [reportType, setReportType] = useState<ReportType>('submission');
   const [projectId, setProjectId] = useState<string>('');
@@ -41,9 +41,9 @@ export default function ReportsPage() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (t as any)(key, opts) as string;
       if (reportType === 'submission') {
-        await generateSubmissionReportById(submissionId, wrappedT, brand, pageLabel);
+        await generateSubmissionReportById(submissionId, wrappedT, brand, pageLabel, language);
       } else {
-        await generateProjectReportById(projectId, wrappedT, brand, pageLabel);
+        await generateProjectReportById(projectId, wrappedT, brand, pageLabel, language);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'report failed');

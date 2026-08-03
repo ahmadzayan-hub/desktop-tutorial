@@ -3,6 +3,42 @@
 Notable changes to the VERTEX platform. Semantic versioning
 (major.minor.patch) once we cut a 1.0.0 tag.
 
+## 0.6.3 - Follow-ups sweep
+
+Shipped every remaining FOLLOWUPS item that can land without
+production data or paid external accounts.
+
+- Server-side upload validation. Migration
+  `0003_server_upload_validation.sql` installs a `BEFORE INSERT OR
+  UPDATE` trigger on `storage.objects` that rejects writes to the
+  `submissions` bucket when the MIME type is not in the allowlist or
+  the file is over 25 MB. Client-side `validateFile` is now a UX
+  hint; this is the hard boundary.
+- Backup automation. `.github/workflows/vertex-backup.yml` runs
+  nightly at 22:00 UTC (02:00 UAE), takes a `pg_dump` and a
+  `submissions` bucket mirror, and uploads both as workflow
+  artefacts with 30-day retention. Uses three repository secrets:
+  `VERTEX_SUPABASE_ACCESS_TOKEN`, `VERTEX_SUPABASE_PROJECT_REF`,
+  `VERTEX_SUPABASE_DB_PASSWORD`.
+- Chart bundle split. `pages/analytics/AnalyticsCharts.tsx` extracts
+  every recharts widget into its own lazy chunk. The Analytics page
+  now renders the four KPI cards from its own tiny chunk and only
+  pulls the 110 KB gzip `charts` chunk once the user is looking at
+  the numbers.
+- PDF Arabic font scaffold. `services/pdf/arabicFont.ts` registers a
+  base64-encoded Noto Sans Arabic subset on demand via jsPDF's VFS +
+  `addFont`. `generateSubmissionReport` and `generateProjectReport`
+  now take a `language` and pick the right font via `pickFontFor`.
+  The base64 payload is empty by default (English reports carry no
+  extra bytes); drop the subset in and Arabic reports switch to
+  proper shaping. Instructions inside the file.
+- Authenticated e2e scaffold. `tests/e2e/happy-path.spec.ts` is
+  skipped by default and enables itself when the four e2e env
+  variables are set. It logs in as a seeded reviewer, walks the
+  four-step upload wizard, waits for the traffic-light chip, and
+  approves. `tests/fixtures/seed.sql` defines the reviewer + admin
+  users + test project. Setup steps in `docs/FOLLOWUPS.md`.
+
 ## 0.6.2 - Hardening round 2
 
 Follow-up from the audit list. Every item is a real defence-in-depth
