@@ -7,8 +7,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ElevatedCard
@@ -59,7 +60,7 @@ fun HistoryScreen(onBack: () -> Unit) {
     }
     val favs = remember(refresh) { store.favorites().toSet() }
 
-    val items = all.filter { fb ->
+    val shown = all.filter { fb ->
         val text = fb.finalText.orEmpty()
         (query.isBlank() || text.contains(query.trim(), ignoreCase = true)) &&
             (personFilter.isBlank() || fb.recipientId == personFilter) &&
@@ -81,14 +82,16 @@ fun HistoryScreen(onBack: () -> Unit) {
             )
         },
     ) { padding ->
-        Column(
+        // LazyColumn: السجل بيكبر مع الوقت، فبنرسمه كسول بدل رسم كل الكروت مرة واحدة.
+        LazyColumn(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+          item {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
@@ -121,15 +124,17 @@ fun HistoryScreen(onBack: () -> Unit) {
                 }
             }
 
-            if (items.isEmpty()) {
+            if (shown.isEmpty()) {
                 Text(
                     "مفيش رسايل بالفلتر ده. جرّب تشيل البحث أو الفلترة.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+            } // Column الهيدر
+          } // item الهيدر
 
-            items.forEach { fb ->
+          items(shown, key = { it.date + "|" + it.finalText }) { fb ->
                 val text = fb.finalText.orEmpty()
                 val fav = favs.contains(text)
                 val who = nameOf(fb.recipientId)

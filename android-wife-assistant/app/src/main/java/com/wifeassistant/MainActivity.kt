@@ -32,8 +32,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wifeassistant.data.Settings
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import com.wifeassistant.ui.BroadcastScreen
 import com.wifeassistant.ui.HistoryScreen
 import com.wifeassistant.ui.HomeScreen
@@ -59,7 +62,8 @@ class MainActivity : ComponentActivity() {
         Notifications.ensureChannel(this)
         Settings(this).ensureSeed() // أول تشغيل: يجهّز أول شخص افتراضي
         requestNotificationPermissionIfNeeded()
-        Scheduler.scheduleDaily(this) // جدولة إشعارات الصباح/المساء
+        // جدولة WorkManager بره الـ main thread عشان ما تأخّرش بدء التشغيل/أول فريم.
+        lifecycleScope.launch(Dispatchers.Default) { Scheduler.scheduleDaily(this@MainActivity) }
 
         setContent {
             // نقرأ تفضيلات المظهر ونخلّيها state عشان تتغيّر فوراً من الإعدادات.

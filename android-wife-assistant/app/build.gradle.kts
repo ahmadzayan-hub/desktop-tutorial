@@ -48,7 +48,11 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // R8: يشيل الكود والموارد غير المستخدمة (منها آلاف أيقونات
+            // material-icons-extended) — تصغير كبير للـ APK. قواعد الحفظ في
+            // proguard-rules.pro بتحمي تخزين kotlinx.serialization المحلي.
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             val ksPath = System.getenv("KEYSTORE_FILE")
             signingConfig = if (!ksPath.isNullOrBlank() && file(ksPath).exists()) {
