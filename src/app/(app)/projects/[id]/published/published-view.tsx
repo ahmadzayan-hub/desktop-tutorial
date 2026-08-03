@@ -6,6 +6,8 @@ import { motion } from "motion/react";
 import {
   CheckCircle2,
   FileText,
+  Maximize2,
+  Minimize2,
   Printer,
   ShieldCheck,
   Sparkles,
@@ -13,6 +15,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { SimpleMarkdown } from "@/components/markdown/simple-markdown";
 import { FactItem } from "@/components/facts/fact-item";
+import { MetricRing } from "@/components/data-viz/metric-ring";
+import { ConfidenceBar } from "@/components/data-viz/confidence-bar";
 import { useLocale } from "@/lib/i18n/locale-provider";
 import { formatDate } from "@/lib/utils/dates";
 import { cn } from "@/lib/utils/cn";
@@ -32,6 +36,7 @@ export function PublishedView({ project }: Props) {
   const isAr = locale === "ar";
   const search = useSearchParams();
   const shouldPrint = search.get("print") === "1";
+  const [presenter, setPresenter] = useState(false);
 
   const [state, setState] = useState<PipelineState | null>(null);
   useEffect(() => {
@@ -52,6 +57,14 @@ export function PublishedView({ project }: Props) {
     [state, locale],
   );
 
+  const confidenceCounts = useMemo(() => {
+    const c = { HIGH: 0, MEDIUM: 0, LOW: 0 };
+    for (const f of state?.facts ?? []) {
+      c[f.confidence] += 1;
+    }
+    return c;
+  }, [state]);
+
   const authority =
     (isAr && project.client_authority_ar) || project.client_authority_en || "";
   const counterparty =
@@ -59,10 +72,40 @@ export function PublishedView({ project }: Props) {
   const pageLabel = (n: number) => t.pipeline.extract.page.replace("{n}", String(n));
 
   return (
-    <div dir={dir} className="min-h-screen bg-slate-50 print:bg-white">
-      <div className="mx-auto max-w-4xl px-5 py-10 print:max-w-none print:px-0 print:py-0">
+    <div
+      dir={dir}
+      className={cn(
+        "min-h-screen bg-slate-50 print:bg-white",
+        presenter && "text-[110%]",
+      )}
+    >
+      <div
+        className={cn(
+          "mx-auto px-5 py-10 print:max-w-none print:px-0 print:py-0",
+          presenter ? "max-w-6xl" : "max-w-4xl",
+        )}
+      >
         {!shouldPrint && (
-          <div className="mb-6 flex justify-end print:hidden">
+          <div className="mb-6 flex flex-wrap justify-end gap-2 print:hidden">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setPresenter((v) => !v)}
+              aria-pressed={presenter}
+            >
+              {presenter ? (
+                <Minimize2 className="h-3.5 w-3.5" />
+              ) : (
+                <Maximize2 className="h-3.5 w-3.5" />
+              )}
+              {isAr
+                ? presenter
+                  ? "عرض عادي"
+                  : "وضع العرض"
+                : presenter
+                  ? "Exit presenter"
+                  : "Presenter mode"}
+            </Button>
             <Button size="sm" onClick={() => window.print()}>
               <Printer className="h-3.5 w-3.5" />
               {t.pipeline.publish.print}
@@ -143,6 +186,38 @@ export function PublishedView({ project }: Props) {
               </div>
             </header>
 
+            {/* Key metrics band — quality ring + confidence distribution */}
+            <section className="grid gap-6 border-b border-slate-100 bg-slate-50/60 px-8 py-6 sm:grid-cols-[auto_1fr] sm:items-center print:bg-white">
+              <MetricRing
+                value={snapshot.quality.score / 5}
+                label={isAr ? "بوّابة الجودة" : "Quality gate"}
+                sublabel={`${snapshot.quality.score}/5`}
+                tone={snapshot.quality.score >= 4 ? "emerald" : snapshot.quality.score >= 3 ? "gold" : "amber"}
+              />
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-500">
+                    {isAr ? "توزيع الثقة" : "Confidence mix"}
+                  </p>
+                  <p className="text-[11px] text-slate-500">
+                    {state.facts.length}{" "}
+                    {isAr ? "واقعة" : state.facts.length === 1 ? "fact" : "facts"}{" "}
+                    ·{" "}
+                    {state.documents.length}{" "}
+                    {isAr ? "مستند" : state.documents.length === 1 ? "document" : "documents"}
+                  </p>
+                </div>
+                <ConfidenceBar
+                  counts={confidenceCounts}
+                  labels={
+                    isAr
+                      ? { HIGH: "مرتفعة", MEDIUM: "متوسّطة", LOW: "منخفضة" }
+                      : undefined
+                  }
+                />
+              </div>
+            </section>
+
             {/* Executive summary */}
             <section className="border-b border-slate-100 px-8 py-8">
               <h2 className="mb-4 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-brand-navy">
@@ -161,7 +236,7 @@ export function PublishedView({ project }: Props) {
             <section className="grid gap-5 border-b border-slate-100 px-8 py-8 sm:grid-cols-2">
               {FACT_GROUP_ORDER.map((group) =>
                 grouped[group].length === 0 ? null : (
-                  <div key={group} className={cn("space-y-2.5")}>
+                  <div key={group} className="space-y-2.5">
                     <h3 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-500">
                       {t.pipeline.extract.groups[group]}
                     </h3>
