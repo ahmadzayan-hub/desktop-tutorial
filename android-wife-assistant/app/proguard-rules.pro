@@ -29,3 +29,10 @@
 # ============ OkHttp ============
 -dontwarn okhttp3.**
 -dontwarn okio.**
+
+# ============ androidx.security-crypto (Google Tink) ============
+# Tink بيشاور على أنوتيشنز errorprone وقت الترجمة بس، ومش موجودة وقت التشغيل،
+# فـ R8 بيقع على "Missing class". آمن نتجاهلها لأنها أنوتيشنز فاضية.
+-dontwarn com.google.errorprone.annotations.**
+-dontwarn javax.annotation.**
+-dontwarn com.google.auto.value.**
