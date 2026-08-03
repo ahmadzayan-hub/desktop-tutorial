@@ -153,6 +153,14 @@ class Settings(context: Context) {
         get() = prefs.getString("businessApiKey", "").orEmpty()
         set(v) = prefs.edit().putString("businessApiKey", v.trim()).apply()
 
+    // مناسبات مكتومة (مفيش إشعار ليها). المفتاح: "recipientId|label" للأشخاص، أو label للعامة.
+    var mutedOccasions: List<String>
+        get() {
+            val raw = prefs.getString("mutedOccasions", null) ?: return emptyList()
+            return runCatching { json.decodeFromString<List<String>>(raw) }.getOrDefault(emptyList())
+        }
+        set(v) = prefs.edit().putString("mutedOccasions", json.encodeToString(v)).apply()
+
     fun currentRecipient(): Recipient? {
         val list = recipients
         return list.firstOrNull { it.id == selectedRecipientId } ?: list.firstOrNull()

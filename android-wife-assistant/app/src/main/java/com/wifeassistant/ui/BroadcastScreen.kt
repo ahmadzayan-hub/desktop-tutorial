@@ -58,7 +58,12 @@ import com.wifeassistant.util.ContactsReader
 import com.wifeassistant.util.Csv
 import com.wifeassistant.util.WhatsApp
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 
 // عضو في قائمة الإرسال بمعرّف فريد (id) — عشان الاختيار والرسائل الذكية تتربط بالشخص
@@ -204,10 +209,23 @@ fun BroadcastScreen(onBack: () -> Unit) {
         if (all.size > 60) toast("هنجهّز أول 60 (الأقصى للدفعة) — كرّر للباقي")
         scope.launch {
             busy = true; progress = 0
-            for (c in targets) {
-                aiMsgs[c.id] = runCatching { composer.oneFor(c.name, "", sharedCtx, business = businessMode) }
-                    .getOrElse { personalize(c.name) }
-                progress += 1
+            // توليد متوازي محدود (٤ في نفس الوقت) — أسرع بكتير من واحد ورا واحد لـ60 عميل،
+            // من غير ما نغرق Groq بطلبات. العدّاد ذرّي عشان التحديث ما يتلغبطش.
+            val done = java.util.concurrent.atomic.AtomicInteger(0)
+            val sem = Semaphore(4)
+            coroutineScope {
+                targets.map { c ->
+                    async {
+                        val msg = sem.withPermit {
+                            withContext(Dispatchers.IO) {
+                                runCatching { composer.oneFor(c.name, "", sharedCtx, business = businessMode) }
+                                    .getOrElse { personalize(c.name) }
+                            }
+                        }
+                        aiMsgs[c.id] = msg
+                        progress = done.incrementAndGet()
+                    }
+                }.awaitAll()
             }
             busy = false
             toast("جهّزت $progress رسالة مخصّصة ✍️")

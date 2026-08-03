@@ -351,6 +351,10 @@ private fun UpcomingOccasions(
     onWrite: (String, String) -> Unit,
     onIdeas: (String, String) -> Unit,
 ) {
+    val context = LocalContext.current
+    val settings = remember { com.wifeassistant.data.Settings(context) }
+    var muted by remember { mutableStateOf(settings.mutedOccasions.toSet()) }
+
     data class Up(val rid: String, val name: String, val label: String, val days: Int)
     val upcoming = people.recipients.flatMap { r ->
         r.occasions.mapNotNull { o ->
@@ -375,11 +379,26 @@ private fun UpcomingOccasions(
                     1 -> "بكرة"
                     else -> "بعد ${u.days} يوم"
                 }
+                val key = u.rid + "|" + u.label
+                val isMuted = muted.contains(key)
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("${u.label} لـ${u.name} · $whenTxt", style = MaterialTheme.typography.bodyMedium)
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        "${u.label} لـ${u.name} · $whenTxt" + if (isMuted) "  🔕" else "",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Row(
+                        modifier = Modifier.horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
                         AssistChip(onClick = { onWrite(u.rid, u.label) }, label = { Text("✍️ اكتب") })
                         AssistChip(onClick = { onIdeas(u.rid, u.label) }, label = { Text("🎁 أفكار") })
+                        AssistChip(
+                            onClick = {
+                                muted = if (isMuted) muted - key else muted + key
+                                settings.mutedOccasions = muted.toList()
+                            },
+                            label = { Text(if (isMuted) "🔔 تفعيل التنبيه" else "🔕 كتم") },
+                        )
                     }
                 }
             }

@@ -18,8 +18,10 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         val settings = Settings(applicationContext)
 
         // (1) مناسبات الأشخاص القريّبة - تنبيه مبكّر (خلال 3 أيام) بغضّ النظر عن مفتاح التذكيرات.
+        val muted = settings.mutedOccasions.toSet()
         settings.recipients.forEach { r ->
             r.occasions.forEach { o ->
+                if (muted.contains(r.id + "|" + o.label)) return@forEach // المستخدم كتم المناسبة دي
                 val days = DateUtil.daysUntilMMDD(o.date) ?: return@forEach
                 if (days <= 3) {
                     val who = r.name.ifBlank { "حد بتحبه" }
@@ -41,6 +43,7 @@ class ReminderWorker(context: Context, params: WorkerParameters) :
         // (1ب) مناسبات عامة قريّبة من الإعدادات (عيد/مناسبة موسمية) — تنبيه مبكّر خلال 3 أيام.
         settings.occasions.forEach { occ ->
             if (!occ.enabled) return@forEach
+            if (muted.contains(occ.label)) return@forEach // مناسبة عامة مكتومة
             val days = when (occ.type) {
                 "fixed" -> occ.date?.takeIf { it != "MM-DD" }?.let { DateUtil.daysUntilMMDD(it) }
                 "manual" -> occ.dates.mapNotNull { DateUtil.daysUntilYMD(it) }.filter { it in 0..3 }.minOrNull()

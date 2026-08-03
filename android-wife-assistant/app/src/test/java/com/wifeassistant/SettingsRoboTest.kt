@@ -61,5 +61,14 @@ class SettingsRoboTest {
         assertTrue(s.senderAccounts.isEmpty())
         assertEquals("", s.businessApiEndpoint)
         assertEquals("", s.selectedSenderId)
+        assertTrue(s.mutedOccasions.isEmpty())
+    }
+
+    @Test fun mutedOccasionsRoundTrip() {
+        val s = Settings(ctx())
+        s.mutedOccasions = listOf("r1|عيد ميلاد", "رمضان")
+        val back = s.mutedOccasions.toSet()
+        assertTrue(back.contains("r1|عيد ميلاد"))
+        assertTrue(back.contains("رمضان"))
     }
 }
