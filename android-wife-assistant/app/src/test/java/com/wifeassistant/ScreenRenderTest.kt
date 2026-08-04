@@ -2,7 +2,10 @@ package com.wifeassistant
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import com.wifeassistant.ui.BroadcastScreen
+import com.wifeassistant.ui.DraftPolishScreen
 import com.wifeassistant.ui.HistoryScreen
+import com.wifeassistant.ui.SmartReplyScreen
 import com.wifeassistant.ui.WelcomeScreen
 import org.junit.Rule
 import org.junit.Test
@@ -31,5 +34,21 @@ class ScreenRenderTest {
         rule.setContent { HistoryScreen(onBack = {}) }
         rule.onNodeWithText("سجل الرسايل 📜").assertExists()
         rule.onNodeWithText("مفيش رسايل بالفلتر ده. جرّب تشيل البحث أو الفلترة.").assertExists()
+    }
+
+    // شاشات مزايا الجلسة الجديدة — نتأكد إنها بتتركّب من غير كراش (عنوانها موجود).
+    @Test fun draftPolishScreenComposes() {
+        rule.setContent { DraftPolishScreen(onBack = {}) }
+        rule.onNodeWithText("حسّن رسالتي ✨").assertExists()
+    }
+
+    @Test fun smartReplyScreenComposes() {
+        rule.setContent { SmartReplyScreen(onBack = {}) }
+        rule.onNodeWithText("رد ذكي 💬").assertExists()
+    }
+
+    @Test fun broadcastScreenComposes() {
+        rule.setContent { BroadcastScreen(onBack = {}) }
+        rule.onNodeWithText("مجموعات وإرسال 📣").assertExists()
     }
 }
