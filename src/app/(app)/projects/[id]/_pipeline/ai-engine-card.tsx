@@ -15,7 +15,12 @@ import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { useLocale } from "@/lib/i18n/locale-provider";
 import { cn } from "@/lib/utils/cn";
-import { AVAILABLE_MODELS, type LlmProgress, type LlmStatus } from "@/lib/llm/web-llm";
+import {
+  AVAILABLE_MODELS,
+  classifyProbeError,
+  type LlmProgress,
+  type LlmStatus,
+} from "@/lib/llm/web-llm";
 
 interface Props {
   progress: LlmProgress;
@@ -103,6 +108,27 @@ export function AiEngineCard({
           />
         </div>
       )}
+
+      {status === "error" &&
+        (() => {
+          const c = classifyProbeError(progress.text || progress.error);
+          if (!c.is_driver_bug) return null;
+          return (
+            <div className="mt-3 rounded-lg border border-rose-200 bg-rose-50 p-3 text-xs leading-relaxed text-rose-800">
+              <p className="font-semibold">
+                {isAr
+                  ? "سائق الرسوميّات لا يدعم الاستدلال هنا"
+                  : "GPU driver can't run on-device AI here"}
+              </p>
+              <p className="mt-1">{isAr ? c.friendly_ar : c.friendly_en}</p>
+              <p className="mt-2 text-[11px] text-rose-700/80">
+                {isAr
+                  ? "الاستخراج سيستمرّ عبر المسار الحتمي (بدون ذكاء اصطناعي على الجهاز)."
+                  : "Extraction will continue via the deterministic baseline (no on-device AI)."}
+              </p>
+            </div>
+          );
+        })()}
 
       <div className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
         <div className="min-w-0">
