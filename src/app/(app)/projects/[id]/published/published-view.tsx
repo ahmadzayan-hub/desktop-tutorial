@@ -82,7 +82,7 @@ export function PublishedView({ project }: Props) {
     >
       <div
         className={cn(
-          "mx-auto px-5 py-10 print:max-w-none print:px-0 print:py-0",
+          "mx-auto px-3 py-5 sm:px-5 sm:py-10 print:max-w-none print:px-0 print:py-0",
           presenter ? "max-w-6xl" : "max-w-4xl",
         )}
       >
@@ -127,7 +127,7 @@ export function PublishedView({ project }: Props) {
             className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm print:rounded-none print:border-0 print:shadow-none"
           >
             {/* Hero cover */}
-            <header className="relative overflow-hidden border-b border-slate-100 bg-gradient-to-br from-brand-navy via-brand-navy/95 to-brand-navy/90 px-8 py-10 text-white print:bg-white print:text-brand-navy">
+            <header className="relative overflow-hidden border-b border-slate-100 bg-gradient-to-br from-brand-navy via-brand-navy/95 to-brand-navy/90 px-5 py-7 text-white sm:px-8 sm:py-10 print:bg-white print:text-brand-navy">
               <div className="absolute inset-0 opacity-[0.06] print:hidden">
                 <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
                   <defs>
@@ -231,7 +231,7 @@ export function PublishedView({ project }: Props) {
             </section>
 
             {/* Executive summary */}
-            <section className="border-b border-slate-100 px-8 py-8">
+            <section className="border-b border-slate-100 px-5 py-6 sm:px-8 sm:py-8">
               <h2 className="mb-4 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-brand-navy">
                 <Sparkles className="h-3.5 w-3.5 text-brand-gold" />
                 {isAr ? "الموجز التنفيذي" : "Executive brief"}
@@ -245,7 +245,7 @@ export function PublishedView({ project }: Props) {
             </section>
 
             {/* Facts grid */}
-            <section className="grid gap-5 border-b border-slate-100 px-8 py-8 sm:grid-cols-2">
+            <section className="grid gap-4 border-b border-slate-100 px-5 py-6 sm:grid-cols-2 sm:gap-5 sm:px-8 sm:py-8">
               {FACT_GROUP_ORDER.map((group) =>
                 grouped[group].length === 0 ? null : (
                   <div key={group} className="space-y-2.5">
@@ -269,7 +269,7 @@ export function PublishedView({ project }: Props) {
             </section>
 
             {/* Meta footer */}
-            <footer className="px-8 py-5">
+            <footer className="px-5 py-4 sm:px-8 sm:py-5">
               <div className="flex flex-wrap items-center justify-between gap-3 text-[11px] text-slate-500">
                 <span className="inline-flex items-center gap-1.5">
                   <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
