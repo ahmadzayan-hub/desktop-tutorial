@@ -10,14 +10,14 @@
 #   5) Prints a checklist of stale branches to delete via the GitHub UI.
 #
 # BEFORE RUNNING:
-#   - Create these 6 empty repos on GitHub under ahmadzayan-hub (no README,
-#     no .gitignore, no license — nothing at all):
-#         lahza
-#         beyond-style-uae
-#         prompt-orchestrator
-#         draftly
-#         pitchora-studio
-#         mutabasir-director-lens
+#   - The 6 empty target repos MUST already exist on GitHub under ahmadzayan-hub.
+#     Owner has created them named simply as numbers:
+#         11  -> lahza                       (from origin/main)
+#         22  -> beyond-style-uae            (from origin/beyond-connect-console)
+#         33  -> prompt-orchestrator         (from origin/legacy/prompt-orchestrator)
+#         44  -> draftly                     (from origin/draftly/main)
+#         55  -> pitchora-studio             (from origin/pitchora)
+#         66  -> mutabasir-director-lens     (from origin/mutabasir/director-lens-platform)
 #   - Confirm you have push access from your local machine to all 6.
 #   - Run this script from the root of a fresh `desktop-tutorial` clone.
 
@@ -41,22 +41,27 @@ git fetch origin --prune
 # owner is fixed for this migration.
 OWNER="ahmadzayan-hub"
 
+# Target repos on GitHub are numbered 11..66 (owner named them this way).
+# key = GitHub repo name (target), value = "canonical branch on origin | human label"
 declare -A PROJECTS=(
-  [lahza]="main"
-  [beyond-style-uae]="beyond-connect-console"
-  [prompt-orchestrator]="legacy/prompt-orchestrator"
-  [draftly]="draftly/main"
-  [pitchora-studio]="pitchora"
-  [mutabasir-director-lens]="mutabasir/director-lens-platform"
+  [11]="main|lahza"
+  [22]="beyond-connect-console|beyond-style-uae"
+  [33]="legacy/prompt-orchestrator|prompt-orchestrator"
+  [44]="draftly/main|draftly"
+  [55]="pitchora|pitchora-studio"
+  [66]="mutabasir/director-lens-platform|mutabasir-director-lens"
 )
 
 # --- Step 3: mirror each canonical branch into its new repo ----------------
-for proj in "${!PROJECTS[@]}"; do
-  src_branch="${PROJECTS[$proj]}"
-  remote_name="mig_${proj//-/_}"
+# Iterate in stable numeric order so log output is easy to follow.
+for proj in 11 22 33 44 55 66; do
+  spec="${PROJECTS[$proj]}"
+  src_branch="${spec%%|*}"
+  label="${spec##*|}"
+  remote_name="mig_${proj}"
   remote_url="https://github.com/${OWNER}/${proj}.git"
 
-  info "Project: $proj  ←  origin/$src_branch  →  $remote_url"
+  info "Project ${proj} (${label})  ←  origin/${src_branch}  →  ${remote_url}"
 
   # Verify the source branch exists on origin.
   git rev-parse --verify "origin/${src_branch}" > /dev/null 2>&1 \
@@ -74,7 +79,7 @@ for proj in "${!PROJECTS[@]}"; do
   info "Pushing history..."
   git push "$remote_name" "refs/remotes/origin/${src_branch}:refs/heads/main"
 
-  info "$proj migrated. Verify at $remote_url"
+  info "${label} migrated → ${remote_url}"
   echo ""
 done
 
