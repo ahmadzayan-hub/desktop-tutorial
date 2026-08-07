@@ -19,15 +19,18 @@ param(
 $ErrorActionPreference = "Stop"
 $Owner = "ahmadzayan-hub"
 
-# ==== EDIT THIS TABLE if your repo names differ ==============================
+# ==== Target repos on GitHub =================================================
+# Owner created them with the literal suffix "-Private" (which is a name,
+# NOT the visibility setting — two of them are actually public and need
+# their visibility fixed manually in GitHub Settings).
 # Key = repo name on GitHub. Value = "source branch|human label"
 $Projects = [ordered]@{
-  "11" = "main|lahza"
-  "22" = "beyond-connect-console|beyond-style-uae"
-  "33" = "legacy/prompt-orchestrator|prompt-orchestrator"
-  "44" = "draftly/main|draftly"
-  "55" = "pitchora|pitchora-studio"
-  "66" = "mutabasir/director-lens-platform|mutabasir-director-lens"
+  "lahza-Private"                    = "main|lahza"
+  "beyond-style-uae-Private"         = "beyond-connect-console|beyond-style-uae"
+  "prompt-orchestrator-Private"      = "legacy/prompt-orchestrator|prompt-orchestrator"
+  "draftly-Private"                  = "draftly/main|draftly"
+  "Pitchora-studio-Private"          = "pitchora|pitchora-studio"
+  "mutabasir-director-lens-Private"  = "mutabasir/director-lens-platform|mutabasir-director-lens"
 }
 # ============================================================================
 

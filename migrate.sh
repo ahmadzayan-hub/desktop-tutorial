@@ -41,20 +41,20 @@ git fetch origin --prune
 # owner is fixed for this migration.
 OWNER="ahmadzayan-hub"
 
-# Target repos on GitHub are numbered 11..66 (owner named them this way).
-# key = GitHub repo name (target), value = "canonical branch on origin | human label"
+# Target repos on GitHub. Owner named them with the literal "-Private" suffix
+# (two of them are accidentally public — fix visibility in Settings after).
+# Key = repo name on GitHub, Value = "canonical branch on origin | human label"
 declare -A PROJECTS=(
-  [11]="main|lahza"
-  [22]="beyond-connect-console|beyond-style-uae"
-  [33]="legacy/prompt-orchestrator|prompt-orchestrator"
-  [44]="draftly/main|draftly"
-  [55]="pitchora|pitchora-studio"
-  [66]="mutabasir/director-lens-platform|mutabasir-director-lens"
+  ["lahza-Private"]="main|lahza"
+  ["beyond-style-uae-Private"]="beyond-connect-console|beyond-style-uae"
+  ["prompt-orchestrator-Private"]="legacy/prompt-orchestrator|prompt-orchestrator"
+  ["draftly-Private"]="draftly/main|draftly"
+  ["Pitchora-studio-Private"]="pitchora|pitchora-studio"
+  ["mutabasir-director-lens-Private"]="mutabasir/director-lens-platform|mutabasir-director-lens"
 )
 
 # --- Step 3: mirror each canonical branch into its new repo ----------------
-# Iterate in stable numeric order so log output is easy to follow.
-for proj in 11 22 33 44 55 66; do
+for proj in "${!PROJECTS[@]}"; do
   spec="${PROJECTS[$proj]}"
   src_branch="${spec%%|*}"
   label="${spec##*|}"
