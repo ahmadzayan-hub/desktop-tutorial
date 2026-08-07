@@ -20,14 +20,14 @@ export interface DemoOrder {
 }
 
 export const DEMO_ORDERS: DemoOrder[] = [
-  { ref: "BCM-2026-1042", customer: "Aisha Al Marri", item: { en: "The Keepsake", ar: "التذكار" }, total: 149, emirate: { en: "Dubai", ar: "دبي" }, payment: "paid", production: "packing", delivery: "scheduled", approval: "approved", ageHours: 2 },
-  { ref: "BCM-2026-1041", customer: "Omar Haddad", item: { en: "The Signature", ar: "التوقيع" }, total: 229, emirate: { en: "Abu Dhabi", ar: "أبوظبي" }, payment: "paid", production: "printing", delivery: "scheduled", approval: "pending", ageHours: 5 },
-  { ref: "BCM-2026-1040", customer: "Latifa S.", item: { en: "The Moment", ar: "اللحظة" }, total: 89, emirate: { en: "Sharjah", ar: "الشارقة" }, payment: "link_sent", production: "queued", delivery: "scheduled", approval: "pending", ageHours: 7 },
-  { ref: "BCM-2026-1039", customer: "James P.", item: { en: "The Keepsake", ar: "التذكار" }, total: 149, emirate: { en: "Dubai", ar: "دبي" }, payment: "paid", production: "ready", delivery: "out", approval: "approved", ageHours: 22 },
-  { ref: "BCM-2026-1038", customer: "Mariam K.", item: { en: "The Signature", ar: "التوقيع" }, total: 229, emirate: { en: "Ajman", ar: "عجمان" }, payment: "cod", production: "packing", delivery: "scheduled", approval: "approved", ageHours: 26 },
-  { ref: "BCM-2026-1037", customer: "Noura A.", item: { en: "The Moment", ar: "اللحظة" }, total: 89, emirate: { en: "Dubai", ar: "دبي" }, payment: "paid", production: "ready", delivery: "delivered", approval: "approved", ageHours: 30 },
-  { ref: "BCM-2026-1036", customer: "Yousef R.", item: { en: "The Keepsake", ar: "التذكار" }, total: 149, emirate: { en: "RAK", ar: "رأس الخيمة" }, payment: "awaiting", production: "queued", delivery: "scheduled", approval: "pending", ageHours: 34 },
-  { ref: "BCM-2026-1035", customer: "Hessa M.", item: { en: "The Signature", ar: "التوقيع" }, total: 229, emirate: { en: "Dubai", ar: "دبي" }, payment: "paid", production: "ready", delivery: "delivered", approval: "approved", ageHours: 48 },
+  { ref: "LHZ-2026-1042", customer: "Aisha Al Marri", item: { en: "The Keepsake", ar: "التذكار" }, total: 149, emirate: { en: "Dubai", ar: "دبي" }, payment: "paid", production: "packing", delivery: "scheduled", approval: "approved", ageHours: 2 },
+  { ref: "LHZ-2026-1041", customer: "Omar Haddad", item: { en: "The Signature", ar: "التوقيع" }, total: 229, emirate: { en: "Abu Dhabi", ar: "أبوظبي" }, payment: "paid", production: "printing", delivery: "scheduled", approval: "pending", ageHours: 5 },
+  { ref: "LHZ-2026-1040", customer: "Latifa S.", item: { en: "The Moment", ar: "اللحظة" }, total: 89, emirate: { en: "Sharjah", ar: "الشارقة" }, payment: "link_sent", production: "queued", delivery: "scheduled", approval: "pending", ageHours: 7 },
+  { ref: "LHZ-2026-1039", customer: "James P.", item: { en: "The Keepsake", ar: "التذكار" }, total: 149, emirate: { en: "Dubai", ar: "دبي" }, payment: "paid", production: "ready", delivery: "out", approval: "approved", ageHours: 22 },
+  { ref: "LHZ-2026-1038", customer: "Mariam K.", item: { en: "The Signature", ar: "التوقيع" }, total: 229, emirate: { en: "Ajman", ar: "عجمان" }, payment: "cod", production: "packing", delivery: "scheduled", approval: "approved", ageHours: 26 },
+  { ref: "LHZ-2026-1037", customer: "Noura A.", item: { en: "The Moment", ar: "اللحظة" }, total: 89, emirate: { en: "Dubai", ar: "دبي" }, payment: "paid", production: "ready", delivery: "delivered", approval: "approved", ageHours: 30 },
+  { ref: "LHZ-2026-1036", customer: "Yousef R.", item: { en: "The Keepsake", ar: "التذكار" }, total: 149, emirate: { en: "RAK", ar: "رأس الخيمة" }, payment: "awaiting", production: "queued", delivery: "scheduled", approval: "pending", ageHours: 34 },
+  { ref: "LHZ-2026-1035", customer: "Hessa M.", item: { en: "The Signature", ar: "التوقيع" }, total: 229, emirate: { en: "Dubai", ar: "دبي" }, payment: "paid", production: "ready", delivery: "delivered", approval: "approved", ageHours: 48 },
 ];
 
 export interface DemoLead {

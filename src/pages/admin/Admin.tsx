@@ -141,20 +141,20 @@ function Overview({ kpis }: { kpis: Record<string, number> }) {
 
       <div className="grid gap-4 md:grid-cols-3">
         <StatusCard title={t("admin.statusPayment")} items={[
-          { label: "Paid", value: payment.paid ?? 0, tone: "bg-green-500" },
-          { label: "Awaiting", value: (payment.awaiting ?? 0) + (payment.link_sent ?? 0), tone: "bg-amber-500" },
-          { label: "COD", value: payment.cod ?? 0, tone: "bg-sky-500" },
+          { label: t("admin.status.paid"), value: payment.paid ?? 0, tone: "bg-green-500" },
+          { label: t("admin.status.awaiting"), value: (payment.awaiting ?? 0) + (payment.link_sent ?? 0), tone: "bg-amber-500" },
+          { label: t("admin.status.cod"), value: payment.cod ?? 0, tone: "bg-sky-500" },
         ]} />
         <StatusCard title={t("admin.statusProduction")} items={[
-          { label: "Queued", value: production.queued ?? 0, tone: "bg-coffee-300" },
-          { label: "Printing", value: production.printing ?? 0, tone: "bg-gold-500" },
-          { label: "Packing", value: production.packing ?? 0, tone: "bg-coffee-500" },
-          { label: "Ready", value: production.ready ?? 0, tone: "bg-green-500" },
+          { label: t("admin.status.queued"), value: production.queued ?? 0, tone: "bg-coffee-300" },
+          { label: t("admin.status.printing"), value: production.printing ?? 0, tone: "bg-gold-500" },
+          { label: t("admin.status.packing"), value: production.packing ?? 0, tone: "bg-coffee-500" },
+          { label: t("admin.status.ready"), value: production.ready ?? 0, tone: "bg-green-500" },
         ]} />
         <StatusCard title={t("admin.statusDelivery")} items={[
-          { label: "Scheduled", value: delivery.scheduled ?? 0, tone: "bg-coffee-400" },
-          { label: "Out", value: delivery.out ?? 0, tone: "bg-gold-500" },
-          { label: "Delivered", value: delivery.delivered ?? 0, tone: "bg-green-500" },
+          { label: t("admin.status.scheduled"), value: delivery.scheduled ?? 0, tone: "bg-coffee-400" },
+          { label: t("admin.status.out"), value: delivery.out ?? 0, tone: "bg-gold-500" },
+          { label: t("admin.status.delivered"), value: delivery.delivered ?? 0, tone: "bg-green-500" },
         ]} />
       </div>
     </div>
@@ -183,9 +183,9 @@ function Orders() {
             <td className="px-4 py-3 text-coffee-700">{o.customer}</td>
             <td className="px-4 py-3 text-coffee-600">{pick(o.item)}</td>
             <td className="px-4 py-3 text-coffee-800">{formatAed(o.total, lang)}</td>
-            <td className="px-4 py-3"><Badge tone={o.payment === "paid" ? "green" : o.payment === "cod" ? "sky" : "amber"}>{o.payment.replace("_", " ")}</Badge></td>
-            <td className="px-4 py-3"><Badge tone={o.production === "ready" ? "green" : "coffee"}>{o.production}</Badge></td>
-            <td className="px-4 py-3"><Badge tone={o.delivery === "delivered" ? "green" : o.delivery === "out" ? "gold" : "coffee"}>{o.delivery}</Badge></td>
+            <td className="px-4 py-3"><Badge tone={o.payment === "paid" ? "green" : o.payment === "cod" ? "sky" : "amber"}>{t(`admin.status.${o.payment}`)}</Badge></td>
+            <td className="px-4 py-3"><Badge tone={o.production === "ready" ? "green" : "coffee"}>{t(`admin.status.${o.production}`)}</Badge></td>
+            <td className="px-4 py-3"><Badge tone={o.delivery === "delivered" ? "green" : o.delivery === "out" ? "gold" : "coffee"}>{t(`admin.status.${o.delivery}`)}</Badge></td>
           </tr>
         ))}
       </tbody>
@@ -198,14 +198,14 @@ function Leads() {
   const { t, pick } = useI18n();
   return (
     <TableCard title={t("admin.nav.leads")}>
-      <thead><Tr head cols={[t("admin.colCustomer"), "Channel", "Interest", t("admin.colStatus"), t("admin.colWhen")]} /></thead>
+      <thead><Tr head cols={[t("admin.colCustomer"), t("admin.colChannel"), t("admin.colInterest"), t("admin.colStatus"), t("admin.colWhen")]} /></thead>
       <tbody className="divide-y divide-coffee-100">
         {DEMO_LEADS.map((l, i) => (
           <tr key={i} className="text-sm">
             <td className="px-4 py-3 font-medium text-coffee-900">{l.name}</td>
             <td className="px-4 py-3 text-coffee-600">{pick(l.channel)}</td>
             <td className="px-4 py-3 text-coffee-600">{pick(l.interest)}</td>
-            <td className="px-4 py-3"><Badge tone={l.temp === "hot" ? "gold" : l.temp === "warm" ? "amber" : "coffee"}>{l.temp}</Badge></td>
+            <td className="px-4 py-3"><Badge tone={l.temp === "hot" ? "gold" : l.temp === "warm" ? "amber" : "coffee"}>{t(`admin.status.${l.temp}`)}</Badge></td>
             <td className="px-4 py-3 text-xs text-coffee-400">{l.ageHours}h</td>
           </tr>
         ))}
@@ -229,7 +229,7 @@ function Approvals({ approved, setApproved }: { approved: Set<string>; setApprov
               <td className="px-4 py-3 font-medium text-coffee-900">{o.ref}</td>
               <td className="px-4 py-3 text-coffee-700">{o.customer}</td>
               <td className="px-4 py-3 text-coffee-600">{pick(o.item)}</td>
-              <td className="px-4 py-3"><Badge tone={isApproved ? "green" : "amber"}>{isApproved ? t("admin.approved") : "pending"}</Badge></td>
+              <td className="px-4 py-3"><Badge tone={isApproved ? "green" : "amber"}>{isApproved ? t("admin.approved") : t("admin.pending")}</Badge></td>
               <td className="px-4 py-3 text-end">
                 {!isApproved && (
                   <button
@@ -276,7 +276,7 @@ function Inventory() {
   const { t, pick } = useI18n();
   return (
     <TableCard title={t("admin.nav.inventory")}>
-      <thead><Tr head cols={[t("admin.colItem"), t("admin.colStock"), "Reorder at", t("admin.colStatus")]} /></thead>
+      <thead><Tr head cols={[t("admin.colItem"), t("admin.colStock"), t("admin.colReorder"), t("admin.colStatus")]} /></thead>
       <tbody className="divide-y divide-coffee-100">
         {DEMO_INVENTORY.map((it, i) => {
           const low = it.stock <= it.reorder;
@@ -285,7 +285,7 @@ function Inventory() {
               <td className="px-4 py-3 font-medium text-coffee-900">{pick(it.item)}</td>
               <td className="px-4 py-3 text-coffee-700">{it.stock.toLocaleString()}</td>
               <td className="px-4 py-3 text-coffee-500">{it.reorder}</td>
-              <td className="px-4 py-3"><Badge tone={low ? "amber" : "green"}>{low ? "Reorder" : "OK"}</Badge></td>
+              <td className="px-4 py-3"><Badge tone={low ? "amber" : "green"}>{low ? t("admin.reorder") : t("admin.ok")}</Badge></td>
             </tr>
           );
         })}
