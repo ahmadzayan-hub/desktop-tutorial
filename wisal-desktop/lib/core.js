@@ -416,6 +416,25 @@ async function generateOneFor(member, opts) {
   }
 }
 
+
+// «سلسلة الدفء»: كام يوم متتالي فيهم رسالة اتبعتت (بسماحية يوم واحد) — نظير Streak في أندرويد.
+function computeStreak(dates, todayISO) {
+  const set = new Set((dates || []).filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d || '')));
+  if (!set.size) return 0;
+  const day = (iso, delta) => {
+    const t = new Date(iso + 'T00:00:00Z');
+    t.setUTCDate(t.getUTCDate() + delta);
+    return t.toISOString().slice(0, 10);
+  };
+  let cursor;
+  if (set.has(todayISO)) cursor = todayISO;
+  else if (set.has(day(todayISO, -1))) cursor = day(todayISO, -1);
+  else return 0;
+  let n = 0;
+  while (set.has(cursor)) { n++; cursor = day(cursor, -1); }
+  return n;
+}
+
 // ملخّص حالة للنظام (شريط الحالة + تبويبات Memory/Brain).
 function stats() {
   const s = getSettings(); const st = getStore(); const p = getPeople();
@@ -426,6 +445,7 @@ function stats() {
     feedback: (st.feedback || []).length,
     favorites: (st.favorites || []).length,
     hasKey: !!s.groqKey,
+    streak: computeStreak((st.feedback || []).filter((f) => f.finalText).map((f) => f.date), todayISO()),
   };
 }
 
@@ -435,5 +455,5 @@ module.exports = {
   getStore, addStyleExample, addFeedback, bumpTheme, toggleFavorite, deleteHistory, markContacted,
   generate, refine, giftIdeas, todayISO, stats,
   getGroups, setGroups, parseContactsCSV, analyzePersona, generateOneFor,
-  detectLang, resolveLang, langDirective, dialectPhrase, intentById,
+  detectLang, resolveLang, langDirective, dialectPhrase, intentById, computeStreak,
 };

@@ -62,6 +62,7 @@ async function updateStatus() {
   pill(`🧠 Brain: <b>${st.people || 0}</b> شخص`);
   pill(`🗄️ Memory: <b>${st.styleExamples || 0}</b> أمثلة أسلوب`);
   pill(`⭐ <b>${st.favorites || 0}</b> مفضّلة`);
+  if (st.streak > 0) pill(`🔥 <b>${st.streak}</b> يوم دفء متواصل`);
 }
 
 // آخر رسالة اشتغل عليها الوكيل (للأدوات: نسخ/واتساب). بتتحدّث مع كل توليد/اختيار.

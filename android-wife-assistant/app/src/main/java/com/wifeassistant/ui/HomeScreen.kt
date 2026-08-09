@@ -88,6 +88,7 @@ fun HomeScreen(
     val people by vm.people.collectAsStateWithLifecycle()
     val ideas by vm.ideas.collectAsStateWithLifecycle()
     val next by vm.nextAction.collectAsStateWithLifecycle()
+    val streak by vm.streak.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
     var edited by remember { mutableStateOf("") }
@@ -170,6 +171,7 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             HeaderBanner(current)
+            StreakCard(streak)
             next?.let { na -> NextActionCard(na) { vm.writeToNext(na) } }
             RecipientSwitcher(
                 people = people,
@@ -568,6 +570,47 @@ private fun HeaderBanner(current: Recipient?) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimary,
             )
+        }
+    }
+}
+
+// 🔥 «سلسلة الدفء»: كام يوم متتالي وانت بتوصّل حب — تحفيز لطيف يحافظ على العادة.
+// بتظهر بس لما فيه سلسلة فعلاً (مفيش تأنيب لو مفيش).
+@Composable
+private fun StreakCard(streak: Int) {
+    if (streak < 1) return
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                Brush.horizontalGradient(
+                    listOf(
+                        MaterialTheme.colorScheme.tertiaryContainer,
+                        MaterialTheme.colorScheme.primaryContainer,
+                    ),
+                ),
+                RoundedCornerShape(20.dp),
+            )
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text("🔥", style = MaterialTheme.typography.headlineMedium)
+            Column {
+                Text(
+                    if (streak == 1) "يوم دفء متواصل" else "$streak يوم دفء متواصل",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+                Text(
+                    com.wifeassistant.data.Streak.message(streak),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+            }
         }
     }
 }

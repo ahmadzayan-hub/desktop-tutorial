@@ -73,6 +73,10 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
     private val _nextAction = MutableStateFlow<NextAction?>(null)
     val nextAction: StateFlow<NextAction?> = _nextAction.asStateFlow()
 
+    // «سلسلة الدفء»: كام يوم متتالي فيهم رسالة اتبعتت فعلاً.
+    private val _streak = MutableStateFlow(0)
+    val streak: StateFlow<Int> = _streak.asStateFlow()
+
     init { loadPending(); refreshRecipients() }
 
     // نقرأ الأشخاص والشخص المختار من الإعدادات - بننده دي كل ما نفتح الشاشة
@@ -89,6 +93,11 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
     // يرشّح اللفتة الجاية: أولوية لأقرب مناسبة خلال 10 أيام، وإلا أطول شخص من غير تواصل.
     // حساب أيام المناسبة من DateUtil.daysUntilMMDD (موجود ومختبَر) بدل تكرار المنطق.
     private fun updateNextAction() {
+        // تحديث سلسلة الدفء من سجل الرسايل المبعوتة (قراءة واحدة للسجل).
+        _streak.value = com.wifeassistant.data.Streak.compute(
+            store.feedback().filter { !it.finalText.isNullOrBlank() }.map { it.date },
+            DateUtil.today(),
+        )
         val recips = settings.recipients
         if (recips.isEmpty()) { _nextAction.value = null; return }
 
