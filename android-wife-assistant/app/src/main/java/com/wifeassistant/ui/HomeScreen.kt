@@ -96,6 +96,28 @@ fun HomeScreen(
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
+    // إشعار شفافية الذكاء (مرة واحدة): مسؤولية + خصوصية قبل أول استخدام.
+    val settings = remember { com.wifeassistant.data.Settings(context) }
+    var showAiNotice by remember { mutableStateOf(!settings.aiNoticeAck) }
+    if (showAiNotice) {
+        AlertDialog(
+            onDismissRequest = { }, // لازم يقر بيها عشان نضمن إنه شافها
+            title = { Text("شفافية الذكاء الاصطناعي 🤖") },
+            text = {
+                Text(
+                    "• الاقتراحات بيكتبها ذكاء اصطناعي — راجعها وعدّلها قبل ما تبعت.\n" +
+                        "• لما تطلب توليد، بيتبعت نص الموقف/السياق لمزوّد الذكاء (Groq) عشان يجهّز الرسالة.\n" +
+                        "• بياناتك وتعلّم أسلوبك متخزّنين على جهازك بس، ومفتاح Groq مشفّر.\n" +
+                        "• مفيش أي رسالة بتتبعت تلقائيًا — الضغطة الأخيرة دايمًا بإيدك.",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            },
+            confirmButton = {
+                Button(onClick = { settings.aiNoticeAck = true; showAiNotice = false }) { Text("فهمت 👍") }
+            },
+        )
+    }
+
     // كل ما نرجع للشاشة نحدّث قائمة الأشخاص (ممكن اتغيّرت من شاشة الأشخاص).
     LaunchedEffect(Unit) { vm.refreshRecipients() }
     val current = people.current

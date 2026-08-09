@@ -153,6 +153,11 @@ class Settings(context: Context) {
         get() = prefs.getString("businessApiKey", "").orEmpty()
         set(v) = prefs.edit().putString("businessApiKey", v.trim()).apply()
 
+    // اتعرض إشعار الشفافية عن الذكاء الاصطناعي مرة واحدة؟ (مسؤولية + خصوصية).
+    var aiNoticeAck: Boolean
+        get() = prefs.getBoolean("aiNoticeAck", false)
+        set(v) = prefs.edit().putBoolean("aiNoticeAck", v).apply()
+
     // مناسبات مكتومة (مفيش إشعار ليها). المفتاح: "recipientId|label" للأشخاص، أو label للعامة.
     var mutedOccasions: List<String>
         get() {

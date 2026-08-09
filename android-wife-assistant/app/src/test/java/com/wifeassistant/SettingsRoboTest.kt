@@ -64,6 +64,13 @@ class SettingsRoboTest {
         assertTrue(s.mutedOccasions.isEmpty())
     }
 
+    @Test fun aiNoticeAckDefaultsFalseAndPersists() {
+        val s = Settings(ctx())
+        assertEquals(false, s.aiNoticeAck)
+        s.aiNoticeAck = true
+        assertEquals(true, s.aiNoticeAck)
+    }
+
     @Test fun mutedOccasionsRoundTrip() {
         val s = Settings(ctx())
         s.mutedOccasions = listOf("r1|عيد ميلاد", "رمضان")
