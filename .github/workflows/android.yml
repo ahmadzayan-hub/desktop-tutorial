@@ -98,6 +98,22 @@ jobs:
           cp app/build/outputs/apk/release/app-release.apk ../wisal.apk
           cp app/build/outputs/bundle/release/app-release.aab ../wisal.aab
 
+      # قناة توزيع إضافية: فرع apk-dist فيه الـ APK/AAB مباشرة — بيتسحب بالـ git
+      # (مفيد لما تنزيل الـ release من المتصفح يتعطّل، وبيتكتب فوقه كل بناء).
+      - name: Publish APK to apk-dist branch
+        working-directory: ${{ github.workspace }}
+        run: |
+          rm -rf /tmp/apkdist && mkdir /tmp/apkdist
+          cp wisal.apk wisal.aab /tmp/apkdist/
+          cd /tmp/apkdist
+          sha256sum wisal.apk wisal.aab > SHA256SUMS.txt
+          git init -q -b apk-dist
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -q -m "dist: wisal.apk from ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" apk-dist
+
       # اختياري: أرشيف الـ CI. مش بيوقف الـ pipeline لو مساحة أرشيف الـ Actions
       # اتملت — التنزيل الأساسي بيتنشر على release ثابت تحت (android-latest).
       - name: Upload artifacts
