@@ -4,6 +4,13 @@ name: Build Android APK
 # بيتشغّل لما تعدّل حاجة في android-wife-assistant/ أو يدوياً من تبويب Actions.
 on:
   workflow_dispatch:
+  # PRs run the unit-test step only (see the `if:` guards on the release +
+  # publish steps below). This catches Kotlin regressions before merge without
+  # spending signing/publish minutes on every PR.
+  pull_request:
+    paths:
+      - "android-wife-assistant/**"
+      - ".github/workflows/android.yml"
   push:
     branches:
       - claude/telegram-ai-assistant-bot-8vqsfg
@@ -63,15 +70,17 @@ jobs:
           fi
 
       # 2) توقيع اختياري: لو ضفت الأسرار بيتوقّع release حقيقي، غير كده debug.
+      # PRs بيقفوا هنا (بعد الاختبارات) — التوقيع والنشر بس لـ push على main.
       - name: Decode keystore (optional signing)
         id: keystore
-        if: ${{ env.KEYSTORE_BASE64 != '' }}
+        if: ${{ github.event_name != 'pull_request' && env.KEYSTORE_BASE64 != '' }}
         run: |
           echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.keystore"
           echo "path=$RUNNER_TEMP/release.keystore" >> "$GITHUB_OUTPUT"
 
-      # 3) بناء نسخة release (APK قابل للتثبيت).
+      # 3) بناء نسخة release (APK قابل للتثبيت). PRs بيتخطّوها.
       - name: Build release APK
+        if: github.event_name != 'pull_request'
         env:
           KEYSTORE_FILE: ${{ steps.keystore.outputs.path }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -82,8 +91,9 @@ jobs:
           VERSION_NAME: "1.0.${{ github.run_number }}"
         run: ./gradlew assembleRelease --stacktrace --no-daemon
 
-      # 4) بناء App Bundle (AAB) للرفع على Google Play.
+      # 4) بناء App Bundle (AAB) للرفع على Google Play. PRs بيتخطّوها.
       - name: Build release AAB (for Google Play)
+        if: github.event_name != 'pull_request'
         env:
           KEYSTORE_FILE: ${{ steps.keystore.outputs.path }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -94,6 +104,7 @@ jobs:
         run: ./gradlew bundleRelease --stacktrace --no-daemon
 
       - name: Prepare artifacts (wisal.apk / wisal.aab)
+        if: github.event_name != 'pull_request'
         run: |
           cp app/build/outputs/apk/release/app-release.apk ../wisal.apk
           cp app/build/outputs/bundle/release/app-release.aab ../wisal.aab
@@ -101,6 +112,7 @@ jobs:
       # اختياري: أرشيف الـ CI. مش بيوقف الـ pipeline لو مساحة أرشيف الـ Actions
       # اتملت — التنزيل الأساسي بيتنشر على release ثابت تحت (android-latest).
       - name: Upload artifacts
+        if: github.event_name != 'pull_request'
         continue-on-error: true
         uses: actions/upload-artifact@v4
         with:

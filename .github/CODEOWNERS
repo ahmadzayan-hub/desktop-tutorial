@@ -1,0 +1,35 @@
+# Code owners for this multi-project workspace.
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-security/customizing-your-repository/about-code-owners
+#
+# Every PR gets @ahmadzayan-hub auto-requested as reviewer. Product-line-scoped
+# owners keep sub-project reviews landing with the same maintainer whichever
+# folder a change touches. See PROJECTS.md for the full map.
+
+# Default owner for everything not otherwise matched.
+*                                    @ahmadzayan-hub
+
+# ---- Product line 1 · Lahza (root Vite app) ----
+/src/                                @ahmadzayan-hub
+/public/                             @ahmadzayan-hub
+/index.html                          @ahmadzayan-hub
+/vite.config.ts                      @ahmadzayan-hub
+/tailwind.config.ts                  @ahmadzayan-hub
+/postcss.config.js                   @ahmadzayan-hub
+/vercel.json                         @ahmadzayan-hub
+/eslint.config.js                    @ahmadzayan-hub
+
+# ---- Product line 2 · Wisal (three surfaces) ----
+/wisal-web/                          @ahmadzayan-hub
+/wisal-desktop/                      @ahmadzayan-hub
+/android-wife-assistant/             @ahmadzayan-hub
+/telegram-wife-assistant/            @ahmadzayan-hub
+
+# ---- Product line 3 · Beyond Style UAE landing ----
+/landing/                            @ahmadzayan-hub
+
+# ---- Workspace-wide ----
+/.github/                            @ahmadzayan-hub
+/docs/                               @ahmadzayan-hub
+/agent-os/                           @ahmadzayan-hub
+/README.md                           @ahmadzayan-hub
+/PROJECTS.md                         @ahmadzayan-hub
