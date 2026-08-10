@@ -1,9 +1,15 @@
 // Webhook واتساب:
 //  - GET: تحقّق الاشتراك (Meta بتبعت hub.challenge أول مرة).
-//  - POST: استقبال الرسائل الواردة + حالات التسليم (delivered/read).
-// هنا بنسجّل بس ونرجّع 200 بسرعة (Meta بتعيد المحاولة لو مارجعناش 200 بسرعة).
-// ملاحظة: نافذة الـ24 ساعة بتبدأ من آخر رسالة واردة — لو هتتبعها، خزّن الـ timestamp
-// لكل رقم في قاعدة بيانات (مثلاً Supabase). السكافولد ده مابيخزّنش لسه.
+//  - POST: استقبال الرسائل الواردة + حالات التسليم — مع تحقق توقيع Meta
+//    (X-Hub-Signature-256) على الـ raw body لو APP_SECRET متظبّط.
+//
+// ملاحظة أمان: لو APP_SECRET موجود، أي POST بتوقيع غلط بيترفض 401 — محدش يقدر
+// يحقن أحداث مزيفة. لو مش متظبّط (تجربة أولى)، بنقبل مع تحذير في اللوج —
+// اظبطه قبل أي اعتماد على الأحداث الواردة.
+//
+// بنعطّل الـ body parser عشان الـ HMAC لازم يتحسب على البايتات الخام بالظبط.
+
+const { verifySignature } = require('../lib/wa');
 
 module.exports = async function handler(req, res) {
   if (req.method === 'GET') {
@@ -19,9 +25,23 @@ module.exports = async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
+    // نقرأ البايتات الخام (الـ parser متعطّل) — مطلوبة لتحقق التوقيع.
+    const chunks = [];
+    for await (const chunk of req) chunks.push(chunk);
+    const raw = Buffer.concat(chunks);
+
+    const secret = process.env.APP_SECRET;
+    if (secret) {
+      if (!verifySignature(raw, req.headers['x-hub-signature-256'], secret)) {
+        res.status(401).json({ error: 'invalid signature' });
+        return;
+      }
+    } else {
+      console.warn('webhook: APP_SECRET not set — signature NOT verified (set it before relying on inbound events)');
+    }
+
     try {
-      let body = req.body;
-      if (typeof body === 'string') { try { body = JSON.parse(body); } catch { body = {}; } }
+      const body = JSON.parse(raw.toString('utf8') || '{}');
       const entry = body && body.entry ? body.entry : [];
       for (const e of entry) {
         for (const ch of e.changes || []) {
@@ -45,3 +65,6 @@ module.exports = async function handler(req, res) {
 
   res.status(405).send('method not allowed');
 };
+
+// تعطيل الـ body parser: التوقيع بيتحسب على البايتات الخام.
+module.exports.config = { api: { bodyParser: false } };

@@ -1,22 +1,30 @@
 // POST /api/send — يبعت رسالة واحدة لعميل عبر WhatsApp Business Cloud API.
 // مصمّم للردّ على عملاء بدأوا محادثة (نص حر جوّه 24 ساعة) أو قوالب معتمدة.
-// محمي بمفتاح تطبيق (APP_API_KEY) عشان محدش تاني يستخدم الـ endpoint.
+// محمي بمفتاح تطبيق (APP_API_KEY) بمقارنة آمنة توقيتيًا + حد معدّل best-effort.
 //
 // سياسة مهمة: ده مش أداة بلاست لأرقام باردة. الاستخدام المشروع:
 //  - رد على عميل راسلك (نص حر، خلال 24 ساعة).
 //  - قالب معتمد من Meta لعملاء عملوا opt-in.
 // إرسال غير مرغوب بيخالف شروط Meta وبيوقّف رقمك.
 
-const { sendMessage } = require('../lib/wa');
+const { sendMessage, timingSafeEqualStr, makeRateLimiter } = require('../lib/wa');
+
+// حد معدّل في الذاكرة: 30 طلب/دقيقة لكل instance (ملاحظة: في serverless ده لكل
+// instance — حماية من الإغراق مش ضمان صارم؛ الحد الصارم يبقى على مستوى البنية).
+const allow = makeRateLimiter({ limit: 30, windowMs: 60000 });
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'method not allowed' });
     return;
   }
-  // مصادقة بسيطة بمفتاح مشترك.
+  if (!allow()) {
+    res.status(429).json({ ok: false, error: 'rate limit exceeded — slow down' });
+    return;
+  }
+  // مصادقة بمفتاح مشترك — مقارنة آمنة توقيتيًا.
   const key = req.headers['x-api-key'];
-  if (!process.env.APP_API_KEY || key !== process.env.APP_API_KEY) {
+  if (!process.env.APP_API_KEY || !timingSafeEqualStr(key, process.env.APP_API_KEY)) {
     res.status(401).json({ error: 'unauthorized' });
     return;
   }
