@@ -55,8 +55,8 @@
 
 | Gap | Type | Priority |
 |---|---|---|
-| No automated integration test for `/api/analyze` | Test gap | High |
-| No E2E test for intake → approve journey | Test gap | High |
+| ~~No automated integration test for `/api/analyze`~~ | ~~Test gap~~ | ✅ RESOLVED — 5 API E2E tests |
+| ~~No E2E test for intake → approve journey~~ | ~~Test gap~~ | ✅ RESOLVED — 18 Playwright tests |
 | No accessibility automated scan | Test gap | Medium |
 | Create/edit forms not implemented | Feature gap | Medium (Phase 2) |
 | Screenshot upload not persisted | Feature gap | Low (Phase 2) |

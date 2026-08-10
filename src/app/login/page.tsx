@@ -33,8 +33,9 @@ export default function LoginPage() {
 
       <div className="card flex flex-col gap-3">
         <div>
-          <label className="label">البريد الإلكتروني</label>
+          <label className="label" htmlFor="email">البريد الإلكتروني</label>
           <input
+            id="email"
             className="input"
             autoComplete="email"
             inputMode="email"
@@ -44,8 +45,9 @@ export default function LoginPage() {
           />
         </div>
         <div>
-          <label className="label">كلمة المرور</label>
+          <label className="label" htmlFor="password">كلمة المرور</label>
           <input
+            id="password"
             className="input"
             type="password"
             autoComplete="current-password"

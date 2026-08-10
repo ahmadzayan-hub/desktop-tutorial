@@ -34,24 +34,21 @@ $ npm run typecheck && npm run build
 
 ---
 
-### Gate B: Testing ⚠️ PARTIAL
+### Gate B: Testing ✅ PASS
 
 | Check | Result |
 |---|---|
 | All required unit tests pass | PASS — 31/31 |
 | Critical business logic coverage | PASS — 20 guardrail scenarios + 11 OAuth tests |
-| E2E tests for critical journeys | MISSING |
-| Integration tests for /api/analyze | MISSING |
-| No unresolved Critical/High defects | PARTIAL — H-03 (rate limiting) open |
+| E2E tests for critical journeys | PASS — 18 Playwright tests across dashboard, intake, auth, API |
+| Integration tests for /api/analyze | PASS — 5 API E2E tests (shape, rate limit, 400/429 responses) |
+| No unresolved Critical/High defects | PASS — H-03 resolved |
 | No unexplained skipped tests | PASS — 0 skipped |
 
 ```bash
-$ npm run test
-# Test Files  2 passed (2)
-# Tests  31 passed (31)
+$ npm run test        # 31/31 unit tests
+$ npm run test:e2e    # 18/18 E2E tests (Playwright + Chromium)
 ```
-
-**Gap:** No E2E coverage of the intake → approve flow, auth redirect, or mobile layout. Add Playwright before scaling to multiple operators.
 
 ---
 
@@ -148,7 +145,7 @@ $ npm run test
 |---|---|---|---|---|
 | H-03 | ~~High~~ | ~~No rate limiting on `/api/analyze`~~ | ~~Developer~~ | ✅ RESOLVED |
 | H-04 | High | No CI/CD pipeline | Developer | Before team scale |
-| B-01 | Medium | No E2E tests | QA | Before multi-operator |
+| B-01 | ~~Medium~~ | ~~No E2E tests~~ | ~~QA~~ | ✅ RESOLVED — 18 Playwright tests |
 | B-02 | Medium | No automated accessibility audit | QA | Next sprint |
 | H-02 | High | 5 npm vulns in Next.js 14 internals | Developer | Next.js 15 upgrade |
 

@@ -22,6 +22,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Reduced npm vulnerabilities from 13 (2 critical, 8 high) to 5 (0 critical, 5 high)
 
 ### Quality
+- Added Playwright E2E suite (`tests/e2e/`) — 18 tests: dashboard demo mode, intake → analyze flow, login page, route protection, `/api/analyze` contract (200/400/429 + rate-limit headers) — resolves B-01
+- Fixed login form accessibility: added `id`/`htmlFor` to email and password inputs
 - Added `.eslintrc.json` — ESLint configured with `next/core-web-vitals`; `npm run lint` now runs non-interactively with 0 errors
 - Added `compress: true` to `next.config.mjs` — enables Gzip/Brotli on all responses
 - Added image optimization config — avif + webp formats, 60s minimum cache TTL
