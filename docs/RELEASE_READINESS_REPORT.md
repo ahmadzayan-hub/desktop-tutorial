@@ -86,7 +86,7 @@ $ npm run test
 
 ---
 
-### Gate E: Security and Privacy ⚠️ PARTIAL
+### Gate E: Security and Privacy ✅ PASS
 
 | Check | Result |
 |---|---|
@@ -97,9 +97,8 @@ $ npm run test
 | Sensitive data handling | PASS — no PII in code, AES-256-GCM token encryption |
 | AI risks assessed | PASS — OWASP LLM Top 10 reviewed |
 | Security headers | PASS — CSP, HSTS, X-Frame DENY, nosniff |
-| Rate limiting on /api/analyze | MISSING — H-03 open |
-
-**Blocking gap:** No rate limiting on `/api/analyze`. An unauthenticated flood (or authenticated abuse) could generate unbounded AI costs. Mitigate before public traffic.
+| Rate limiting on /api/analyze | PASS — 30 req/min/IP sliding window, 429 + Retry-After |
+| Structured API logging | PASS — latency, provider, guardrail worst_status logged per request |
 
 ---
 
@@ -147,7 +146,7 @@ $ npm run test
 
 | ID | Severity | Issue | Owner | Target |
 |---|---|---|---|---|
-| H-03 | High | No rate limiting on `/api/analyze` | Developer | Before public launch |
+| H-03 | ~~High~~ | ~~No rate limiting on `/api/analyze`~~ | ~~Developer~~ | ✅ RESOLVED |
 | H-04 | High | No CI/CD pipeline | Developer | Before team scale |
 | B-01 | Medium | No E2E tests | QA | Before multi-operator |
 | B-02 | Medium | No automated accessibility audit | QA | Next sprint |
@@ -157,6 +156,6 @@ $ npm run test
 
 ## Recommended Next Action
 
-**Add rate limiting to `/api/analyze`.** This is the single most important action before any production traffic. A simple Vercel Edge Config rate limit or `next-rate-limit` package resolves H-03 in under 2 hours.
+**H-03 is resolved.** Rate limiting (30 req/min/IP sliding window) is live in `src/app/api/analyze/route.ts` with `Retry-After` and `X-RateLimit-*` headers.
 
-After that: add Playwright E2E for the intake flow (B-01), then plan the Next.js 15 upgrade (H-02).
+**Next:** Add Playwright E2E for the intake flow (B-01), then plan the Next.js 15 upgrade (H-02).

@@ -8,6 +8,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ## [Unreleased] — improvement/production-uiux-performance
 
 ### Security
+- Added sliding-window rate limiter to `POST /api/analyze` — 30 req/min/IP; returns 429 with `Retry-After` and `X-RateLimit-*` headers (resolves H-03)
+- Added structured request logging to `/api/analyze` — latency, provider, guardrail worst_status per call
 - Added Content Security Policy header (CSP) to all routes via `next.config.mjs`
 - Added `Strict-Transport-Security` (HSTS) header — max-age 2 years, includeSubDomains, preload
 - Changed `X-Frame-Options` from `SAMEORIGIN` to `DENY` (operator console should never be embedded)

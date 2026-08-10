@@ -60,4 +60,4 @@
 | No accessibility automated scan | Test gap | Medium |
 | Create/edit forms not implemented | Feature gap | Medium (Phase 2) |
 | Screenshot upload not persisted | Feature gap | Low (Phase 2) |
-| Rate limiting on `/api/analyze` not implemented | Security gap | High |
+| ~~Rate limiting on `/api/analyze` not implemented~~ | ~~Security gap~~ | ✅ RESOLVED |
