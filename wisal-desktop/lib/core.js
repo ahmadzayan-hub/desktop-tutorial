@@ -16,7 +16,12 @@ function readJson(name, def) {
   try { return JSON.parse(fs.readFileSync(fileFor(name), 'utf8')); } catch (e) { return def; }
 }
 function writeJson(name, obj) {
-  try { fs.writeFileSync(fileFor(name), JSON.stringify(obj, null, 2)); } catch (e) { /* ignore */ }
+  // كتابة ذرّية: ملف مؤقت ثم rename — كراش وسط الكتابة مايبوّظش الملف الأصلي.
+  try {
+    const tmp = fileFor(name + '.tmp');
+    fs.writeFileSync(tmp, JSON.stringify(obj, null, 2));
+    fs.renameSync(tmp, fileFor(name));
+  } catch (e) { /* ignore */ }
 }
 
 // ---------- الإعدادات ----------

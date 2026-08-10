@@ -64,6 +64,46 @@ class StoreRoboTest {
         assertEquals(0L, store.daysSinceContact("rX"))
     }
 
+    // H1: كتابة ذرّية — ملف أساسي تالف + مؤقت سليم = استرجاع بدل ضياع صامت.
+    @Test fun recoversFromCorruptMainFileViaTmp() {
+        val store = Store(ctx())
+        store.addFeedback(Feedback(DateUtil.todayISO(), "manual", listOf("حب"), "pick1", "استرجعني", "r1"))
+        val dir = ctx().filesDir
+        val main = java.io.File(dir, "store.json")
+        val tmp = java.io.File(dir, "store.json.tmp")
+        // نحاكي كراش وسط rename: المؤقت فيه النسخة السليمة والأساسي اتشوّه.
+        main.copyTo(tmp, overwrite = true)
+        main.writeText("{ corrupted json !!!")
+        val back = Store(ctx()).feedback()
+        assertEquals(1, back.size)
+        assertEquals("استرجعني", back[0].finalText)
+    }
+
+    @Test fun corruptFileWithoutTmpFallsBackToDefaults() {
+        val dir = ctx().filesDir
+        java.io.File(dir, "store.json").writeText("not json")
+        java.io.File(dir, "store.json.tmp").delete()
+        val store = Store(ctx())
+        assertTrue(store.feedback().isEmpty()) // بيرجع افتراضي من غير كراش
+    }
+
+    @Test fun writeLeavesNoLingeringTmp() {
+        val store = Store(ctx())
+        store.addFeedback(Feedback(DateUtil.todayISO(), "manual", listOf("حب"), "pick1", "x", "r1"))
+        assertFalse(java.io.File(ctx().filesDir, "store.json.tmp").exists())
+    }
+
+    // H2: قفل مشترك بين النسخ — كتابات متزامنة من نسختين Store ماتضيعش تحديثات.
+    @Test fun concurrentWritesFromTwoInstancesLoseNothing() {
+        val a = Store(ctx())
+        val b = Store(ctx())
+        val perThread = 25
+        val t1 = Thread { repeat(perThread) { i -> a.addFeedback(Feedback(DateUtil.todayISO(), "manual", listOf("حب"), "pick1", "a$i", "r1")) } }
+        val t2 = Thread { repeat(perThread) { i -> b.addFeedback(Feedback(DateUtil.todayISO(), "manual", listOf("حب"), "pick1", "b$i", "r2")) } }
+        t1.start(); t2.start(); t1.join(); t2.join()
+        assertEquals(perThread * 2, Store(ctx()).feedback().size)
+    }
+
     @Test fun deleteHistoryRemovesMatch() {
         val store = Store(ctx())
         val d = DateUtil.todayISO()

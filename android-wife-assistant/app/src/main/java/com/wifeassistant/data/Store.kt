@@ -6,18 +6,43 @@ import kotlinx.serialization.json.Json
 import java.io.File
 
 // المخزن المحلي (JSON) - نظير store.js. بيحفظ التعلّم وثبات الحالة.
+//
+// سلامة البيانات (مهم):
+// 1) الكتابة ذرّية: بنكتب لملف مؤقت ثم rename — لو التطبيق اتقتل وسط الكتابة،
+//    الملف الأصلي بيفضل سليم (مفيش ضياع صامت للتعلّم والسجل).
+// 2) القفل LOCK ثابت (companion) مش لكل نسخة — الشاشات والـ workers بيعملوا
+//    نسخ Store مختلفة، فلازم قفل مشترك عشان قراءة-تعديل-كتابة متزامنة ما
+//    تضيعش تحديثات. القفل reentrant فالدوال المعدِّلة بتمسكه على العملية كلها.
 class Store(context: Context) {
     private val file = File(context.filesDir, "store.json")
+    private val tmpFile = File(context.filesDir, "store.json.tmp")
     private val json = Json { prettyPrint = true; ignoreUnknownKeys = true; encodeDefaults = true }
 
-    @Synchronized
-    fun read(): AppData {
-        if (!file.exists()) return defaultData()
-        return runCatching { json.decodeFromString<AppData>(file.readText()) }.getOrElse { defaultData() }
+    companion object {
+        // قفل مشترك على مستوى العملية — بيغطي كل نسخ Store.
+        private val LOCK = Any()
     }
 
-    @Synchronized
-    fun write(data: AppData) = file.writeText(json.encodeToString(data))
+    fun read(): AppData = synchronized(LOCK) {
+        // الملف الأساسي، ولو تالف/ناقص نحاول نسترجع من المؤقت (كتابة اكتملت
+        // لكن الـ rename ما حصلش قبل الإغلاق).
+        readFrom(file) ?: readFrom(tmpFile) ?: defaultData()
+    }
+
+    private fun readFrom(f: File): AppData? {
+        if (!f.exists()) return null
+        return runCatching { json.decodeFromString<AppData>(f.readText()) }.getOrNull()
+    }
+
+    fun write(data: AppData): Unit = synchronized(LOCK) {
+        tmpFile.writeText(json.encodeToString(data))
+        // rename في نفس المجلد ذرّي على أندرويد/لينكس.
+        if (!tmpFile.renameTo(file)) {
+            // احتياطي نادر لو الـ rename فشل: نسخ مباشر (أفضل من الفشل الصامت).
+            file.writeText(tmpFile.readText())
+            tmpFile.delete()
+        }
+    }
 
     private fun defaultData(): AppData {
         val weights = AppConstants.THEMES.associateWith { 1.0 }.toMutableMap()
@@ -30,8 +55,7 @@ class Store(context: Context) {
 
     fun styleExamplesCount(): Int = read().styleExamples.size
 
-    @Synchronized
-    fun addStyleExample(text: String, theme: String?, recipientId: String) {
+    fun addStyleExample(text: String, theme: String?, recipientId: String): Unit = synchronized(LOCK) {
         val d = read()
         d.styleExamples.add(StyleExample(text.trim(), theme, DateUtil.todayISO(), recipientId))
         // السقف لكل شخص لوحده (الأقدم لنفس الشخص يخرج).
@@ -45,8 +69,7 @@ class Store(context: Context) {
     // ---- أوزان المواضيع (ترجيح) ----
     fun themeWeights(): Map<String, Double> = read().themeWeights
 
-    @Synchronized
-    fun bumpThemeWeight(theme: String?, delta: Double) {
+    fun bumpThemeWeight(theme: String?, delta: Double): Unit = synchronized(LOCK) {
         if (theme == null) return
         val d = read()
         var next = (d.themeWeights[theme] ?: 1.0) + delta
@@ -61,16 +84,14 @@ class Store(context: Context) {
     }
 
     // ---- تغذية راجعة ----
-    @Synchronized
-    fun addFeedback(fb: Feedback) {
+    fun addFeedback(fb: Feedback): Unit = synchronized(LOCK) {
         val d = read(); d.feedback.add(fb); write(d)
     }
 
     fun feedback(): List<Feedback> = read().feedback
 
     // حذف عنصر من السجل (بمطابقة التاريخ والنص).
-    @Synchronized
-    fun deleteHistory(date: String, text: String) {
+    fun deleteHistory(date: String, text: String): Unit = synchronized(LOCK) {
         val d = read()
         d.feedback.removeAll { it.date == date && it.finalText == text }
         write(d)
@@ -80,8 +101,7 @@ class Store(context: Context) {
     fun favorites(): List<String> = read().favorites
     fun isFavorite(text: String): Boolean = read().favorites.contains(text)
 
-    @Synchronized
-    fun toggleFavorite(text: String) {
+    fun toggleFavorite(text: String): Unit = synchronized(LOCK) {
         val d = read()
         if (!d.favorites.remove(text)) d.favorites.add(text)
         write(d)
@@ -90,14 +110,12 @@ class Store(context: Context) {
     // ---- ثبات الحالة (مش نفس الخانة مرتين/يوم) ----
     fun wasSlotSentToday(slot: String): Boolean = read().lastSentPerSlot[slot] == DateUtil.todayISO()
 
-    @Synchronized
-    fun markSlotSentToday(slot: String) {
+    fun markSlotSentToday(slot: String): Unit = synchronized(LOCK) {
         val d = read(); d.lastSentPerSlot[slot] = DateUtil.todayISO(); write(d)
     }
 
     // ---- تذكيرات التواصل ("بقالك فترة ما كلّمت فلان") ----
-    @Synchronized
-    fun markContacted(recipientId: String) {
+    fun markContacted(recipientId: String): Unit = synchronized(LOCK) {
         if (recipientId.isBlank()) return
         val d = read(); d.lastContactedPerRecipient[recipientId] = DateUtil.todayISO(); write(d)
     }
@@ -127,19 +145,16 @@ class Store(context: Context) {
     // ---- الجولة المعلّقة (بين الإشعار والواجهة) ----
     fun getPending(): PendingRound? = read().pending
 
-    @Synchronized
-    fun setPending(p: PendingRound) {
+    fun setPending(p: PendingRound): Unit = synchronized(LOCK) {
         val d = read(); d.pending = p; write(d)
     }
 
-    @Synchronized
-    fun clearPending() {
+    fun clearPending(): Unit = synchronized(LOCK) {
         val d = read(); d.pending = null; write(d)
     }
 
     // ---- تصفير التعلّم (بيحافظ على lastSentPerSlot) ----
-    @Synchronized
-    fun resetLearning() {
+    fun resetLearning(): Unit = synchronized(LOCK) {
         val old = read()
         val fresh = defaultData()
         fresh.lastSentPerSlot.putAll(old.lastSentPerSlot)
