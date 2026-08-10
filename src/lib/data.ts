@@ -41,7 +41,7 @@ export async function fetchRows(table: string, opts: FetchOpts = {}): Promise<Fe
     return { rows, connected: false, demoMode: true };
   }
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     let q = supabase.from(table).select("*").limit(opts.limit ?? 100);
     if (opts.order) q = q.order(opts.order, { ascending: false });
     const { data, error } = await q;
@@ -116,15 +116,15 @@ export async function fetchKpis(): Promise<{ kpis: Kpis; connected: boolean; dem
     return { kpis, connected: false, demoMode: true };
   }
 
-  const supabase = createClient();
+  const supabase = await createClient();
   const [convs, orders, disputes] = await Promise.all([
     supabase.from("conversations").select("stage,lead_temperature,intent,created_at"),
     supabase.from("orders").select("order_status,payment_status,total_amount,created_at"),
     supabase.from("disputes").select("status"),
   ]);
-  const c = convs.data ?? [];
+  const c = (convs.data ?? []) as Array<Record<string, unknown>>;
   const o = (orders.data ?? []) as Array<Record<string, unknown>>;
-  const d = disputes.data ?? [];
+  const d = (disputes.data ?? []) as Array<Record<string, unknown>>;
   const paid = o.filter((x) => x.payment_status === "confirmed" || x.order_status === "paid");
   const sumTotal = (rows: Array<Record<string, unknown>>) =>
     rows.reduce((s, r) => s + (Number(r.total_amount) || 0), 0);

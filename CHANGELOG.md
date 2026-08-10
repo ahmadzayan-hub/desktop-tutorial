@@ -17,9 +17,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Added `src/middleware.ts` — session-based route protection; all non-public routes redirect to `/login` when Supabase is configured; demo mode bypasses auth transparently
 
 ### Dependencies
-- Upgraded Next.js `14.2.15` → `14.2.35` (latest patch in 14.x — reduces vulnerability count)
+- Upgraded Next.js `14.2.15` → `16.3.0` (latest stable — resolves all remaining npm vulnerabilities; H-02)
+- Upgraded `eslint-config-next` to match Next.js 16; lint script switched from `next lint` (removed in v16) to `eslint src` directly
 - Upgraded Vitest `2.1.2` → `3.2.7` (latest stable v3 — resolves esbuild dev-server vulnerability)
-- Reduced npm vulnerabilities from 13 (2 critical, 8 high) to 5 (0 critical, 5 high)
+- Reduced npm vulnerabilities from 13 (2 critical, 8 high) to **0** (H-02 resolved)
+
+### Breaking-change migrations (Next.js 15/16 async APIs)
+- `cookies()` from `next/headers` is now a Promise — awaited in `supabase/server.ts` and `secure-store.ts`
+- `createClient()` in `supabase/server.ts` is now `async`; all callers in `data.ts` updated to `await createClient()`
+- All `secure-store.ts` cookie helpers (`saveTokens`, `readTokens`, `clearTokens`, `saveState`, `readState`, `clearState`) are now async; all callers in route handlers and `notebooklm-session.ts` updated
+- `searchParams` in `integrations/page.tsx` is now a `Promise<{...}>`; page is now async and awaits it
+- `notebooklm-session.ts` `getNotebookLmStatus()` is now async (was wrapped with `cache()` which cannot be used with async functions in Next.js 16)
 
 ### Quality
 - Added Playwright E2E suite (`tests/e2e/`) — 18 tests: dashboard demo mode, intake → analyze flow, login page, route protection, `/api/analyze` contract (200/400/429 + rate-limit headers) — resolves B-01

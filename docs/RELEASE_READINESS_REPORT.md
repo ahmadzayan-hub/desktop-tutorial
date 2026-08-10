@@ -89,7 +89,7 @@ $ npm run test:e2e    # 18/18 E2E tests (Playwright + Chromium)
 |---|---|
 | Authentication enforced | PASS — middleware redirects to /login |
 | Input validation on API | PASS — Zod schema, required field checks |
-| Dependency vulnerabilities | PARTIAL — 5 high remaining (Next.js 14 internals) |
+| Dependency vulnerabilities | PASS — 0 vulnerabilities (Next.js 16.3.0) |
 | Secrets protected | PASS — env-only, .env.local gitignored |
 | Sensitive data handling | PASS — no PII in code, AES-256-GCM token encryption |
 | AI risks assessed | PASS — OWASP LLM Top 10 reviewed |
@@ -147,7 +147,7 @@ $ npm run test:e2e    # 18/18 E2E tests (Playwright + Chromium)
 | H-04 | High | No CI/CD pipeline | Developer | Before team scale |
 | B-01 | ~~Medium~~ | ~~No E2E tests~~ | ~~QA~~ | ✅ RESOLVED — 18 Playwright tests |
 | B-02 | Medium | No automated accessibility audit | QA | Next sprint |
-| H-02 | High | 5 npm vulns in Next.js 14 internals | Developer | Next.js 15 upgrade |
+| H-02 | ~~High~~ | ~~5 npm vulns in Next.js 14 internals~~ | ~~Developer~~ | ✅ RESOLVED — upgraded to Next.js 16.3.0 (0 vulns) |
 
 ---
 

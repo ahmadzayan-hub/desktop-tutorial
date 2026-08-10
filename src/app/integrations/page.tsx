@@ -16,13 +16,14 @@ const STATUS_BANNER: Record<string, { tone: "ok" | "warn" | "err"; text: string 
   error: { tone: "err", text: "حدث خطأ أثناء التفويض. يرجى المحاولة مرة أخرى." },
 };
 
-export default function IntegrationsPage({
+export default async function IntegrationsPage({
   searchParams,
 }: {
-  searchParams: { notebooklm?: string };
+  searchParams: Promise<{ notebooklm?: string }>;
 }) {
-  const status = getNotebookLmStatus();
-  const banner = searchParams.notebooklm ? STATUS_BANNER[searchParams.notebooklm] : undefined;
+  const status = await getNotebookLmStatus();
+  const { notebooklm } = await searchParams;
+  const banner = notebooklm ? STATUS_BANNER[notebooklm] : undefined;
 
   return (
     <div className="mx-auto max-w-3xl">

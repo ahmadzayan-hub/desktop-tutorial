@@ -28,6 +28,7 @@ jobs:
 
       - name: Lint
         run: npm run lint
+        # next lint removed in Next.js 16; script now calls eslint directly
 
       - name: Unit tests
         run: npm run test
