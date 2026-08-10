@@ -1,0 +1,162 @@
+# Release Readiness Report — مسار (Masaar)
+
+**Date:** 2026-08-09  
+**Branch:** `improvement/production-uiux-performance`  
+**Assessors:** Principal Architect, QA Lead, Security Engineer, Product Manager
+
+---
+
+## Verdict
+
+> **Conditionally release-ready**
+
+مسار is suitable for controlled production use by its intended operator (single-operator social commerce console). It is **not yet ready for unattended public traffic** until rate limiting on `/api/analyze` is added and E2E tests are in place.
+
+---
+
+## Gate Assessment
+
+### Gate A: Build Quality ✅ PASS
+
+| Check | Result |
+|---|---|
+| Production build | PASS — clean, 0 errors |
+| TypeScript errors | 0 |
+| ESLint errors | 0 (configured: `next/core-web-vitals`) |
+| Unresolved import errors | 0 |
+| Browser console errors (critical flows) | None detected in demo mode |
+| Committed secrets | None |
+
+```bash
+$ npm run typecheck && npm run build
+# → 0 errors, 23 routes compiled successfully
+```
+
+---
+
+### Gate B: Testing ⚠️ PARTIAL
+
+| Check | Result |
+|---|---|
+| All required unit tests pass | PASS — 31/31 |
+| Critical business logic coverage | PASS — 20 guardrail scenarios + 11 OAuth tests |
+| E2E tests for critical journeys | MISSING |
+| Integration tests for /api/analyze | MISSING |
+| No unresolved Critical/High defects | PARTIAL — H-03 (rate limiting) open |
+| No unexplained skipped tests | PASS — 0 skipped |
+
+```bash
+$ npm run test
+# Test Files  2 passed (2)
+# Tests  31 passed (31)
+```
+
+**Gap:** No E2E coverage of the intake → approve flow, auth redirect, or mobile layout. Add Playwright before scaling to multiple operators.
+
+---
+
+### Gate C: UX ⚠️ PARTIAL
+
+| Check | Result |
+|---|---|
+| Critical journeys completable | PASS — intake, inbox, dashboard all work |
+| Mobile layout | PASS — responsive, PWA installable |
+| All important states exist | PARTIAL — empty states text-only, no illustrations |
+| Navigation consistent | PASS — sidebar + mobile header |
+| No dead controls | PARTIAL — read-only record pages have no edit actions yet |
+| No accidental data loss | PASS — approve flow requires explicit click |
+| No critical accessibility defects | PARTIAL — no automated WCAG audit run; skip-nav missing |
+
+**Gap:** Record pages (orders, customers, inventory) are read-only lists. No create/edit forms. This is a documented Phase 2 roadmap item, not a blocking defect for operator-only use.
+
+---
+
+### Gate D: Performance ✅ PASS
+
+| Check | Result |
+|---|---|
+| First Load JS | 87.7 kB (target ≤ 100 kB) — PASS |
+| Server-rendered pages | All data pages SSR — PASS |
+| Image optimization | avif/webp enabled — PASS |
+| Compression | `compress: true` — PASS |
+| PWA / offline | Network-first SW — PASS |
+| Core Web Vitals | Estimated PASS (not measured on live deployment) |
+
+**Note:** Lighthouse scores not measured on live deployment — environment lacks production Supabase data. Run Lighthouse on preview deployment URL post-push.
+
+---
+
+### Gate E: Security and Privacy ⚠️ PARTIAL
+
+| Check | Result |
+|---|---|
+| Authentication enforced | PASS — middleware redirects to /login |
+| Input validation on API | PASS — Zod schema, required field checks |
+| Dependency vulnerabilities | PARTIAL — 5 high remaining (Next.js 14 internals) |
+| Secrets protected | PASS — env-only, .env.local gitignored |
+| Sensitive data handling | PASS — no PII in code, AES-256-GCM token encryption |
+| AI risks assessed | PASS — OWASP LLM Top 10 reviewed |
+| Security headers | PASS — CSP, HSTS, X-Frame DENY, nosniff |
+| Rate limiting on /api/analyze | MISSING — H-03 open |
+
+**Blocking gap:** No rate limiting on `/api/analyze`. An unauthenticated flood (or authenticated abuse) could generate unbounded AI costs. Mitigate before public traffic.
+
+---
+
+### Gate F: AI Quality ⚠️ PARTIAL
+
+| Check | Result |
+|---|---|
+| Guardrail correctness (20 scenarios) | PASS — 100% |
+| Structured output validation | PASS — Zod schema enforced |
+| Numerical checks (VAT math) | PASS — unit tested |
+| Prompt injection — manual cases | PASS — system/user role separation holds |
+| Sources vs. assumptions distinguished | PASS — AnalysisPanel labels clearly |
+| Failure and fallback behavior | PASS — mock mode always available |
+| Model limitations disclosed | PASS — confidence score + guardrail badges shown |
+| Automated hallucination eval suite | MISSING — manual only |
+| Arabic language quality formal audit | MISSING — manual review only |
+
+---
+
+### Gate G: Documentation ✅ PASS
+
+| Deliverable | Status |
+|---|---|
+| README.md | UPDATED |
+| docs/PROJECT_AUDIT_BASELINE.md | CREATED |
+| docs/PRODUCT_REQUIREMENTS_AND_USER_JOURNEYS.md | CREATED |
+| docs/UX_UI_DESIGN_SYSTEM.md | CREATED |
+| docs/ARCHITECTURE.md | CREATED |
+| docs/AI_SYSTEM_AND_PROMPT_ARCHITECTURE.md | CREATED |
+| docs/AI_EVALUATION_PLAN.md | CREATED |
+| docs/SECURITY_AND_RESPONSIBLE_AI_ASSESSMENT.md | CREATED |
+| docs/PERFORMANCE_REPORT.md | CREATED |
+| docs/REQUIREMENTS_TRACEABILITY_MATRIX.md | CREATED |
+| docs/TEST_STRATEGY.md | CREATED |
+| docs/DEPLOYMENT_AND_ROLLBACK.md | CREATED |
+| docs/RELEASE_READINESS_REPORT.md | THIS FILE |
+| CHANGELOG.md | CREATED |
+| .env.example | PRE-EXISTING, verified accurate |
+| DEVELOPER_NOTES.md | PRE-EXISTING, accurate |
+| ROADMAP.md | PRE-EXISTING, accurate |
+
+---
+
+## Unresolved Issues (blocking or high)
+
+| ID | Severity | Issue | Owner | Target |
+|---|---|---|---|---|
+| H-03 | High | No rate limiting on `/api/analyze` | Developer | Before public launch |
+| H-04 | High | No CI/CD pipeline | Developer | Before team scale |
+| B-01 | Medium | No E2E tests | QA | Before multi-operator |
+| B-02 | Medium | No automated accessibility audit | QA | Next sprint |
+| H-02 | High | 5 npm vulns in Next.js 14 internals | Developer | Next.js 15 upgrade |
+
+---
+
+## Recommended Next Action
+
+**Add rate limiting to `/api/analyze`.** This is the single most important action before any production traffic. A simple Vercel Edge Config rate limit or `next-rate-limit` package resolves H-03 in under 2 hours.
+
+After that: add Playwright E2E for the intake flow (B-01), then plan the Next.js 15 upgrade (H-02).
