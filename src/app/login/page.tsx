@@ -60,7 +60,7 @@ export default function LoginPage() {
         </button>
         {msg && <p className="text-sm text-red-700">{msg}</p>}
 
-        <div className="flex items-center gap-2 py-1 text-xs text-gray-400">
+        <div className="flex items-center gap-2 py-1 text-xs text-gray-500">
           <span className="h-px flex-1 bg-gray-200" />
           <span>أو</span>
           <span className="h-px flex-1 bg-gray-200" />

@@ -110,6 +110,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="apple-mobile-web-app-title" content="مسار" />
       </head>
       <body>
+        {/* Skip navigation — first focusable element, hidden until focused */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:shadow-lg focus:ring-2 focus:ring-amber-500 focus:outline-none"
+          lang="ar"
+        >
+          انتقل إلى المحتوى الرئيسي
+        </a>
+
         <div className="flex h-screen overflow-hidden">
           {/* Desktop sidebar — LTR layout so sidebar always on left */}
           <aside
@@ -126,7 +135,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Nav mobile badges={badges} />
             </div>
 
-            <main className="flex-1 overflow-y-auto px-4 py-4 md:px-8 md:py-6">
+            <main id="main-content" className="flex-1 overflow-y-auto px-4 py-4 md:px-8 md:py-6">
               {children}
             </main>
           </div>

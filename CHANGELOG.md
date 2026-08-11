@@ -30,7 +30,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - `notebooklm-session.ts` `getNotebookLmStatus()` is now async (was wrapped with `cache()` which cannot be used with async functions in Next.js 16)
 
 ### Quality
-- Added Playwright E2E suite (`tests/e2e/`) — 18 tests: dashboard demo mode, intake → analyze flow, login page, route protection, `/api/analyze` contract (200/400/429 + rate-limit headers) — resolves B-01
+- Added Playwright E2E suite (`tests/e2e/`) — 23 tests: dashboard demo mode, intake → analyze flow, login page, route protection, `/api/analyze` contract, WCAG 2.1 AA accessibility audit — resolves B-01 and B-02
+- Added `@axe-core/playwright` — automated WCAG 2.1 AA audit on dashboard, intake, login; 5 accessibility tests
+- Added skip-nav link to `layout.tsx` → `#main-content` (keyboard users, screen readers)
+- Fixed 4 real accessibility defects found by axe-core:
+  - `sidebar-group-label`: `text-slate-600` → `text-slate-400` (dark sidebar contrast)
+  - `kpi-hint`: `text-slate-400` → `text-slate-600` (light background contrast)
+  - Login "أو" divider: `text-gray-400` → `text-gray-500` (contrast)
+  - Intake form: all inputs/selects now have `id`/`htmlFor` label associations
 - Fixed login form accessibility: added `id`/`htmlFor` to email and password inputs
 - Added `.eslintrc.json` — ESLint configured with `next/core-web-vitals`; `npm run lint` now runs non-interactively with 0 errors
 - Added `compress: true` to `next.config.mjs` — enables Gzip/Brotli on all responses

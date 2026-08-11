@@ -90,12 +90,12 @@ export default function IntakePage() {
         <div className="card flex flex-col gap-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="label" lang="ar">اسم العميل</label>
-              <input className="input" value={form.customerName} onChange={(e) => set("customerName", e.target.value)} />
+              <label htmlFor="intake-name" className="label" lang="ar">اسم العميل</label>
+              <input id="intake-name" className="input" value={form.customerName} onChange={(e) => set("customerName", e.target.value)} />
             </div>
             <div>
-              <label className="label" lang="ar">المنصة</label>
-              <select className="input" value={form.platform} onChange={(e) => set("platform", e.target.value as Platform)}>
+              <label htmlFor="intake-platform" className="label" lang="ar">المنصة</label>
+              <select id="intake-platform" className="input" value={form.platform} onChange={(e) => set("platform", e.target.value as Platform)}>
                 <option value="instagram">Instagram</option>
                 <option value="whatsapp">WhatsApp</option>
                 <option value="tiktok">TikTok</option>
@@ -108,22 +108,22 @@ export default function IntakePage() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="label" lang="ar">لغة الرسالة</label>
-              <select className="input" value={form.language} onChange={(e) => set("language", e.target.value as Language)}>
+              <label htmlFor="intake-language" className="label" lang="ar">لغة الرسالة</label>
+              <select id="intake-language" className="input" value={form.language} onChange={(e) => set("language", e.target.value as Language)}>
                 <option value="en">English</option>
                 <option value="ar">عربي</option>
                 <option value="mixed">مختلط</option>
               </select>
             </div>
             <div>
-              <label className="label" lang="ar">الإمارة (إن عُرفت)</label>
-              <input className="input" value={form.emirate} onChange={(e) => set("emirate", e.target.value)} placeholder="دبي / الشارقة / العين…" />
+              <label htmlFor="intake-emirate" className="label" lang="ar">الإمارة (إن عُرفت)</label>
+              <input id="intake-emirate" className="input" value={form.emirate} onChange={(e) => set("emirate", e.target.value)} placeholder="دبي / الشارقة / العين…" />
             </div>
           </div>
 
           <div>
-            <label className="label" lang="ar">رسالة العميل</label>
-            <textarea className="input min-h-[120px]" value={form.message} onChange={(e) => set("message", e.target.value)} placeholder="الصق رسالة الواتساب أو الدايركت هنا…" />
+            <label htmlFor="intake-message" className="label" lang="ar">رسالة العميل</label>
+            <textarea id="intake-message" className="input min-h-[120px]" value={form.message} onChange={(e) => set("message", e.target.value)} placeholder="الصق رسالة الواتساب أو الدايركت هنا…" />
             {privacyWarning && (
               <p className="mt-1 text-xs text-red-700" lang="ar">
                 تبدو الرسالة تحتوي على رقم هاتف أو عنوان. لا تدرج البيانات الخاصة في أي رد علني.
@@ -132,23 +132,23 @@ export default function IntakePage() {
           </div>
 
           <div>
-            <label className="label" lang="ar">المنتج / الإعلان المعروض (اختياري)</label>
-            <input className="input" value={form.productShown} onChange={(e) => set("productShown", e.target.value)} />
+            <label htmlFor="intake-product" className="label" lang="ar">المنتج / الإعلان المعروض (اختياري)</label>
+            <input id="intake-product" className="input" value={form.productShown} onChange={(e) => set("productShown", e.target.value)} />
           </div>
 
           <div>
-            <label className="label" lang="ar">لقطة شاشة / صورة المنتج (اختياري)</label>
-            <input type="file" accept="image/*" onChange={onFile} className="text-sm" />
+            <label htmlFor="intake-image" className="label" lang="ar">لقطة شاشة / صورة المنتج (اختياري)</label>
+            <input id="intake-image" type="file" accept="image/*" onChange={onFile} className="text-sm" />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="label" lang="ar">السعر المعروف (د.إ)</label>
-              <input className="input" value={form.knownPrice} onChange={(e) => set("knownPrice", e.target.value)} />
+              <label htmlFor="intake-price" className="label" lang="ar">السعر المعروف (د.إ)</label>
+              <input id="intake-price" className="input" value={form.knownPrice} onChange={(e) => set("knownPrice", e.target.value)} />
             </div>
             <div>
-              <label className="label" lang="ar">تكلفة التوصيل المعروفة (د.إ)</label>
-              <input className="input" value={form.knownDelivery} onChange={(e) => set("knownDelivery", e.target.value)} />
+              <label htmlFor="intake-delivery" className="label" lang="ar">تكلفة التوصيل المعروفة (د.إ)</label>
+              <input id="intake-delivery" className="input" value={form.knownDelivery} onChange={(e) => set("knownDelivery", e.target.value)} />
             </div>
           </div>
 
@@ -157,8 +157,8 @@ export default function IntakePage() {
             <label className="flex items-center gap-2" lang="ar"><input type="checkbox" checked={form.courierConfirmed} onChange={(e) => set("courierConfirmed", e.target.checked)} /> تكلفة الشحن مؤكدة</label>
             <label className="flex items-center gap-2" lang="ar"><input type="checkbox" checked={form.vatApplicable} onChange={(e) => set("vatApplicable", e.target.checked)} /> ضريبة القيمة المضافة</label>
             <div>
-              <label className="label" lang="ar">حالة الدفع</label>
-              <select className="input" value={form.paymentStatus} onChange={(e) => set("paymentStatus", e.target.value)}>
+              <label htmlFor="intake-payment" className="label" lang="ar">حالة الدفع</label>
+              <select id="intake-payment" className="input" value={form.paymentStatus} onChange={(e) => set("paymentStatus", e.target.value)}>
                 <option value="none">لا شيء</option>
                 <option value="link_sent">تم إرسال الرابط</option>
                 <option value="needs_verification">بانتظار التحقق</option>
