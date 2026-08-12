@@ -24,6 +24,24 @@
 انسخ `.env.example` واملاه: `WHATSAPP_TOKEN`, `PHONE_NUMBER_ID`, `VERIFY_TOKEN`,
 `APP_API_KEY`, `GRAPH_VERSION`.
 
+## ✅ النشر الحالي (production)
+
+الخدمة منشورة وشغّالة على:
+
+- **Base URL:** `https://wisal-cloud-api.vercel.app`
+- **Send:** `POST https://wisal-cloud-api.vercel.app/api/send`
+- **Webhook:** `https://wisal-cloud-api.vercel.app/api/webhook`
+
+اتحقق منها فعليًا بعد النشر: `GET /api/send` → 405، و`GET /api/webhook` بدون
+باراميترات → 403 (يعني الدوال حيّة والحماية شغّالة). ناقص بس ظبط متغيّرات البيئة
+في Vercel → Project → Settings → Environment Variables عشان الإرسال الفعلي يشتغل.
+
+> ملاحظة تشغيلية: مشروع Vercel ده متظبّط عليه Output Directory = `.next`
+> وRoot Directory = `public` (إعدادات قديمة من محاولة استيراد سابقة). النشر
+> الحالي متوافق معاها: الملفات بتترفع تحت `public/` وأمر البناء بينشئ `.next`
+> كمخرج ثابت. لو هتنضّف الإعدادات دي من الداشبورد لاحقًا، ارفع الملفات بدون
+> البادئة `public/` وسيب أمر البناء echo بسيط.
+
 ## النشر (Vercel)
 ```bash
 npm i -g vercel
