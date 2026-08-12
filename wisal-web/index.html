@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#E5397B">
+  <meta name="theme-color" content="#0b0713">
 
   <title>وصال | مساعد التواصل العائلي وترابط القلوب</title>
   <meta name="description" content="وصال تطبيق أندرويد مجاني يساعدك تكتب رسائل دافئة لأهلك وأحبابك بنبرة تناسب كل علاقة: الشريك والأبناء والوالدين والإخوة. يعمل على جهازك بالكامل، بدون حساب وبدون خوادم.">
@@ -81,131 +81,333 @@
   </script>
 
   <style>
+    /* ————— نظام التصميم: داكن فاخر + زجاج + عمق ثلاثي الأبعاد ————— */
     :root{
-      --rose:#E5397B; --plum:#7B4EE5; --ink:#201a1c; --muted:#6b5b60;
-      --bg:#fff7fa; --card:#ffffff; --line:#f0dbe4;
-      --grad:linear-gradient(135deg,#E5397B,#7B4EE5);
+      --rose:#ff4d8d; --rose-soft:#ff7eb0; --plum:#8b5cf6; --violet:#6d28d9;
+      --amber:#fbbf24; --teal:#2dd4bf;
+      --bg:#0b0713; --bg2:#120b1e; --ink:#f5eef6; --muted:#b3a3bd;
+      --glass:rgba(255,255,255,.055); --glass-strong:rgba(255,255,255,.09);
+      --line:rgba(255,255,255,.12); --line-soft:rgba(255,255,255,.07);
+      --grad:linear-gradient(135deg,#ff4d8d,#8b5cf6);
+      --grad-text:linear-gradient(120deg,#ff7eb0 10%,#c4b5fd 55%,#8b5cf6 90%);
+      --r-lg:26px; --r-md:20px; --r-sm:14px;
     }
     *{box-sizing:border-box}
-    html{-webkit-text-size-adjust:100%}
+    html{-webkit-text-size-adjust:100%; scroll-behavior:smooth; overflow-x:clip}
+    @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
     body{
-      margin:0; font-family:"Segoe UI",Tahoma,"Noto Naskh Arabic",Arial,sans-serif;
-      color:var(--ink); background:var(--bg); line-height:1.75;
-      font-size:17px; text-rendering:optimizeLegibility;
+      margin:0; font-family:"Segoe UI",-apple-system,"SF Pro Display",Tahoma,"Noto Kufi Arabic","Noto Naskh Arabic",Arial,sans-serif;
+      color:var(--ink); background:var(--bg); line-height:1.8; font-size:17px;
+      text-rendering:optimizeLegibility; overflow-x:hidden;
     }
     a{color:inherit}
-    .wrap{max-width:960px; margin-inline:auto; padding:0 20px}
+    .wrap{max-width:1080px; margin-inline:auto; padding:0 20px; position:relative; z-index:2}
+
+    /* ————— خلفية الشفق (aurora) — GPU فقط: transform/opacity ————— */
+    .aurora{position:fixed; inset:-20%; z-index:0; pointer-events:none; filter:blur(90px); opacity:.5}
+    .aurora i{position:absolute; border-radius:50%; will-change:transform}
+    .aurora .a1{width:44vmax;height:44vmax; background:radial-gradient(circle,#ff4d8d55,transparent 65%); top:-6%; right:-4%; animation:drift1 26s ease-in-out infinite alternate}
+    .aurora .a2{width:40vmax;height:40vmax; background:radial-gradient(circle,#8b5cf655,transparent 65%); bottom:-8%; left:-6%; animation:drift2 32s ease-in-out infinite alternate}
+    .aurora .a3{width:30vmax;height:30vmax; background:radial-gradient(circle,#2dd4bf33,transparent 65%); top:38%; left:28%; animation:drift3 38s ease-in-out infinite alternate}
+    @keyframes drift1{to{transform:translate(-12vmax,10vmax) scale(1.15)}}
+    @keyframes drift2{to{transform:translate(10vmax,-8vmax) scale(1.1)}}
+    @keyframes drift3{to{transform:translate(-8vmax,-10vmax) scale(1.2)}}
+    @media (prefers-reduced-motion:reduce){ .aurora i{animation:none} }
+
+    /* شبكة نقاط خفيفة للعمق */
+    .dots{position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.5;
+      background-image:radial-gradient(rgba(255,255,255,.06) 1px, transparent 1.4px);
+      background-size:26px 26px;
+      -webkit-mask-image:radial-gradient(ellipse 90% 60% at 50% 8%, #000 30%, transparent 75%);
+      mask-image:radial-gradient(ellipse 90% 60% at 50% 8%, #000 30%, transparent 75%);
+    }
+
+    /* ————— أزرار ————— */
     .btn{
-      display:inline-flex; align-items:center; gap:.5rem; justify-content:center;
-      background:var(--grad); color:#fff; text-decoration:none; font-weight:700;
-      padding:16px 26px; border-radius:16px; font-size:19px; border:0;
-      box-shadow:0 10px 24px rgba(229,57,123,.28); width:100%;
+      display:inline-flex; align-items:center; gap:.6rem; justify-content:center;
+      background:var(--grad); color:#fff; text-decoration:none; font-weight:800;
+      padding:17px 28px; border-radius:18px; font-size:18px; border:0; width:100%;
+      box-shadow:0 14px 40px rgba(255,77,141,.35), inset 0 1px 0 rgba(255,255,255,.25);
+      transition:transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s;
+      position:relative; overflow:hidden;
     }
-    .btn.secondary{background:#fff; color:var(--rose); border:2px solid var(--line); box-shadow:none}
-    header{padding:56px 0 32px; text-align:center}
+    .btn::after{ /* لمعة بتعدّي على الزر */
+      content:""; position:absolute; inset:0;
+      background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);
+      transform:translateX(160%); transition:transform .7s ease;
+    }
+    .btn:hover{transform:translateY(-3px) scale(1.015); box-shadow:0 22px 55px rgba(255,77,141,.45), inset 0 1px 0 rgba(255,255,255,.25)}
+    .btn:hover::after{transform:translateX(-160%)}
+    .btn:active{transform:translateY(-1px) scale(.99)}
+    .btn.secondary{
+      background:var(--glass-strong); color:var(--ink); border:1px solid var(--line);
+      box-shadow:0 8px 26px rgba(0,0,0,.35); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    }
+    .btn.secondary:hover{box-shadow:0 16px 40px rgba(139,92,246,.25)}
+
+    /* ————— الهيرو ————— */
+    header{padding:64px 0 30px; text-align:center; position:relative}
     .badge{
-      display:inline-block; background:#fff; border:1px solid var(--line);
-      color:var(--plum); padding:6px 14px; border-radius:999px; font-size:14px; font-weight:600;
+      display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+      flex-wrap:wrap; max-width:calc(100% - 8px);
+      background:var(--glass); border:1px solid var(--line);
+      color:var(--rose-soft); padding:8px 18px; border-radius:999px; font-size:14px; font-weight:700;
+      backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+      box-shadow:0 4px 18px rgba(0,0,0,.3);
     }
-    .logo{width:112px; height:112px; border-radius:28px; box-shadow:0 12px 30px rgba(123,78,229,.25)}
-    h1{font-size:34px; line-height:1.3; margin:18px 0 10px}
-    .lead{color:var(--muted); font-size:19px; margin:0 auto 26px; max-width:620px}
-    .cta{max-width:420px; margin-inline:auto; display:grid; gap:12px}
-    .note{color:var(--muted); font-size:14px; margin-top:12px}
-    section{padding:34px 0}
-    h2{font-size:26px; margin:0 0 18px; text-align:center}
-    .grid{display:grid; gap:16px}
-    @media(min-width:640px){ .grid{grid-template-columns:1fr 1fr} h1{font-size:44px} }
+    .badge .pulse{width:8px;height:8px;border-radius:50%;background:var(--teal); box-shadow:0 0 0 0 rgba(45,212,191,.6); animation:pulse 2.2s infinite}
+    @keyframes pulse{70%{box-shadow:0 0 0 9px rgba(45,212,191,0)} 100%{box-shadow:0 0 0 0 rgba(45,212,191,0)}}
+    .logo{width:118px; height:118px; border-radius:30px; margin-top:26px;
+      box-shadow:0 24px 60px rgba(139,92,246,.4), 0 6px 18px rgba(255,77,141,.3);
+      animation:float 6s ease-in-out infinite;
+    }
+    @keyframes float{50%{transform:translateY(-10px) rotate(1.5deg)}}
+    @media (prefers-reduced-motion:reduce){ .logo{animation:none} }
+    h1{
+      font-size:clamp(36px, 7vw, 64px); line-height:1.25; margin:22px 0 12px; font-weight:900;
+      background:var(--grad-text); -webkit-background-clip:text; background-clip:text; color:transparent;
+      letter-spacing:-.5px;
+    }
+    .lead{color:var(--muted); font-size:clamp(17px,2.6vw,21px); margin:0 auto 30px; max-width:640px}
+    .cta{max-width:440px; margin-inline:auto; display:grid; gap:13px}
+    .note{color:var(--muted); font-size:13.5px; margin-top:14px; opacity:.85}
+
+    /* ————— موك-أب موبايل ثلاثي الأبعاد (CSS خالص + tilt بالـ JS) ————— */
+    .stage{perspective:1200px; margin:52px auto 8px; max-width:340px}
+    .phone{
+      position:relative; border-radius:44px; padding:14px;
+      background:linear-gradient(160deg,#241a35,#150e22 60%);
+      border:1px solid var(--line); box-shadow:0 40px 90px rgba(0,0,0,.55), 0 18px 40px rgba(139,92,246,.22), inset 0 1px 0 rgba(255,255,255,.09);
+      transform-style:preserve-3d; transform:rotateX(8deg) rotateY(-6deg);
+      transition:transform .4s cubic-bezier(.2,.8,.2,1); will-change:transform;
+    }
+    .phone .notch{position:absolute; top:14px; left:50%; transform:translateX(-50%); width:118px; height:26px; background:#0b0713; border-radius:16px; z-index:3;
+      display:flex; align-items:center; justify-content:center; gap:6px}
+    .phone .notch i{width:8px;height:8px;border-radius:50%;background:#241a35}
+    .phone .notch b{width:34px;height:6px;border-radius:4px;background:#241a35}
+    .screen{
+      border-radius:32px; overflow:hidden; background:linear-gradient(180deg,#17102a,#0e0919);
+      min-height:520px; padding:56px 16px 18px; display:flex; flex-direction:column; gap:12px;
+      transform:translateZ(24px);
+    }
+    .appbar{display:flex; align-items:center; gap:10px; padding:2px 4px 10px; border-bottom:1px solid var(--line-soft)}
+    .appbar .av{width:38px;height:38px;border-radius:12px;background:var(--grad); display:grid; place-items:center; font-size:19px}
+    .appbar .t{font-weight:800; font-size:15px}
+    .appbar .s{color:var(--teal); font-size:11.5px}
+    .bubble{
+      max-width:88%; padding:12px 14px; border-radius:18px; font-size:14.5px; line-height:1.7;
+      opacity:0; transform:translateY(14px) translateZ(30px); animation:pop .6s cubic-bezier(.2,.8,.2,1) forwards;
+    }
+    .bubble.ai{background:var(--glass-strong); border:1px solid var(--line); align-self:flex-start; border-start-start-radius:6px}
+    .bubble.me{background:var(--grad); align-self:flex-end; border-start-end-radius:6px; box-shadow:0 10px 26px rgba(255,77,141,.3)}
+    .bubble small{display:block; color:var(--rose-soft); font-weight:700; font-size:11px; margin-bottom:4px}
+    .bubble.me small{color:rgba(255,255,255,.85)}
+    .b1{animation-delay:.5s} .b2{animation-delay:1.4s} .b3{animation-delay:2.4s}
+    @keyframes pop{to{opacity:1; transform:translateY(0) translateZ(30px)}}
+    @media (prefers-reduced-motion:reduce){ .bubble{animation:none; opacity:1; transform:none} }
+    .typing{display:inline-flex; gap:5px; padding:4px 2px}
+    .typing i{width:7px;height:7px;border-radius:50%;background:var(--muted); animation:ty 1.2s infinite}
+    .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+    @keyframes ty{30%{transform:translateY(-5px); opacity:1} 60%{opacity:.4}}
+    .sendrow{margin-top:auto; display:flex; gap:8px; align-items:center}
+    .sendrow .field{flex:1; background:var(--glass); border:1px solid var(--line-soft); border-radius:14px; padding:10px 14px; color:var(--muted); font-size:13px}
+    .sendrow .go{width:42px;height:42px; border-radius:13px; background:var(--grad); display:grid; place-items:center; font-size:17px; box-shadow:0 8px 20px rgba(255,77,141,.35)}
+
+    /* ————— عدّادات ثقة ————— */
+    .stats{display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin:44px auto 0; max-width:720px}
+    .stat{
+      flex:1; min-width:150px; text-align:center; padding:18px 12px;
+      background:var(--glass); border:1px solid var(--line-soft); border-radius:var(--r-md);
+      backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    }
+    .stat b{display:block; font-size:28px; font-weight:900; background:var(--grad-text); -webkit-background-clip:text; background-clip:text; color:transparent}
+    .stat span{color:var(--muted); font-size:13.5px}
+
+    /* ————— أقسام ————— */
+    section{padding:64px 0; position:relative}
+    h2{font-size:clamp(26px,4.5vw,38px); margin:0 0 8px; text-align:center; font-weight:900; letter-spacing:-.3px}
+    .sub{color:var(--muted); text-align:center; margin:0 auto 38px; max-width:560px; font-size:16.5px}
+
+    /* Bento grid + بطاقات زجاج بعمق */
+    .grid{display:grid; gap:16px; grid-template-columns:1fr}
+    @media(min-width:640px){ .grid{grid-template-columns:repeat(2,1fr)} }
+    @media(min-width:920px){ .grid{grid-template-columns:repeat(3,1fr)} .feature.wide{grid-column:span 2} }
     .feature{
-      background:var(--card); border:1px solid var(--line); border-radius:20px; padding:20px;
+      background:var(--glass); border:1px solid var(--line-soft); border-radius:var(--r-lg); padding:26px 24px;
+      backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
+      transition:transform .35s cubic-bezier(.2,.8,.2,1), border-color .35s, box-shadow .35s;
+      transform-style:preserve-3d; position:relative; overflow:hidden;
     }
-    .feature .ico{font-size:30px}
-    .feature h3{margin:8px 0 6px; font-size:19px}
-    .feature p{margin:0; color:var(--muted); font-size:16px}
-    .steps{counter-reset:s; display:grid; gap:14px; max-width:640px; margin-inline:auto}
-    .step{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 18px}
-    .step b{color:var(--rose)}
+    .feature::before{ /* توهّج علوي */
+      content:""; position:absolute; top:0; right:10%; left:10%; height:1px;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+    }
+    .feature:hover{transform:translateY(-6px) scale(1.015); border-color:var(--line); box-shadow:0 24px 55px rgba(139,92,246,.22)}
+    .feature .ico{
+      font-size:26px; width:56px; height:56px; display:grid; place-items:center;
+      background:var(--glass-strong); border:1px solid var(--line-soft); border-radius:18px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.12); transform:translateZ(22px);
+    }
+    .feature h3{margin:14px 0 6px; font-size:19px; font-weight:800}
+    .feature p{margin:0; color:var(--muted); font-size:15.5px}
+
+    /* خطوات — خط زمني */
+    .steps{display:grid; gap:0; max-width:620px; margin-inline:auto; position:relative}
+    .step{
+      display:flex; gap:18px; align-items:flex-start; padding:10px 0 26px; position:relative;
+    }
+    .step .n{
+      flex:none; width:46px; height:46px; border-radius:16px; display:grid; place-items:center;
+      background:var(--grad); font-weight:900; font-size:18px; box-shadow:0 10px 26px rgba(255,77,141,.35);
+      position:relative; z-index:2;
+    }
+    .step:not(:last-child)::before{
+      content:""; position:absolute; top:52px; bottom:0; inset-inline-start:22px; width:2px;
+      background:linear-gradient(180deg,var(--rose),var(--plum)); opacity:.35;
+    }
+    .step .tx b{display:block; font-size:17.5px; margin-bottom:2px}
+    .step .tx p{margin:0; color:var(--muted); font-size:15.5px}
+
+    /* الخصوصية */
+    .privacy{
+      background:linear-gradient(160deg,rgba(255,77,141,.1),rgba(139,92,246,.1));
+      border:1px solid var(--line); border-radius:var(--r-lg); padding:34px 28px; text-align:center;
+      max-width:760px; margin-inline:auto; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+      box-shadow:0 20px 50px rgba(0,0,0,.3);
+    }
+    .privacy h2{margin-bottom:12px}
+    .privacy p{color:var(--muted); margin:0; font-size:16.5px}
+    .shield{font-size:42px; display:block; margin-bottom:8px}
+
+    /* FAQ */
     .faq{max-width:720px; margin-inline:auto; display:grid; gap:12px}
-    .faq details{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:6px 16px}
-    .faq summary{cursor:pointer; font-weight:700; padding:12px 0}
-    .faq p{margin:0 0 14px; color:var(--muted)}
-    .privacy{background:#fff; border:1px solid var(--line); border-radius:20px; padding:24px; text-align:center; max-width:720px; margin-inline:auto}
-    footer{padding:30px 0 50px; text-align:center; color:var(--muted); font-size:14px}
-    .hero-band{background:var(--grad); color:#fff}
-    .hero-band .lead{color:rgba(255,255,255,.92)}
-    .hero-band .badge{background:rgba(255,255,255,.16); border-color:transparent; color:#fff}
+    .faq details{
+      background:var(--glass); border:1px solid var(--line-soft); border-radius:var(--r-sm); padding:6px 18px;
+      backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); transition:border-color .3s;
+    }
+    .faq details[open]{border-color:var(--line)}
+    .faq summary{cursor:pointer; font-weight:800; padding:13px 0; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:10px}
+    .faq summary::-webkit-details-marker{display:none}
+    .faq summary::after{content:"＋"; color:var(--rose-soft); font-size:20px; transition:transform .3s}
+    .faq details[open] summary::after{transform:rotate(45deg)}
+    .faq p{margin:0 0 16px; color:var(--muted)}
+
+    footer{padding:36px 0 56px; text-align:center; color:var(--muted); font-size:14px; border-top:1px solid var(--line-soft); margin-top:30px}
+    footer a{color:var(--rose-soft); text-decoration:none}
+    footer a:hover{text-decoration:underline}
+
+    /* ————— أنيميشن الظهور عند التمرير —————
+       الإخفاء بيتفعّل بس لما الـ JS يحمّل فعلاً (html.js) — لو الـ JS فشل الصفحة تظهر كاملة */
+    html.js .reveal{opacity:0; transform:translateY(28px); transition:opacity .7s ease, transform .7s cubic-bezier(.2,.8,.2,1)}
+    html.js .reveal.in{opacity:1; transform:none}
+    @media (prefers-reduced-motion:reduce){ html.js .reveal{opacity:1; transform:none; transition:none} }
   </style>
 </head>
 <body>
 
-  <header class="hero-band">
+  <div class="aurora" aria-hidden="true"><i class="a1"></i><i class="a2"></i><i class="a3"></i></div>
+  <div class="dots" aria-hidden="true"></div>
+
+  <header>
     <div class="wrap">
-      <span class="badge">تطبيق أندرويد مجاني</span>
-      <div style="margin-top:18px">
-        <img class="logo" src="/assets/logo.svg" width="112" height="112" alt="شعار وصال">
+      <span class="badge"><i class="pulse"></i> مجاني · يعمل بالذكاء الاصطناعي · بدون إعلانات</span>
+      <div>
+        <img class="logo" src="/assets/logo.svg" width="118" height="118" alt="شعار وصال">
       </div>
       <h1>وصال، يقرّب قلوب أحبابك</h1>
-      <p class="lead">اكتب رسالة دافئة لأهلك في وقتها، بنبرة تناسب كل علاقة. وصال يقترح، أنت تعدّل وتبعت بيدك.</p>
+      <p class="lead">اكتب رسالة دافئة لأهلك في وقتها، بنبرة تناسب كل علاقة. الذكاء الاصطناعي يقترح، وأنت تعدّل وتبعت بيدك.</p>
       <div class="cta">
         <a class="btn" href="https://github.com/ahmadzayan-hub/desktop-tutorial/releases/download/android-latest/wisal.apk" rel="noopener">📱 حمّل للأندرويد</a>
         <a class="btn secondary" href="https://github.com/ahmadzayan-hub/desktop-tutorial/releases/download/windows-latest/Wisal-Setup.exe" rel="noopener">💻 حمّل لويندوز</a>
       </div>
       <p class="note">أندرويد 8.0 وأحدث · ويندوز 10 وأحدث. أول تثبيت ممكن يطلب سماح من النظام.</p>
+
+      <!-- موك-أب الهاتف ثلاثي الأبعاد -->
+      <div class="stage">
+        <div class="phone" id="phone">
+          <div class="notch" aria-hidden="true"><i></i><b></b><i></i></div>
+          <div class="screen" aria-hidden="true">
+            <div class="appbar">
+              <div class="av">💞</div>
+              <div><div class="t">ماما</div><div class="s">● متصلة الآن</div></div>
+            </div>
+            <div class="bubble ai b1"><small>✨ اقتراح وصال</small>صباح الخير يا أغلى ماما 🌸 وحشتيني، النهارده هعدّي عليكي بعد العصر أشرب الشاي معاكي</div>
+            <div class="bubble ai b2"><small>✨ اقتراح تاني</small>يا رب صباحك سعادة يا حبيبتي ☀️ كنت بفكر فيكي وقلت أطمّن عليكي — عاملة إيه؟</div>
+            <div class="bubble me b3"><small>انت — بضغطة واحدة</small>صباح الخير يا أغلى ماما 🌸 وحشتيني قوي، جايلك بعد العصر نشرب الشاي مع بعض ❤️</div>
+            <div class="sendrow">
+              <div class="field">اكتب أو خلّي وصال يقترح…</div>
+              <div class="go">➤</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats reveal">
+        <div class="stat"><b>9+</b><span>مزايا ذكية</span></div>
+        <div class="stat"><b>83</b><span>اختبار آلي أخضر</span></div>
+        <div class="stat"><b>100٪</b><span>بياناتك على جهازك</span></div>
+        <div class="stat"><b>0</b><span>إعلانات واشتراكات</span></div>
+      </div>
     </div>
   </header>
 
   <section id="features">
     <div class="wrap">
-      <h2>ليه وصال؟</h2>
+      <h2 class="reveal">ليه وصال؟</h2>
+      <p class="sub reveal">كل ميزة اتبنت عشان تحافظ على أغلى حاجة عندك: علاقتك بأهلك.</p>
       <div class="grid">
-        <article class="feature"><div class="ico">👨‍👩‍👧‍👦</div><h3>لكل أفراد العائلة</h3><p>الشريك، الأبناء، الوالدين، الإخوة، وحتى المجموعات. لكل علاقة نبرتها الخاصة.</p></article>
-        <article class="feature"><div class="ico">💬</div><h3>كلام من القلب</h3><p>رسائل باللهجة المصرية، صادقة وبسيطة، مع لمسة إيموجي معبّرة عن معناها.</p></article>
-        <article class="feature"><div class="ico">🧠</div><h3>يتعلم أسلوبك</h3><p>كل ما تختار وتعدّل، الاقتراحات تقترب أكثر من طريقتك في الكلام لكل شخص.</p></article>
-        <article class="feature"><div class="ico">📅</div><h3>مربوط بتقويمك</h3><p>يقرأ مناسبات جهازك (ومنها تقويم جوجل) ويجهّز رسالة مناسبة لليوم.</p></article>
-        <article class="feature"><div class="ico">🔒</div><h3>خصوصيتك أولاً</h3><p>كل شيء على جهازك فقط. بدون حساب وبدون خوادم، ولا إرسال تلقائي لأحد.</p></article>
-        <article class="feature"><div class="ico">🎁</div><h3>مجاني تماماً</h3><p>بدون اشتراك وبدون إعلانات. حمّله واستخدمه على طول.</p></article>
-        <article class="feature"><div class="ico">🌐</div><h3>عربي وإنجليزي</h3><p>يكتب بلغة الشخص الأولى تلقائياً — عربي بلهجته أو إنجليزي طبيعي دافئ.</p></article>
-        <article class="feature"><div class="ico">💼</div><h3>وضع الأعمال</h3><p>ردود مهنية دافئة لعملائك على واتساب Business — رسالة مخصّصة وضغطة لكل عميل.</p></article>
-        <article class="feature"><div class="ico">🔥</div><h3>سلسلة الدفء</h3><p>كام يوم متتالي وانت موصّل حب؟ عدّاد لطيف يحافظ على عادة التواصل.</p></article>
-      </div>
-    </div>
-  </section>
-
-  <section style="background:#fff">
-    <div class="wrap">
-      <h2>ثلاث خطوات وبس</h2>
-      <div class="steps">
-        <div class="step"><b>١.</b> نزّل التطبيق وافتحه، وأضف من تحب تتواصل معاه.</div>
-        <div class="step"><b>٢.</b> اطلب اقتراح، اختار الأنسب وعدّله على ذوقك.</div>
-        <div class="step"><b>٣.</b> ابعته على واتساب بضغطة، والضغطة الأخيرة بيدك دائماً.</div>
+        <article class="feature wide reveal"><div class="ico">🧠</div><h3>ذكاء يتعلم أسلوبك</h3><p>كل ما تختار وتعدّل، الاقتراحات تقترب أكثر من طريقتك في الكلام مع كل شخص — التعلم كله محلي على جهازك.</p></article>
+        <article class="feature reveal"><div class="ico">👨‍👩‍👧‍👦</div><h3>لكل أفراد العائلة</h3><p>الشريك، الأبناء، الوالدين، الإخوة، والمجموعات. لكل علاقة نبرتها الخاصة.</p></article>
+        <article class="feature reveal"><div class="ico">💬</div><h3>كلام من القلب</h3><p>رسائل باللهجة المصرية، صادقة وبسيطة، مع لمسة إيموجي معبّرة.</p></article>
+        <article class="feature reveal"><div class="ico">📅</div><h3>مربوط بتقويمك</h3><p>يقرأ مناسبات جهازك ويجهّز رسالة مناسبة لليوم قبلها بوقت كافي.</p></article>
+        <article class="feature reveal"><div class="ico">🔒</div><h3>خصوصيتك أولاً</h3><p>كل شيء على جهازك فقط. بدون حساب وبدون خوادم، ولا إرسال تلقائي لأحد.</p></article>
+        <article class="feature reveal"><div class="ico">💼</div><h3>وضع الأعمال</h3><p>ردود مهنية دافئة لعملائك على واتساب Business — رسالة مخصّصة وضغطة لكل عميل.</p></article>
+        <article class="feature reveal"><div class="ico">🔥</div><h3>سلسلة الدفء</h3><p>كام يوم متتالي وانت موصّل حب؟ عدّاد لطيف يحافظ على عادة التواصل.</p></article>
+        <article class="feature reveal"><div class="ico">🌐</div><h3>عربي وإنجليزي</h3><p>يكتب بلغة الشخص الأولى تلقائياً — عربي بلهجته أو إنجليزي طبيعي دافئ.</p></article>
+        <article class="feature reveal"><div class="ico">🎁</div><h3>مجاني تماماً</h3><p>بدون اشتراك وبدون إعلانات. حمّله واستخدمه على طول.</p></article>
       </div>
     </div>
   </section>
 
   <section>
     <div class="wrap">
-      <div class="privacy">
+      <h2 class="reveal">ثلاث خطوات وبس</h2>
+      <p class="sub reveal">من التحميل لأول رسالة دافئة في أقل من دقيقتين.</p>
+      <div class="steps">
+        <div class="step reveal"><div class="n">١</div><div class="tx"><b>نزّل وافتح</b><p>حمّل التطبيق وأضف من تحب تتواصل معاه — اسم وعلاقة وكفاية.</p></div></div>
+        <div class="step reveal"><div class="n">٢</div><div class="tx"><b>اطلب اقتراح</b><p>الذكاء الاصطناعي يكتب لك اقتراحين بنبرة الشخص نفسه، اختار وعدّل على ذوقك.</p></div></div>
+        <div class="step reveal"><div class="n">٣</div><div class="tx"><b>ابعت بيدك</b><p>يفتح واتساب والرسالة جاهزة — الضغطة الأخيرة بيدك دائماً، مفيش إرسال تلقائي.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="privacy reveal">
+        <span class="shield">🛡️</span>
         <h2>خصوصيتك في أمان</h2>
         <p>وصال لا يجمع بياناتك ولا يخزّنها على أي خادم. جهات اتصالك ورسائلك وتعلّم أسلوبك، كلها محفوظة على جهازك أنت وحدك. وقت توليد الرسالة فقط، يُرسَل سياقها لخدمة الذكاء (Groq) لتُكتَب، بدون تخزين لدينا.</p>
       </div>
     </div>
   </section>
 
-  <section style="background:#fff">
+  <section>
     <div class="wrap">
-      <h2>أسئلة شائعة</h2>
+      <h2 class="reveal">أسئلة شائعة</h2>
       <div class="faq">
-        <details><summary>هل التطبيق مجاني؟</summary><p>نعم، وصال مجاني بالكامل ويعمل على جهازك بدون اشتراك.</p></details>
-        <details><summary>هل بياناتي محفوظة؟</summary><p>كل بياناتك تبقى على جهازك، ولا يوجد خادم لنا يجمعها. عند توليد الرسالة، يُرسَل سياقها فقط لخدمة الذكاء (Groq) لكتابتها، ثم لا تُخزَّن عندنا.</p></details>
-        <details><summary>هل وصال يرسل الرسائل بنفسه؟</summary><p>لا. وصال يقترح ويجهّز الرسالة، وأنت من يضغط إرسال بيده. لا يوجد إرسال تلقائي.</p></details>
-        <details><summary>هل يعمل مع واتساب؟</summary><p>نعم. يفتح محادثة الشخص أو منتقي المجموعات والرسالة جاهزة، وتضغط إرسال.</p></details>
+        <details class="reveal"><summary>هل التطبيق مجاني؟</summary><p>نعم، وصال مجاني بالكامل ويعمل على جهازك بدون اشتراك.</p></details>
+        <details class="reveal"><summary>هل بياناتي محفوظة؟</summary><p>كل بياناتك تبقى على جهازك، ولا يوجد خادم لنا يجمعها. عند توليد الرسالة، يُرسَل سياقها فقط لخدمة الذكاء (Groq) لكتابتها، ثم لا تُخزَّن عندنا.</p></details>
+        <details class="reveal"><summary>هل وصال يرسل الرسائل بنفسه؟</summary><p>لا. وصال يقترح ويجهّز الرسالة، وأنت من يضغط إرسال بيده. لا يوجد إرسال تلقائي.</p></details>
+        <details class="reveal"><summary>هل يعمل مع واتساب؟</summary><p>نعم. يفتح محادثة الشخص أو منتقي المجموعات والرسالة جاهزة، وتضغط إرسال.</p></details>
       </div>
     </div>
   </section>
 
   <section>
     <div class="wrap" style="text-align:center">
-      <h2>ابدأ اليوم</h2>
+      <h2 class="reveal">ابدأ اليوم</h2>
+      <p class="sub reveal">أقرب ناس ليك مستنيين رسالة منك. خلّيها النهارده.</p>
       <div class="cta">
         <a class="btn" href="https://github.com/ahmadzayan-hub/desktop-tutorial/releases/download/android-latest/wisal.apk" rel="noopener">📱 أندرويد</a>
         <a class="btn secondary" href="https://github.com/ahmadzayan-hub/desktop-tutorial/releases/download/windows-latest/Wisal-Setup.exe" rel="noopener">💻 ويندوز</a>
@@ -220,5 +422,6 @@
     </div>
   </footer>
 
+  <script src="/assets/main.js" defer></script>
 </body>
 </html>
