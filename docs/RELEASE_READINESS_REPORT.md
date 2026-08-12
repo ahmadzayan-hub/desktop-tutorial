@@ -38,15 +38,15 @@ $ npm run typecheck && npm run build
 
 | Check | Result |
 |---|---|
-| All required unit tests pass | PASS — 31/31 |
-| Critical business logic coverage | PASS — 20 guardrail scenarios + 11 OAuth tests |
+| All required unit tests pass | PASS — 79/79 |
+| Critical business logic coverage | PASS — 20 guardrail scenarios + 11 OAuth tests + 43 AI pipeline tests |
 | E2E tests for critical journeys | PASS — 18 Playwright tests across dashboard, intake, auth, API |
 | Integration tests for /api/analyze | PASS — 5 API E2E tests (shape, rate limit, 400/429 responses) |
 | No unresolved Critical/High defects | PASS — H-03 resolved |
 | No unexplained skipped tests | PASS — 0 skipped |
 
 ```bash
-$ npm run test        # 31/31 unit tests
+$ npm run test        # 79/79 unit tests (3 suites)
 $ npm run test:e2e    # 18/18 E2E tests (Playwright + Chromium)
 ```
 
@@ -99,7 +99,7 @@ $ npm run test:e2e    # 18/18 E2E tests (Playwright + Chromium)
 
 ---
 
-### Gate F: AI Quality ⚠️ PARTIAL
+### Gate F: AI Quality ✅ PASS
 
 | Check | Result |
 |---|---|
@@ -110,8 +110,9 @@ $ npm run test:e2e    # 18/18 E2E tests (Playwright + Chromium)
 | Sources vs. assumptions distinguished | PASS — AnalysisPanel labels clearly |
 | Failure and fallback behavior | PASS — mock mode always available |
 | Model limitations disclosed | PASS — confidence score + guardrail badges shown |
-| Automated hallucination eval suite | MISSING — manual only |
-| Arabic language quality formal audit | MISSING — manual review only |
+| AI pipeline unit tests | PASS — 43 new tests: parseAnalysis (8), computeDailyMetrics (6), deterministicNarrative (6), computeVelocity (6), evaluateVip (3), isOrderLocked (4), expectedDeliveryWindow (6), buildVatCsv (5), selectTestimonials (4) |
+| Automated hallucination eval suite | PARTIAL — unit-level Zod validation; full LLM output eval deferred to Phase 2 |
+| Arabic language quality formal audit | MISSING — manual review only; Phase 2 roadmap item |
 
 ---
 

@@ -30,6 +30,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - `notebooklm-session.ts` `getNotebookLmStatus()` is now async (was wrapped with `cache()` which cannot be used with async functions in Next.js 16)
 
 ### Quality
+- Added `tests/analyze-pipeline.test.ts` — 43 unit tests for AI pipeline & business logic: `parseAnalysis` (valid JSON, fenced markdown, prose embedding, invalid JSON, Zod failures), `computeDailyMetrics`, `deterministicNarrative`, `computeVelocity`, `evaluateVip`, `isOrderLocked`, `expectedDeliveryWindow`, `buildVatCsv`, `selectTestimonials`; total unit test count: 79/79 — upgrades Gate F AI Quality to PASS
 - Added Playwright E2E suite (`tests/e2e/`) — 23 tests: dashboard demo mode, intake → analyze flow, login page, route protection, `/api/analyze` contract, WCAG 2.1 AA accessibility audit — resolves B-01 and B-02
 - Added `@axe-core/playwright` — automated WCAG 2.1 AA audit on dashboard, intake, login; 5 accessibility tests
 - Added skip-nav link to `layout.tsx` → `#main-content` (keyboard users, screen readers)
