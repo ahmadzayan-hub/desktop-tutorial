@@ -213,7 +213,7 @@ fun HomeScreen(
                     Text(if (selectedIntent != null) t("✨ اكتب الرسالة", "✨ Write the message") else t("✨ اقتراح فوري", "✨ Instant suggestion"))
                 }
                 FilledTonalButton(onClick = { vm.requestOccasion() }, modifier = Modifier.weight(1f)) {
-                    Text("💌 مناسبة")
+                    Text(t("💌 مناسبة", "💌 Occasion"))
                 }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -221,26 +221,26 @@ fun HomeScreen(
                     onClick = { vm.generate("morning", intentId = selectedIntent, context = contextText.trim()) },
                     modifier = Modifier.weight(1f),
                 ) {
-                    Text("🌅 صباحي")
+                    Text(t("🌅 صباحي", "🌅 Morning"))
                 }
                 OutlinedButton(
                     onClick = { vm.generate("evening", intentId = selectedIntent, context = contextText.trim()) },
                     modifier = Modifier.weight(1f),
                 ) {
-                    Text("🌙 مسائي")
+                    Text(t("🌙 مسائي", "🌙 Evening"))
                 }
             }
             OutlinedButton(onClick = { openCalendar() }, modifier = Modifier.fillMaxWidth()) {
-                Text("📅 مناسبة من أجندتي")
+                Text(t("📅 مناسبة من أجندتي", "📅 From my calendar"))
             }
             OutlinedButton(onClick = onOpenReply, modifier = Modifier.fillMaxWidth()) {
-                Text("💬 رد ذكي على رسالة وصلتك")
+                Text(t("💬 رد ذكي على رسالة وصلتك", "💬 Smart reply to a message"))
             }
             OutlinedButton(onClick = onOpenPolish, modifier = Modifier.fillMaxWidth()) {
-                Text("✨ حسّن رسالتي قبل ما أبعتها")
+                Text(t("✨ حسّن رسالتي قبل ما أبعتها", "✨ Polish my draft before sending"))
             }
             OutlinedButton(onClick = onOpenBroadcast, modifier = Modifier.fillMaxWidth()) {
-                Text("📣 رسالة جماعية لجهات الاتصال")
+                Text(t("📣 رسالة جماعية لجهات الاتصال", "📣 Group message to contacts"))
             }
 
             // المناسبات الجاية عبر كل الأشخاص - تخطيط وتنبيه مبكّر + أفكار عملية.
@@ -259,10 +259,10 @@ fun HomeScreen(
             if (showCal) {
                 AlertDialog(
                     onDismissRequest = { showCal = false },
-                    title = { Text("من أجندتك النهاردة 📅") },
+                    title = { Text(t("من أجندتك النهاردة 📅", "From your calendar today 📅")) },
                     text = {
                         if (calEvents.isEmpty()) {
-                            Text("مفيش أحداث النهاردة في تقويمك.")
+                            Text(t("مفيش أحداث النهاردة في تقويمك.", "No events on your calendar today."))
                         } else {
                             Column {
                                 calEvents.take(10).forEach { title ->
@@ -275,7 +275,7 @@ fun HomeScreen(
                         }
                     },
                     confirmButton = {
-                        TextButton(onClick = { showCal = false }) { Text("إغلاق") }
+                        TextButton(onClick = { showCal = false }) { Text(t("إغلاق", "Close")) }
                     },
                 )
             }
@@ -288,12 +288,12 @@ fun HomeScreen(
                 ) {
                     CircularProgressIndicator(modifier = Modifier.height(28.dp))
                     Spacer(Modifier.height(0.dp))
-                    Text("  بكتب لك اقتراحين...", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(t("  بكتب لك اقتراحين...", "  Writing two suggestions for you..."), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
 
             state.occasionLabel?.let {
-                Text("💝 مناسبة: $it", style = MaterialTheme.typography.titleMedium)
+                Text(t("💝 مناسبة: ", "💝 Occasion: ") + it, style = MaterialTheme.typography.titleMedium)
             }
 
             val isGroup = current?.relation?.startsWith("group") == true
@@ -313,9 +313,9 @@ fun HomeScreen(
                     onGroup = { WhatsApp.chooser(context, item.text) },
                     onRefine = { style -> vm.refine(idx, style) },
                     onRemind = {
-                        val who = current?.let { it.name.ifBlank { Relations.labelOf(it.relation) } } ?: "حد بتحبه"
+                        val who = current?.let { it.name.ifBlank { Relations.labelOf(it.relation) } } ?: t("حد بتحبه", "someone you love")
                         SendReminder.schedule(context, who, item.text, "tomorrow_morning")
-                        Toast.makeText(context, "هفكّرك بكرة الصبح ⏰", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, t("هفكّرك بكرة الصبح ⏰", "I'll remind you tomorrow morning ⏰"), Toast.LENGTH_SHORT).show()
                     },
                 )
             }
@@ -323,23 +323,23 @@ fun HomeScreen(
             if (state.items.isNotEmpty()) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedButton(onClick = { vm.regenerate() }, modifier = Modifier.weight(1f)) {
-                        Text("🔄 جديد")
+                        Text(t("🔄 جديد", "🔄 Fresh"))
                     }
                     OutlinedButton(onClick = { vm.ignore() }, modifier = Modifier.weight(1f)) {
-                        Text("🙈 تجاهل")
+                        Text(t("🙈 تجاهل", "🙈 Skip"))
                     }
                 }
                 OutlinedTextField(
                     value = edited,
                     onValueChange = { edited = it },
-                    label = { Text("عدّل بنفسك واحفظه لأسلوبك") },
+                    label = { Text(t("عدّل بنفسك واحفظه لأسلوبك", "Edit it yourself and save it to your style")) },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 2,
                 )
-                Button(
+                GradientButton(
                     onClick = { vm.edit(edited); edited = "" },
                     modifier = Modifier.fillMaxWidth(),
-                ) { Text("💾 احفظ نسختي المعدّلة") }
+                ) { Text(t("💾 احفظ نسختي المعدّلة", "💾 Save my edited version")) }
             } else if (!state.loading) {
                 EmptyState()
             }
@@ -351,26 +351,26 @@ fun HomeScreen(
         if (ideas.open) {
             AlertDialog(
                 onDismissRequest = { vm.closeIdeas() },
-                title = { Text("🎁 أفكار لـ${ideas.title}") },
+                title = { Text(t("🎁 أفكار لـ", "🎁 Ideas for ") + ideas.title) },
                 text = {
                     if (ideas.loading) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             CircularProgressIndicator(modifier = Modifier.height(22.dp))
-                            Text("  بجهّزلك أفكار...")
+                            Text(t("  بجهّزلك أفكار...", "  Getting ideas ready..."))
                         }
                     } else {
                         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                             Text(ideas.text)
                             Spacer(Modifier.height(8.dp))
                             Text(
-                                "دي أفكار وفئة سعرية تقريبية - مش أسعار حقيقية لحظية.",
+                                t("دي أفكار وفئة سعرية تقريبية - مش أسعار حقيقية لحظية.", "These are ideas with rough price ranges — not live prices."),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                     }
                 },
-                confirmButton = { TextButton(onClick = { vm.closeIdeas() }) { Text("تمام") } },
+                confirmButton = { TextButton(onClick = { vm.closeIdeas() }) { Text(t("تمام", "Done")) } },
             )
         }
     }
@@ -404,32 +404,32 @@ private fun UpcomingOccasions(
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("🎀 مناسبات جايّة", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            Text(t("🎀 مناسبات جايّة", "🎀 Upcoming occasions"), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
             upcoming.forEach { u ->
                 val whenTxt = when (u.days) {
-                    0 -> "النهاردة"
-                    1 -> "بكرة"
-                    else -> "بعد ${u.days} يوم"
+                    0 -> t("النهاردة", "today")
+                    1 -> t("بكرة", "tomorrow")
+                    else -> t("بعد ${u.days} يوم", "in ${u.days} days")
                 }
                 val key = u.rid + "|" + u.label
                 val isMuted = muted.contains(key)
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(
-                        "${u.label} لـ${u.name} · $whenTxt" + if (isMuted) "  🔕" else "",
+                        t("${u.label} لـ${u.name} · $whenTxt", "${u.label} for ${u.name} · $whenTxt") + if (isMuted) "  🔕" else "",
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     Row(
                         modifier = Modifier.horizontalScroll(rememberScrollState()),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        AssistChip(onClick = { onWrite(u.rid, u.label) }, label = { Text("✍️ اكتب") })
-                        AssistChip(onClick = { onIdeas(u.rid, u.label) }, label = { Text("🎁 أفكار") })
+                        AssistChip(onClick = { onWrite(u.rid, u.label) }, label = { Text(t("✍️ اكتب", "✍️ Write")) })
+                        AssistChip(onClick = { onIdeas(u.rid, u.label) }, label = { Text(t("🎁 أفكار", "🎁 Ideas")) })
                         AssistChip(
                             onClick = {
                                 muted = if (isMuted) muted - key else muted + key
                                 settings.mutedOccasions = muted.toList()
                             },
-                            label = { Text(if (isMuted) "🔔 تفعيل التنبيه" else "🔕 كتم") },
+                            label = { Text(if (isMuted) t("🔔 تفعيل التنبيه", "🔔 Unmute") else t("🔕 كتم", "🔕 Mute")) },
                         )
                     }
                 }
@@ -454,16 +454,16 @@ private fun RecipientSwitcher(
         Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    "✍️ بتكتب لـ",
+                    t("✍️ بتكتب لـ", "✍️ Writing to"),
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                 )
-                TextButton(onClick = onManage) { Text("إدارة الأشخاص") }
+                TextButton(onClick = onManage) { Text(t("إدارة الأشخاص", "Manage people")) }
             }
             if (people.recipients.isEmpty()) {
                 Text(
-                    "لسه مفيش حد. ضيف أول شخص عشان تبدأ.",
+                    t("لسه مفيش حد. ضيف أول شخص عشان تبدأ.", "No one yet. Add your first person to begin."),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -484,11 +484,11 @@ private fun RecipientSwitcher(
                             },
                         )
                     }
-                    AssistChip(onClick = onManage, label = { Text("＋ شخص") })
+                    AssistChip(onClick = onManage, label = { Text(t("＋ شخص", "＋ Person")) })
                 }
                 people.current?.let { r ->
                     Text(
-                        "النبرة: ${Relations.byId(r.relation).tone}",
+                        t("النبرة: ", "Tone: ") + Relations.byId(r.relation).tone,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 6.dp),
@@ -504,7 +504,7 @@ private fun RecipientSwitcher(
 private fun IntentPicker(selected: String?, onToggle: (String) -> Unit) {
     Column {
         Text(
-            "نيّة الرسالة (اختياري)",
+            t("نيّة الرسالة (اختياري)", "Message intent (optional)"),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 4.dp),
@@ -544,10 +544,10 @@ private fun HeaderBanner(current: Recipient?) {
     val who = current?.let { it.name.ifBlank { Relations.labelOf(it.relation) } }
     val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
     val greeting = when (hour) {
-        in 5..11 -> "صباح الخير 🌅"
-        in 12..16 -> "نهارك سعيد ☀️"
-        in 17..21 -> "مساء الخير 🌙"
-        else -> "سهرة هنيّة ✨"
+        in 5..11 -> t("صباح الخير 🌅", "Good morning 🌅")
+        in 12..16 -> t("نهارك سعيد ☀️", "Have a lovely day ☀️")
+        in 17..21 -> t("مساء الخير 🌙", "Good evening 🌙")
+        else -> t("سهرة هنيّة ✨", "Sweet night ✨")
     }
     Box(
         modifier = Modifier
@@ -573,8 +573,8 @@ private fun HeaderBanner(current: Recipient?) {
                 fontWeight = FontWeight.Bold,
             )
             Text(
-                if (who != null) "مين تحب تطمّن عليه؟ ابعت لـ$who بكلمة حلوة 💗"
-                else "مين تحب تفاجئه بكلمة حلوة النهاردة؟ 💗",
+                if (who != null) t("مين تحب تطمّن عليه؟ ابعت لـ$who بكلمة حلوة 💗", "Who needs to hear from you? Send $who a kind word 💗")
+                else t("مين تحب تفاجئه بكلمة حلوة النهاردة؟ 💗", "Who will you surprise with a kind word today? 💗"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimary,
             )
@@ -608,7 +608,7 @@ private fun StreakCard(streak: Int) {
             Text("🔥", style = MaterialTheme.typography.headlineMedium)
             Column {
                 Text(
-                    if (streak == 1) "يوم دفء متواصل" else "$streak يوم دفء متواصل",
+                    if (streak == 1) t("يوم دفء متواصل", "1 warm day in a row") else t("$streak يوم دفء متواصل", "$streak warm days in a row"),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -639,7 +639,7 @@ private fun NextActionCard(a: NextAction, onWrite: () -> Unit) {
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    "💡 اللفتة الجاية",
+                    t("💡 اللفتة الجاية", "💡 Next gesture"),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                 )
@@ -655,17 +655,17 @@ private fun NextActionCard(a: NextAction, onWrite: () -> Unit) {
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                 )
             }
-            FilledTonalButton(onClick = onWrite) { Text("✍️ اكتبله") }
+            FilledTonalButton(onClick = onWrite) { Text(t("✍️ اكتبله", "✍️ Write to them")) }
         }
     }
 }
 
 // نص زر الواتساب حسب الشخص المختار: "ابعت لأمي"، "ابعت لسوسو"، أو "ابعت للعيلة".
 private fun sendLabelFor(current: Recipient?): String {
-    if (current == null) return "📲 إرسال واتساب"
+    if (current == null) return t("📲 إرسال واتساب", "📲 Send on WhatsApp")
     val rel = Relations.byId(current.relation)
     val who = current.name.ifBlank { rel.label }
-    return if (current.relation.startsWith("group")) "📣 ابعت لـ$who" else "📲 ابعت لـ$who"
+    return if (current.relation.startsWith("group")) t("📣 ابعت لـ$who", "📣 Send to $who") else t("📲 ابعت لـ$who", "📲 Send to $who")
 }
 
 @Composable
@@ -705,11 +705,11 @@ private fun SuggestionCard(
                 modifier = Modifier.horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                AssistChip(onClick = { onRefine("longer") }, label = { Text("➕ أطول") })
-                AssistChip(onClick = { onRefine("shorter") }, label = { Text("➖ أقصر") })
-                AssistChip(onClick = { onRefine("romantic") }, label = { Text("💘 أرومانسي") })
-                AssistChip(onClick = { onRefine("simpler") }, label = { Text("🌿 أبسط") })
-                AssistChip(onClick = onRemind, label = { Text("⏰ ذكّرني بكرة") })
+                AssistChip(onClick = { onRefine("longer") }, label = { Text(t("➕ أطول", "➕ Longer")) })
+                AssistChip(onClick = { onRefine("shorter") }, label = { Text(t("➖ أقصر", "➖ Shorter")) })
+                AssistChip(onClick = { onRefine("romantic") }, label = { Text(t("💘 أرومانسي", "💘 More romantic")) })
+                AssistChip(onClick = { onRefine("simpler") }, label = { Text(t("🌿 أبسط", "🌿 Simpler")) })
+                AssistChip(onClick = onRemind, label = { Text(t("⏰ ذكّرني بكرة", "⏰ Remind me tomorrow")) })
             }
 
             // نبرة سريعة: نفس الرسالة بمزاج مختلف بضغطة واحدة.
@@ -717,32 +717,31 @@ private fun SuggestionCard(
                 modifier = Modifier.horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                AssistChip(onClick = { onRefine("playful") }, label = { Text("😄 مرح") })
-                AssistChip(onClick = { onRefine("serious") }, label = { Text("🎯 جاد") })
-                AssistChip(onClick = { onRefine("apology") }, label = { Text("🕊️ اعتذار") })
-                AssistChip(onClick = { onRefine("grateful") }, label = { Text("🙏 امتنان") })
-                AssistChip(onClick = { onRefine("reassure") }, label = { Text("🫂 طمأنة") })
+                AssistChip(onClick = { onRefine("playful") }, label = { Text(t("😄 مرح", "😄 Playful")) })
+                AssistChip(onClick = { onRefine("serious") }, label = { Text(t("🎯 جاد", "🎯 Serious")) })
+                AssistChip(onClick = { onRefine("apology") }, label = { Text(t("🕊️ اعتذار", "🕊️ Apology")) })
+                AssistChip(onClick = { onRefine("grateful") }, label = { Text(t("🙏 امتنان", "🙏 Grateful")) })
+                AssistChip(onClick = { onRefine("reassure") }, label = { Text(t("🫂 طمأنة", "🫂 Reassure")) })
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(
+                GradientButton(
                     onClick = onWhatsApp,
                     modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 ) { Text(sendLabel) }
                 FilledTonalButton(onClick = onGroup, modifier = Modifier.weight(1f)) {
-                    Text("📣 منتقي")
+                    Text(t("📣 منتقي", "📣 Picker"))
                 }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(onClick = onCopy, modifier = Modifier.weight(1f)) {
-                    Text("📋 نسخ")
+                    Text(t("📋 نسخ", "📋 Copy"))
                 }
                 OutlinedButton(onClick = onShare, modifier = Modifier.weight(1f)) {
-                    Text("🔗 مشاركة")
+                    Text(t("🔗 مشاركة", "🔗 Share"))
                 }
                 FilledTonalButton(onClick = onChoose, modifier = Modifier.weight(1f)) {
-                    Text("👍 اختار")
+                    Text(t("👍 اختار", "👍 Choose"))
                 }
             }
         }
@@ -758,11 +757,11 @@ private fun EmptyState() {
     ) {
         Text("💌", style = MaterialTheme.typography.displayMedium)
         Text(
-            "دوس \"اقتراح فوري\" وابدأ",
+            t("دوس \"اقتراح فوري\" وابدأ", "Tap \"Instant suggestion\" to begin"),
             style = MaterialTheme.typography.titleMedium,
         )
         Text(
-            "كل ما تختار وتعدّل، الاقتراحات بتقرب أكتر من أسلوبك",
+            t("كل ما تختار وتعدّل، الاقتراحات بتقرب أكتر من أسلوبك", "Every pick and edit brings suggestions closer to your style"),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
