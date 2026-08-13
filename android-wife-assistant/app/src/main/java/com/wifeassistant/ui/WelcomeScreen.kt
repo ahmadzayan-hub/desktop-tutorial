@@ -43,7 +43,7 @@ fun WelcomeScreen(onStart: () -> Unit) {
             fontSize = 52.sp,
             fontWeight = FontWeight.Black,
             style = MaterialTheme.typography.headlineLarge.copy(
-                brush = Brush.horizontalGradient(listOf(WisalColors.Rose, WisalColors.Peach)),
+                brush = Brush.horizontalGradient(listOf(WisalColors.HumanCoral, WisalColors.SolarAmber)),
             ),
             modifier = Modifier.padding(top = 24.dp),
         )

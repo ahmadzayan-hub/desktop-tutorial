@@ -35,6 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.wifeassistant.data.Relations
+import com.wifeassistant.data.t
 import com.wifeassistant.data.Settings
 import com.wifeassistant.data.Store
 import com.wifeassistant.util.Share
@@ -73,10 +74,10 @@ fun HistoryScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("سجل الرسايل 📜") },
+                title = { Text(t("سجل الرسايل 📜", "Message history 📜")) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = t("رجوع", "Back"))
                     }
                 },
             )
@@ -95,7 +96,7 @@ fun HistoryScreen(onBack: () -> Unit) {
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
-                label = { Text("دوّر في رسايلك") },
+                label = { Text(t("دوّر في رسايلك", "Search your messages")) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -108,12 +109,12 @@ fun HistoryScreen(onBack: () -> Unit) {
                 FilterChip(
                     selected = favOnly,
                     onClick = { favOnly = !favOnly },
-                    label = { Text("⭐ المفضلة") },
+                    label = { Text(t("⭐ المفضلة", "⭐ Favorites")) },
                 )
                 FilterChip(
                     selected = personFilter.isBlank(),
                     onClick = { personFilter = "" },
-                    label = { Text("الكل") },
+                    label = { Text(t("الكل", "All")) },
                 )
                 recipients.forEach { r ->
                     FilterChip(
@@ -126,7 +127,7 @@ fun HistoryScreen(onBack: () -> Unit) {
 
             if (shown.isEmpty()) {
                 Text(
-                    "مفيش رسايل بالفلتر ده. جرّب تشيل البحث أو الفلترة.",
+                    t("مفيش رسايل بالفلتر ده. جرّب تشيل البحث أو الفلترة.", "No messages match this filter. Try clearing the search or filters."),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

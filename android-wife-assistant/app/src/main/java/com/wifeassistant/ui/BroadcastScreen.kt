@@ -235,9 +235,9 @@ fun BroadcastScreen(onBack: () -> Unit) {
     }
     // معاينة: يولّد رسالة أول عضو بس عشان تشوف النبرة قبل ما تجهّز للكل.
     fun preview() {
-        if (settings.groqKey.isBlank()) { toast("ضيف مفتاح Groq الأول"); return }
+        if (settings.groqKey.isBlank()) { toast(t("ضيف مفتاح Groq الأول", "Add your Groq key first")); return }
         if (busy) return
-        val first = currentTargets().firstOrNull() ?: run { toast("مفيش أعضاء"); return }
+        val first = currentTargets().firstOrNull() ?: run { toast(t("مفيش أعضاء", "No members")); return }
         scope.launch {
             busy = true
             previewText = runCatching { composer.oneFor(first.name, "", sharedCtx, business = businessMode) }.getOrElse { personalize(first.name) }
@@ -245,11 +245,11 @@ fun BroadcastScreen(onBack: () -> Unit) {
         }
     }
     fun saveTemplate() {
-        val t = template.trim()
-        if (t.isBlank()) { toast("القالب فاضي"); return }
-        templates = (listOf(t) + templates).distinct().take(10)
+        val txt = template.trim()
+        if (txt.isBlank()) { toast(t("القالب فاضي", "Template is empty")); return }
+        templates = (listOf(txt) + templates).distinct().take(10)
         settings.broadcastTemplates = templates
-        toast("اتحفظ القالب ⭐")
+        toast(t("اتحفظ القالب ⭐", "Template saved ⭐"))
     }
 
     val filtered = activeList.filter { query.isBlank() || it.name.contains(query.trim(), ignoreCase = true) }
@@ -258,7 +258,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
     val selectedSender = senders.firstOrNull { it.id == selectedSenderId }
     val useBusinessApp = businessMode || selectedSender?.channel == "whatsapp_business"
     val sig = selectedSender?.signature.orEmpty()
-    fun withSig(t: String): String = if (sig.isBlank()) t else "$t\n$sig"
+    fun withSig(msg: String): String = if (sig.isBlank()) msg else "$msg\n$sig"
     fun selectSender(a: com.wifeassistant.data.SenderAccount) {
         selectedSenderId = a.id
         settings.selectedSenderId = a.id
@@ -266,7 +266,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
     }
     fun addSender() {
         val lbl = newSenderLabel.trim()
-        if (lbl.isBlank()) { toast("اكتب اسم الحساب"); return }
+        if (lbl.isBlank()) { toast(t("اكتب اسم الحساب", "Type an account name")); return }
         val a = com.wifeassistant.data.SenderAccount(
             id = "s" + System.currentTimeMillis(), label = lbl, channel = newSenderChannel,
             countryCode = newSenderCc.filter { it.isDigit() }, signature = newSenderSig.trim(),
@@ -275,7 +275,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
         settings.senderAccounts = senders
         newSenderLabel = ""; newSenderCc = ""; newSenderSig = ""; newSenderChannel = "whatsapp"
         selectSender(a)
-        toast("اتضاف حساب ${a.label} ✅")
+        toast(t("اتضاف حساب ${a.label} ✅", "Added account ${a.label} ✅"))
     }
     fun deleteSender(a: com.wifeassistant.data.SenderAccount) {
         senders = senders.filterNot { it.id == a.id }
@@ -285,31 +285,31 @@ fun BroadcastScreen(onBack: () -> Unit) {
     // إرسال آلي عبر باك-إند وصال (Cloud API) — بديل مشروع لفتح واتساب اليدوي.
     val cloudConfigured = apiEndpoint.isNotBlank() && apiKey.isNotBlank()
     fun sendViaApi(to: String, text: String) {
-        if (to.filter { it.isDigit() }.isEmpty()) { toast("رقم العميل ناقص"); return }
+        if (to.filter { it.isDigit() }.isEmpty()) { toast(t("رقم العميل ناقص", "Customer number is missing")); return }
         scope.launch {
             val res = com.wifeassistant.data.CloudApiClient(apiEndpoint, apiKey).sendText(to, text)
-            res.onSuccess { toast("اتبعت عبر Business API ✅") }
-                .onFailure { toast("فشل الإرسال: ${it.message}") }
+            res.onSuccess { toast(t("اتبعت عبر Business API ✅", "Sent via Business API ✅")) }
+                .onFailure { toast(t("فشل الإرسال: ${it.message}", "Send failed: ${it.message}")) }
         }
     }
     // إرسال قالب معتمد (خارج نافذة 24 ساعة). القالب لازم يكون معتمد من Meta بنفس الاسم.
     fun sendTemplateViaApi(to: String) {
-        if (to.filter { it.isDigit() }.isEmpty()) { toast("رقم العميل ناقص"); return }
+        if (to.filter { it.isDigit() }.isEmpty()) { toast(t("رقم العميل ناقص", "Customer number is missing")); return }
         scope.launch {
             val res = com.wifeassistant.data.CloudApiClient(apiEndpoint, apiKey)
                 .sendTemplate(to, templateName.trim(), templateLang.trim())
-            res.onSuccess { toast("اتبعت قالب ✅") }
-                .onFailure { toast("فشل الإرسال: ${it.message}") }
+            res.onSuccess { toast(t("اتبعت قالب ✅", "Template sent ✅")) }
+                .onFailure { toast(t("فشل الإرسال: ${it.message}", "Send failed: ${it.message}")) }
         }
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("مجموعات وإرسال 📣") },
+                title = { Text(t("مجموعات وإرسال 📣", "Groups & sending 📣")) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = t("رجوع", "Back"))
                     }
                 },
             )
@@ -331,12 +331,12 @@ fun BroadcastScreen(onBack: () -> Unit) {
                 OutlinedTextField(
                     value = cc,
                     onValueChange = { cc = it.filter { ch -> ch.isDigit() }; settings.defaultCountryCode = cc },
-                    label = { Text("كود الدولة") },
+                    label = { Text(t("كود الدولة", "Country code")) },
                     singleLine = true,
                     modifier = Modifier.width(120.dp),
                 )
                 Text(
-                    "الأرقام المستوردة من غير مقدمة بنكمّلها بالكود ده تلقائياً.",
+                    t("الأرقام المستوردة من غير مقدمة بنكمّلها بالكود ده تلقائياً.", "Imported numbers without a prefix get this code automatically."),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 8.dp),
@@ -345,12 +345,12 @@ fun BroadcastScreen(onBack: () -> Unit) {
             OutlinedTextField(
                 value = template,
                 onValueChange = { template = it },
-                label = { Text("نص الرسالة (استخدم {الاسم} مكان اسم الشخص)") },
+                label = { Text(t("نص الرسالة (استخدم {الاسم} مكان اسم الشخص)", "Message text (use {الاسم} where the name goes)")) },
                 minLines = 2,
                 modifier = Modifier.fillMaxWidth(),
             )
             Text(
-                "بيتبعت واحد واحد بضغطة منك — بيفتح شات كل شخص والرسالة جاهزة باسمه وانت تدوس Send. مفيش إرسال تلقائي.",
+                t("بيتبعت واحد واحد بضغطة منك — بيفتح شات كل شخص والرسالة جاهزة باسمه وانت تدوس Send. مفيش إرسال تلقائي.", "Sent one by one with your tap — each chat opens with the message ready, and you press Send. Nothing is automatic."),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -360,23 +360,21 @@ fun BroadcastScreen(onBack: () -> Unit) {
                 FilterChip(
                     selected = businessMode,
                     onClick = { businessMode = !businessMode },
-                    label = { Text(if (businessMode) "💼 وضع الأعمال: مفعّل" else "💼 وضع الأعمال") },
+                    label = { Text(if (businessMode) t("💼 وضع الأعمال: مفعّل", "💼 Business mode: on") else t("💼 وضع الأعمال", "💼 Business mode")) },
                 )
             }
             if (businessMode) {
                 Text(
-                    "للردّ على عملاء واتساب Business اللي عندهم محادثة شغّالة معاك: الرسالة بتتفتح في واتساب Business " +
-                        "بنبرة مهنية دافئة، وانت تدوس Send لكل واحد. متبعتش رسائل مجهّلة لناس ما كلّموكش — ده بيعرّض رقمك للحظر.",
+                    t("للردّ على عملاء واتساب Business اللي عندهم محادثة شغّالة معاك: الرسالة بتتفتح في واتساب Business بنبرة مهنية دافئة، وانت تدوس Send لكل واحد. متبعتش رسائل مجهّلة لناس ما كلّموكش — ده بيعرّض رقمك للحظر.", "For replying to WhatsApp Business customers who already have a chat with you: the message opens in WhatsApp Business with a warm professional tone, and you press Send for each one. Never message people who did not contact you — it risks getting your number banned."),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary,
                 )
                 // (متقدّم) باك-إند Cloud API: إرسال آلي مشروع عبر Meta لو ظبّطت endpoint + مفتاح.
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("🚀 Business API (متقدّم — اختياري)", fontWeight = FontWeight.Bold)
+                        Text(t("🚀 Business API (متقدّم — اختياري)", "🚀 Business API (advanced — optional)"), fontWeight = FontWeight.Bold)
                         Text(
-                            "لإرسال آلي مشروع عبر WhatsApp Business Cloud API. سيب الخانتين فاضيين لو مش محتاجه — " +
-                                "هيفضل الإرسال بفتح واتساب اليدوي. راجع wisal-cloud-api/README.",
+                            t("لإرسال آلي مشروع عبر WhatsApp Business Cloud API. سيب الخانتين فاضيين لو مش محتاجه — هيفضل الإرسال بفتح واتساب اليدوي. راجع wisal-cloud-api/README.", "For compliant automated sending via WhatsApp Business Cloud API. Leave both fields empty if unused — sending stays manual via WhatsApp. See wisal-cloud-api/README."),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -397,28 +395,28 @@ fun BroadcastScreen(onBack: () -> Unit) {
                         Button(onClick = {
                             settings.businessApiEndpoint = apiEndpoint
                             settings.businessApiKey = apiKey
-                            toast(if (cloudConfigured) "اتحفظ إعداد Business API ✅" else "اتمسح الإعداد")
-                        }) { Text("💾 احفظ الإعداد") }
+                            toast(if (cloudConfigured) t("اتحفظ إعداد Business API ✅", "Business API settings saved ✅") else t("اتمسح الإعداد", "Settings cleared"))
+                        }) { Text(t("💾 احفظ الإعداد", "💾 Save settings")) }
 
                         // قالب معتمد (اختياري) — للإرسال خارج نافذة 24 ساعة.
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             OutlinedTextField(
                                 value = templateName,
                                 onValueChange = { templateName = it },
-                                label = { Text("اسم قالب معتمد (اختياري)") },
+                                label = { Text(t("اسم قالب معتمد (اختياري)", "Approved template name (optional)")) },
                                 singleLine = true,
                                 modifier = Modifier.weight(1f),
                             )
                             OutlinedTextField(
                                 value = templateLang,
                                 onValueChange = { templateLang = it },
-                                label = { Text("لغة") },
+                                label = { Text(t("لغة", "Language")) },
                                 singleLine = true,
                                 modifier = Modifier.width(90.dp),
                             )
                         }
                         Text(
-                            "لو حطيت اسم قالب معتمد من Meta، هيظهر زر «ابعت قالب» لكل عميل — بيشتغل حتى خارج الـ24 ساعة.",
+                            t("لو حطيت اسم قالب معتمد من Meta، هيظهر زر «ابعت قالب» لكل عميل — بيشتغل حتى خارج الـ24 ساعة.", "If you set a Meta-approved template name, a send-template button appears per customer — it works even outside the 24-hour window."),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -429,7 +427,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
             // أبعت من: حساباتك (إمارات/مصر/أعمال). الاختيار بيظبط الكود + التوقيع + التطبيق الهدف.
             ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("📱 أبعت من (حساباتك)", fontWeight = FontWeight.Bold)
+                    Text(t("📱 أبعت من (حساباتك)", "📱 Send from (your accounts)"), fontWeight = FontWeight.Bold)
                     if (senders.isNotEmpty()) {
                         Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                             senders.forEach { a ->
@@ -440,7 +438,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
                                     trailingIcon = {
                                         Text("✕", modifier = Modifier
                                             .padding(start = 2.dp)
-                                            .semantics { contentDescription = "حذف الحساب" }
+                                            .semantics { contentDescription = t("حذف الحساب", "Delete account") }
                                             .clickable { deleteSender(a) })
                                     },
                                 )
@@ -451,34 +449,33 @@ fun BroadcastScreen(onBack: () -> Unit) {
                         OutlinedTextField(
                             value = newSenderLabel,
                             onValueChange = { newSenderLabel = it },
-                            label = { Text("اسم الحساب (مثلاً: الأعمال)") },
+                            label = { Text(t("اسم الحساب (مثلاً: الأعمال)", "Account name (e.g. Business)")) },
                             singleLine = true,
                             modifier = Modifier.weight(1f),
                         )
                         OutlinedTextField(
                             value = newSenderCc,
                             onValueChange = { newSenderCc = it.filter { ch -> ch.isDigit() } },
-                            label = { Text("كود") },
+                            label = { Text(t("كود", "Code")) },
                             singleLine = true,
                             modifier = Modifier.width(90.dp),
                         )
                     }
                     Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        listOf("whatsapp" to "📱 واتساب", "whatsapp_business" to "💼 Business").forEach { (id, label) ->
+                        listOf("whatsapp" to t("📱 واتساب", "📱 WhatsApp"), "whatsapp_business" to "💼 Business").forEach { (id, label) ->
                             FilterChip(selected = newSenderChannel == id, onClick = { newSenderChannel = id }, label = { Text(label) })
                         }
                     }
                     OutlinedTextField(
                         value = newSenderSig,
                         onValueChange = { newSenderSig = it },
-                        label = { Text("توقيع آخر الرسالة (اختياري)") },
+                        label = { Text(t("توقيع آخر الرسالة (اختياري)", "Signature at the end (optional)")) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                     )
-                    Button(onClick = { addSender() }) { Text("＋ أضف حساب") }
+                    Button(onClick = { addSender() }) { Text(t("＋ أضف حساب", "＋ Add account")) }
                     Text(
-                        "ملاحظة: رقمين واتساب شخصيين بيبقوا في نفس التطبيق — الاختيار هنا بيظبط الكود والتوقيع والتطبيق الهدف " +
-                            "(عادي/Business). البرنامج مايقدرش يبدّل بين رقمين جوّه نفس واتساب — ده قيد واتساب نفسه.",
+                        t("ملاحظة: رقمين واتساب شخصيين بيبقوا في نفس التطبيق — الاختيار هنا بيظبط الكود والتوقيع والتطبيق الهدف (عادي/Business). البرنامج مايقدرش يبدّل بين رقمين جوّه نفس واتساب — ده قيد واتساب نفسه.", "Note: two personal WhatsApp numbers live in the same app — this choice sets the code, signature, and target app (regular/Business). Wisal cannot switch between numbers inside WhatsApp itself — that is a WhatsApp limitation."),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -487,7 +484,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
 
             // قوالب مفضّلة
             Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                OutlinedButton(onClick = { saveTemplate() }) { Text("⭐ احفظ القالب") }
+                OutlinedButton(onClick = { saveTemplate() }) { Text(t("⭐ احفظ القالب", "⭐ Save template")) }
                 templates.forEach { t ->
                     FilterChip(
                         selected = template == t,
@@ -496,7 +493,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
                         trailingIcon = {
                             Text("✕", modifier = Modifier
                                 .padding(start = 2.dp)
-                                .semantics { contentDescription = "حذف القالب" }
+                                .semantics { contentDescription = t("حذف القالب", "Delete template") }
                                 .clickable {
                                     templates = templates.filterNot { it == t }
                                     settings.broadcastTemplates = templates
@@ -509,26 +506,26 @@ fun BroadcastScreen(onBack: () -> Unit) {
             // إرسال لرقم مش متسجّل
             ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("✉️ رقم مش متسجّل", fontWeight = FontWeight.Bold)
+                    Text(t("✉️ رقم مش متسجّل", "✉️ Unsaved number"), fontWeight = FontWeight.Bold)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedTextField(
                             value = unknownNum,
                             onValueChange = { unknownNum = it },
-                            label = { Text("رقم الموبايل") },
+                            label = { Text(t("رقم الموبايل", "Phone number")) },
                             singleLine = true,
                             modifier = Modifier.weight(1f),
                         )
                         Button(onClick = {
-                            if (unknownNum.filter { it.isDigit() }.isEmpty()) toast("اكتب الرقم")
+                            if (unknownNum.filter { it.isDigit() }.isEmpty()) toast(t("اكتب الرقم", "Type the number"))
                             else WhatsApp.send(context, unknownNum, withSig(personalize("")), cc, businessApp = useBusinessApp)
-                        }) { Text("📲 ابعت") }
+                        }) { Text(t("📲 ابعت", "📲 Send")) }
                     }
                 }
             }
 
             // مجموعات محفوظة
             if (groups.isNotEmpty()) {
-                Text("مجموعاتك", style = MaterialTheme.typography.labelLarge)
+                Text(t("مجموعاتك", "Your groups"), style = MaterialTheme.typography.labelLarge)
                 groups.forEach { g ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -544,21 +541,21 @@ fun BroadcastScreen(onBack: () -> Unit) {
 
             // مصادر الأعضاء
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
-                Button(onClick = { openContacts() }, modifier = Modifier.weight(1f)) { Text("📇 جهات الاتصال") }
-                OutlinedButton(onClick = { csvLauncher.launch("*/*") }, modifier = Modifier.weight(1f)) { Text("📁 استيراد CSV") }
+                Button(onClick = { openContacts() }, modifier = Modifier.weight(1f)) { Text(t("📇 جهات الاتصال", "📇 Contacts")) }
+                OutlinedButton(onClick = { csvLauncher.launch("*/*") }, modifier = Modifier.weight(1f)) { Text(t("📁 استيراد CSV", "📁 Import CSV")) }
             }
 
             if (loaded) {
                 OutlinedTextField(
                     value = query,
                     onValueChange = { query = it },
-                    label = { Text("دوّر على اسم") },
+                    label = { Text(t("دوّر على اسم", "Search by name")) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
                 val selCount = if (selected.isEmpty()) filtered.size else selected.size
                 Text(
-                    "${filtered.size} جهة · المستهدَف: $selCount",
+                    t("${filtered.size} جهة · المستهدَف: $selCount", "${filtered.size} contacts · targeted: $selCount"),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
                 )
@@ -567,39 +564,39 @@ fun BroadcastScreen(onBack: () -> Unit) {
                 OutlinedTextField(
                     value = sharedCtx,
                     onValueChange = { sharedCtx = it },
-                    label = { Text("سياق مشترك للرسائل (اختياري)") },
+                    label = { Text(t("سياق مشترك للرسائل (اختياري)", "Shared context for messages (optional)")) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Button(onClick = { aiGenerate() }, enabled = !busy) {
-                        Text(if (busy) "بيجهّز... $progress" else "✨ خصّص بالذكاء")
+                        Text(if (busy) t("بيجهّز... $progress", "Preparing... $progress") else t("✨ خصّص بالذكاء", "✨ Personalize with AI"))
                     }
                     if (aiMsgs.isNotEmpty()) {
-                        OutlinedButton(onClick = { aiMsgs.clear() }) { Text("ارجع للقالب") }
+                        OutlinedButton(onClick = { aiMsgs.clear() }) { Text(t("ارجع للقالب", "Back to template")) }
                     }
                 }
                 Text(
-                    "بالذكاء: كل واحد بياخد رسالة تخصّه بالاسم والسياق. من غير ذكاء: بيستخدم القالب فوق مع {الاسم}.",
+                    t("بالذكاء: كل واحد بياخد رسالة تخصّه بالاسم والسياق. من غير ذكاء: بيستخدم القالب فوق مع {الاسم}.", "With AI: everyone gets their own message with their name and context. Without AI: the template above is used with {الاسم}."),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 // معاينة أول رسالة + نسخ الكل + تصدير
                 Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    OutlinedButton(onClick = { preview() }, enabled = !busy) { Text("👁️ معاينة") }
+                    OutlinedButton(onClick = { preview() }, enabled = !busy) { Text(t("👁️ معاينة", "👁️ Preview")) }
                     OutlinedButton(onClick = {
-                        clipboard.setText(AnnotatedString(allText())); toast("اتنسخ الكل ✅")
-                    }) { Text("📋 نسخ الكل") }
+                        clipboard.setText(AnnotatedString(allText())); toast(t("اتنسخ الكل ✅", "All copied ✅"))
+                    }) { Text(t("📋 نسخ الكل", "📋 Copy all")) }
                     OutlinedButton(onClick = {
                         pendingExport = allText()
                         exportLauncher.launch("wisal-broadcast.txt")
-                    }) { Text("📤 تصدير") }
+                    }) { Text(t("📤 تصدير", "📤 Export")) }
                 }
                 if (previewText.isNotBlank()) {
                     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                            Text("👁️ معاينة أول رسالة", fontWeight = FontWeight.Bold)
+                            Text(t("👁️ معاينة أول رسالة", "👁️ Preview of the first message"), fontWeight = FontWeight.Bold)
                             Text(previewText, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
@@ -608,9 +605,9 @@ fun BroadcastScreen(onBack: () -> Unit) {
                 // حفظ كمجموعة
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("💾 احفظ كمجموعة", fontWeight = FontWeight.Bold)
+                        Text(t("💾 احفظ كمجموعة", "💾 Save as a group"), fontWeight = FontWeight.Bold)
                         Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            listOf("work" to "شغل", "project" to "مشروع", "family" to "أسرة", "friends" to "أصحاب", "clients" to "عملاء").forEach { (id, label) ->
+                            listOf("work" to t("شغل", "Work"), "project" to t("مشروع", "Project"), "family" to t("أسرة", "Family"), "friends" to t("أصحاب", "Friends"), "clients" to t("عملاء", "Clients")).forEach { (id, label) ->
                                 FilterChip(selected = groupKind == id, onClick = { groupKind = id }, label = { Text("${kindEmoji(id)} $label") })
                             }
                         }
@@ -618,11 +615,11 @@ fun BroadcastScreen(onBack: () -> Unit) {
                             OutlinedTextField(
                                 value = groupName,
                                 onValueChange = { groupName = it },
-                                label = { Text("اسم المجموعة") },
+                                label = { Text(t("اسم المجموعة", "Group name")) },
                                 singleLine = true,
                                 modifier = Modifier.weight(1f),
                             )
-                            Button(onClick = { saveGroup() }) { Text("حفظ") }
+                            Button(onClick = { saveGroup() }) { Text(t("حفظ", "Save")) }
                         }
                     }
                 }
@@ -641,7 +638,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
                                 Checkbox(
                                     checked = isSel,
                                     onCheckedChange = { if (isSel) selected.remove(c.id) else selected.add(c.id) },
-                                    modifier = Modifier.semantics { contentDescription = "اختيار ${c.name}" },
+                                    modifier = Modifier.semantics { contentDescription = t("اختيار ${c.name}", "Select ${c.name}") },
                                 )
                                 Text(c.name, fontWeight = FontWeight.Bold)
                                 if (aiMsgs.containsKey(c.id)) Text("  ✨", style = MaterialTheme.typography.bodySmall)
@@ -651,21 +648,21 @@ fun BroadcastScreen(onBack: () -> Unit) {
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
-                            OutlinedButton(
+                            GradientButton(
                                 onClick = { WhatsApp.send(context, c.number, withSig(msg), cc, businessApp = useBusinessApp) },
                                 modifier = Modifier.fillMaxWidth(),
-                            ) { Text(if (useBusinessApp) "💼 رد على ${c.name}" else "📲 ابعت لـ${c.name}") }
+                            ) { Text(if (useBusinessApp) t("💼 رد على ${c.name}", "💼 Reply to ${c.name}") else t("📲 ابعت لـ${c.name}", "📲 Send to ${c.name}")) }
                             // إرسال آلي عبر Cloud API — بيظهر بس لو المستخدم ظبّط الباك-إند.
                             if (businessMode && cloudConfigured) {
                                 Button(
                                     onClick = { sendViaApi(c.number, withSig(msg)) },
                                     modifier = Modifier.fillMaxWidth(),
-                                ) { Text("🚀 ابعت عبر Business API") }
+                                ) { Text(t("🚀 ابعت عبر Business API", "🚀 Send via Business API")) }
                                 if (templateName.isNotBlank()) {
                                     OutlinedButton(
                                         onClick = { sendTemplateViaApi(c.number) },
                                         modifier = Modifier.fillMaxWidth(),
-                                    ) { Text("📋 ابعت قالب: ${templateName.trim()}") }
+                                    ) { Text(t("📋 ابعت قالب: ${templateName.trim()}", "📋 Send template: ${templateName.trim()}")) }
                                 }
                             }
                         }

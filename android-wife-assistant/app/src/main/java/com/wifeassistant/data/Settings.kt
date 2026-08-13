@@ -61,9 +61,9 @@ class Settings(context: Context) {
 
     // ---- المظهر ----
     // "system" (تلقائي) / "light" (فاتح) / "dark" (غامق).
-    // الافتراضي "dark" — هوية وصال الليلية (كحلي + ذهبي).
+    // الهوية العالمية فاتحة أولاً (Porcelain) والداكن (Midnight) خيار للمستخدم.
     var themeMode: String
-        get() = prefs.getString("themeMode", "dark") ?: "dark"
+        get() = prefs.getString("themeMode", "system") ?: "system"
         set(v) = prefs.edit().putString("themeMode", v).apply()
 
     // لغة واجهة التطبيق: "ar" (عربي RTL) أو "en" (إنجليزي LTR).

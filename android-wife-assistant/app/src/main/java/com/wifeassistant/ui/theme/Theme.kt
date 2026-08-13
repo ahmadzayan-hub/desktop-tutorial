@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -21,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
-// أشكال Material 3 Expressive: زوايا أنعم وأكبر لإحساس حديث ومجسّم.
+// أشكال ناعمة كبيرة — هوية وصال العالمية.
 private val ExpressiveShapes = Shapes(
     extraSmall = RoundedCornerShape(10.dp),
     small = RoundedCornerShape(14.dp),
@@ -30,27 +29,29 @@ private val ExpressiveShapes = Shapes(
     extraLarge = RoundedCornerShape(36.dp),
 )
 
-// ————— هوية «وصال» —————
-// كحلي ليلي عميق + ذهبي دافئ للعناوين + جراديانت وردي→خوخي للأزرار الأساسية.
+// ————— Wisal Global Design Tokens (docs/design-system.md) —————
+// «The Living Link»: Porcelain فاتح افتراضيًا + Midnight داكن كخيار.
+// Coral/Amber/Teal لمسات إنسانية — مش تدرّجات في كل حتة.
 object WisalColors {
-    val NavyBg = Color(0xFF0D1524)        // خلفية التطبيق
-    val NavySurface = Color(0xFF141E33)   // البطاقات
-    val NavyRaised = Color(0xFF1B2740)    // بطاقة مرفوعة/حقل إدخال
-    val Outline = Color(0xFF2A3854)       // حدود خفيفة
-    val Gold = Color(0xFFEDBF74)          // العناوين والشعار
-    val GoldDeep = Color(0xFFD9A84E)
-    val Rose = Color(0xFFEF5D6B)          // بداية الجراديانت
-    val Peach = Color(0xFFF2A66B)         // نهاية الجراديانت
-    val Teal = Color(0xFF3FD3BC)          // نجاح/متصل
-    val InkWarm = Color(0xFFF1ECE4)       // نص أساسي دافئ
-    val Muted = Color(0xFF9AA6BD)         // نص ثانوي
+    val MidnightAtlantic = Color(0xFF061827) // نص أساسي فاتح / خلفية داكن
+    val HumanCoral = Color(0xFFFF6E72)       // الأساسي (أزرار/تمييز)
+    val SolarAmber = Color(0xFFF2C56B)       // ثانوي (عناوين أقسام/لمسات)
+    val OceanTeal = Color(0xFF35B8A6)        // نجاح/متصل/تمييز ثالث
+    val Porcelain = Color(0xFFF8F5EF)        // خلفية الوضع الفاتح
+    val Mist = Color(0xFFAAB8C4)             // نص ثانوي/حدود
+
+    // مشتقات أسطح (مش في التوكنز الأساسية لكن لازمة للتطبيق):
+    val PorcelainCard = Color(0xFFFFFFFF)
+    val PorcelainRaised = Color(0xFFF0EBE1)
+    val MidnightSurface = Color(0xFF0D2133)
+    val MidnightRaised = Color(0xFF13293D)
 }
 
-// جراديانت الهوية للأزرار الأساسية والعناصر النشطة.
-val WisalGradient = Brush.horizontalGradient(listOf(WisalColors.Rose, WisalColors.Peach))
-val WisalGradientVertical = Brush.verticalGradient(listOf(WisalColors.Rose, WisalColors.Peach))
+// جراديانت البراند (كورال → عنبر) — للأزرار الأساسية ولحظات مختارة فقط.
+val WisalGradient = Brush.horizontalGradient(listOf(WisalColors.HumanCoral, WisalColors.SolarAmber))
+val WisalGradientVertical = Brush.verticalGradient(listOf(WisalColors.HumanCoral, WisalColors.SolarAmber))
 
-// زرار الهوية: خلفية جراديانت وردي→خوخي بنص أبيض عريض. بديل مباشر لـ Button العادي.
+// زرار الهوية: جراديانت كورال→عنبر بنص Midnight غامق (تباين AA على الخلفيتين).
 @Composable
 fun GradientButton(
     onClick: () -> Unit,
@@ -64,63 +65,67 @@ fun GradientButton(
         enabled = enabled,
         modifier = modifier.background(
             brush = if (enabled) WisalGradient else Brush.horizontalGradient(
-                listOf(WisalColors.Outline, WisalColors.Outline)
+                listOf(WisalColors.Mist, WisalColors.Mist)
             ),
             shape = RoundedCornerShape(50),
         ),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
             disabledContainerColor = Color.Transparent,
-            contentColor = Color.White,
-            disabledContentColor = WisalColors.Muted,
+            contentColor = WisalColors.MidnightAtlantic,
+            disabledContentColor = WisalColors.MidnightSurface,
         ),
         shape = RoundedCornerShape(50),
         contentPadding = contentPadding,
     ) { content() }
 }
 
+// الوضع الفاتح (الافتراضي): Porcelain + Midnight نصوص + لمسات كورال/عنبر/تيل.
 private val LightColors = lightColorScheme(
-    primary = WisalColors.Rose,
+    primary = WisalColors.HumanCoral,
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFFFE0D6),
-    onPrimaryContainer = Color(0xFF3E1210),
-    secondary = WisalColors.GoldDeep,
+    primaryContainer = Color(0xFFFFE1E0),
+    onPrimaryContainer = Color(0xFF4A1213),
+    secondary = Color(0xFFB8862F), // عنبر أغمق للنصوص على الفاتح (تباين AA)
     onSecondary = Color.White,
-    secondaryContainer = Color(0xFFF6E7C8),
-    onSecondaryContainer = Color(0xFF3C2E10),
-    tertiary = Color(0xFF0E9384),
-    background = Color(0xFFFDF9F3),
-    onBackground = Color(0xFF1D2434),
-    surface = Color(0xFFFFFFFF),
-    surfaceVariant = Color(0xFFF0EAE0),
-    onSurfaceVariant = Color(0xFF4E5668),
-    outline = Color(0xFFC9C2B4),
+    secondaryContainer = Color(0xFFF7E7C4),
+    onSecondaryContainer = Color(0xFF3C2E08),
+    tertiary = Color(0xFF1E8A7C),
+    onTertiary = Color.White,
+    background = WisalColors.Porcelain,
+    onBackground = WisalColors.MidnightAtlantic,
+    surface = WisalColors.PorcelainCard,
+    onSurface = WisalColors.MidnightAtlantic,
+    surfaceVariant = WisalColors.PorcelainRaised,
+    onSurfaceVariant = Color(0xFF4E5B68),
+    outline = WisalColors.Mist,
 )
 
+// الوضع الداكن (اختياري): Midnight Atlantic.
 private val DarkColors = darkColorScheme(
-    primary = WisalColors.Rose,
-    onPrimary = Color.White,
-    primaryContainer = Color(0xFF3A2030),
-    onPrimaryContainer = Color(0xFFFFD9CF),
-    secondary = WisalColors.Gold,
-    onSecondary = Color(0xFF3A2A10),
-    secondaryContainer = Color(0xFF223050),
-    onSecondaryContainer = WisalColors.Gold,
-    tertiary = WisalColors.Teal,
+    primary = WisalColors.HumanCoral,
+    onPrimary = Color(0xFF3D0A0B),
+    primaryContainer = Color(0xFF57292B),
+    onPrimaryContainer = Color(0xFFFFDAD9),
+    secondary = WisalColors.SolarAmber,
+    onSecondary = Color(0xFF3C2E08),
+    secondaryContainer = Color(0xFF2A3A50),
+    onSecondaryContainer = WisalColors.SolarAmber,
+    tertiary = WisalColors.OceanTeal,
     onTertiary = Color(0xFF00332B),
-    background = WisalColors.NavyBg,
-    onBackground = WisalColors.InkWarm,
-    surface = WisalColors.NavySurface,
-    onSurface = WisalColors.InkWarm,
-    surfaceVariant = WisalColors.NavyRaised,
-    onSurfaceVariant = WisalColors.Muted,
-    outline = WisalColors.Outline,
+    background = WisalColors.MidnightAtlantic,
+    onBackground = WisalColors.Porcelain,
+    surface = WisalColors.MidnightSurface,
+    onSurface = WisalColors.Porcelain,
+    surfaceVariant = WisalColors.MidnightRaised,
+    onSurfaceVariant = WisalColors.Mist,
+    outline = Color(0xFF2C4157),
 )
 
 @Composable
 fun WifeAssistantTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // هوية وصال هي الافتراضي؛ Material You اختياري من الإعدادات
+    dynamicColor: Boolean = false, // هوية وصال هي الافتراضي؛ Material You اختياري
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current

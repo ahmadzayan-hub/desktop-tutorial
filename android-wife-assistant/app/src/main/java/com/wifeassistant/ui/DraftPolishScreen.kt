@@ -44,6 +44,7 @@ import com.wifeassistant.data.Relations
 import com.wifeassistant.data.Settings
 import com.wifeassistant.data.Store
 import com.wifeassistant.data.Suggestion
+import com.wifeassistant.data.t
 import com.wifeassistant.util.SocialShare
 import com.wifeassistant.util.WhatsApp
 import kotlinx.coroutines.launch
@@ -85,7 +86,7 @@ fun DraftPolishScreen(onBack: () -> Unit) {
         store.markContacted(rid)
     }
     fun generate() {
-        if (draft.isBlank()) { toast("اكتب مسوّدة رسالتك الأول"); return }
+        if (draft.isBlank()) { toast(t("اكتب مسوّدة رسالتك الأول", "Write your draft first")); return }
         if (busy) return
         scope.launch {
             busy = true
@@ -97,10 +98,10 @@ fun DraftPolishScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("حسّن رسالتي ✨") },
+                title = { Text(t("حسّن رسالتي ✨", "Polish my message ✨")) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = t("رجوع", "Back"))
                     }
                 },
             )
@@ -115,14 +116,13 @@ fun DraftPolishScreen(onBack: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(
-                "اكتب رسالتك بنفسك — ولو مستعجلة — والوكيل يرجّعها في نسختين أدفأ وأطبع بأسلوبك، " +
-                    "من غير ما يغيّر قصدك. تعدّل وتبعت بضغطة.",
+                t("اكتب رسالتك بنفسك — ولو مستعجلة — والوكيل يرجّعها في نسختين أدفأ وأطبع بأسلوبك، من غير ما يغيّر قصدك. تعدّل وتبعت بضغطة.", "Write your message yourself — even a rushed one — and get back two warmer, kinder versions in your style, without changing what you mean. Edit and send with one tap."),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             if (recipients.isNotEmpty()) {
-                Text("هتبعتها لمين؟", style = MaterialTheme.typography.labelLarge)
+                Text(t("هتبعتها لمين؟", "Who is it for?"), style = MaterialTheme.typography.labelLarge)
                 Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     recipients.forEach { r ->
                         val label = r.name.ifBlank { Relations.labelOf(r.relation) }
@@ -138,30 +138,30 @@ fun DraftPolishScreen(onBack: () -> Unit) {
             OutlinedTextField(
                 value = draft,
                 onValueChange = { draft = it },
-                label = { Text("مسوّدة رسالتك") },
+                label = { Text(t("مسوّدة رسالتك", "Your draft")) },
                 minLines = 3,
                 modifier = Modifier.fillMaxWidth(),
             )
             OutlinedTextField(
                 value = goal,
                 onValueChange = { goal = it },
-                label = { Text("عايز توصّل إيه بالظبط؟ (اختياري)") },
+                label = { Text(t("عايز توصّل إيه بالظبط؟ (اختياري)", "What exactly do you want to convey? (optional)")) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
             Button(onClick = { generate() }, enabled = !busy, modifier = Modifier.fillMaxWidth()) {
-                Text(if (busy) "بحسّنها..." else "✨ حسّن رسالتي")
+                Text(if (busy) t("بحسّنها...", "Polishing...") else t("✨ حسّن رسالتي", "✨ Polish my message"))
             }
 
             results.forEachIndexed { idx, s ->
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("${idx + 1}️⃣ نسخة محسّنة", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                        Text(t("${idx + 1}️⃣ نسخة محسّنة", "${idx + 1}️⃣ Polished version"), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
                         Text(s.text, style = MaterialTheme.typography.bodyLarge)
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(onClick = { learn(s.text, "pick"); send(s.text) }) { Text("📲 ابعت") }
-                            OutlinedButton(onClick = { clipboard.setText(AnnotatedString(s.text)); toast("اتنسخت ✅") }) { Text("📋 نسخ") }
-                            OutlinedButton(onClick = { learn(s.text, "pick"); toast("حفظت أسلوبك 👌") }) { Text("👍 اختار") }
+                            Button(onClick = { learn(s.text, "pick"); send(s.text) }) { Text(t("📲 ابعت", "📲 Send")) }
+                            OutlinedButton(onClick = { clipboard.setText(AnnotatedString(s.text)); toast(t("اتنسخت ✅", "Copied ✅")) }) { Text(t("📋 نسخ", "📋 Copy")) }
+                            OutlinedButton(onClick = { learn(s.text, "pick"); toast(t("حفظت أسلوبك 👌", "Saved to your style 👌")) }) { Text(t("👍 اختار", "👍 Choose")) }
                         }
                         // شارك عبر منصّة تانية: بننسخ الرسالة ونفتح التطبيق (المنصّات مابتقبلش نص جاهز في اللينك).
                         Row(
@@ -182,7 +182,7 @@ fun DraftPolishScreen(onBack: () -> Unit) {
             if (results.isNotEmpty()) {
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("عدّل بنفسك واحفظه لأسلوبك", fontWeight = FontWeight.Bold)
+                        Text(t("عدّل بنفسك واحفظه لأسلوبك", "Edit it yourself and save it to your style"), fontWeight = FontWeight.Bold)
                         OutlinedTextField(
                             value = editBox,
                             onValueChange = { editBox = it },
@@ -191,14 +191,14 @@ fun DraftPolishScreen(onBack: () -> Unit) {
                         )
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Button(onClick = {
-                                val t = editBox.trim()
-                                if (t.isBlank()) toast("اكتب نسختك")
-                                else { learn(t, "edited"); send(t); editBox = "" }
-                            }) { Text("📲 ابعت نسختي") }
+                                val txt = editBox.trim()
+                                if (txt.isBlank()) toast(t("اكتب نسختك", "Write your version first"))
+                                else { learn(txt, "edited"); send(txt); editBox = "" }
+                            }) { Text(t("📲 ابعت نسختي", "📲 Send my version")) }
                             OutlinedButton(onClick = {
-                                val t = editBox.trim()
-                                if (t.isNotBlank()) { learn(t, "edited"); editBox = ""; toast("سجّلت نسختك 🌟") }
-                            }) { Text("💾 احفظ") }
+                                val txt = editBox.trim()
+                                if (txt.isNotBlank()) { learn(txt, "edited"); editBox = ""; toast(t("سجّلت نسختك 🌟", "Saved your version 🌟")) }
+                            }) { Text(t("💾 احفظ", "💾 Save")) }
                         }
                     }
                 }

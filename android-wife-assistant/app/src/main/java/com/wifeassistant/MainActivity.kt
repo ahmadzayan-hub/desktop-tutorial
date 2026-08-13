@@ -125,7 +125,7 @@ private fun AppRoot(onThemeChanged: () -> Unit = {}) {
     val vm: HomeViewModel = viewModel()
 
     val items = listOf(
-        NavItem("home", t("الرئيسية", "Home"), Icons.Filled.Home),
+        NavItem("home", t("اليوم", "Today"), Icons.Filled.Home),
         NavItem("people", t("الأشخاص", "People"), Icons.Filled.People),
         NavItem("history", t("السجل", "History"), Icons.Filled.History),
         NavItem("stats", t("إحصائيات", "Stats"), Icons.Filled.BarChart),

@@ -44,6 +44,7 @@ import com.wifeassistant.data.Settings
 import com.wifeassistant.data.SmartReply
 import com.wifeassistant.data.Store
 import com.wifeassistant.data.Suggestion
+import com.wifeassistant.data.t
 import com.wifeassistant.util.SocialShare
 import com.wifeassistant.util.WhatsApp
 import kotlinx.coroutines.launch
@@ -85,7 +86,7 @@ fun SmartReplyScreen(onBack: () -> Unit) {
         store.markContacted(rid)
     }
     fun generate() {
-        if (received.isBlank()) { toast("الصق الرسالة اللي وصلتك الأول"); return }
+        if (received.isBlank()) { toast(t("الصق الرسالة اللي وصلتك الأول", "Paste the message you received first")); return }
         if (busy) return
         scope.launch {
             busy = true
@@ -97,10 +98,10 @@ fun SmartReplyScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("رد ذكي 💬") },
+                title = { Text(t("رد ذكي 💬", "Smart reply 💬")) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = t("رجوع", "Back"))
                     }
                 },
             )
@@ -115,13 +116,13 @@ fun SmartReplyScreen(onBack: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(
-                "الصق رسالة وصلتلك، والوكيل يقترح ردّين بأسلوبك ونبرة علاقتك بالشخص — تعدّل وتبعت بضغطة.",
+                t("الصق رسالة وصلتلك، والوكيل يقترح ردّين بأسلوبك ونبرة علاقتك بالشخص — تعدّل وتبعت بضغطة.", "Paste a message you received and get two reply drafts in your style and this relationship tone — edit and send with one tap."),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             if (recipients.isNotEmpty()) {
-                Text("الرسالة من مين؟", style = MaterialTheme.typography.labelLarge)
+                Text(t("الرسالة من مين؟", "Who is the message from?"), style = MaterialTheme.typography.labelLarge)
                 Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     recipients.forEach { r ->
                         val label = r.name.ifBlank { Relations.labelOf(r.relation) }
@@ -137,30 +138,30 @@ fun SmartReplyScreen(onBack: () -> Unit) {
             OutlinedTextField(
                 value = received,
                 onValueChange = { received = it },
-                label = { Text("الرسالة اللي وصلتك") },
+                label = { Text(t("الرسالة اللي وصلتك", "The message you received")) },
                 minLines = 3,
                 modifier = Modifier.fillMaxWidth(),
             )
             OutlinedTextField(
                 value = contextText,
                 onValueChange = { contextText = it },
-                label = { Text("سياق مهم؟ (اختياري)") },
+                label = { Text(t("سياق مهم؟ (اختياري)", "Important context? (optional)")) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
             Button(onClick = { generate() }, enabled = !busy, modifier = Modifier.fillMaxWidth()) {
-                Text(if (busy) "بجهّز ردّين..." else "✨ اقترح ردّ")
+                Text(if (busy) t("بجهّز ردّين...", "Preparing two replies...") else t("✨ اقترح ردّ", "✨ Suggest a reply"))
             }
 
             results.forEachIndexed { idx, s ->
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("${idx + 1}️⃣ رد مقترح", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                        Text(t("${idx + 1}️⃣ رد مقترح", "${idx + 1}️⃣ Suggested reply"), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
                         Text(s.text, style = MaterialTheme.typography.bodyLarge)
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(onClick = { learn(s.text, "pick"); sendReply(s.text) }) { Text("📲 ابعت") }
-                            OutlinedButton(onClick = { clipboard.setText(AnnotatedString(s.text)); toast("اتنسخت ✅") }) { Text("📋 نسخ") }
-                            OutlinedButton(onClick = { learn(s.text, "pick"); toast("حفظت أسلوبك 👌") }) { Text("👍 اختار") }
+                            Button(onClick = { learn(s.text, "pick"); sendReply(s.text) }) { Text(t("📲 ابعت", "📲 Send")) }
+                            OutlinedButton(onClick = { clipboard.setText(AnnotatedString(s.text)); toast(t("اتنسخت ✅", "Copied ✅")) }) { Text(t("📋 نسخ", "📋 Copy")) }
+                            OutlinedButton(onClick = { learn(s.text, "pick"); toast(t("حفظت أسلوبك 👌", "Saved to your style 👌")) }) { Text(t("👍 اختار", "👍 Choose")) }
                         }
                         // شارك عبر منصّة تانية: بننسخ الرد ونفتح التطبيق (المنصّات مابتقبلش نص جاهز في اللينك).
                         Row(
@@ -181,7 +182,7 @@ fun SmartReplyScreen(onBack: () -> Unit) {
             if (results.isNotEmpty()) {
                 ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("عدّل بنفسك واحفظه لأسلوبك", fontWeight = FontWeight.Bold)
+                        Text(t("عدّل بنفسك واحفظه لأسلوبك", "Edit it yourself and save it to your style"), fontWeight = FontWeight.Bold)
                         OutlinedTextField(
                             value = editBox,
                             onValueChange = { editBox = it },
@@ -190,14 +191,14 @@ fun SmartReplyScreen(onBack: () -> Unit) {
                         )
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Button(onClick = {
-                                val t = editBox.trim()
-                                if (t.isBlank()) toast("اكتب ردّك")
-                                else { learn(t, "edited"); sendReply(t); editBox = "" }
-                            }) { Text("📲 ابعت نسختي") }
+                                val txt = editBox.trim()
+                                if (txt.isBlank()) toast(t("اكتب ردّك", "Write your reply first"))
+                                else { learn(txt, "edited"); sendReply(txt); editBox = "" }
+                            }) { Text(t("📲 ابعت نسختي", "📲 Send my version")) }
                             OutlinedButton(onClick = {
-                                val t = editBox.trim()
-                                if (t.isNotBlank()) { learn(t, "edited"); editBox = ""; toast("سجّلت نسختك 🌟") }
-                            }) { Text("💾 احفظ") }
+                                val txt = editBox.trim()
+                                if (txt.isNotBlank()) { learn(txt, "edited"); editBox = ""; toast(t("سجّلت نسختك 🌟", "Saved your version 🌟")) }
+                            }) { Text(t("💾 احفظ", "💾 Save")) }
                         }
                     }
                 }

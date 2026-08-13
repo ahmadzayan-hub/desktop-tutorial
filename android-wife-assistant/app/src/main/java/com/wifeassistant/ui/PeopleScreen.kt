@@ -57,6 +57,8 @@ import com.wifeassistant.data.PersonaAnalyzer
 import com.wifeassistant.data.Recipient
 import com.wifeassistant.data.Relations
 import com.wifeassistant.data.Settings
+import com.wifeassistant.data.t
+import com.wifeassistant.ui.theme.GradientButton
 import com.wifeassistant.util.Avatars
 import com.wifeassistant.util.ContactsReader
 import kotlinx.coroutines.launch
@@ -103,14 +105,14 @@ fun PeopleScreen(onBack: () -> Unit) {
         contacts = runCatching { ContactsReader.withBirthdays(context) }.getOrDefault(emptyList())
         showContacts = true
         if (contacts.isEmpty()) {
-            Toast.makeText(context, "مفيش جهات اتصال بأعياد ميلاد مسجّلة", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, t("مفيش جهات اتصال بأعياد ميلاد مسجّلة", "No contacts with saved birthdays"), Toast.LENGTH_LONG).show()
         }
     }
     val contactsPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) loadContacts()
-        else Toast.makeText(context, "محتاج إذن جهات الاتصال عشان أستورد المواعيد", Toast.LENGTH_LONG).show()
+        else Toast.makeText(context, t("محتاج إذن جهات الاتصال عشان أستورد المواعيد", "I need contacts permission to import dates"), Toast.LENGTH_LONG).show()
     }
     fun openContacts() {
         val granted = ContextCompat.checkSelfPermission(
@@ -129,7 +131,7 @@ fun PeopleScreen(onBack: () -> Unit) {
     // تحليل المعلومات الملصوقة بالـ LLM وملء الحقول (المستخدم يراجع قبل الحفظ).
     fun analyze() {
         if (social.isBlank() && pasteInfo.isBlank()) {
-            Toast.makeText(context, "حط رابط أو الصق معلومات عنه الأول", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, t("حط رابط أو الصق معلومات عنه الأول", "Add a link or paste some info about them first"), Toast.LENGTH_SHORT).show()
             return
         }
         analyzing = true
@@ -147,9 +149,9 @@ fun PeopleScreen(onBack: () -> Unit) {
                     val lines = res.occasions.joinToString("\n") { "${it.label}=${it.date}" }
                     occText = listOf(occText.trim(), lines).filter { it.isNotBlank() }.joinToString("\n")
                 }
-                Toast.makeText(context, "تم التحليل ✅ راجع وعدّل قبل الحفظ", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, t("تم التحليل ✅ راجع وعدّل قبل الحفظ", "Analyzed ✅ review and edit before saving"), Toast.LENGTH_LONG).show()
             } catch (e: Exception) {
-                Toast.makeText(context, "التحليل مش متاح دلوقتي (محتاج نت + مفتاح Groq)", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, t("التحليل مش متاح دلوقتي (محتاج نت + مفتاح Groq)", "Analysis unavailable right now (needs internet + Groq key)"), Toast.LENGTH_LONG).show()
             }
             analyzing = false
         }
@@ -157,7 +159,7 @@ fun PeopleScreen(onBack: () -> Unit) {
 
     fun save() {
         if (name.isBlank()) {
-            Toast.makeText(context, "اكتب الاسم الأول", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, t("اكتب الاسم الأول", "Write the name first"), Toast.LENGTH_SHORT).show()
             return
         }
         val occs = parseOccasions(occText)
@@ -183,16 +185,16 @@ fun PeopleScreen(onBack: () -> Unit) {
         if (settings.selectedRecipientId.isBlank()) settings.selectedRecipientId = list.first().id
         people = list
         clearForm()
-        Toast.makeText(context, "اتحفظ ✅", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, t("اتحفظ ✅", "Saved ✅"), Toast.LENGTH_SHORT).show()
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("الأشخاص 👨‍👩‍👧‍👦") },
+                title = { Text(t("الأشخاص 👨‍👩‍👧‍👦", "People 👨‍👩‍👧‍👦")) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = t("رجوع", "Back"))
                     }
                 },
             )
@@ -207,7 +209,7 @@ fun PeopleScreen(onBack: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Text(
-                if (editingId == null) "إضافة شخص" else "تعديل شخص",
+                if (editingId == null) t("إضافة شخص", "Add a person") else t("تعديل شخص", "Edit person"),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
@@ -215,11 +217,11 @@ fun PeopleScreen(onBack: () -> Unit) {
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("الاسم أو الدلع") },
+                label = { Text(t("الاسم أو الدلع", "Name or nickname")) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
-            Text("العلاقة", style = MaterialTheme.typography.bodyMedium)
+            Text(t("العلاقة", "Relationship"), style = MaterialTheme.typography.bodyMedium)
             Row(
                 modifier = Modifier.horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -235,7 +237,7 @@ fun PeopleScreen(onBack: () -> Unit) {
             // معاينة حيّة: نبرة الرسالة بتتغيّر حسب العلاقة المختارة.
             Relations.byId(relation).let { rel ->
                 Text(
-                    "نبرة العلاقة الافتراضية لـ${rel.label}: ${rel.tone}",
+                    t("نبرة العلاقة الافتراضية لـ${rel.label}: ${rel.tone}", "Default tone for ${rel.label}: ${rel.tone}"),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -248,19 +250,19 @@ fun PeopleScreen(onBack: () -> Unit) {
                     if (bmp != null) {
                         Image(
                             bitmap = bmp,
-                            contentDescription = "صورة الشخص",
+                            contentDescription = t("صورة الشخص", "Person photo"),
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.size(56.dp).clip(CircleShape),
                         )
                     }
                 }
                 OutlinedButton(onClick = { photoPicker.launch("image/*") }) {
-                    Text(if (photoPath.isBlank()) "📷 أضف صورة" else "📷 غيّر الصورة")
+                    Text(if (photoPath.isBlank()) t("📷 أضف صورة", "📷 Add photo") else t("📷 غيّر الصورة", "📷 Change photo"))
                 }
             }
 
             // لهجة الرسالة الخاصة بيه.
-            Text("لهجة الرسالة", style = MaterialTheme.typography.bodyMedium)
+            Text(t("لهجة الرسالة", "Message dialect"), style = MaterialTheme.typography.bodyMedium)
             Row(
                 modifier = Modifier.horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -275,12 +277,12 @@ fun PeopleScreen(onBack: () -> Unit) {
             }
 
             // لغة الرسالة حسب لغته الأولى: تلقائي (نكشفها) / عربي / إنجليزي.
-            Text("لغة الرسالة (حسب لغته الأولى)", style = MaterialTheme.typography.bodyMedium)
+            Text(t("لغة الرسالة (حسب لغته الأولى)", "Message language (their first language)"), style = MaterialTheme.typography.bodyMedium)
             Row(
                 modifier = Modifier.horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                listOf("auto" to "🌐 تلقائي", "ar" to "🇪🇬 عربي", "en" to "🇬🇧 إنجليزي").forEach { (id, label) ->
+                listOf("auto" to t("🌐 تلقائي", "🌐 Auto"), "ar" to "العربية", "en" to "English").forEach { (id, label) ->
                     FilterChip(
                         selected = language == id,
                         onClick = { language = id },
@@ -293,28 +295,28 @@ fun PeopleScreen(onBack: () -> Unit) {
             OutlinedTextField(
                 value = tone,
                 onValueChange = { tone = it },
-                label = { Text("نبرة خاصة بيه (اختياري)") },
+                label = { Text(t("نبرة خاصة بيه (اختياري)", "Custom tone for them (optional)")) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
             OutlinedTextField(
                 value = number,
                 onValueChange = { number = it },
-                label = { Text("رقم واتساب (اختياري، دولي بأرقام)") },
+                label = { Text(t("رقم واتساب (اختياري، دولي بأرقام)", "WhatsApp number (optional, international digits)")) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
             OutlinedTextField(
                 value = notes,
                 onValueChange = { notes = it },
-                label = { Text("حاجات عنه (بيحب إيه، ذكريات، نكت بينكم)") },
+                label = { Text(t("حاجات عنه (بيحب إيه، ذكريات، نكت بينكم)", "Things about them (likes, memories, inside jokes)")) },
                 minLines = 2,
                 modifier = Modifier.fillMaxWidth(),
             )
             OutlinedTextField(
                 value = occText,
                 onValueChange = { occText = it },
-                label = { Text("مناسباته (سطر لكل واحدة: عيد ميلاد=08-24)") },
+                label = { Text(t("مناسباته (سطر لكل واحدة: عيد ميلاد=08-24)", "Their occasions (one per line: birthday=08-24)")) },
                 minLines = 2,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -322,7 +324,7 @@ fun PeopleScreen(onBack: () -> Unit) {
             // ---- تحليل الشخصية بالذكاء (من معلومات انت بتجيبها، مش سحب تلقائي) ----
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
             Text(
-                "تحليل بالذكاء 🧠",
+                t("تحليل بالذكاء 🧠", "AI analysis 🧠"),
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
@@ -330,19 +332,19 @@ fun PeopleScreen(onBack: () -> Unit) {
             OutlinedTextField(
                 value = social,
                 onValueChange = { social = it },
-                label = { Text("روابط تواصله (سطر لكل رابط - مرجع سريع)") },
+                label = { Text(t("روابط تواصله (سطر لكل رابط - مرجع سريع)", "Their social links (one per line — quick reference)")) },
                 minLines = 1,
                 modifier = Modifier.fillMaxWidth(),
             )
             OutlinedTextField(
                 value = pasteInfo,
                 onValueChange = { pasteInfo = it },
-                label = { Text("الصق معلومات عنه (البايو/بوست/رسايل/اهتماماته)") },
+                label = { Text(t("الصق معلومات عنه (البايو/بوست/رسايل/اهتماماته)", "Paste info about them (bio/posts/messages/interests)")) },
                 minLines = 3,
                 modifier = Modifier.fillMaxWidth(),
             )
             Text(
-                "بنحلّل اللي انت بتلصقه بس. الذكاء يكمّل الملف والمناسبات، وانت تراجع قبل الحفظ.",
+                t("بنحلّل اللي انت بتلصقه بس. الذكاء يكمّل الملف والمناسبات، وانت تراجع قبل الحفظ.", "We only analyze what you paste. AI fills in the profile and occasions, and you review before saving."),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -353,34 +355,34 @@ fun PeopleScreen(onBack: () -> Unit) {
             ) {
                 if (analyzing) {
                     CircularProgressIndicator(modifier = Modifier.size(18.dp))
-                    Text("  بحلّل...")
+                    Text(t("  بحلّل...", "  Analyzing..."))
                 } else {
-                    Text("🧠 حلّل وكمّل الملف")
+                    Text(t("🧠 حلّل وكمّل الملف", "🧠 Analyze & complete profile"))
                 }
             }
             OutlinedButton(onClick = { openContacts() }, modifier = Modifier.fillMaxWidth()) {
-                Text("📇 استورد عيد ميلاد من جهات الاتصال")
+                Text(t("📇 استورد عيد ميلاد من جهات الاتصال", "📇 Import a birthday from contacts"))
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = { save() }, modifier = Modifier.weight(1f)) {
-                    Text(if (editingId == null) "➕ إضافة" else "💾 حفظ التعديل")
+                GradientButton(onClick = { save() }, modifier = Modifier.weight(1f)) {
+                    Text(if (editingId == null) t("➕ إضافة", "➕ Add") else t("💾 حفظ التعديل", "💾 Save changes"))
                 }
                 if (editingId != null) {
-                    OutlinedButton(onClick = { clearForm() }) { Text("إلغاء") }
+                    OutlinedButton(onClick = { clearForm() }) { Text(t("إلغاء", "Cancel")) }
                 }
             }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             Text(
-                "أشخاصك",
+                t("أشخاصك", "Your people"),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
             )
             if (people.isEmpty()) {
                 Text(
-                    "لسه مفيش حد. ضيف أول شخص عشان تبدأ تكتب له.",
+                    t("لسه مفيش حد. ضيف أول شخص عشان تبدأ تكتب له.", "No one yet. Add your first person to start writing."),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
@@ -408,7 +410,7 @@ fun PeopleScreen(onBack: () -> Unit) {
                             }
                             Text(
                                 (if (selected) "✅ " else "") + Relations.emojiOf(p.relation) + " " +
-                                    (p.name.ifBlank { "(بدون اسم)" }) + " · " + Relations.labelOf(p.relation),
+                                    (p.name.ifBlank { t("(بدون اسم)", "(unnamed)") }) + " · " + Relations.labelOf(p.relation),
                                 style = MaterialTheme.typography.titleSmall,
                             )
                         }
@@ -419,14 +421,14 @@ fun PeopleScreen(onBack: () -> Unit) {
                                     onBack()
                                 },
                                 modifier = Modifier.weight(1f),
-                            ) { Text("اختار") }
+                            ) { Text(t("اختار", "Select")) }
                             OutlinedButton(onClick = {
                                 name = p.name; relation = p.relation; number = p.number; notes = p.notes
                                 occText = p.occasions.joinToString("\n") { "${it.label}=${it.date}" }
                                 social = p.social; pasteInfo = ""
                                 tone = p.tone; dialect = p.dialect; language = p.language; photoPath = p.photoPath
                                 workingId = p.id; editingId = p.id
-                            }) { Text("تعديل") }
+                            }) { Text(t("تعديل", "Edit")) }
                             TextButton(onClick = {
                                 val list = people.toMutableList()
                                 list.removeAll { it.id == p.id }
@@ -435,7 +437,7 @@ fun PeopleScreen(onBack: () -> Unit) {
                                     settings.selectedRecipientId = list.firstOrNull()?.id ?: ""
                                 }
                                 people = list
-                            }) { Text("حذف") }
+                            }) { Text(t("حذف", "Delete")) }
                         }
                     }
                 }
@@ -445,7 +447,7 @@ fun PeopleScreen(onBack: () -> Unit) {
             if (showContacts && contacts.isNotEmpty()) {
                 AlertDialog(
                     onDismissRequest = { showContacts = false },
-                    title = { Text("استورد عيد ميلاد 📇") },
+                    title = { Text(t("استورد عيد ميلاد 📇", "Import a birthday 📇")) },
                     text = {
                         Column(
                             modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -459,13 +461,13 @@ fun PeopleScreen(onBack: () -> Unit) {
                                     occText = listOf(occText.trim(), line)
                                         .filter { it.isNotBlank() }.joinToString("\n")
                                     showContacts = false
-                                    Toast.makeText(context, "اتضاف - راجع واحفظ ✅", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, t("اتضاف - راجع واحفظ ✅", "Added — review and save ✅"), Toast.LENGTH_SHORT).show()
                                 }) { Text("🎂 ${cb.name} · ${cb.mmdd}") }
                             }
                         }
                     },
                     confirmButton = {
-                        TextButton(onClick = { showContacts = false }) { Text("إغلاق") }
+                        TextButton(onClick = { showContacts = false }) { Text(t("إغلاق", "Close")) }
                     },
                 )
             }
