@@ -25,8 +25,19 @@ class ScreenRenderTest {
 
     @Test fun welcomeScreenComposes() {
         rule.setContent { WelcomeScreen(onStart = {}) }
-        rule.onNodeWithText("وصال 💗").assertExists()
+        rule.onNodeWithText("وصال").assertExists()
         rule.onNodeWithText("يلا نبدأ 💗").assertExists()
+    }
+
+    // تبديل لغة الواجهة: نفس الشاشة لازم تترسم بالإنجليزي لما I18n.lang = "en".
+    @Test fun welcomeScreenComposesInEnglish() {
+        com.wifeassistant.data.I18n.lang = "en"
+        try {
+            rule.setContent { WelcomeScreen(onStart = {}) }
+            rule.onNodeWithText("Let's start 💗").assertExists()
+        } finally {
+            com.wifeassistant.data.I18n.lang = "ar"
+        }
     }
 
     @Test fun historyScreenComposesWithEmptyState() {

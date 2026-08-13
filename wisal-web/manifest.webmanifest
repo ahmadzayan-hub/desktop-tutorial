@@ -1,14 +1,19 @@
 {
   "name": "وصال، مساعد التواصل العائلي",
   "short_name": "وصال",
-  "description": "اكتب رسائل دافئة لأهلك وأحبابك بنبرة تناسب كل علاقة. مجاني وعلى جهازك بالكامل.",
+  "description": "مساحة خاصة لأقرب ناس. الذكاء يساعدك تعبّر بصدق ولا يتحدث نيابة عنك.",
   "lang": "ar",
   "dir": "rtl",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fff7fa",
-  "theme_color": "#E5397B",
+  "background_color": "#F8F5EF",
+  "theme_color": "#F8F5EF",
   "icons": [
-    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
   ]
 }
