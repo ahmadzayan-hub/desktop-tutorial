@@ -67,6 +67,8 @@ import com.wifeassistant.data.Occasion
 import com.wifeassistant.data.Recipient
 import com.wifeassistant.data.Relations
 import com.wifeassistant.data.Suggestion
+import com.wifeassistant.data.t
+import com.wifeassistant.ui.theme.GradientButton
 import com.wifeassistant.util.CalendarReader
 import com.wifeassistant.util.Share
 import com.wifeassistant.util.WhatsApp
@@ -103,18 +105,24 @@ fun HomeScreen(
     if (showAiNotice) {
         AlertDialog(
             onDismissRequest = { }, // لازم يقر بيها عشان نضمن إنه شافها
-            title = { Text("شفافية الذكاء الاصطناعي 🤖") },
+            title = { Text(t("شفافية الذكاء الاصطناعي 🤖", "AI transparency 🤖")) },
             text = {
                 Text(
-                    "• الاقتراحات بيكتبها ذكاء اصطناعي — راجعها وعدّلها قبل ما تبعت.\n" +
-                        "• لما تطلب توليد، بيتبعت نص الموقف/السياق لمزوّد الذكاء (Groq) عشان يجهّز الرسالة.\n" +
-                        "• بياناتك وتعلّم أسلوبك متخزّنين على جهازك بس، ومفتاح Groq مشفّر.\n" +
-                        "• مفيش أي رسالة بتتبعت تلقائيًا — الضغطة الأخيرة دايمًا بإيدك.",
+                    t(
+                        "• الاقتراحات بيكتبها ذكاء اصطناعي — راجعها وعدّلها قبل ما تبعت.\n" +
+                            "• لما تطلب توليد، بيتبعت نص الموقف/السياق لمزوّد الذكاء (Groq) عشان يجهّز الرسالة.\n" +
+                            "• بياناتك وتعلّم أسلوبك متخزّنين على جهازك بس، ومفتاح Groq مشفّر.\n" +
+                            "• مفيش أي رسالة بتتبعت تلقائيًا — الضغطة الأخيرة دايمًا بإيدك.",
+                        "• Suggestions are written by AI — review and tweak them before you send.\n" +
+                            "• When you ask for a suggestion, the situation/context text goes to the AI provider (Groq) to craft the message.\n" +
+                            "• Your data and style learning stay on your device only, and your Groq key is encrypted.\n" +
+                            "• Nothing is ever sent automatically — the final tap is always yours.",
+                    ),
                     style = MaterialTheme.typography.bodyMedium,
                 )
             },
             confirmButton = {
-                Button(onClick = { settings.aiNoticeAck = true; showAiNotice = false }) { Text("فهمت 👍") }
+                Button(onClick = { settings.aiNoticeAck = true; showAiNotice = false }) { Text(t("فهمت 👍", "Got it 👍")) }
             },
         )
     }
@@ -138,7 +146,7 @@ fun HomeScreen(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) loadCalendar()
-        else Toast.makeText(context, "محتاج إذن التقويم عشان أقرأ أجندتك", Toast.LENGTH_LONG).show()
+        else Toast.makeText(context, t("محتاج إذن التقويم عشان أقرأ أجندتك", "I need calendar permission to read your agenda"), Toast.LENGTH_LONG).show()
     }
     fun openCalendar() {
         val granted = ContextCompat.checkSelfPermission(
@@ -155,7 +163,7 @@ fun HomeScreen(
         snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
             TopAppBar(
-                title = { Text("وصال 💗", fontWeight = FontWeight.Bold) },
+                title = { Text(t("وصال 💗", "Wesal 💗"), fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
                 ),
@@ -191,18 +199,18 @@ fun HomeScreen(
             OutlinedTextField(
                 value = contextText,
                 onValueChange = { contextText = it },
-                label = { Text("إيه المناسبة أو اللي حصل؟ (اختياري)") },
+                label = { Text(t("إيه المناسبة أو اللي حصل؟ (اختياري)", "What's the occasion, or what happened? (optional)")) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 1,
             )
 
             // أزرار التوليد
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(
+                GradientButton(
                     onClick = { vm.generate("manual", intentId = selectedIntent, context = contextText.trim()) },
                     modifier = Modifier.weight(1f),
                 ) {
-                    Text(if (selectedIntent != null) "✨ اكتب الرسالة" else "✨ اقتراح فوري")
+                    Text(if (selectedIntent != null) t("✨ اكتب الرسالة", "✨ Write the message") else t("✨ اقتراح فوري", "✨ Instant suggestion"))
                 }
                 FilledTonalButton(onClick = { vm.requestOccasion() }, modifier = Modifier.weight(1f)) {
                     Text("💌 مناسبة")

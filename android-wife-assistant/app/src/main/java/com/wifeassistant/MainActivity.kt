@@ -34,7 +34,10 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.wifeassistant.data.I18n
 import com.wifeassistant.data.Settings
+import com.wifeassistant.data.t
+import androidx.compose.runtime.key
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.wifeassistant.ui.BroadcastScreen
@@ -67,21 +70,28 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch(Dispatchers.Default) { Scheduler.scheduleDaily(this@MainActivity) }
 
         setContent {
-            // نقرأ تفضيلات المظهر ونخلّيها state عشان تتغيّر فوراً من الإعدادات.
+            // نقرأ تفضيلات المظهر واللغة ونخلّيها state عشان تتغيّر فوراً من الإعدادات.
             var themeMode by remember { mutableStateOf(Settings(this).themeMode) }
             var dynamicColor by remember { mutableStateOf(Settings(this).dynamicColor) }
+            var appLanguage by remember { mutableStateOf(Settings(this).appLanguage) }
+            I18n.lang = appLanguage
             val dark = when (themeMode) {
                 "light" -> false
                 "dark" -> true
                 else -> isSystemInDarkTheme()
             }
             WifeAssistantTheme(darkTheme = dark, dynamicColor = dynamicColor) {
-                // اللغة عربي فالاتجاه من اليمين لليسار.
-                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                    AppRoot(onThemeChanged = {
-                        themeMode = Settings(this).themeMode
-                        dynamicColor = Settings(this).dynamicColor
-                    })
+                // الاتجاه بيتبع لغة الواجهة: عربي RTL، إنجليزي LTR.
+                val direction = if (appLanguage == "en") LayoutDirection.Ltr else LayoutDirection.Rtl
+                CompositionLocalProvider(LocalLayoutDirection provides direction) {
+                    // key(appLanguage): تغيير اللغة يعيد تكوين الشجرة كلها فتتبدّل كل النصوص فورًا.
+                    key(appLanguage) {
+                        AppRoot(onThemeChanged = {
+                            themeMode = Settings(this).themeMode
+                            dynamicColor = Settings(this).dynamicColor
+                            appLanguage = Settings(this).appLanguage
+                        })
+                    }
                 }
             }
         }
@@ -115,11 +125,11 @@ private fun AppRoot(onThemeChanged: () -> Unit = {}) {
     val vm: HomeViewModel = viewModel()
 
     val items = listOf(
-        NavItem("home", "الرئيسية", Icons.Filled.Home),
-        NavItem("people", "الأشخاص", Icons.Filled.People),
-        NavItem("history", "السجل", Icons.Filled.History),
-        NavItem("stats", "إحصائيات", Icons.Filled.BarChart),
-        NavItem("settings", "إعدادات", Icons.Filled.Settings),
+        NavItem("home", t("الرئيسية", "Home"), Icons.Filled.Home),
+        NavItem("people", t("الأشخاص", "People"), Icons.Filled.People),
+        NavItem("history", t("السجل", "History"), Icons.Filled.History),
+        NavItem("stats", t("إحصائيات", "Stats"), Icons.Filled.BarChart),
+        NavItem("settings", t("إعدادات", "Settings"), Icons.Filled.Settings),
     )
 
     Scaffold(

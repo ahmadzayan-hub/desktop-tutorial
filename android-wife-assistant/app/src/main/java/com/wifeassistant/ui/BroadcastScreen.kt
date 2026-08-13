@@ -54,6 +54,8 @@ import com.wifeassistant.data.BroadcastGroup
 import com.wifeassistant.data.GroupComposer
 import com.wifeassistant.data.GroupMember
 import com.wifeassistant.data.Settings
+import com.wifeassistant.data.t
+import com.wifeassistant.ui.theme.GradientButton
 import com.wifeassistant.util.ContactsReader
 import com.wifeassistant.util.Csv
 import com.wifeassistant.util.WhatsApp
@@ -132,7 +134,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
     val exportLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri ->
         if (uri != null) {
             runCatching { context.contentResolver.openOutputStream(uri)?.use { it.write(pendingExport.toByteArray()) } }
-            toast("اتصدّر ✅")
+            toast(t("اتصدّر ✅", "Exported ✅"))
         }
     }
 
@@ -147,11 +149,11 @@ fun BroadcastScreen(onBack: () -> Unit) {
             activeList = raw.mapIndexed { i, c -> BcMember("c$i", c.name, c.number) }
             loaded = true
             resetForNewList()
-            if (activeList.isEmpty()) toast("مفيش جهات اتصال بأرقام")
+            if (activeList.isEmpty()) toast(t("مفيش جهات اتصال بأرقام", "No contacts with numbers"))
         }
     }
     val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) loadContacts() else toast("محتاج إذن جهات الاتصال")
+        if (granted) loadContacts() else toast(t("محتاج إذن جهات الاتصال", "Contacts permission needed"))
     }
     fun openContacts() {
         val ok = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
@@ -169,7 +171,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
             activeList = rows.mapIndexed { i, r -> BcMember("v$i", r.name, r.number) }
             loaded = true
             resetForNewList()
-            toast(if (rows.isEmpty()) "الملف فاضي أو غير مقروء" else "اتحمّل ${rows.size} جهة ✅")
+            toast(if (rows.isEmpty()) t("الملف فاضي أو غير مقروء", "File is empty or unreadable") else t("اتحمّل ${rows.size} جهة ✅", "Loaded ${rows.size} contacts ✅"))
         }
     }
 
@@ -178,9 +180,9 @@ fun BroadcastScreen(onBack: () -> Unit) {
     }
     fun saveGroup() {
         val nm = groupName.trim()
-        if (nm.isBlank()) { toast("اكتب اسم المجموعة"); return }
+        if (nm.isBlank()) { toast(t("اكتب اسم المجموعة", "Type a group name")); return }
         val chosen = if (selected.isNotEmpty()) activeList.filter { selected.contains(it.id) } else activeList
-        if (chosen.isEmpty()) { toast("مفيش أعضاء للحفظ"); return }
+        if (chosen.isEmpty()) { toast(t("مفيش أعضاء للحفظ", "No members to save")); return }
         val g = BroadcastGroup(
             id = "g" + System.currentTimeMillis(), name = nm, kind = groupKind,
             members = chosen.map { GroupMember(it.name, it.number) },
@@ -188,7 +190,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
         groups = groups + g
         settings.broadcastGroups = groups
         groupName = ""
-        toast("اتحفظت المجموعة (${chosen.size}) ✅")
+        toast(t("اتحفظت المجموعة (${chosen.size}) ✅", "Group saved (${chosen.size}) ✅"))
     }
     fun loadGroup(g: BroadcastGroup) {
         activeList = g.members.mapIndexed { i, m -> BcMember("g$i", m.name, m.number) }
@@ -201,12 +203,12 @@ fun BroadcastScreen(onBack: () -> Unit) {
     }
     // يولّد رسالة مخصّصة بالـ LLM لكل عضو (المحدّدين أو الكل، بحد أقصى 60).
     fun aiGenerate() {
-        if (settings.groqKey.isBlank()) { toast("ضيف مفتاح Groq من الإعدادات الأول"); return }
+        if (settings.groqKey.isBlank()) { toast(t("ضيف مفتاح Groq من الإعدادات الأول", "Add your Groq key in Settings first")); return }
         if (busy) return
         val all = currentTargets()
         val targets = all.take(60)
-        if (targets.isEmpty()) { toast("مفيش أعضاء"); return }
-        if (all.size > 60) toast("هنجهّز أول 60 (الأقصى للدفعة) — كرّر للباقي")
+        if (targets.isEmpty()) { toast(t("مفيش أعضاء", "No members")); return }
+        if (all.size > 60) toast(t("هنجهّز أول 60 (الأقصى للدفعة) — كرّر للباقي", "Preparing the first 60 (batch max) — repeat for the rest"))
         scope.launch {
             busy = true; progress = 0
             // توليد متوازي محدود (٤ في نفس الوقت) — أسرع بكتير من واحد ورا واحد لـ60 عميل،
@@ -228,7 +230,7 @@ fun BroadcastScreen(onBack: () -> Unit) {
                 }.awaitAll()
             }
             busy = false
-            toast("جهّزت $progress رسالة مخصّصة ✍️")
+            toast(t("جهّزت $progress رسالة مخصّصة ✍️", "Prepared $progress personalized messages ✍️"))
         }
     }
     // معاينة: يولّد رسالة أول عضو بس عشان تشوف النبرة قبل ما تجهّز للكل.
