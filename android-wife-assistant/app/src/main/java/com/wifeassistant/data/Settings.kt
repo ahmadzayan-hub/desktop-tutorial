@@ -69,7 +69,7 @@ class Settings(context: Context) {
     // لغة واجهة التطبيق: "ar" (عربي RTL) أو "en" (إنجليزي LTR).
     var appLanguage: String
         get() = prefs.getString("appLanguage", "ar") ?: "ar"
-        set(v) = prefs.edit().putString("appLanguage", if (v == "en") "en" else "ar").apply()
+        set(v) = prefs.edit().putString("appLanguage", if (Locales.isRegistered(v)) v else "ar").apply()
 
     // Material You (ألوان من خلفية الجهاز) - أندرويد 12+.
     // الافتراضي مطفي — هوية وصال أولاً؛ يتفعّل من الإعدادات لمن يحب.

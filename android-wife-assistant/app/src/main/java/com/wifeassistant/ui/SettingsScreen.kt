@@ -46,7 +46,7 @@ import com.wifeassistant.work.Scheduler
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(onBack: () -> Unit, onThemeChanged: () -> Unit = {}) {
+fun SettingsScreen(onBack: () -> Unit, onThemeChanged: () -> Unit = {}, onOpenStyleTransparency: () -> Unit = {}) {
     val context = LocalContext.current
     val settings = remember { Settings(context) }
 
@@ -92,15 +92,16 @@ fun SettingsScreen(onBack: () -> Unit, onThemeChanged: () -> Unit = {}) {
             Section(t("اللغة والمظهر", "Language & Appearance"))
             Text(t("لغة التطبيق", "App language"), style = MaterialTheme.typography.bodyMedium)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf("ar" to "العربية", "en" to "English").forEach { (id, label) ->
+                // اللغات من سجل Locales بأسمائها الأصلية — من غير أعلام دول.
+                com.wifeassistant.data.Locales.registered.forEach { loc ->
                     FilterChip(
-                        selected = appLanguage == id,
+                        selected = appLanguage == loc.code,
                         onClick = {
-                            appLanguage = id
-                            settings.appLanguage = id
+                            appLanguage = loc.code
+                            settings.appLanguage = loc.code
                             onThemeChanged() // بيعيد تكوين الشجرة فتتبدّل اللغة والاتجاه فورًا
                         },
-                        label = { Text(label) },
+                        label = { Text(if (loc.machineDrafted) "${loc.nativeName} (beta)" else loc.nativeName) },
                         modifier = Modifier.weight(1f),
                     )
                 }
@@ -195,6 +196,20 @@ fun SettingsScreen(onBack: () -> Unit, onThemeChanged: () -> Unit = {}) {
                     )
                 }
             }
+
+            Section(t("الخصوصية والتعلّم", "Privacy & learning"))
+            OutlinedButton(
+                onClick = onOpenStyleTransparency,
+                modifier = Modifier.fillMaxWidth(),
+            ) { Text(t("🧠 ما الذي تعلّمه وصال؟", "🧠 What has Wisal learned?")) }
+            Text(
+                t(
+                    "شوف القواعد اللي اتعلمها من أسلوبك، وعطّل أو عدّل أو امسح أي واحدة. كله على جهازك.",
+                    "See the rules learned from your style, and turn off, edit, or delete any of them. All on your device.",
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
 
             Section(t("مواعيد الاقتراحات", "Suggestion times"))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

@@ -49,6 +49,7 @@ import com.wifeassistant.ui.PeopleScreen
 import com.wifeassistant.ui.SettingsScreen
 import com.wifeassistant.ui.SmartReplyScreen
 import com.wifeassistant.ui.StatsScreen
+import com.wifeassistant.ui.StyleTransparencyScreen
 import com.wifeassistant.ui.WelcomeScreen
 import com.wifeassistant.ui.theme.WifeAssistantTheme
 import androidx.compose.ui.platform.LocalContext
@@ -82,7 +83,7 @@ class MainActivity : ComponentActivity() {
             }
             WifeAssistantTheme(darkTheme = dark, dynamicColor = dynamicColor) {
                 // الاتجاه بيتبع لغة الواجهة: عربي RTL، إنجليزي LTR.
-                val direction = if (appLanguage == "en") LayoutDirection.Ltr else LayoutDirection.Rtl
+                val direction = if (com.wifeassistant.data.Locales.isRtl(appLanguage)) LayoutDirection.Rtl else LayoutDirection.Ltr
                 CompositionLocalProvider(LocalLayoutDirection provides direction) {
                     // key(appLanguage): تغيير اللغة يعيد تكوين الشجرة كلها فتتبدّل كل النصوص فورًا.
                     key(appLanguage) {
@@ -152,7 +153,12 @@ private fun AppRoot(onThemeChanged: () -> Unit = {}) {
                 .fillMaxSize(),
         ) {
             when (screen) {
-                "settings" -> SettingsScreen(onBack = { screen = "home" }, onThemeChanged = onThemeChanged)
+                "settings" -> SettingsScreen(
+                    onBack = { screen = "home" },
+                    onThemeChanged = onThemeChanged,
+                    onOpenStyleTransparency = { screen = "styleTransparency" },
+                )
+                "styleTransparency" -> StyleTransparencyScreen(onBack = { screen = "settings" })
                 "stats" -> StatsScreen(onBack = { screen = "home" })
                 "history" -> HistoryScreen(onBack = { screen = "home" })
                 "people" -> PeopleScreen(onBack = { screen = "home" })

@@ -40,6 +40,17 @@ class ScreenRenderTest {
         }
     }
 
+    // اللغة التالتة (إسبانية) بتتحل من حزمة الترجمة — نفس الشاشة تترسم بالإسباني.
+    @Test fun welcomeScreenComposesInSpanish() {
+        com.wifeassistant.data.I18n.lang = "es"
+        try {
+            rule.setContent { WelcomeScreen(onStart = {}) }
+            rule.onNodeWithText("Empecemos 💗").assertExists()
+        } finally {
+            com.wifeassistant.data.I18n.lang = "ar"
+        }
+    }
+
     @Test fun historyScreenComposesWithEmptyState() {
         // مخزن فاضي (أول تشغيل) → العنوان + رسالة "مفيش رسايل" لازم يتركّبوا.
         rule.setContent { HistoryScreen(onBack = {}) }
@@ -56,6 +67,13 @@ class ScreenRenderTest {
     @Test fun smartReplyScreenComposes() {
         rule.setContent { SmartReplyScreen(onBack = {}) }
         rule.onNodeWithText("رد ذكي 💬").assertExists()
+    }
+
+    // شاشة شفافية التعلّم: العنوان + وعد الخصوصية المحلية + زر تصفير الكل.
+    @Test fun styleTransparencyScreenComposes() {
+        rule.setContent { com.wifeassistant.ui.StyleTransparencyScreen(onBack = {}) }
+        rule.onNodeWithText("ما الذي تعلّمه وصال؟").assertExists()
+        rule.onNodeWithText("🔄 تصفير كل التعلّم").assertExists()
     }
 
     @Test fun broadcastScreenComposes() {

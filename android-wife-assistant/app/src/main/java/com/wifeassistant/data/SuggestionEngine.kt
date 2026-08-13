@@ -174,11 +174,16 @@ class SuggestionEngine(
         val lines = examples.takeLast(AppConstants.STYLE_EXAMPLES_MAX)
             .mapIndexed { i, e -> "${i + 1}) ${e.text}" }
             .joinToString("\n")
+        // قواعد الأسلوب المفعّلة (من شاشة «ما الذي تعلّمه وصال؟») —
+        // اللي المستخدم عطّله أو مسحه ما بيدخلش التوجيه خالص.
+        val rules = store.activeStyleRules(rid)
+        val rulesBlock = if (rules.isEmpty()) "" else
+            "\nعادات مؤكّدة من أسلوبي التزم بيها: " + rules.joinToString("؛ ") { it.text }
         return listOf(
             "دي أمثلة من رسايل اخترتها أو عدّلتها قبل كده - ده أسلوبي وصوتي.",
             "قلّد روح الأمثلة دي (اختيار الكلمات والإيقاع) من غير ما تنسخها حرفياً:",
             lines,
-        ).joinToString("\n")
+        ).joinToString("\n") + rulesBlock
     }
 
     private fun buildUserPrompt(

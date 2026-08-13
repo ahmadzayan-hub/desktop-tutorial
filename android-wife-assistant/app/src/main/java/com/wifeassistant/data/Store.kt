@@ -160,4 +160,32 @@ class Store(context: Context) {
         fresh.lastSentPerSlot.putAll(old.lastSentPerSlot)
         write(fresh)
     }
+
+    // ---- شاشة «ما الذي تعلّمه وصال؟» ----
+
+    // قواعد الأسلوب لشخص واحد بعد تطبيق تجاوزات المستخدم.
+    fun styleRules(recipientId: String): List<StyleRule> {
+        val d = read()
+        return StyleInsights.applyOverrides(
+            StyleInsights.deriveRaw(recipientId, d.styleExamples.filter { it.recipientId == recipientId }),
+            d.styleRuleOverrides,
+        )
+    }
+
+    // القواعد المفعّلة فقط — للاستخدام في توجيه التوليد.
+    fun activeStyleRules(recipientId: String): List<StyleRule> = styleRules(recipientId).filter { it.enabled }
+
+    fun setStyleRuleOverride(ruleId: String, override: StyleRuleOverride): Unit = synchronized(LOCK) {
+        val d = read(); d.styleRuleOverrides[ruleId] = override; write(d)
+    }
+
+    // تصفير تعلّم شخص واحد: أمثلته + تغذيته الراجعة + تجاوزات قواعده فقط.
+    fun resetLearningFor(recipientId: String): Unit = synchronized(LOCK) {
+        val d = read()
+        d.styleExamples.removeAll { it.recipientId == recipientId }
+        d.feedback.removeAll { it.recipientId == recipientId }
+        val toDrop = d.styleRuleOverrides.keys.filter { it.endsWith(":$recipientId") }
+        toDrop.forEach { d.styleRuleOverrides.remove(it) }
+        write(d)
+    }
 }

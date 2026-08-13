@@ -55,10 +55,21 @@ data class PendingRound(
     val occasionLabel: String? = null,
 )
 
+// تجاوز المستخدم لقاعدة أسلوب مشتقّة (شاشة «ما الذي تعلّمه وصال؟»):
+// تعطيل، تعديل نص، أو حذف نهائي. مفتاحها id القاعدة الثابت.
+@Serializable
+data class StyleRuleOverride(
+    val enabled: Boolean = true,
+    val editedText: String? = null,
+    val deleted: Boolean = false,
+)
+
 // كل بيانات التعلّم المحفوظة محلياً (JSON في filesDir).
 @Serializable
 data class AppData(
     val styleExamples: MutableList<StyleExample> = mutableListOf(),
+    // تجاوزات قواعد الأسلوب (ruleId -> override) — محلية فقط زي باقي التعلّم.
+    val styleRuleOverrides: MutableMap<String, StyleRuleOverride> = mutableMapOf(),
     val themeWeights: MutableMap<String, Double> = mutableMapOf(),
     val feedback: MutableList<Feedback> = mutableListOf(),
     val lastSentPerSlot: MutableMap<String, String> = mutableMapOf(),
