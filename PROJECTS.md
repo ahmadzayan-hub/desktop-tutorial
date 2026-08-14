@@ -31,6 +31,8 @@ and a Telegram bot.
 | `wisal-web/` | Landing + download page | Static HTML/CSS/JS (own `vercel.json`, `manifest`, `sitemap`, `robots`, `llms.txt`) | Vercel/Netlify as a **separate project** with Root Directory = `wisal-web` |
 | `android-wife-assistant/` | Android app | Kotlin + Gradle | Google Play / signed APK |
 | `telegram-wife-assistant/` | Telegram bot | Node.js (PM2 `ecosystem.config.js`) | Any always-on host (VPS/Render/Railway) via PM2 |
+| `wisal-cloud-api/` | Business-mode backend (WhatsApp Business Cloud API relay) | Node.js Vercel functions | Vercel as a **separate project**, Root Directory = `wisal-cloud-api` |
+| `wisal-direct-relay/` | Wisal Direct backend — device registry + encrypted-envelope store-and-forward (Phase 3, in progress; not the E2EE protocol itself, see `docs/decisions/ADR-002-e2ee-protocol.md`) | Node.js Vercel functions | Vercel as a **separate project**, Root Directory = `wisal-direct-relay` |
 
 ## Product line 3 — Beyond Style UAE (landing page)
 
@@ -66,6 +68,8 @@ no shared or duplicated source folders across projects.
   ecosystem.config.js` on any always-on host. Needs `GROQ_API_KEY` +
   `TELEGRAM_BOT_TOKEN` (see its `README.md`).
 - **android-wife-assistant** — open in Android Studio, or `./gradlew assembleRelease`.
+- **wisal-cloud-api** — new Vercel project, Root Directory `wisal-cloud-api`. See its `README.md` for required env vars.
+- **wisal-direct-relay** — new Vercel project, Root Directory `wisal-direct-relay`. No shared secret required (per-request device signatures); see its `README.md` for the production-storage blocker before real deployment.
 - **landing (Beyond Style UAE)** — already auto-deploys to GitHub Pages via
   `deploy-landing.yml`; or host the `landing/` folder as-is on any static host.
 

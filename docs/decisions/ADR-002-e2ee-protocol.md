@@ -17,6 +17,12 @@ Date: 2026-08-13 · Status: **Accepted — owner decided: support both backends*
 > `android-wife-assistant/.../data/crypto/` with unit tests; both real
 > backends remain NOT integrated until their Phase 3 slices ship — no E2EE
 > claim before the release gates below pass, in either variant.
+>
+> **Progress (2026-08-14)**: the relay this envelope design requires now
+> exists as `wisal-direct-relay` (signature-authenticated device registry +
+> opaque envelope submit/inbox/ack, 14-day max TTL, delete-on-ack). It speaks
+> the `EncryptedEnvelope` shape from `CryptoProvider.kt` field-for-field. No
+> `CryptoProvider` backend is wired to it yet — that integration is next.
 
 ## Context
 

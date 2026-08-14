@@ -9,7 +9,7 @@
 | Path | Status | Notes |
 |---|---|---|
 | 1. Personal AI Assistant | ✅ **Shipped** | On-device data, AI drafts via Groq (context only at generation time), manual send only |
-| 2. Wisal Direct (E2EE) | 🗺️ **Roadmap (Phase 3)** | Requires identity, pairing, E2EE library evaluation (Signal protocol / MLS), relay backend. NOT claimed anywhere in product copy until real and tested |
+| 2. Wisal Direct (E2EE) | 🚧 **In progress (Phase 3)** | Device identity + expiring one-time invitations + `wisal://pair` deep link ship in the Android app; `wisal-direct-relay` (device registry + opaque envelope store-and-forward) ships as a backend. Real E2EE (libsignal/vodozemac per ADR-002) is NOT yet integrated. NOT claimed anywhere in product copy until it is, and tested |
 | 3. WhatsApp Fallback | ✅ **Shipped** | Opens WhatsApp with the reviewed draft; final Send is always the user's tap |
 
 ## Current stack (Architecture Decision Gate: EXTEND, do not rewrite)
@@ -17,7 +17,8 @@
 - **Android (primary)**: Kotlin + Jetpack Compose Material 3. Layered: `data/` (storage + pure AI engines) → `ui/` (Compose + ViewModel) → `util/` → `work/`. 83+ automated tests in CI (unit + Robolectric + Compose).
 - **Windows**: Electron (`wisal-desktop`) with tested pure core (`lib/core.js`). Adaptive desktop layout is roadmap (Phase 4); current UI is functional single-pane.
 - **Web**: static Arabic-first site (`wisal-web`), zero external requests, security headers, honest privacy copy.
-- **Backend (business mode only)**: `wisal-cloud-api` on Vercel — WhatsApp Business Cloud API relay with HMAC webhook verification, timing-safe auth, rate limiting. **This is not a messaging relay for Direct mode** — that is a separate future service.
+- **Backend (business mode only)**: `wisal-cloud-api` on Vercel — WhatsApp Business Cloud API relay with HMAC webhook verification, timing-safe auth, rate limiting. **This is not a messaging relay for Direct mode.**
+- **Backend (Wisal Direct, in progress)**: `wisal-direct-relay` on Vercel — signature-authenticated device registry + opaque encrypted-envelope store-and-forward (ADR-002 §5.3). Every mutating call requires a signature proving control of the device's private key; the server schema has no plaintext field. Production blocker, documented in its README: in-memory storage must be replaced with real persistence (Postgres) before deployment. No E2EE protocol runs yet — this is the pipe, not the encryption.
 
 Rationale (ADR-001): the existing stack builds green, is tested, and supports the shipped product. A cross-platform rewrite (e.g. Flutter) is only justified when Phase 3 (Direct messaging) starts, and must pass the E2EE/RTL/secure-storage validation checklist first.
 

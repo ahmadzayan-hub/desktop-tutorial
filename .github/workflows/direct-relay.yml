@@ -1,0 +1,38 @@
+name: Direct relay checks
+
+# فحص باك-إند wisal-direct-relay: صحة الصياغة + اختبارات المنطق النقي
+# (تسجيل جهاز، إيداع/سحب/تأكيد مغلف، فحص تسرّب plaintext). بيتشغّل مع أي
+# تعديل في المجلد.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - claude/telegram-ai-assistant-bot-8vqsfg
+      - main
+    paths:
+      - "wisal-direct-relay/**"
+      - ".github/workflows/direct-relay.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: wisal-direct-relay
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Syntax + tests
+        run: |
+          npm run check
+          npm test

@@ -17,12 +17,13 @@
 - People/occasions/notes, two suggestions, polish, smart reply, style learning (local), history, reminders.
 - Remaining in-phase work: style-learning transparency screen («ما الذي تعلّمه وصال؟») with editable rules; local model provider abstraction (today: Groq external provider with disclosure; template fallback exists offline).
 
-## Phase 3 — Wisal Direct (E2EE) 🗺️ NOT STARTED — release-gated by security
-1. ADR: E2EE library evaluation (libsignal vs MLS implementations) incl. Android+Windows support, licensing, maintenance.
-2. Identity: device-generated IDs, QR/expiring-link pairing, no contact-book upload.
-3. Relay backend (new service — NOT wisal-cloud-api): encrypted envelopes only, delivery state, expiry; automated plaintext-leak tests.
-4. Chat UI (one-to-one), offline delivery, privacy-neutral push.
-- **Rule: no E2EE marketing claims until implementation + tests genuinely support it. Mock transports must be DEMO_ONLY-flagged and blocked in production builds.**
+## Phase 3 — Wisal Direct (E2EE) 🚧 IN PROGRESS — release-gated by security
+1. ✅ ADR-002: E2EE library evaluation (libsignal vs vodozemac vs OpenMLS). Owner decision: support both `signal` and `vodozemac` build variants behind a protocol-agnostic `CryptoProvider` abstraction.
+2. ✅ Identity: device-generated EC P-256 keypair (`DeviceIdentityCodec`), no contact-book upload, no phone/email required.
+3. ✅ Pairing: 48h expiring one-time invitations, `wisal://pair` deep link, accept screen (pending/accepted/expired/already-used states), replay-guarded.
+4. ✅ Relay backend (`wisal-direct-relay` — separate service, NOT `wisal-cloud-api`): signature-authenticated device registry, opaque encrypted-envelope submit/inbox/ack, 14-day max TTL, sweep-on-fetch, delete-on-ack, automated plaintext-leak test, allowlist-only logger.
+5. 🗺️ NEXT: integrate a real `CryptoProvider` backend (vodozemac first — Apache-2.0, no client licensing decision needed to start) against the relay; replace in-memory relay storage with Postgres; one-to-one chat UI; offline delivery test; privacy-neutral push notifications.
+- **Rule: no E2EE marketing claims until implementation + tests genuinely support it.** Today's slices (identity, pairing, relay) carry zero encryption claims — the accept screen says so explicitly. Mock transports must be DEMO_ONLY-flagged and blocked in production builds (enforced: `CryptoProviderFactory` throws if `DEMO_ONLY` is requested outside a debug build).
 
 ## Phase 4 — Windows adaptive UI 🗺️
 - Rail/sidebar + chat-list pane + conversation pane; keyboard shortcuts; window resize/scaling tests; QR device linking.
