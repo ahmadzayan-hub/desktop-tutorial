@@ -1,6 +1,22 @@
 # ADR-002: E2EE protocol selection for Wisal Direct (Phase 3)
 
-Date: 2026-08-13 · Status: **Proposed — blocked on one owner decision (client licensing)**
+Date: 2026-08-13 · Status: **Accepted — owner decided: support both backends**
+
+> **Owner decision (2026-08-13)**: keep both options open. The client is built
+> against a protocol-agnostic `CryptoProvider` abstraction; the concrete
+> backend is a build-variant choice:
+> - **`signal` variant** → `libsignal` (AGPL-3.0). Distributing this build
+>   requires releasing that build's client source under AGPL-compatible terms.
+>   AGPL obligations attach per distributed build, not to the repository as a
+>   whole.
+> - **`vodozemac` variant** (default) → vodozemac (Apache-2.0), no copyleft
+>   obligation.
+> The relay never links protocol code, so it is identical for both. The
+> envelope format is opaque ciphertext either way. Scaffolding for this
+> abstraction (interfaces, envelope model, `DEMO_ONLY` guard) lives in
+> `android-wife-assistant/.../data/crypto/` with unit tests; both real
+> backends remain NOT integrated until their Phase 3 slices ship — no E2EE
+> claim before the release gates below pass, in either variant.
 
 ## Context
 
