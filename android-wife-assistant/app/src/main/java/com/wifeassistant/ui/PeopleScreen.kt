@@ -61,6 +61,7 @@ import com.wifeassistant.data.t
 import com.wifeassistant.ui.theme.GradientButton
 import com.wifeassistant.util.Avatars
 import com.wifeassistant.util.ContactsReader
+import com.wifeassistant.util.Share
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -196,6 +197,28 @@ fun PeopleScreen(onBack: () -> Unit) {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = t("رجوع", "Back"))
                     }
+                },
+                actions = {
+                    // دعوة لوصال: بتولّد رابط إقران منتهي الصلاحية (48 ساعة) وتفتح
+                    // شيت المشاركة — الإرسال بإيدك دايمًا، ومفيش بيانات غير اسمك ومفتاحك.
+                    TextButton(onClick = {
+                        val me = com.wifeassistant.data.crypto.DeviceIdentityStore.getOrCreate(context)
+                        val myName = Settings(context).myName.ifBlank { t("صديقك على وصال", "Your friend on Wisal") }
+                        val inv = com.wifeassistant.data.pairing.Pairing.create(
+                            inviterDeviceId = me.deviceId,
+                            inviterPublicKeyB64 = me.publicKeyB64,
+                            inviterName = myName,
+                            nowEpochSec = System.currentTimeMillis() / 1000,
+                        )
+                        val link = com.wifeassistant.data.pairing.Pairing.payload(inv)
+                        Share.text(
+                            context,
+                            t(
+                                "$myName بيدعوك لوصال 💗 — افتح الرابط من موبايلك بعد تثبيت التطبيق (صالح 48 ساعة):\n$link",
+                                "$myName invites you to Wisal 💗 — open this link on your phone after installing the app (valid 48h):\n$link",
+                            ),
+                        )
+                    }) { Text(t("🔗 دعوة", "🔗 Invite")) }
                 },
             )
         },

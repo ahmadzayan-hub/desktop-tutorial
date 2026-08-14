@@ -115,6 +115,22 @@ class Settings(context: Context) {
         get() = prefs.getString("selectedRecipientId", "").orEmpty()
         set(v) = prefs.edit().putString("selectedRecipientId", v).apply()
 
+    // ---- الإقران (Wisal Direct) ----
+    // بيانات عامة فقط (معرّف + مفتاح عام + اسم) — مفيش أسرار هنا.
+    var pairedPeers: List<com.wifeassistant.data.pairing.PairedPeer>
+        get() {
+            val raw = prefs.getString("pairedPeers", null) ?: return emptyList()
+            return runCatching {
+                json.decodeFromString<List<com.wifeassistant.data.pairing.PairedPeer>>(raw)
+            }.getOrDefault(emptyList())
+        }
+        set(v) = prefs.edit().putString("pairedPeers", json.encodeToString(v)).apply()
+
+    // معرفات الدعوات المقبولة — منع إعادة استخدام نفس الدعوة على الجهاز ده.
+    var acceptedInvitationIds: Set<String>
+        get() = prefs.getStringSet("acceptedInvitationIds", emptySet()).orEmpty()
+        set(v) = prefs.edit().putStringSet("acceptedInvitationIds", v).apply()
+
     // ---- الإرسال الجماعي ----
     // كود الدولة الافتراضي (أرقام بس، زي "20") — بيتكمّل للأرقام المستوردة من غير مقدمة.
     var defaultCountryCode: String

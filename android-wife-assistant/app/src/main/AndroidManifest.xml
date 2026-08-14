@@ -32,6 +32,13 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- استقبال روابط دعوات الإقران wisal://pair#... -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="wisal" android:host="pair" />
+            </intent-filter>
         </activity>
 
         <!-- ودجت الشاشة الرئيسية: فتح سريع لشاشة الاقتراحات -->

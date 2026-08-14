@@ -87,11 +87,25 @@ class MainActivity : ComponentActivity() {
                 CompositionLocalProvider(LocalLayoutDirection provides direction) {
                     // key(appLanguage): تغيير اللغة يعيد تكوين الشجرة كلها فتتبدّل كل النصوص فورًا.
                     key(appLanguage) {
-                        AppRoot(onThemeChanged = {
-                            themeMode = Settings(this).themeMode
-                            dynamicColor = Settings(this).dynamicColor
-                            appLanguage = Settings(this).appLanguage
-                        })
+                        // دعوة إقران وصلت عبر wisal://pair — شاشة القبول ليها الأولوية.
+                        var pendingInvite by remember {
+                            mutableStateOf(
+                                intent?.dataString?.let { com.wifeassistant.data.pairing.Pairing.parsePayload(it) }
+                            )
+                        }
+                        val invite = pendingInvite
+                        if (invite != null) {
+                            com.wifeassistant.ui.InviteAcceptScreen(
+                                invitation = invite,
+                                onClose = { pendingInvite = null },
+                            )
+                        } else {
+                            AppRoot(onThemeChanged = {
+                                themeMode = Settings(this).themeMode
+                                dynamicColor = Settings(this).dynamicColor
+                                appLanguage = Settings(this).appLanguage
+                            })
+                        }
                     }
                 }
             }

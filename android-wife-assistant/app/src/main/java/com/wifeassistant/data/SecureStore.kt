@@ -45,4 +45,15 @@ object SecureStore {
             legacy(context).edit().putString(KEY, value).apply()
         }
     }
+
+    // ---- تخزين أسرار عامة (هوية الجهاز وغيرها) ----
+    // نفس سياسة الاحتياطي: التشفير أولًا، والفشل بيرجع للتخزين العادي بدل الكراش.
+    fun getSecret(context: Context, key: String): String? =
+        secure(context)?.getString(key, null) ?: legacy(context).getString(key, null)
+
+    fun setSecret(context: Context, key: String, value: String) {
+        val enc = secure(context)
+        if (enc != null) enc.edit().putString(key, value).apply()
+        else legacy(context).edit().putString(key, value).apply()
+    }
 }

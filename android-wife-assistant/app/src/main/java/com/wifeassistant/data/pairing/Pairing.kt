@@ -30,6 +30,16 @@ data class PairingInvitation(
     }
 }
 
+// طرف مقترن (بيانات عامة فقط) — بيتخزن محليًا بعد قبول دعوة.
+@Serializable
+data class PairedPeer(
+    val deviceId: String,
+    val publicKeyB64: String,
+    val name: String,
+    val invitationId: String,
+    val pairedAtEpochSec: Long,
+)
+
 sealed class PairingResult {
     data class Ok(val invitation: PairingInvitation) : PairingResult()
     data class Refused(val reason: String) : PairingResult()

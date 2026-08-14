@@ -284,5 +284,16 @@ object LocalePackEs {
         "Usually no emoji" to "Normalmente sin emojis",
         "Usually one emoji" to "Normalmente un solo emoji",
         "You like emoji in your messages" to "Te gustan los emojis en tus mensajes",
+        // شاشة قبول دعوة الإقران
+        "Invitation to Wisal 🔗" to "Invitación a Wisal 🔗",
+        "Accept invitation" to "Aceptar invitación",
+        "Decline" to "Rechazar",
+        "Accepted ✅" to "Aceptada ✅",
+        "This invitation was already accepted on this device." to "Esta invitación ya fue aceptada en este dispositivo.",
+        "This invitation is expired or invalid. Ask for a new one." to "Esta invitación ha caducado o no es válida. Pide una nueva.",
+        "If you accept, only their device id, public key, and name are stored on your device. No phone numbers or contacts are exchanged." to "Si aceptas, solo se guardan en tu dispositivo su identificador de dispositivo, su clave pública y su nombre. No se intercambian números de teléfono ni contactos.",
+        "Pairing is recorded on your device. Encrypted chat between devices activates with the Wisal Direct service — in development, and we won't call it encrypted before it's built and reviewed." to "El emparejamiento queda registrado en tu dispositivo. El chat cifrado entre dispositivos se activará con el servicio Wisal Direct — en desarrollo, y no lo llamaremos cifrado antes de que esté construido y revisado.",
+        "🔗 Invite" to "🔗 Invitar",
+        "Your friend on Wisal" to "Tu amigo en Wisal",
     )
 }
