@@ -18,11 +18,38 @@ Date: 2026-08-13 · Status: **Accepted — owner decided: support both backends*
 > backends remain NOT integrated until their Phase 3 slices ship — no E2EE
 > claim before the release gates below pass, in either variant.
 >
-> **Progress (2026-08-14)**: the relay this envelope design requires now
-> exists as `wisal-direct-relay` (signature-authenticated device registry +
-> opaque envelope submit/inbox/ack, 14-day max TTL, delete-on-ack). It speaks
-> the `EncryptedEnvelope` shape from `CryptoProvider.kt` field-for-field. No
-> `CryptoProvider` backend is wired to it yet — that integration is next.
+> **Progress (2026-08-14, relay)**: the relay this envelope design requires
+> now exists as `wisal-direct-relay` (signature-authenticated device registry
+> + opaque envelope submit/inbox/ack, 14-day max TTL, delete-on-ack). It
+> speaks the `EncryptedEnvelope` shape from `CryptoProvider.kt` field-for-
+> field. The Android client's transport half is also built and tested —
+> `DirectRelayClient` signs and calls all four endpoints — but nothing
+> encrypts yet; it currently only carries whatever bytes `CryptoProvider`
+> hands it (`DEMO_ONLY` today). No `CryptoProvider` backend is wired in.
+>
+> **Progress (2026-08-14, feasibility)**: verified against Maven Central
+> directly (not from memory) that **neither real backend requires local
+> Rust/NDK cross-compilation** — both publish prebuilt Android AARs with the
+> native library already built in:
+> - `org.signal:libsignal-android` — latest `0.86.5`, actively maintained
+>   (last publish 2025-11-17). This is the AGPL-3.0 `signal` variant.
+> - `org.matrix.rustcomponents:crypto-android` — latest `26.05.12`, very
+>   actively maintained (last publish 2026-05-12). This is Element's
+>   production Olm/Megolm (vodozemac-backed) binding — Apache-2.0, and the
+>   real artifact for the `vodozemac` variant. (No standalone raw-vodozemac
+>   Android AAR is published; `crypto-android` is the maintained, in-
+>   production wrapper around it and is the correct integration target.)
+>
+> This means CI does not need an NDK/Rust toolchain added to build either
+> variant — Gradle fetches the AAR like any other dependency. What remains
+> genuinely hard, and is *not* attempted in this slice, is the integration
+> itself: `crypto-android`'s `OlmMachine` API (key upload, one-time-key
+> claiming, X3DH-equivalent session establishment, ratchet state
+> persistence) is a real API surface, not a drop-in call, and getting it
+> subtly wrong is exactly the kind of mistake that needs expert review before
+> it ever claims to be E2EE. Per §5.1's own rule, a partially-wired crypto
+> library is not attempted here — better to ship the honest transport layer
+> now and do the real integration as its own reviewed slice.
 
 ## Context
 
