@@ -42,6 +42,17 @@ interface CryptoProvider {
     fun session(recipientDeviceId: String): CryptoSession
 }
 
+// باك-إندات بتحتاج مادة تأسيس من الطرف التاني (زي PreKeyBundle بتاع Signal:
+// X3DH/PQXDH) قبل أول جلسة مع جهاز معيّن — session() على الباك-إندات دي
+// بترمي لو التأسيس لسه ما حصلش. DEMO_ONLY مش محتاجها.
+interface PreKeyEstablishingProvider : CryptoProvider {
+    fun hasSession(recipientDeviceId: String): Boolean
+
+    // preKeyBundleBytes: تسلسل JSON من SignalPreKeyBundleDto (أو ما يعادلها
+    // في باك-إند تاني) — جاي من نقطة استعلام على الـ relay في شريحة لاحقة.
+    fun establishSession(recipientDeviceId: String, preKeyBundleBytes: ByteArray)
+}
+
 object CryptoProviderFactory {
     // isDebugBuild بيتمرر من BuildConfig.DEBUG عند نقطة الاستدعاء —
     // كده الحارس قابل للاختبار على الـ JVM من غير Robolectric.
@@ -52,10 +63,11 @@ object CryptoProviderFactory {
             }
             DemoOnlyCrypto()
         }
-        // الباك-إندات الحقيقية لسه ما اتكاملتش — الفشل الصريح أصدق من mock صامت.
-        CryptoBackend.SIGNAL -> throw NotImplementedError(
-            "libsignal backend lands in Phase 3 (signal build variant) — see ADR-002"
-        )
+        // libsignal حقيقي ومتكامل فعليًا (ADR-002 §"Correction 2026-08-14") —
+        // بروتوكول متحقق منه، لكن mayClaimE2ee لسه false لحد ما تكامل الـ
+        // relay وبوابات الإطلاق تكتمل. الهوية بتتولّد جديدة كل استدعاء هنا
+        // عمدًا (التخزين الدائم شريحة لاحقة موثّقة، مش جزء من الشريحة دي).
+        CryptoBackend.SIGNAL -> LibsignalCryptoProvider(LibsignalKeys.generateIdentity())
         CryptoBackend.VODOZEMAC -> throw NotImplementedError(
             "vodozemac backend lands in Phase 3 (default build variant) — see ADR-002"
         )

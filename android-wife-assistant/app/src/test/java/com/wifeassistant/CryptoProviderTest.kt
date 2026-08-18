@@ -32,11 +32,18 @@ class CryptoProviderTest {
         assertArrayEquals("سلام".toByteArray(), s.decrypt(out))
     }
 
-    @Test fun realBackendsFailLoudlyUntilIntegrated() {
-        // الفشل الصريح أصدق من mock صامت يتسرب للإنتاج.
-        assertThrows(NotImplementedError::class.java) {
-            CryptoProviderFactory.create(CryptoBackend.SIGNAL, isDebugBuild = true)
-        }
+    @Test fun signalBackendIsRealButStillMayNotClaimE2ee() {
+        // libsignal اتكامل فعليًا (ADR-002 correction) — لكن لسه ممنوع يدّعي
+        // E2EE قبل ما تكامل الـ relay وبوابات الإطلاق تكتمل (LibsignalCryptoProviderTest
+        // بتغطي صحة البروتوكول نفسه بتفصيل).
+        val p = CryptoProviderFactory.create(CryptoBackend.SIGNAL, isDebugBuild = true)
+        assertFalse(p.mayClaimE2ee)
+    }
+
+    @Test fun vodozemacStillFailsLoudlyUntilIntegrated() {
+        // vodozemac لسه موقوف: التكامل معاه يحتاج إعادة بناء الـ relay كسيرفر
+        // Matrix جزئي — قرار مالك مفتوح، موثّق في ADR-002. الفشل الصريح أصدق
+        // من mock صامت يتسرب للإنتاج.
         assertThrows(NotImplementedError::class.java) {
             CryptoProviderFactory.create(CryptoBackend.VODOZEMAC, isDebugBuild = false)
         }

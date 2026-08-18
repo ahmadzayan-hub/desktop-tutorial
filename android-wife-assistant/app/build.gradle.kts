@@ -91,6 +91,9 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+    // بروتوكول Signal الحقيقي (ADR-002 §signal variant، AGPL-3.0). AAR جاهز
+    // بمكتبة native مبنية مسبقًا لكل ABI — مفيش NDK/Rust توليف محلي مطلوب.
+    implementation("org.signal:libsignal-android:0.86.5")
 
     testImplementation("junit:junit:4.13.2")
     // سيرفر HTTP وهمي محلي — بيختبر DirectRelayClient ضد طلبات/ردود حقيقية بدون شبكة فعلية.

@@ -88,6 +88,48 @@ Date: 2026-08-13 · Status: **Accepted — owner decided: support both backends*
 > decision for the owner (license obligation vs. months of extra backend
 > work), not one to guess silently — raised back to them rather than forcing
 > either path.
+>
+> **Owner decision (2026-08-14)**: proceed with `libsignal` now, since it
+> doesn't require the relay redesign. `vodozemac`/`crypto-android` stays
+> parked pending a separate decision on whether to invest in the Matrix-
+> homeserver-shaped relay work it would need.
+>
+> **Progress (2026-08-14, real integration)**: `LibsignalCryptoProvider`
+> implements `PreKeyEstablishingProvider` against `org.signal:libsignal-android:0.86.5`
+> (real Maven artifact, prebuilt native libs, no local Rust/NDK build). Every
+> API call it makes (`PreKeyBundle`, `SessionBuilder`, `SessionCipher`, the
+> five `SignalProtocolStore` sub-interfaces, key/record constructors) was
+> verified against the **actual compiled bytecode** of the published
+> `libsignal-client-0.86.5.jar` via `javap` — not against README examples or
+> a possibly-diverged `main`-branch source tree, and not from memory. This
+> caught two real, non-obvious details that would have been outright wrong
+> guesses: (1) `PreKeyBundle`'s Java constructor orders its parameters
+> differently from the Rust struct it binds to — a naive port from the Rust
+> source (the only source initially reachable for this one file) would have
+> swapped two fields; (2) the sender keeps sending `PreKeySignalMessage`-typed
+> ciphertext until it has processed a reply from the recipient, not just
+> until it has sent one — confirmed by running a real two-party handshake,
+> not by reading the type constants.
+>
+> Both findings came from **executing the actual library**: a standalone
+> Java program was compiled and run directly against the published jar
+> (`javac`/`java`, no Gradle/Android needed) to perform a full bidirectional
+> PQXDH handshake + Double Ratchet exchange, and separately to verify the
+> exact `serialize()` → base64 → byte-array-constructor round trip that
+> `SignalPreKeyBundleDto` uses for wire transport — both passed. The Kotlin
+> wrapper mirrors exactly what was verified working, not what seemed
+> plausible from documentation.
+>
+> **What this slice does *not* claim or include**: `mayClaimE2ee` stays
+> `false`. No persistence — `LibsignalCryptoProvider`'s `SignalProtocolStore`
+> is in-memory only; identity/pre-keys don't yet survive an app restart
+> (the natural next step, parallel to `DeviceIdentityStore`). No relay
+> wiring — nothing publishes a `SignalPreKeyBundleDto` to
+> `wisal-direct-relay` or fetches one for a real peer yet; the two-party
+> exchange proven above ran in one process, not across two real devices.
+> One-time pre-keys are generated one at a time with no replenishment
+> policy. None of this is claimed as done — each is a concrete, separate,
+> smaller next step now that the cryptography itself is verified correct.
 
 ## Context
 

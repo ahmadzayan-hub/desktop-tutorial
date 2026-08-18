@@ -22,7 +22,8 @@
 2. ✅ Identity: device-generated EC P-256 keypair (`DeviceIdentityCodec`), no contact-book upload, no phone/email required.
 3. ✅ Pairing: 48h expiring one-time invitations, `wisal://pair` deep link, accept screen (pending/accepted/expired/already-used states), replay-guarded.
 4. ✅ Relay backend (`wisal-direct-relay` — separate service, NOT `wisal-cloud-api`): signature-authenticated device registry, opaque encrypted-envelope submit/inbox/ack, 14-day max TTL, sweep-on-fetch, delete-on-ack, automated plaintext-leak test, allowlist-only logger.
-5. 🗺️ NEXT: integrate a real `CryptoProvider` backend (vodozemac first — Apache-2.0, no client licensing decision needed to start) against the relay; replace in-memory relay storage with Postgres; one-to-one chat UI; offline delivery test; privacy-neutral push notifications.
+5. ✅ Real `CryptoProvider` backend: `LibsignalCryptoProvider` (libsignal 0.86.5, PQXDH + Double Ratchet), verified against actual published bytecode and a real executed handshake, not documentation. In-memory only — no persistence, no relay wiring yet.
+6. 🗺️ NEXT: publish/fetch `SignalPreKeyBundleDto` via `wisal-direct-relay` (new endpoint); persist identity/pre-keys (parallel to `DeviceIdentityStore`); one-to-one chat UI wired to real two-device exchange; offline delivery test; privacy-neutral push notifications; external security review before any E2EE claim.
 - **Rule: no E2EE marketing claims until implementation + tests genuinely support it.** Today's slices (identity, pairing, relay) carry zero encryption claims — the accept screen says so explicitly. Mock transports must be DEMO_ONLY-flagged and blocked in production builds (enforced: `CryptoProviderFactory` throws if `DEMO_ONLY` is requested outside a debug build).
 
 ## Phase 4 — Windows adaptive UI 🗺️
