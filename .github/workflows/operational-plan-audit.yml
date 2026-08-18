@@ -69,10 +69,13 @@ jobs:
         run: node operational-plan/tests/audit.cjs
 
       - name: Upload findings JSON
+        # Non-fatal on purpose: the audit's own exit code is the merge gate.
+        # A quota-full artifact upload should not fail an otherwise-green run.
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: audit-findings
           path: /tmp/audit_findings.json
           if-no-files-found: warn
-          retention-days: 30
+          retention-days: 7
