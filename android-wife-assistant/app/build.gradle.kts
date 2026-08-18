@@ -41,6 +41,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // libsignal-android بيطلب desugaring حتى مع minSdk=26 (متطلب معلن في
+        // aar metadata بتاعته، مش مرتبط بمستوى API الفعلي).
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "17"
@@ -94,6 +97,8 @@ dependencies {
     // بروتوكول Signal الحقيقي (ADR-002 §signal variant، AGPL-3.0). AAR جاهز
     // بمكتبة native مبنية مسبقًا لكل ABI — مفيش NDK/Rust توليف محلي مطلوب.
     implementation("org.signal:libsignal-android:0.86.5")
+    // مطلوبة من libsignal-android (aar metadata) — راجع compileOptions فوق.
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 
     testImplementation("junit:junit:4.13.2")
     // سيرفر HTTP وهمي محلي — بيختبر DirectRelayClient ضد طلبات/ردود حقيقية بدون شبكة فعلية.
