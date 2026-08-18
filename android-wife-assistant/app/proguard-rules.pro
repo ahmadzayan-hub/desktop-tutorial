@@ -30,6 +30,14 @@
 -dontwarn okhttp3.**
 -dontwarn okio.**
 
+# ============ libsignal (org.signal:libsignal-android) ============
+# المكتبة مش بتوزّع consumer proguard rules بتاعتها (اتفحص جوّه الـ AAR).
+# بتعتمد على JNI بيستدعي دوال Kotlin/Java internal بالاسم (lambdas زي
+# lambda$encrypt$0) — لو R8 غيّر الاسم أو مسحها، الاستدعاء بيفشل وقت التشغيل
+# من غير ما CI (اختبارات JVM بس، مفيش R8) يمسكها. احتياط آمن ومحافظ.
+-keep class org.signal.libsignal.** { *; }
+-dontwarn org.signal.libsignal.**
+
 # ============ androidx.security-crypto (Google Tink) ============
 # Tink بيشاور على أنوتيشنز errorprone وقت الترجمة بس، ومش موجودة وقت التشغيل،
 # فـ R8 بيقع على "Missing class". آمن نتجاهلها لأنها أنوتيشنز فاضية.

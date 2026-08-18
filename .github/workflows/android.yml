@@ -100,8 +100,12 @@ jobs:
 
       # قناة توزيع إضافية: فرع apk-dist فيه الـ APK/AAB مباشرة — بيتسحب بالـ git
       # (مفيد لما تنزيل الـ release من المتصفح يتعطّل، وبيتكتب فوقه كل بناء).
+      # continue-on-error: git push بيرفض أي ملف أكبر من 100MB (بدون LFS) —
+      # القناة دي ثانوية وميّتة أصلًا في الحالة دي، لازم ما توقّفش القناة
+      # الأساسية (GitHub Release تحت) لو حجم الـ APK كبر مستقبلاً.
       - name: Publish APK to apk-dist branch
         working-directory: ${{ github.workspace }}
+        continue-on-error: true
         run: |
           rm -rf /tmp/apkdist && mkdir /tmp/apkdist
           cp wisal.apk wisal.aab /tmp/apkdist/

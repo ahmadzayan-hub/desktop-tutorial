@@ -17,6 +17,23 @@ android {
         // التحديثات تتثبّت فوق بعضها. محلياً بيرجع لـ 1.
         versionCode = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 1
         versionName = System.getenv("VERSION_NAME") ?: "1.0"
+
+        // libsignal-android بتحمل مكتبة native (~74MB) لكل ABI. مفيش تقسيم APK
+        // لكل ABI في التوزيع الحالي (ملف APK واحد)، فلو سبنا كل الـ ABIs
+        // الحجم بيقفز لأكتر من 600MB. arm64-v8a هو الغالبية الساحقة من
+        // أجهزة أندرويد الحقيقية بعد minSdk=26 (2017+) — قرار واعي وموثّق،
+        // مش تقصير: التطبيق بقى 64-bit بس على أجهزة ARM.
+        ndk {
+            abiFilters += "arm64-v8a"
+        }
+    }
+
+    packaging {
+        jniLibs {
+            // نسخة الاختبار من مكتبة libsignal (libsignal_jni_testing.so) بنفس
+            // حجم النسخة الحقيقية تقريبًا ومالهاش أي داعي في تطبيق مُثبَّت.
+            excludes += "**/libsignal_jni_testing.so"
+        }
     }
 
     // توقيع نسخة الـ release. بيقرأ من متغيّرات البيئة (بتتحط في الـ CI من
