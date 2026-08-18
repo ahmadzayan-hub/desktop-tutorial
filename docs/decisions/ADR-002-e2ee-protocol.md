@@ -50,6 +50,44 @@ Date: 2026-08-13 · Status: **Accepted — owner decided: support both backends*
 > it ever claims to be E2EE. Per §5.1's own rule, a partially-wired crypto
 > library is not attempted here — better to ship the honest transport layer
 > now and do the real integration as its own reviewed slice.
+>
+> **Correction (2026-08-14, verified from real source, not memory)**: started
+> the `crypto-android` integration and read its actual public API
+> (`matrix-org/matrix-rust-sdk`, `bindings/matrix-sdk-crypto-ffi/src/machine.rs`,
+> fetched and inspected directly). Finding that changes the practical
+> tradeoff between the two variants:
+>
+> - **`crypto-android`'s `OlmMachine` is not a generic point-to-point
+>   encrypt/decrypt API.** Its surface (`outgoing_requests`,
+>   `receive_sync_changes`, `share_room_key`, `create_encrypted_to_device_request`,
+>   room IDs, Matrix user IDs) is shaped around the **Matrix Client-Server
+>   protocol** — a homeserver's `/sync`, `/keys/upload`, `/keys/claim`,
+>   `/sendToDevice` endpoints. There is no exposed raw
+>   `encrypt(recipient, bytes) -> bytes` call. Wiring it to
+>   `wisal-direct-relay` as designed would mean rebuilding the relay as a
+>   partial Matrix homeserver (sync tokens, per-room state, the specific
+>   request/response shapes above) — not "add a dependency and call it,"
+>   but a second backend redesign project in its own right.
+> - **`libsignal`'s API is the structural fit our relay already has.**
+>   Verified from `signalapp/libsignal`,
+>   `java/shared/.../protocol/{SessionCipher,SignalProtocolAddress}.java`:
+>   sessions are addressed by `(name, deviceId)` — exactly our
+>   `senderDeviceId`/`recipientDeviceId` model — with a plain
+>   `SessionCipher.encrypt(byte[]) -> CiphertextMessage` /
+>   `.decrypt(...) -> byte[]`. It needs one addition to what's built:
+>   `wisal-direct-relay` would need a **pre-key bundle endpoint**
+>   (identity key + signed pre-key + one-time pre-keys per device, for
+>   `SessionBuilder.process(PreKeyBundle)` — X3DH) alongside the existing
+>   device registry, which is a natural, small extension of the current
+>   schema, not a redesign.
+>
+> **Net effect**: the "pick a variant" decision is no longer symmetric.
+> `vodozemac`/`crypto-android` is Apache-2.0 but costs a relay-as-homeserver
+> rewrite to integrate against this architecture; `libsignal` is AGPL-3.0 but
+> is a natural extension of what's already built and tested. This is a real
+> decision for the owner (license obligation vs. months of extra backend
+> work), not one to guess silently — raised back to them rather than forcing
+> either path.
 
 ## Context
 
