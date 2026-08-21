@@ -94,3 +94,19 @@ npm run dev
 ```
 
 See [docs/API.md](docs/API.md) and [docs/DEPLOY.md](docs/DEPLOY.md).
+
+## Design
+
+If you want to regenerate a screen (or the whole product) with an AI
+design tool — v0.dev, Lovable, Bolt, Framer AI, Figma Make, Galileo AI,
+Uizard — start from
+[docs/DESIGN_GENERATION_PROMPT.md](docs/DESIGN_GENERATION_PROMPT.md).
+It is grounded in the exact tokens, fonts, palette, and route paths on
+`main`, with per-tool tuning notes at the bottom.
+
+A CI check (`.github/workflows/design-prompt-drift.yml`) fails any PR
+that changes `src/app/globals.css`, `tailwind.config.ts`, or a route
+inside `src/app/(app|public|auth)/` without also updating the prompt,
+so the design brief cannot silently drift from the code. Add
+`[skip-design-drift]` to a PR title or commit message to acknowledge
+intentional drift.
