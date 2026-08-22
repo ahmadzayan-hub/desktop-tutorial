@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { useI18n } from "@/i18n/I18nContext";
 
 export type Surface = "cup" | "sleeve" | "box" | "card";
@@ -25,15 +26,17 @@ export function ProductPreview({
   sample?: boolean;
 }) {
   const { t } = useI18n();
+  const uid = useId();
+  const clipId = `clip-${surface}-${uid.replace(/:/g, "")}`;
   const shown = image ?? placeholderImage ?? null;
   const isSample = !image && !!placeholderImage;
 
   return (
     <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-gradient-to-br from-cream-50 to-cream-200 shadow-inner">
       <div className="absolute inset-3 flex items-center justify-center rounded-xl bg-white/60">
-        <svg viewBox="0 0 400 400" className="h-full w-full" role="img" aria-label={`${surface} preview`}>
+        <svg viewBox="0 0 400 400" className="h-full w-full" role="img" aria-label={t(`customize.surfaces.${surface}` as Parameters<typeof t>[0])}>
           <defs>
-            <clipPath id={`clip-${surface}`}>
+            <clipPath id={clipId}>
               {surface === "cup" && <circle cx="200" cy="205" r="120" />}
               {surface === "sleeve" && <rect x="70" y="150" width="260" height="120" rx="10" />}
               {surface === "box" && <rect x="95" y="120" width="210" height="170" rx="14" />}
@@ -81,11 +84,11 @@ export function ProductPreview({
               y={surface === "cup" ? 85 : surface === "sleeve" ? 150 : surface === "box" ? 120 : 120}
               width={surface === "cup" ? 240 : surface === "sleeve" ? 260 : surface === "box" ? 210 : 180}
               height={surface === "cup" ? 240 : surface === "sleeve" ? 120 : surface === "box" ? 170 : 160}
-              clipPath={`url(#clip-${surface})`}
+              clipPath={`url(#${clipId})`}
               preserveAspectRatio="xMidYMid slice"
             />
           ) : (
-            <g clipPath={`url(#clip-${surface})`}>
+            <g clipPath={`url(#${clipId})`}>
               <rect x="0" y="0" width="400" height="400" fill="#e9dcc8" />
               <text x="200" y="200" textAnchor="middle" className="fill-gold-600" fontSize="13" fontWeight="600">
                 {t("customize.preview.placeholder")}

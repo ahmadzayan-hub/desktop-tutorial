@@ -283,7 +283,7 @@ export function MessageStep({ draft, update }: StepProps) {
             {nameHint && (
               <p className="mt-2 font-arabic text-lg text-coffee-900" dir="rtl">
                 {nameHint.arabic}
-                {!nameHint.confident && <span className="ms-2 align-middle font-sans text-[10px] text-amber-600">⚠︎ please confirm</span>}
+                {!nameHint.confident && <span className="ms-2 align-middle font-sans text-[10px] text-amber-600">{t("common.pleaseConfirm")}</span>}
               </p>
             )}
           </div>

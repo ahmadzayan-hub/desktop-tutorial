@@ -21,6 +21,8 @@ export const ar: Dict = {
     startCustomizing: "ابدأ التصميم",
     openMenu: "فتح القائمة",
     closeMenu: "إغلاق القائمة",
+    primaryNav: "التنقل الرئيسي",
+    mobileNav: "قائمة الجوال",
   },
 
   common: {
@@ -46,6 +48,14 @@ export const ar: Dict = {
     getStarted: "ابدأ الآن",
     viewAll: "عرض الكل",
     aed: "درهم",
+    close: "إغلاق",
+    skipToContent: "انتقل إلى المحتوى الرئيسي",
+    pleaseConfirm: "⚠︎ يرجى التأكيد",
+  },
+
+  notFound: {
+    title: "الصفحة غير موجودة",
+    body: "عذراً، لم نتمكن من العثور على هذه الصفحة.",
   },
 
   hero: {

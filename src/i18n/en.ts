@@ -19,6 +19,8 @@ export const en = {
     startCustomizing: "Start Customising",
     openMenu: "Open menu",
     closeMenu: "Close menu",
+    primaryNav: "Primary navigation",
+    mobileNav: "Mobile navigation",
   },
 
   common: {
@@ -44,6 +46,14 @@ export const en = {
     getStarted: "Get started",
     viewAll: "View all",
     aed: "AED",
+    close: "Close",
+    skipToContent: "Skip to main content",
+    pleaseConfirm: "⚠︎ please confirm",
+  },
+
+  notFound: {
+    title: "Page not found",
+    body: "Sorry, we couldn't find that page.",
   },
 
   hero: {

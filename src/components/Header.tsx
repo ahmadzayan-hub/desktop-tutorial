@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { Link, NavLink } from "react-router-dom";
 import { Menu, X, ArrowRight } from "lucide-react";
 import { useI18n } from "@/i18n/I18nContext";
 import { BrandMark } from "./BrandMark";
@@ -21,10 +21,9 @@ export const NAV_ITEMS = [
 export function Header() {
   const { t, isRtl } = useI18n();
   const [open, setOpen] = useState(false);
-  const { pathname } = useLocation();
+  const closeMenu = useCallback(() => setOpen(false), []);
 
-  // Close the mobile menu on navigation + lock body scroll while open.
-  useEffect(() => setOpen(false), [pathname]);
+  // Lock body scroll while mobile menu is open.
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
@@ -40,7 +39,7 @@ export function Header() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-1 xl:flex" aria-label="Primary">
+        <nav className="hidden items-center gap-1 xl:flex" aria-label={t("nav.primaryNav")}>
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
@@ -83,12 +82,13 @@ export function Header() {
         id="mobile-menu"
         className={`xl:hidden ${open ? "block" : "hidden"} border-t border-coffee-100 bg-cream`}
       >
-        <nav className="container-max flex flex-col gap-1 py-4" aria-label="Mobile">
+        <nav className="container-max flex flex-col gap-1 py-4" aria-label={t("nav.mobileNav")}>
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               end={"end" in item ? item.end : undefined}
+              onClick={closeMenu}
               className={({ isActive }) =>
                 `rounded-xl px-4 py-3 text-base font-medium transition ${
                   isActive ? "bg-coffee-700 text-cream-50" : "text-coffee-700 hover:bg-coffee-50"
