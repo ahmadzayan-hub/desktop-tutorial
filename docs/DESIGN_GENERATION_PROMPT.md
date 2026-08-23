@@ -78,8 +78,8 @@ ink:    slate-900 #0f172a (light) · slate-200 #e2e8f0 (dark)
 **Fonts (Google Fonts):**
 - Sans: `Space Grotesk` (400, 500, 600, 700)
 - Display / serif accent: `Fraunces` (400 opt-size, 600, 700, italic)
-- Arabic: `Tajawal` (400, 500, 700) — automatically swap when `[dir="rtl"]`
-- Mono: `JetBrains Mono`
+- Arabic: `Tajawal` (400, 500, 700, 900) — automatically swap when `[dir="rtl"]`
+- Mono: `JetBrains Mono` **as a CSS fallback stack only** — it is not loaded from Google Fonts; expect the user's system monospace unless installed locally
 
 **Radius:** 12px controls · 20px cards · 28px hero surfaces · 999px pills.
 **Spacing:** 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 px scale.

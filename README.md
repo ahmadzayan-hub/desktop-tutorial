@@ -2,6 +2,13 @@
 
 > **Your MBA, on one desk.**
 
+> [!IMPORTANT]
+> **This repository is the migration archive.** Canonical Maktab development
+> happens in the [`Maktab`](https://github.com/ahmadzayan-hub/Maktab) repo —
+> see `docs/portfolio-audit/PORTFOLIO_INDEX.md` (the portfolio's single
+> source of truth). The snapshot here builds and passes its gates, but new
+> work belongs in the canonical repo.
+
 Maktab is a bilingual (English + Arabic) study platform for MBA students,
 managers and entrepreneurs. It brings your courses, lectures, tasks,
 grades, study packs, group projects, flashcards, quizzes, weekly briefs,
@@ -22,9 +29,9 @@ Deployable to **Vercel** on a free tier.
 - **Grades + Timeline** — see where you stand and what's next.
 - **Files, Messages, Announcements** — one inbox for everything from
   your programme.
-- **Bilingual EN / AR** with a real RTL layout, native fonts (Space
-  Grotesk + Fraunces + Tajawal + IBM Plex Sans Arabic + JetBrains Mono),
-  light and dark themes.
+- **Bilingual EN / AR** with a real RTL layout, loaded fonts (Space
+  Grotesk + Fraunces + Tajawal; IBM Plex Sans Arabic and JetBrains Mono
+  appear only as CSS fallback stacks), light and dark themes.
 - **Offline-ready PWA** with a service worker and installable manifest.
 
 ## Repository layout
@@ -36,7 +43,7 @@ Deployable to **Vercel** on a free tier.
 │   │   ├── (app)/         Authenticated study workspace (23 pages)
 │   │   ├── (auth)/        Login, signup, reset-password
 │   │   ├── (public)/      Landing, pricing, features, faq, terms, privacy
-│   │   ├── api/           22 API routes (ask-mba, tutor, tasks, files, …)
+│   │   ├── api/           50 API routes in 28 groups (ask-mba, tutor, tasks, files, …)
 │   │   ├── admin/         Feedback console
 │   │   ├── layout.tsx     Root layout + fonts + PWA registration
 │   │   └── sitemap.ts     SEO sitemap
@@ -112,7 +119,8 @@ intentional drift.
 
 ## Docs
 
-- `docs/PROJECT_AUDIT_BASELINE.md` — current-state audit + findings
+- `docs/ASSESSMENT.md` — current-state audit + findings
+- `docs/portfolio-audit/` — portfolio index, migration ledger, per-repo audits
 - `docs/API.md` — API reference
 - `docs/DEPLOY.md` — deployment guide
 - `docs/MOBILE.md` — installable PWA + Capacitor wrapper

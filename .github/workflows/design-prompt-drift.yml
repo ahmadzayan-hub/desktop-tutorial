@@ -13,6 +13,7 @@ on:
   pull_request:
     paths:
       - "src/app/globals.css"
+      - "src/app/layout.tsx"
       - "tailwind.config.ts"
       - "src/app/(app)/**"
       - "src/app/(public)/**"
@@ -41,11 +42,14 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
           set -euo pipefail
-          changed=$(git diff --name-only "$BASE" "$HEAD")
+          # Three-dot diff = changes on the PR branch since the merge base.
+          # A two-dot diff against the base tip reports main's own commits in
+          # reverse once main moves, giving false passes AND false failures.
+          changed=$(git diff --name-only "$BASE"..."$HEAD")
 
           # Files the prompt quotes from — any change here must be matched by a
           # prompt update or an explicit skip token.
-          drift_sensitive=$(printf '%s\n' "$changed" | grep -E '^(src/app/globals\.css|tailwind\.config\.ts|src/app/\(app\)/|src/app/\(public\)/|src/app/\(auth\)/)' || true)
+          drift_sensitive=$(printf '%s\n' "$changed" | grep -E '^(src/app/globals\.css|src/app/layout\.tsx|tailwind\.config\.ts|src/app/\(app\)/|src/app/\(public\)/|src/app/\(auth\)/)' || true)
 
           prompt_touched=$(printf '%s\n' "$changed" | grep -x 'docs/DESIGN_GENERATION_PROMPT.md' || true)
 
@@ -62,7 +66,7 @@ jobs:
             echo "::error::Design tokens or routes changed but docs/DESIGN_GENERATION_PROMPT.md was not updated in this PR."
             echo ""
             echo "Files that changed and drift the prompt:"
-            printf '  - %s\n' $drift_sensitive
+            printf '%s\n' "$drift_sensitive" | sed 's/^/  - /'
             echo ""
             echo "Fix one of:"
             echo "  1. Update docs/DESIGN_GENERATION_PROMPT.md to reflect the new tokens/routes."
@@ -70,4 +74,5 @@ jobs:
             exit 1
           fi
 
-          echo "OK. drift_sensitive=$(printf '%s' "$drift_sensitive" | wc -l | tr -d ' ') prompt_touched=$([ -n "$prompt_touched" ] && echo yes || echo no) skip=${skip:-none}"
+          count=$(printf '%s\n' "$drift_sensitive" | sed '/^$/d' | wc -l | tr -d ' ')
+          echo "OK. drift_sensitive=$count prompt_touched=$([ -n "$prompt_touched" ] && echo yes || echo no) skip=${skip:-none}"

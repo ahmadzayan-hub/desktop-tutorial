@@ -34,7 +34,7 @@ security posture and deployment reality. It is a triage aid, not a measurement
 | Repo | Role |
 |---|---|
 | `lahza-Private` | Historical archive, 74 branches. **The provenance record — do not retire.** |
-| `desktop-tutorial` | Migration archive |
+| `desktop-tutorial` | Migration archive — holds a building Maktab snapshot; canonical development in `Maktab` (its README now says so) |
 | `beyond-style-ops` | Legacy snapshot (`legacy-final` branch) |
 | `pitchora`, `pitchora2` | Empty — zero commits |
 | `prompt-orchestrator-Private`, `beyond-style-uae-Private`, `mutabasir-director-lens-Private` | Private predecessors |
