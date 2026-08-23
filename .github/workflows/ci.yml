@@ -1,0 +1,45 @@
+name: CI
+
+# Enforces the release quality gates on every PR and on pushes to main.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install (clean, from lockfile)
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test
+
+      - name: Production build
+        run: npm run build
+
+      # Fails only on CRITICAL advisories (currently 0). The 5 remaining HIGH
+      # advisories are tracked to the Next 16 migration in
+      # docs/PROJECT_AUDIT_BASELINE.md; audited here for visibility without
+      # blocking, so a newly-introduced critical is caught immediately.
+      - name: Security audit (block new criticals)
+        run: npm audit --audit-level=critical
