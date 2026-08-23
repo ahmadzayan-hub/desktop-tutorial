@@ -14,7 +14,7 @@ cross-checked against the repository inventory.
 | `66` | 66 | (root) | READY | |
 | `33` | 33 | (root) | **READY — deployed 2026-08-23** | RailMind. **Correction:** this project already existed and was linked; the earlier "not deployed" entry was wrong. It had simply never built. |
 | `lahza` | lahza | — | unverified | |
-| `wisal` | wisal | — | unverified | |
+| `wisal` | wisal | — | **ERROR since `b3f469a`** | Broken by my own commit, not a pre-existing fault: that commit removed the root Vite app (Lahza's storefront, now in `lahza`) and left the project building a root with no web app in it. Last green deploy `ed53249`. Fix open as `wisal#2` — root `vercel.json` with `outputDirectory: wisal-web`. |
 | `beyond-style-ops` | beyond-style-ops | — | legacy | repo is a legacy snapshot |
 | `promptops` | promptops | — | unverified | **correction 2026-08-23:** previously listed as not deployed; a Vercel project exists |
 
