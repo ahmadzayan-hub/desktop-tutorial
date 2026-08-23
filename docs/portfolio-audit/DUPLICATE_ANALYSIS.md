@@ -162,3 +162,55 @@ goal is revenue this quarter rather than governance, `66` is already earning
 it and BSOS is not.
 
 This remains the owner's decision. Nothing has been merged, moved or deleted.
+
+## Update — 2026-08-23 late: there is a **third** repository
+
+`beyond-style-uae-v6` implements Beyond Style UAE a third time. It appeared in
+no registry row, no family table and nowhere in this document, for the same
+reason HADER AI didn't: it was never in the repo list this audit was seeded
+from.
+
+It was found by looking at pull-request activity rather than at the list — the
+same method that found the 20th project an hour earlier. Two unregistered
+repositories in one evening is a pattern, not a coincidence: **the seed list is
+not a reliable enumeration of this portfolio.**
+
+| | `beyond-style-uae-v6` |
+|---|---|
+| Origin | v0 bootstrap (`v0.app` project `prj_tMiK8WzE…`), package still named `my-project` |
+| Stack | Next.js 16.3.0, TypeScript |
+| Scope | **One feature**: a pricing workbench |
+| Substance | `lib/pricing-engine.ts`, `components/pricing-workbench.tsx` |
+| Tests | **none** — self-scored 2/10 on testing |
+| Self-assessment | `QUALITY_SCORECARD.md`, **58/100**, "Not a production candidate" |
+
+### Why this one is different, and why that matters
+
+`66` and BSOS are rival *whole-product* implementations — that is what makes
+choosing between them expensive, and it is why the decision is escalated.
+
+`beyond-style-uae-v6` is not a third rival. It is a **single capability**
+neither of the other two has: deterministic pricing with decimal-safe rounding
+at money boundaries, isolated in one pure module with no framework coupling.
+
+That changes the shape of the canonical decision rather than adding to it. The
+pricing engine is a candidate to **absorb into** whichever implementation wins,
+not a third option to weigh against them. `lib/pricing-engine.ts` is pure and
+has no dependency on this repo's UI, so absorbing it is a file move plus a test
+suite — the tests it never had.
+
+Its own scorecard is worth crediting: it states plainly that there is no auth,
+no RLS, no persistence, no CI and no automated tests, and refuses to call
+itself production-ready. That is the standard this audit asks for, applied by
+whoever wrote it.
+
+### What is still owner-decided
+
+Unchanged. Which of `66` or BSOS is canonical is still escalated, and this
+finding does not resolve it — it adds one asset to move once the decision is
+made, and one more repository to the list of things the Permanent Portfolio
+Rule's "one canonical source of truth per product" is currently not true of.
+
+Beyond Style now spans **five** repositories: `66`, `Beyond-Style-UAE-`,
+`beyond-style-uae-v6`, `beyond-style-ops` (legacy snapshot) and
+`beyond-style-uae-Private` (unaudited predecessor).
