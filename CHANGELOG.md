@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased — Production-readiness audit (in progress)
+
+- **Security:** upgraded `vitest` 2 to 4 and `next` 14.2.15 to 14.2.35; `npm audit`
+  went from 14 vulnerabilities to 5, clearing both criticals and all moderates.
+  The remaining 5 highs are all bound to the Next 16 major migration and are
+  tracked with an interim mitigation in `docs/PROJECT_AUDIT_BASELINE.md`.
+- **Docs:** rewrote `README.md` to describe the real product (Maktab) instead of
+  the stale "Prompt Orchestrator" content; added `docs/PROJECT_AUDIT_BASELINE.md`.
+- Verified after each change: `typecheck`, `lint`, `test` (18/18), and `build` pass.
+
 ## v0.18.0 — 2026-05-02 — Dark mode polish + real-time expert preamble
 
 The "every page reads cleanly, every prompt is dated" release.
