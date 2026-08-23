@@ -11,11 +11,11 @@ The single source of truth. One row per canonical project, 2026-08-23.
 | Beyond Style — jewellery design & production | `66` **(canonical undecided)** | Commerce | ACTIVE_DEVELOPMENT | P1 | 70 | pass | 90 | 66-ten-tawny.vercel.app | 2026-08-23 |
 | RailMind — rail maintenance intelligence | `33` | Industrial | PRODUCTION_CANDIDATE | P1 | 76 | pass | 38 | **33-ashen-xi.vercel.app — live** | 2026-08-23 |
 | Pitchora — boardroom presentation studio | `Pitchora-studio-Private` | Intelligence | ACTIVE_DEVELOPMENT | P1 | 74 | pass | 125 | not deployed | 2026-08-23 |
-| Lahza — coffee gifts & events | `lahza` | Commerce | ACTIVE_DEVELOPMENT | P2 | 58 | pass | none | lahza (Vercel) | 2026-08-23 |
+| Lahza — coffee gifts & events | `lahza` | Commerce | ACTIVE_DEVELOPMENT | P2 | 58 | pass | none | lahza (Vercel **+ Netlify**) | 2026-08-23 |
 | Draftly · صياغة | `draftly-Private` | Productivity | ACTIVE_DEVELOPMENT | P2 | 66 | pass | 62 | not deployed | 2026-08-23 |
 | PromptOps — prompt lifecycle | `promptops` | Productivity | PROTOTYPE | P2 | 60 | pass | 18 | promptops (Vercel) | 2026-08-23 |
-| Wisal — relationship intelligence | `wisal` | Intelligence | PROTOTYPE | P3 | 35 | n/a | none | wisal (Vercel) | 2026-08-23 |
-| Annual Operation Plan 2026 | `annual-operation-plan-2026` | Industrial | PROTOTYPE | P3 | 30 | n/a | none | Pages, disabled | 2026-08-23 |
+| Wisal — relationship intelligence | `wisal` | Intelligence | PROTOTYPE | P3 | 35 | n/a | none | wisal (Vercel) — **3 deployable surfaces** | 2026-08-23 |
+| Annual Operation Plan 2026 | `annual-operation-plan-2026` | Industrial | PROTOTYPE | P3 | 30 | n/a | none | **3 hosting configs — Netlify + Vercel + Pages** | 2026-08-23 |
 | Agentic OS Enterprise | `agentic-os-enterprise` | Platform | PRODUCTION_CANDIDATE | **owner decision** | 85 | unverified | 42 files | not deployed | 2026-08-23 |
 | Agentic Analytics | `11` | Platform | INCUBATION | P3 | 55 | unverified | 19 files | not deployed | 2026-08-23 |
 | ALKAHTANI OS | `22` | Platform | EXPERIMENTAL | P3 | 25 | unverified | 0 | not deployed | 2026-08-23 |

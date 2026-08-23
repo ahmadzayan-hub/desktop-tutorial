@@ -56,7 +56,12 @@ Each was checked with `get_project` before any action was proposed:
 | `wisal-cloud-api` | auto only | **ERROR** |
 | `pitchora` | **none** | none — never built |
 
-**No custom domain is attached to any deletion candidate.** Nothing in this
+**No custom domain is attached to any deletion candidate on Vercel.**
+
+**This verification is Vercel-only, and that is a real limit.** Netlify was
+later found attached to `desktop-tutorial` (two sites) and `lahza` — see the
+correction at the end of EXTERNAL_DEPENDENCY_MAP.md. Nothing here says whether
+a Netlify site serves a domain for the same repository. Nothing in this
 list is answering on a real hostname, so removing them cannot break a link
 anyone has published on a domain they own. Two of them — `1` and `vercel` —
 are READY and do still serve stale `desktop-tutorial` content on their
