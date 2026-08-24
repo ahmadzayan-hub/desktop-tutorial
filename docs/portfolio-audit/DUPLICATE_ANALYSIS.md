@@ -214,3 +214,53 @@ Rule's "one canonical source of truth per product" is currently not true of.
 Beyond Style now spans **five** repositories: `66`, `Beyond-Style-UAE-`,
 `beyond-style-uae-v6`, `beyond-style-ops` (legacy snapshot) and
 `beyond-style-uae-Private` (unaudited predecessor).
+
+
+## Update — 2026-08-24: `desktop-tutorial` is a second live copy of Maktab
+
+The registry calls `desktop-tutorial` a **migration archive**. It is not. Its
+`package.json` is named `maktab`, it has its own CI, its own Vercel project,
+and it has **already diverged** from the canonical `maktab` repo.
+
+| | `maktab` (canonical) | `desktop-tutorial` |
+|---|---|---|
+| `package.json` name | `maktab` | `maktab` |
+| Tracked files | 191 | 220 |
+| `src/` tree hash | `037b10a` | `e532735` — **different** |
+| Only here | `StudyCommandCenter.tsx`, `readiness.ts`, `readiness.test.ts` | `desktop/`, `extension/`, `mobile/` shells |
+
+Neither is a superset. The Learning Command Center work landed in `maktab`;
+the desktop, browser-extension and mobile shells exist only in
+`desktop-tutorial`. Both receive commits.
+
+### How it surfaced
+
+PR #112 proposed restructuring Maktab's UI — 23 pages into 5 tabs — **against
+`desktop-tutorial`**, not against `maktab`. That is the cost this duplication
+imposes: a contributor cannot tell which repo is the product, so significant
+work gets aimed at the copy.
+
+### Why PR #112 was not merged
+
+Separately from the duplication, that PR could not be merged on its own terms.
+Its branch forks from `ff73de2`, before the portfolio split, and:
+
+- contains **none** of the 5-tab work its description claims — no `src/app/`
+  exists on it at all;
+- resurrects 283 files across six directories that were deliberately moved out
+  (`agentic-os/` 162, `android-wife-assistant/` 66, `telegram-wife-assistant/`
+  25, `landing/` 20, `agent-os/` 10, `operational-plan/` 2), two of which are
+  now canonical in `wisal` and one in `masaar`;
+- deletes `src/middleware.ts`, `src/lib/supabase/server.ts`, `src/lib/env.ts`
+  and `src/lib/safe-fetch.ts`, which exist nowhere on the branch under any
+  name — the auth gate and the Next 15 async-cookies migration among them.
+
+Its 29,749/32,263 diff is an artifact of the stale base, not a restructure.
+Recorded on the PR with the evidence.
+
+### Owner decision
+
+Which repo is canonical for Maktab. This is the same class of question as
+Beyond Style but far cheaper to settle now: the divergence is three source
+files against three platform shells, not two full implementations. Left
+alone it will grow, and it is already misdirecting contributions.

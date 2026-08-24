@@ -34,7 +34,7 @@ found on 2026-08-23 and audited the same day.
 | Repo | Role | Note |
 |---|---|---|
 | `lahza-Private` | Historical mixed container, 74 branches | **Public despite the `-Private` name.** Every identity inside resolves to a canonical repo above. |
-| `desktop-tutorial` | Migration archive | — |
+| `desktop-tutorial` | **NOT an archive — a second live copy of Maktab** | `package.json` is named `maktab`; own CI, own Vercel project, `src/` already diverged from the canonical `maktab`. See DUPLICATE_ANALYSIS.md. Canonical choice is an owner decision. |
 | `pitchora`, `pitchora2` | **Empty — zero commits** | Verified by clone. No content to preserve. |
 | `prompt-orchestrator-Private`, `beyond-style-uae-Private`, `mutabasir-director-lens-Private` | Private predecessors, unaudited | Named `-Private`; visibility not yet verified per repo |
 | `sherifkaroub83-cell/talabat-retention-agentic-os` | External collaboration | Not owned |
