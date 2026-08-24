@@ -47,3 +47,24 @@ mutation returns 403 for this session, and pausing could drop a live URL.
 `data-value-studio`, `exeflow`, `annual-operation-plan-2026`
 (GitHub Pages, disabled), `11`, `22`, `44`, `55`, `agentic-os-enterprise`,
 `Beyond-Style-UAE-`, `draftly-Private`.
+
+## Nested deploy configs — swept 2026-08-24
+
+Prompted by wisal, where six security headers sat in `wisal-web/vercel.json`
+and had never applied: Vercel reads only the **root** `vercel.json`, so a
+config file one directory down looks correct, fails silently, and protects
+nothing.
+
+Checked every cloned repo for `vercel.json` / `netlify.toml` below the root.
+
+| Repo | Nested config | Verdict |
+|---|---|---|
+| `wisal` | `wisal-web/vercel.json` | Was inert. Superseded by the root file, which now carries the headers — verified live. Left in place as the config that would apply if that directory moves to its own repo. |
+| `wisal` | `wisal-cloud-api/vercel.json`, `wisal-direct-relay/vercel.json` | `functions.maxDuration: 15` only. No headers, no routes — nothing security-relevant is silently absent. Each applies only under a Vercel project whose Root Directory is set to that folder. |
+| everything else | none | `33`, `66`, `annual-operation-plan-2026`, `desktop-tutorial`, `lahza`, `maktab`, `masaar`, `mutabasir`, `Pitchora-studio-Private`, `promptops`, `vertex` all keep `vercel.json` (and `netlify.toml` where present) at the repo root, where it is read. |
+
+So wisal was the only instance. The lesson generalises even though the sweep
+came back clean: a deploy config in the wrong directory produces no error and
+no warning, which makes it indistinguishable from one that works. It is worth
+re-running this check whenever a directory is promoted out of a repo or a repo
+root is restructured — both of which happened in this portfolio this week.
