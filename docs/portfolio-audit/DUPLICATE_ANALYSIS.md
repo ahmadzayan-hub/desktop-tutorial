@@ -264,3 +264,89 @@ Which repo is canonical for Maktab. This is the same class of question as
 Beyond Style but far cheaper to settle now: the divergence is three source
 files against three platform shells, not two full implementations. Left
 alone it will grow, and it is already misdirecting contributions.
+
+## Resolved — 2026-08-24: owner named both canonicals
+
+| Product | Canonical | Non-canonical |
+|---|---|---|
+| **Maktab** | `maktab` | `desktop-tutorial`, and the Maktab app sitting inside `promptops` |
+| **Beyond Style** | `Beyond-Style-UAE-` | `66`, `beyond-style-uae-v6`, `beyond-style-ops` (legacy) |
+
+### Beyond Style — done
+
+`beyond-style-uae-v6`'s pricing engine is absorbed into the canonical repo as
+`bsos/design_studio/cost_model.py`, ported to Python with 18 tests it never
+had. It is not a duplicate of `pricing.py`: that one answers *what do we
+quote*, this one answers *what does the piece cost*. The join is the floor —
+`pricing.py` floored every quote at a flat AED 265, which is far above a
+silver pendant's true cost and can be below a gold coin's. `floor_for_quote()`
+now takes the higher of the flat floor and the computed per-piece floor.
+
+`66`'s work stays recoverable through its branches, both of which remain. They
+had diverged in both directions, so both SHAs are recorded here rather than
+relying on either alone:
+
+| ref | SHA at 2026-08-24 |
+|---|---|
+| `66` `main` | `f1521d1` |
+| `66` `claude/beyond-style-uae-os-ji8ygo` (its default branch) | `eecc953` |
+
+Snapshot tags could not be pushed — the session's git proxy returns **403** on
+tag pushes to `66`, with any tag name. Nothing is being deleted there, so the
+branches themselves are the record; the SHAs above survive a branch moving.
+
+### Maktab — a live bug blocks the obvious cleanup
+
+`maktab` is ahead and the decision is easy to act on in principle: 937
+insertions against 152 deletions across 52 files, the Next 15 async-cookies
+migration at 38 call sites that `desktop-tutorial` still lacks, and
+`StudyCommandCenter.tsx` + `readiness.ts` (556 lines) which supersede the 113
+lines that exist only in the copy. Nothing unique would be lost.
+
+**But `desktop-tutorial` cannot be retired yet, and the reason is a bug.**
+
+`promptops` ships ZAIan Studio's desktop (Electron), mobile (Capacitor) and
+browser-extension clients. All four entry points default to the same host:
+
+| file | default |
+|---|---|
+| `promptops/desktop/main.js` | `https://desktop-tutorial-kappa-five.vercel.app` |
+| `promptops/mobile/capacitor.config.ts` | same |
+| `promptops/extension/content.js` | same |
+| `promptops/extension/options.js` | same |
+
+That host serves **Maktab** — verified live: HTTP 200, `<title>Maktab · مكتب ·
+Your MBA on one desk`, redirecting to `/dashboard`.
+
+So every installed ZAIan Studio client opens an MBA study platform. Taking
+`desktop-tutorial`'s deployment down would move those clients from *wrong app*
+to *dead app*, so it stays up until the shells point somewhere correct.
+
+### Why there is nowhere correct to point them yet
+
+`promptops` is registered as PromptOps — prompt lifecycle. Its README states
+the Product Authority in full, with an explicit non-goal of *"being a feature
+inside Maktab"*. Its `package.json` is named `maktab`, and its routes are
+`ask-mba/`, `flashcards/`, `grades/`, `courses/`, `group-project/`.
+
+It is a hybrid, not simply a mislabelled copy. Real PromptOps code is there —
+`src/lib/services/template.ts` renders prompt skeletons from a template and
+Q&A, alongside `formatter.ts`, `clarification.ts`, `orchestration.ts` and
+`llm/` — and those four test files are the 18 tests this audit credited to
+PromptOps. That code is grafted onto a Maktab application shell.
+
+So ZAIan Studio has no deployment of its own to point at. Repointing the URL
+is blocked on PromptOps existing as a deployed app, which is a build decision,
+not a config edit. Recorded rather than guessed at.
+
+### Three Maktab-named repositories, not two
+
+An earlier entry in this document said `desktop-tutorial` was a second live
+copy. There are three, all with `package.json` name `maktab` and all with
+different `src/` trees:
+
+| repo | tracked files | `src/` tree |
+|---|---|---|
+| `maktab` | 191 | `037b10a` |
+| `desktop-tutorial` | 220 | `e532735` |
+| `promptops` | 202 | `a1c6607` |

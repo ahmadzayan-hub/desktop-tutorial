@@ -10,13 +10,13 @@ found on 2026-08-23 and audited the same day.
 | 2 | Maktab — learning OS | `maktab` | ACTIVE · all PRs merged | `tweenz-ai` |
 | 3 | Mutabasir — evidence intelligence | `mutabasir` | ACTIVE · all PRs merged | `mutabasir-director-lens` |
 | 4 | VERTEX — contract compliance | `vertex` | ACTIVE · all PRs merged | — |
-| 5 | Beyond Style — jewellery design & production | `66` *(canonical undecided)* | ACTIVE · all PRs merged · **built three times — `Beyond-Style-UAE-` and `beyond-style-uae-v6`; canonical still escalated** | `beyond-style-ops` (legacy snapshot) |
+| 5 | Beyond Style — jewellery design & production | **`Beyond-Style-UAE-`** — owner decision 2026-08-24 | ACTIVE · v6's pricing engine absorbed as `cost_model.py` with 18 new tests | `66` (f1521d1 / eecc953), `beyond-style-uae-v6`, `beyond-style-ops` (legacy snapshot) |
 | 6 | RailMind — rail maintenance intelligence | `33` | ACTIVE · all PRs merged (greenfield) | — |
 | 7 | Pitchora — evidence presentation studio | `Pitchora-studio-Private` | ACTIVE · all PRs merged | `pitchora-studio` |
 | 8 | Lahza — coffee gifts & events | `lahza` | ACTIVE | `beyond-coffee-moments` |
 | 9 | Wisal — relationship intelligence | `wisal` | PROTOTYPE · PR#1 merged, PR#2 open (Vercel fix) · **33 tests, previously recorded as none** | — |
 | 10 | Annual Operation Plan 2026 | `annual-operation-plan-2026` | PROTOTYPE | `operational-plan-v03` |
-| 11 | PromptOps — prompt lifecycle | `promptops` | PROTOTYPE | `prompt-orchestrator`, `zaian-studio` |
+| 11 | PromptOps — prompt lifecycle | `promptops` | **PROTOTYPE — repo is a hybrid.** Real PromptOps code (`template.ts`, `formatter.ts`, `clarification.ts`, `llm/`, and the 18 tests) is grafted onto a **Maktab** app shell: `package.json` name is `maktab`, routes are `ask-mba/`, `flashcards/`, `grades/`. Its README declares a non-goal of "being a feature inside Maktab". | `prompt-orchestrator`, `zaian-studio` |
 | 12 | **Draftly · صياغة** | `draftly-Private` | ACTIVE (v1.0.1) — **not previously in the portfolio list** | `archive/draftly/main` |
 | 13 | Data Value Studio | `data-value-studio` | CHARTERED | — |
 | 14 | ExecFlow | `exeflow` | CHARTERED | — |
@@ -34,7 +34,7 @@ found on 2026-08-23 and audited the same day.
 | Repo | Role | Note |
 |---|---|---|
 | `lahza-Private` | Historical mixed container, 74 branches | **Public despite the `-Private` name.** Every identity inside resolves to a canonical repo above. |
-| `desktop-tutorial` | **NOT an archive — a second live copy of Maktab** | `package.json` is named `maktab`; own CI, own Vercel project, `src/` already diverged from the canonical `maktab`. See DUPLICATE_ANALYSIS.md. Canonical choice is an owner decision. |
+| `desktop-tutorial` | **NOT an archive — a second live copy of Maktab, non-canonical as of 2026-08-24. Must stay deployed:** its URL is what ZAIan Studio's shipped clients open | `package.json` is named `maktab`; own CI, own Vercel project, `src/` already diverged from the canonical `maktab`. See DUPLICATE_ANALYSIS.md. Canonical choice is an owner decision. |
 | `pitchora`, `pitchora2` | **Empty — zero commits** | Verified by clone. No content to preserve. |
 | `prompt-orchestrator-Private`, `beyond-style-uae-Private`, `mutabasir-director-lens-Private` | Private predecessors, unaudited | Named `-Private`; visibility not yet verified per repo |
 | `sherifkaroub83-cell/talabat-retention-agentic-os` | External collaboration | Not owned |

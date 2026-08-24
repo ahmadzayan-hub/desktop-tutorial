@@ -77,3 +77,21 @@ Recorded rather than silently edited, per the audit's own rule.
 | Beyond Style is built **twice** | **three times** | `beyond-style-uae-v6` — a v0-bootstrapped pricing workbench, 58/100 on its own scorecard, no tests. Found the same way, an hour later. Not a third rival implementation but a single capability the other two lack; see DUPLICATE_ANALYSIS.md. |
 | Seven projects listed as having open PRs | **all merged** | The Status column was never refreshed after the merges. Checked against the PR search rather than assumed. |
 | `desktop-tutorial` is a **migration archive** | **a second live copy of Maktab** | Its `package.json` is named `maktab`. It has its own CI and Vercel project and its `src/` has already diverged from the canonical repo. Surfaced when PR #112 aimed a 23-pages-to-5-tabs restructure at the copy rather than the product. |
+
+## Owner decisions taken — 2026-08-24
+
+| Question | Decision | State |
+|---|---|---|
+| Canonical for Maktab | **`maktab`** | Acted on where safe. `desktop-tutorial` marked non-canonical; its app is NOT removed, because its deployment is a live dependency of ZAIan Studio's shipped clients. |
+| Canonical for Beyond Style | **`Beyond-Style-UAE-`** | Done. v6's pricing engine absorbed with 18 new tests; `66`'s two diverged heads recorded by SHA. |
+
+### The bug these decisions exposed
+
+ZAIan Studio's shipped desktop, mobile and browser-extension clients all
+default to `desktop-tutorial-kappa-five.vercel.app`, which serves **Maktab** —
+verified live, HTTP 200, redirecting to `/dashboard`. Every installed ZAIan
+Studio client opens an MBA study platform.
+
+It cannot be fixed by editing the URL: `promptops`, ZAIan Studio's canonical
+home, contains the Maktab app rather than a deployable PromptOps, so there is
+nowhere correct to point them yet. See DUPLICATE_ANALYSIS.md.
