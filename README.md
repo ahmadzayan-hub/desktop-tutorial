@@ -1,5 +1,24 @@
 # Maktab · مكتب
 
+> [!IMPORTANT]
+> **This repository is NOT canonical for Maktab. `ahmadzayan-hub/maktab` is.**
+>
+> Decided by the owner on 2026-08-24. Do not open pull requests against the
+> application code here — `maktab` is ahead (the Next 15 async-cookies
+> migration across 38 call sites, plus `StudyCommandCenter` and
+> `readiness.ts`, which this copy does not have).
+>
+> **This repo is still deployed on purpose, and must stay that way for now.**
+> `desktop-tutorial-kappa-five.vercel.app` is the URL that ZAIan Studio's
+> shipped desktop, mobile and browser-extension clients open by default —
+> see `promptops/desktop/main.js`, `mobile/capacitor.config.ts`,
+> `extension/content.js` and `extension/options.js`. Those clients currently
+> show Maktab, which is a live bug; taking this deployment down would turn a
+> wrong app into a dead one. It can be retired once those shells point
+> somewhere correct. Tracked in `docs/portfolio-audit/DUPLICATE_ANALYSIS.md`.
+>
+> What is unique here: `docs/portfolio-audit/` — the portfolio audit.
+
 > **Your MBA, on one desk.**
 
 Maktab is a bilingual (English + Arabic) study platform for MBA students,
