@@ -1,0 +1,73 @@
+name: Design prompt drift check
+
+# The design-generation prompt (docs/DESIGN_GENERATION_PROMPT.md) quotes exact
+# design tokens, palette values, fonts, and route paths from the app. If any of
+# those source files change without the prompt being updated in the same PR,
+# the prompt drifts and starts telling design tools to use tokens/routes that
+# no longer exist. This check fails the PR when that happens.
+#
+# To acknowledge intentional drift, add the string `[skip-design-drift]` anywhere
+# in the PR title or a commit message.
+
+on:
+  pull_request:
+    paths:
+      - "src/app/globals.css"
+      - "tailwind.config.ts"
+      - "src/app/(app)/**"
+      - "src/app/(public)/**"
+      - "src/app/(auth)/**"
+      - "docs/DESIGN_GENERATION_PROMPT.md"
+      - ".github/workflows/design-prompt-drift.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: design-prompt-drift-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Detect drift
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          set -euo pipefail
+          changed=$(git diff --name-only "$BASE" "$HEAD")
+
+          # Files the prompt quotes from — any change here must be matched by a
+          # prompt update or an explicit skip token.
+          drift_sensitive=$(printf '%s\n' "$changed" | grep -E '^(src/app/globals\.css|tailwind\.config\.ts|src/app/\(app\)/|src/app/\(public\)/|src/app/\(auth\)/)' || true)
+
+          prompt_touched=$(printf '%s\n' "$changed" | grep -x 'docs/DESIGN_GENERATION_PROMPT.md' || true)
+
+          # Honour skip token in PR title or any commit message in the range.
+          skip=""
+          if printf '%s' "$PR_TITLE" | grep -q '\[skip-design-drift\]'; then
+            skip="pr-title"
+          fi
+          if [ -z "$skip" ] && git log --format=%B "$BASE".."$HEAD" | grep -q '\[skip-design-drift\]'; then
+            skip="commit-message"
+          fi
+
+          if [ -n "$drift_sensitive" ] && [ -z "$prompt_touched" ] && [ -z "$skip" ]; then
+            echo "::error::Design tokens or routes changed but docs/DESIGN_GENERATION_PROMPT.md was not updated in this PR."
+            echo ""
+            echo "Files that changed and drift the prompt:"
+            printf '  - %s\n' $drift_sensitive
+            echo ""
+            echo "Fix one of:"
+            echo "  1. Update docs/DESIGN_GENERATION_PROMPT.md to reflect the new tokens/routes."
+            echo "  2. Add [skip-design-drift] to the PR title or a commit message if the drift is intentional and the prompt update will land later."
+            exit 1
+          fi
+
+          echo "OK. drift_sensitive=$(printf '%s' "$drift_sensitive" | wc -l | tr -d ' ') prompt_touched=$([ -n "$prompt_touched" ] && echo yes || echo no) skip=${skip:-none}"

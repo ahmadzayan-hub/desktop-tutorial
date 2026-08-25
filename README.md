@@ -1,55 +1,85 @@
-# Maktab — مكتب
+# Maktab · مكتب
 
-**Your MBA, on one desk.** A bilingual (English / Arabic) study platform for MBA
-students that brings courses, an AI tutor, quizzes, flashcards, study packs,
-grades, deadlines, and a weekly brief together in one place.
+> [!IMPORTANT]
+> **This repository is NOT canonical for Maktab. `ahmadzayan-hub/maktab` is.**
+>
+> Decided by the owner on 2026-08-24. Do not open pull requests against the
+> application code here — `maktab` is ahead (the Next 15 async-cookies
+> migration across 38 call sites, plus `StudyCommandCenter` and
+> `readiness.ts`, which this copy does not have).
+>
+> **This repo is still deployed on purpose, and must stay that way for now.**
+> `desktop-tutorial-kappa-five.vercel.app` is the URL that ZAIan Studio's
+> shipped desktop, mobile and browser-extension clients open by default —
+> see `promptops/desktop/main.js`, `mobile/capacitor.config.ts`,
+> `extension/content.js` and `extension/options.js`. Those clients currently
+> show Maktab, which is a live bug; taking this deployment down would turn a
+> wrong app into a dead one. It can be retired once those shells point
+> somewhere correct. Tracked in `docs/portfolio-audit/DUPLICATE_ANALYSIS.md`.
+>
+> What is unique here: `docs/portfolio-audit/` — the portfolio audit.
 
-Built on **Next.js 14 (App Router) + Supabase (Postgres + RLS)** with a
-pluggable AI provider (Anthropic / OpenAI / Ollama) and **Stripe** subscriptions.
+> **Your MBA, on one desk.**
 
-## Features
+Maktab is a bilingual (English + Arabic) study platform for MBA students,
+managers and entrepreneurs. It brings your courses, lectures, tasks,
+grades, study packs, group projects, flashcards, quizzes, weekly briefs,
+and an AI study tutor into one calm, mobile-first workspace.
 
-- **AI tutor & Ask-MBA** — grounded Q&A and tutoring over course material (RAG).
-- **Courses & lectures** — course pages, lecture view, and emailed lecture notes.
-- **Active recall** — quizzes, flashcards, and generated study packs.
-- **Planning** — calendar, tasks, deadlines, timeline, and a weekly brief.
-- **Progress** — grades, achievements, and a personal dashboard.
-- **Collaboration** — messages and a group-project space.
-- **Accounts & billing** — email/Google auth, onboarding, Stripe Student/Pro
-  subscriptions (monthly & annual), and self-serve account export/deletion.
-- **Bilingual** — full English/Arabic UI with RTL support.
-- **Admin** — users, stats, feedback, and announcements.
-- **Browser extension** — a Chrome (Manifest V3) companion in `extension/`.
+Built on **Next.js 14 (App Router) + Supabase + Tailwind + Framer Motion**.
+Deployable to **Vercel** on a free tier.
 
-## Stack
+## What you can do with Maktab
 
-- **Framework:** Next.js 14 (App Router, React Server Components) + TypeScript (strict)
-- **Data & auth:** Supabase (Postgres, Row-Level Security, SSR auth helpers)
-- **AI:** provider-abstracted via `AI_PROVIDER` (Anthropic / OpenAI / Ollama); RAG in `src/lib/rag`
-- **Payments:** Stripe (Checkout, Billing Portal, webhooks)
-- **Email:** Resend
-- **UI:** Tailwind, framer-motion, lucide-react, recharts
-- **Validation:** zod · **Tests:** Vitest
+- **Ask MBA** — an AI tutor grounded in business-school topics.
+- **Weekly Brief** — a Monday summary of what's due, what to study, what
+  to prep for.
+- **Study Packs** — bundle lecture notes, flashcards, and quizzes for a
+  topic or an exam.
+- **Group Project** — coordinate roles, deliverables, and deadlines with
+  your team.
+- **Grades + Timeline** — see where you stand and what's next.
+- **Files, Messages, Announcements** — one inbox for everything from
+  your programme.
+- **Bilingual EN / AR** with a real RTL layout, native fonts (Space
+  Grotesk + Fraunces + Tajawal + IBM Plex Sans Arabic + JetBrains Mono),
+  light and dark themes.
+- **Offline-ready PWA** with a service worker and installable manifest.
 
-## Project structure
+## Repository layout
 
 ```
-src/
-  app/
-    (public)/         marketing + legal (features, pricing, faq, privacy, terms, …)
-    (auth)/           login, signup, reset-password
-    (app)/            authenticated product (dashboard, tutor, courses, quizzes,
-                      flashcards, grades, calendar, tasks, subscription, admin, …)
-    api/              50+ route handlers (auth, courses, tutor, quizzes, files,
-                      subscription, webhooks/stripe, account/export, account/delete, …)
-  lib/
-    ai/  llm/  rag/   AI provider, prompts, retrieval
-    services/         orchestration, clarification, formatter, template, auth
-    supabase/  stripe/  i18n/  db/   integrations & helpers
-supabase/migrations/  0001_init.sql, 0002_feedback.sql, 0003_tweenz_schema.sql (schema + RLS)
-extension/            Chrome MV3 extension
-docs/                 API, DEPLOY, DESKTOP, MOBILE, audit + assessment reports
+.
+├── src/
+│   ├── app/
+│   │   ├── (app)/         Authenticated study workspace (23 pages)
+│   │   ├── (auth)/        Login, signup, reset-password
+│   │   ├── (public)/      Landing, pricing, features, faq, terms, privacy
+│   │   ├── api/           22 API routes (ask-mba, tutor, tasks, files, …)
+│   │   ├── admin/         Feedback console
+│   │   ├── layout.tsx     Root layout + fonts + PWA registration
+│   │   └── sitemap.ts     SEO sitemap
+│   ├── lib/               engine, safe-fetch, supabase, i18n, services
+│   ├── components/        UI kit (glass cards, motion, icons, forms)
+│   └── middleware.ts      Supabase session refresh
+├── public/                icon, manifest.webmanifest, sw.js, offline assets
+├── supabase/              migrations, seed
+├── extension/             Browser extension (MV3)
+├── mobile/                Capacitor scaffold
+├── desktop/               Electron wrapper
+├── docs/                  Audit, deploy, mobile, desktop notes
+├── vercel.json            Deploy config
+├── tailwind.config.ts     Design tokens (brand / navy / teal / gold)
+└── package.json
 ```
+
+Sibling products that used to live in this repository now have their own
+repositories: [wisal](https://github.com/ahmadzayan-hub/wisal),
+[lahza](https://github.com/ahmadzayan-hub/lahza),
+[masaar](https://github.com/ahmadzayan-hub/masaar),
+[vertex](https://github.com/ahmadzayan-hub/vertex),
+[mutabasir](https://github.com/ahmadzayan-hub/mutabasir),
+[annual-operation-plan-2026](https://github.com/ahmadzayan-hub/annual-operation-plan-2026).
 
 ## Quick start
 
@@ -57,55 +87,51 @@ docs/                 API, DEPLOY, DESKTOP, MOBILE, audit + assessment reports
 # 1. Install
 npm install
 
-# 2. Configure (never commit real values)
+# 2. Configure (Supabase + optional OpenAI + optional Stripe)
 cp .env.example .env.local
-#   Fill in the keys listed below.
 
-# 3. Apply the database schema to your Supabase project
-#   psql "$SUPABASE_DB_URL" -f supabase/migrations/0001_init.sql
-#   (then 0002_…, 0003_…) — or paste into the Supabase SQL editor.
-
-# 4. Run
-npm run dev        # http://localhost:3000
+# 3. Run the dev server
+npm run dev
+# open http://localhost:3000
 ```
 
-### Environment variables
+Maktab boots with **no backend credentials required** — the demo flow
+redirects `/`, `/login`, and `/signup` to `/dashboard` and every page
+renders sample content. Add `NEXT_PUBLIC_SUPABASE_URL` and
+`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` to enable real auth and
+persistence; add `OPENAI_API_KEY` (server-only) for higher-quality Ask
+MBA responses; add `STRIPE_*` for the subscription page.
 
-Copy `.env.example` and fill in your own values (all secrets stay server-side):
+## Quality gates
 
-| Variable | Purpose |
-| --- | --- |
-| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase client |
-| `SUPABASE_SERVICE_ROLE_KEY` | server-only privileged DB access |
-| `AI_PROVIDER`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY` | AI provider selection & keys |
-| `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe |
-| `STRIPE_*_PRICE_ID` | Student / Pro monthly & annual price IDs |
-| `RESEND_API_KEY`, `EMAIL_FROM` | transactional email |
-| `NEXT_PUBLIC_APP_URL` | canonical app URL |
-
-## Scripts
+Run any of these locally:
 
 ```bash
-npm run dev         # local dev server
-npm run build       # production build
-npm run start       # serve the production build
-npm run typecheck   # tsc --noEmit
-npm run lint        # next lint
-npm run test        # vitest run
+npm run typecheck    # tsc --noEmit
+npm run lint         # next lint
+npm test             # vitest run (18 tests)
+npm run build        # next build
 ```
 
-## Documentation
+## Design
 
-- [docs/API.md](docs/API.md) — API reference
-- [docs/DEPLOY.md](docs/DEPLOY.md) — deployment
-- [docs/PROJECT_AUDIT_BASELINE.md](docs/PROJECT_AUDIT_BASELINE.md) — production-readiness audit baseline
+If you want to regenerate a screen (or the whole product) with an AI
+design tool — v0.dev, Lovable, Bolt, Framer AI, Figma Make, Galileo AI,
+Uizard — start from
+[docs/DESIGN_GENERATION_PROMPT.md](docs/DESIGN_GENERATION_PROMPT.md).
+It is grounded in the exact tokens, fonts, palette, and route paths on
+`main`, with per-tool tuning notes at the bottom.
 
-## Browser extension
+A CI check (`.github/workflows/design-prompt-drift.yml`) fails any PR
+that changes `src/app/globals.css`, `tailwind.config.ts`, or a route
+inside `src/app/(app|public|auth)/` without also updating the prompt,
+so the design brief cannot silently drift from the code. Add
+`[skip-design-drift]` to a PR title or commit message to acknowledge
+intentional drift.
 
-Load `extension/` via `chrome://extensions` → Developer mode → **Load unpacked**,
-then set the API base URL and key on the extension's Options page.
+## Docs
 
-## Status
-
-Pre-1.0. See [docs/PROJECT_AUDIT_BASELINE.md](docs/PROJECT_AUDIT_BASELINE.md) for
-current release-readiness gaps (dependency upgrades and test coverage in progress).
+- `docs/PROJECT_AUDIT_BASELINE.md` — current-state audit + findings
+- `docs/API.md` — API reference
+- `docs/DEPLOY.md` — deployment guide
+- `docs/MOBILE.md` — installable PWA + Capacitor wrapper

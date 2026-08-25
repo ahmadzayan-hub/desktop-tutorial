@@ -1,19 +1,24 @@
 name: CI
 
-# Enforces the release quality gates on every PR and on pushes to main.
 on:
   push:
     branches: [main]
   pull_request:
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
 
 jobs:
   quality:
+    name: typecheck / lint / test / build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -22,30 +27,32 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Install (clean, from lockfile)
+      - name: Install
         run: npm ci
 
-      - name: Type check
+      - name: Typecheck
         run: npm run typecheck
 
       - name: Lint
         run: npm run lint
 
-      - name: Unit tests
-        run: npm run test
+      - name: Test
+        run: npm test
 
-      - name: Production build
+      - name: Build
         run: npm run build
 
-      # Fails only on CRITICAL advisories (currently 0). The 5 remaining HIGH
+      # Fails only on CRITICAL advisories (currently 0). The remaining HIGH
       # advisories are tracked to the Next 16 migration in
-      # docs/PROJECT_AUDIT_BASELINE.md; audited here for visibility without
+      # docs/NEXT_16_MIGRATION_PLAN.md; audited here for visibility without
       # blocking, so a newly-introduced critical is caught immediately.
       - name: Security audit (block new criticals)
         run: npm audit --audit-level=critical
 
   e2e:
+    name: playwright (public surface)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
