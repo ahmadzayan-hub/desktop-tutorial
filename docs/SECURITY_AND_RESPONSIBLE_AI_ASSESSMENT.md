@@ -17,12 +17,13 @@ one **scheduled** dependency risk (Next 16). Not yet release-hardened.
 | Broken authentication (API2) | ✅ | Supabase Auth + cookie session; `requireUser()` gate on protected routes |
 | Multi-tenant isolation | ✅ | Postgres **RLS**: 62 policy statements across `supabase/migrations/*` |
 | Injection | ✅ (parameterized) | Supabase query builder (no raw SQL in routes); **zod** input validation in 12 API files |
-| Security misconfiguration (A05) | ⚠️ partial | 5 headers set in `next.config.mjs` (X-Content-Type-Options, X-Frame-Options, HSTS, Referrer-Policy, Permissions-Policy); **no Content-Security-Policy** |
+| Security misconfiguration (A05) | ⚠️ improving | 5 base headers + a **`Content-Security-Policy-Report-Only`** baseline now set in `next.config.mjs`; enforce it (with nonces) after verifying against real traffic |
+| CORS (A05) | ⚠️ finding | `/api/*` sets `Access-Control-Allow-Origin: *`. Not credential-exploitable (browsers block `*` + credentials), but overly permissive; scope it to the app origin (+ the extension's origin) once the extension's needs are confirmed |
 | Sensitive-data exposure / errors (A09) | ✅ fixed | `handleError()` no longer returns internal error messages on 500s; logs server-side only |
 | Secrets | ✅ | only `.env.example` / `.env.production.example` tracked, placeholders only; service-role key used server-side; AI keys in `lib/ai` (server) |
 | Payment integrity | ✅ tested | Stripe webhook rejects missing/invalid signatures before any DB write (unit-tested) |
 | Vulnerable dependencies (A06) | ⚠️ scheduled | `npm audit` 5 high, all bound to the Next 16 migration (`docs/NEXT_16_MIGRATION_PLAN.md`) |
-| Rate limiting / anti-automation (API4) | ❌ gap | none found on API or AI routes — brute-force, scraping, cost-abuse, and the Server-Actions DoS are unmitigated in-app |
+| Rate limiting / anti-automation (API4) | ⚠️ partial | best-effort limiter now in `src/middleware.ts` on `/api/auth/*` (20/min) and `/api/ask-mba\|tutor\|sessions` (40/min), fail-open + unit-tested. **In-memory / per-instance on serverless** — add a shared store (Upstash/Vercel KV) for a hard global cap |
 | SSRF, CSRF | ⚠️ unverified | needs review of any user-supplied URL fetch and state-changing GET/POST CSRF posture |
 
 ## Priority security actions
