@@ -95,3 +95,33 @@ Studio client opens an MBA study platform.
 It cannot be fixed by editing the URL: `promptops`, ZAIan Studio's canonical
 home, contains the Maktab app rather than a deployable PromptOps, so there is
 nowhere correct to point them yet. See DUPLICATE_ANALYSIS.md.
+
+## 2026-08-25 — promptops is PromptOps
+
+ZAIan Studio is PromptOps: one product, two names. `promptops` has been rebuilt
+to be that product only.
+
+The repo held a complete, tested PromptOps backend that **no UI called**, with
+an MBA study app grafted on top. `0001_init.sql` was PromptOps;
+`0003_tweenz_schema.sql` was the graft. The graft is gone and `/studio`,
+`/templates` and `/history` are built on the APIs that were already there.
+Verified live: `promptops-kappa.vercel.app/studio` returns 200.
+
+### The defect worth remembering
+
+The first deploy passed **typecheck, lint, tests and build** — and shipped with
+the wordmark reading "Maktab" and the nav showing literal `nav.workspace` and
+`ws.target`. The i18n helper returns the key when it is missing, so nothing
+failed anywhere. Only fetching the deployed page found it. Eleven more keys
+were in the same state.
+
+A green pipeline is not a working page. There is now a test that walks every
+`.tsx` for `t("a.b")` and checks both dictionaries, verified against a
+deliberately removed key so it can actually fail.
+
+### Still open
+
+The clients point at the right host **in source**, but installed Electron,
+extension and mobile builds carry the old URL until they are re-released. So
+`desktop-tutorial` stays deployed — the blocker is now a release task, not an
+open question.
