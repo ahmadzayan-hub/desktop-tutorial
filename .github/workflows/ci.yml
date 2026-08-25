@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -40,3 +41,26 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      # Fails only on CRITICAL advisories (currently 0). The remaining HIGH
+      # advisories are tracked to the Next 16 migration in
+      # docs/NEXT_16_MIGRATION_PLAN.md; audited here for visibility without
+      # blocking, so a newly-introduced critical is caught immediately.
+      - name: Security audit (block new criticals)
+        run: npm audit --audit-level=critical
+
+  e2e:
+    name: playwright (public surface)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: Public-surface E2E
+        run: npm run test:e2e

@@ -34,8 +34,13 @@ export function handleError(e: unknown): NextResponse {
       { status: 200 }
     );
   }
+  // Log the detail server-side, but never return the raw internal error message
+  // to the client (avoids leaking stack/DB/internal details — OWASP A09/A05).
   console.error("[api]", e);
-  return NextResponse.json({ error: "internal", message: msg }, { status: 500 });
+  return NextResponse.json(
+    { error: "internal", message: "An unexpected error occurred." },
+    { status: 500 }
+  );
 }
 
 /**
