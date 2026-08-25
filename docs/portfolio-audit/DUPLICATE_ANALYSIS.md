@@ -350,3 +350,66 @@ different `src/` trees:
 | `maktab` | 191 | `037b10a` |
 | `desktop-tutorial` | 220 | `e532735` |
 | `promptops` | 202 | `a1c6607` |
+
+## Resolved — 2026-08-25: promptops is PromptOps
+
+The owner settled the remaining question: **ZAIan Studio is PromptOps** — one
+product, two names. PromptOps is the platform; ZAIan Studio is what its
+browser, desktop and mobile clients ship under.
+
+`promptops` has been rebuilt to be that product and only that product.
+
+### What the repo actually was
+
+Two applications, and the migration numbers said which came first:
+
+| | |
+|---|---|
+| `0001_init.sql` | **PromptOps** — organizations, templates, sessions, questions, answers, prompt_versions, api_keys |
+| `0003_tweenz_schema.sql` | The MBA study platform, grafted on later |
+
+The PromptOps backend was complete and tested — intent detection, gap
+analysis, clarifying questions, per-model formatting, templates, and an
+API-key endpoint for the clients — and **nothing in the UI called any of it**.
+`src/lib/types.ts` was pure PromptOps with no MBA types at all. `Header.tsx`
+already navigated to `/workspace`, `/templates` and `/history`: routes planned
+and never built.
+
+### What was done
+
+The graft is removed and the missing UI is built. `/studio` is that workspace
+screen; `/templates` and `/history` now exist. Verified live:
+`promptops-kappa.vercel.app/studio` returns 200 serving PromptOps.
+
+One integration bug was caught before shipping: `ai-models.ts` catalogues ~30
+models while `sessions.target_model` is an enum of five, so passing a catalogue
+id straight through was a 400. `toTargetModel()` narrows by `promptStyle`
+rather than by id, with a test asserting every catalogue entry resolves to a
+value the API accepts.
+
+Four things had been silently serving the other product — the PWA manifest,
+the service-worker precache, a sitemap advertising nine pages that no longer
+exist, and `/api/health` reporting `service: "maktab"`.
+
+### The defect worth remembering
+
+The first deploy passed typecheck, lint, tests and build, and shipped with the
+wordmark reading "Maktab" and the nav showing literal `nav.workspace` and
+`ws.target`. The i18n helper returns the key when it is missing, so **nothing
+failed anywhere** — the only way to see it was to fetch the deployed page.
+Eleven more keys were in the same state in `ThemeToggle` and `FeedbackWidget`.
+
+A test now walks every `.tsx` for `t("a.b")` and checks both dictionaries. It
+was checked against a deliberately removed key to confirm it can actually
+fail.
+
+### `desktop-tutorial` — dependency reduced, not gone
+
+The clients now point at `promptops-kappa.vercel.app` **in source**. Every
+already-installed Electron app, browser extension and mobile build still has
+`desktop-tutorial-kappa-five.vercel.app` compiled in, and will keep hitting it
+until new releases are cut and users update.
+
+So `desktop-tutorial` still cannot be retired. The difference is that the
+blocker is now a release task with a clear end, rather than an open question
+about where the clients should point.

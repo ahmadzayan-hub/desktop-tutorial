@@ -16,7 +16,7 @@ found on 2026-08-23 and audited the same day.
 | 8 | Lahza — coffee gifts & events | `lahza` | ACTIVE | `beyond-coffee-moments` |
 | 9 | Wisal — relationship intelligence | `wisal` | PROTOTYPE · PR#1 merged, PR#2 open (Vercel fix) · **33 tests, previously recorded as none** | — |
 | 10 | Annual Operation Plan 2026 | `annual-operation-plan-2026` | PROTOTYPE | `operational-plan-v03` |
-| 11 | PromptOps — prompt lifecycle | `promptops` | **PROTOTYPE — repo is a hybrid.** Real PromptOps code (`template.ts`, `formatter.ts`, `clarification.ts`, `llm/`, and the 18 tests) is grafted onto a **Maktab** app shell: `package.json` name is `maktab`, routes are `ask-mba/`, `flashcards/`, `grades/`. Its README declares a non-goal of "being a feature inside Maktab". | `prompt-orchestrator`, `zaian-studio` |
+| 11 | **PromptOps · ZAIan Studio** — prompt lifecycle | `promptops` | ACTIVE_DEVELOPMENT · **rebuilt 2026-08-25 to be this product only.** The MBA app grafted on top (`0003_tweenz_schema.sql`) is removed; the UI the tested backend was waiting for is built — `/studio`, `/templates`, `/history`. Live at `promptops-kappa.vercel.app`. | `prompt-orchestrator`, `zaian-studio` (**same product, not an absorbed identity**) |
 | 12 | **Draftly · صياغة** | `draftly-Private` | ACTIVE (v1.0.1) — **not previously in the portfolio list** | `archive/draftly/main` |
 | 13 | Data Value Studio | `data-value-studio` | CHARTERED | — |
 | 14 | ExecFlow | `exeflow` | CHARTERED | — |
