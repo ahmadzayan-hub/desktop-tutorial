@@ -28,7 +28,7 @@ rejection path**, so "no side effect" is actually proven, not assumed.
 | --- | --- | --- |
 | Unit | business rules, validation, parsers, authz decisions | ✅ growing (33) |
 | Integration | real DB ops, auth flows, RLS, Stripe webhook end-to-end, file handling | ❌ none (needs a test Supabase project) |
-| E2E | onboarding, sign-in, AI generation, save/resume, export, mobile | ❌ none (add Playwright) |
+| E2E | onboarding, sign-in, AI generation, save/resume, export, mobile | ⚠️ started — **Playwright, 8 tests** over the public/no-auth surface (`e2e/public.spec.ts`); auth'd journeys still to add |
 | Visual regression | key pages at 360/390/768/1024/1440px | ❌ none |
 
 ## Gaps & next priorities
@@ -50,6 +50,7 @@ npm run lint
 npm run test          # 33 tests
 npm run build
 npm audit --audit-level=critical
+npm run test:e2e      # Playwright — boots the dev server, runs the public-surface E2E
 ```
 
 ## What tests do NOT cover (be explicit)

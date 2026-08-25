@@ -43,3 +43,17 @@ jobs:
       # blocking, so a newly-introduced critical is caught immediately.
       - name: Security audit (block new criticals)
         run: npm audit --audit-level=critical
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: Public-surface E2E
+        run: npm run test:e2e
