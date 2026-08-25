@@ -12,10 +12,10 @@ _Evidence date: this audit branch (`improvement/production-uiux-performance`)._
 | Gate | Requirement | Status | Evidence / blocker |
 | --- | --- | --- | --- |
 | **A — Build quality** | clean build, 0 TS errors, 0 lint errors, no committed secrets | ✅ | `typecheck` 0, `build` OK, `lint` 0 errors (1 font warning), no tracked secrets |
-| **B — Testing** | tests pass; critical logic covered; no open Critical/High defects | ⚠️ | 33/33 pass; **no integration/E2E**; authz/webhook/error covered |
+| **B — Testing** | tests pass; critical logic covered; no open Critical/High defects | ⚠️ | 37 unit + 8 Playwright E2E (public surface) pass; authz/webhook/error covered; **integration + auth'd E2E still missing** |
 | **C — UX** | critical journeys work, mobile/desktop, states, no dead controls, a11y | ⚠️ not verified | requires runtime + live backend; not assessed this pass |
 | **D — Performance** | CWV targets, budgets, no major regressions | ⚠️ not measured | Lighthouse/CWV pass not yet run |
-| **E — Security & privacy** | authz, validation, deps, secrets, headers, rate limits | ⚠️ | strong authz/RLS/secrets/signed-webhooks; **gaps: rate limiting, CSP**; 5 deps highs (Next 16) |
+| **E — Security & privacy** | authz, validation, deps, secrets, headers, rate limits | ⚠️ | strong authz/RLS/secrets/signed-webhooks; best-effort rate limiting + report-only CSP now added; **remaining: enforce CSP, shared-store rate limit, scope CORS**; 5 deps highs (Next 16) |
 | **F — AI quality** | eval suite, structured output, injection tests, disclosures | ❌ | no eval suite; prompt-injection untested (`AI_EVALUATION_PLAN.md` TBD) |
 | **G — Documentation** | accurate setup/env/architecture/tests/deploy; no stale claims | ⚠️ | README fixed; ARCHITECTURE/SECURITY/TEST_STRATEGY/audit docs added; deploy/rollback + AI docs still needed |
 
