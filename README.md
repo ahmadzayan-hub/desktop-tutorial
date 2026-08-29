@@ -109,7 +109,8 @@ Run any of these locally:
 ```bash
 npm run typecheck    # tsc --noEmit
 npm run lint         # next lint
-npm test             # vitest run (18 tests)
+npm test             # vitest run (37 unit tests)
+npm run test:e2e     # playwright (public-surface E2E, boots the dev server)
 npm run build        # next build
 ```
 
