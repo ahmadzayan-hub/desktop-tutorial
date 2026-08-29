@@ -18,14 +18,18 @@ module.exports = async function handler(req, res) {
     res.status(405).json({ error: 'method not allowed' });
     return;
   }
-  if (!allow()) {
-    res.status(429).json({ ok: false, error: 'rate limit exceeded — slow down' });
-    return;
-  }
-  // مصادقة بمفتاح مشترك — مقارنة آمنة توقيتيًا.
+  // مصادقة بمفتاح مشترك أولًا — مقارنة آمنة توقيتيًا. لازم تسبق حد المعدّل:
+  // هو عدّاد مشترك على مستوى الـ instance، فلو اتفحص الأول، طرف من غير
+  // مفتاح صحيح يقدر "يستنزفه" ويحجب مستخدمين حقيقيين عندهم المفتاح.
+  // فحص المفتاح رخيص (مقارنة نص بس، مفيش شبكة أو تشفير تقيل) فمفيش تكلفة
+  // حقيقية في تقديمه.
   const key = req.headers['x-api-key'];
   if (!process.env.APP_API_KEY || !timingSafeEqualStr(key, process.env.APP_API_KEY)) {
     res.status(401).json({ error: 'unauthorized' });
+    return;
+  }
+  if (!allow()) {
+    res.status(429).json({ ok: false, error: 'rate limit exceeded — slow down' });
     return;
   }
 

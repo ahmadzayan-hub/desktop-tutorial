@@ -1,22 +1,31 @@
 // Webhook واتساب:
 //  - GET: تحقّق الاشتراك (Meta بتبعت hub.challenge أول مرة).
 //  - POST: استقبال الرسائل الواردة + حالات التسليم — مع تحقق توقيع Meta
-//    (X-Hub-Signature-256) على الـ raw body لو APP_SECRET متظبّط.
+//    (X-Hub-Signature-256) على الـ raw body، إلزامي دايمًا.
 //
-// ملاحظة أمان: لو APP_SECRET موجود، أي POST بتوقيع غلط بيترفض 401 — محدش يقدر
-// يحقن أحداث مزيفة. لو مش متظبّط (تجربة أولى)، بنقبل مع تحذير في اللوج —
-// اظبطه قبل أي اعتماد على الأحداث الواردة.
+// ملاحظة أمان: مفيش مسار "قبول مع تحذير" لو APP_SECRET مش متظبّط — كان
+// موجود قبل كده وبيسمح لأي حد يحقن أحداث "رسالة عميل" مزيّفة (اللي المفروض
+// مستقبلاً بتفتح نافذة رد 24 ساعة أو تخطر الفريق)، وده بالظبط النوع اللي
+// المشروع بيرفضه في كل مكان تاني (relay التوقيعات، DEMO_ONLY guard...).
+// من غير APP_SECRET، كل POST بيترفض 401 صريح.
 //
 // بنعطّل الـ body parser عشان الـ HMAC لازم يتحسب على البايتات الخام بالظبط.
 
-const { verifySignature } = require('../lib/wa');
+const { verifySignature, timingSafeEqualStr } = require('../lib/wa');
+
+// آخر 4 أرقام بس — كافية للتتبّع التشغيلي (مطابقة حدث بمحادثة) من غير ما
+// نسجّل رقم تليفون كامل لعميل في سجلات السيرفر.
+function maskPhone(n) {
+  const s = String(n || '');
+  return s.length > 4 ? `…${s.slice(-4)}` : s;
+}
 
 module.exports = async function handler(req, res) {
   if (req.method === 'GET') {
     const mode = req.query['hub.mode'];
     const token = req.query['hub.verify_token'];
     const challenge = req.query['hub.challenge'];
-    if (mode === 'subscribe' && token && token === process.env.VERIFY_TOKEN) {
+    if (mode === 'subscribe' && process.env.VERIFY_TOKEN && timingSafeEqualStr(token, process.env.VERIFY_TOKEN)) {
       res.status(200).send(challenge);
     } else {
       res.status(403).send('forbidden');
@@ -31,13 +40,14 @@ module.exports = async function handler(req, res) {
     const raw = Buffer.concat(chunks);
 
     const secret = process.env.APP_SECRET;
-    if (secret) {
-      if (!verifySignature(raw, req.headers['x-hub-signature-256'], secret)) {
-        res.status(401).json({ error: 'invalid signature' });
-        return;
-      }
-    } else {
-      console.warn('webhook: APP_SECRET not set — signature NOT verified (set it before relying on inbound events)');
+    if (!secret) {
+      console.error('webhook: APP_SECRET not set — rejecting POST (configure it before relying on inbound events)');
+      res.status(401).json({ error: 'webhook not configured' });
+      return;
+    }
+    if (!verifySignature(raw, req.headers['x-hub-signature-256'], secret)) {
+      res.status(401).json({ error: 'invalid signature' });
+      return;
     }
 
     try {
@@ -48,10 +58,10 @@ module.exports = async function handler(req, res) {
           const v = ch.value || {};
           for (const m of v.messages || []) {
             // رسالة واردة من عميل — هنا تقدر تفتح نافذة الرد 24 ساعة / تخطر الفريق.
-            console.log('inbound', m.from, m.type, m.id);
+            console.log('inbound', maskPhone(m.from), m.type, m.id);
           }
           for (const s of v.statuses || []) {
-            console.log('status', s.recipient_id, s.status, s.id);
+            console.log('status', maskPhone(s.recipient_id), s.status, s.id);
           }
         }
       }
