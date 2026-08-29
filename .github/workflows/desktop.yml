@@ -40,12 +40,7 @@ jobs:
 
       # فحص جودة قبل البناء: صحة الصياغة + اختبارات العقل (بدون Electron).
       - name: Quality checks (syntax + core tests)
-        run: |
-          node --check main.js
-          node --check preload.js
-          node --check lib/core.js
-          node --check renderer/renderer.js
-          node test/core.test.js
+        run: npm test
 
       - name: Build Windows installer + portable
         run: npx electron-builder --win --publish never
