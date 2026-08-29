@@ -114,22 +114,29 @@ export function aiAutoCrop(img: HTMLImageElement): string {
 export type ModerationResult = { ok: true } | { ok: false; reason: string };
 
 /**
- * Placeholder moderation. Client-side we can only do trivial checks (e.g. file
- * present, decodable). Real moderation must run server-side before production
- * (see AI_ENDPOINT). We fail-open here but keep a clear seam.
+ * Image moderation before checkout.
+ *
+ * Behaviour matrix:
+ * - VITE_AI_ENDPOINT not set  → fail-open with console.warn (no moderation
+ *   deployed; acceptable in dev/staging, must be set before public launch)
+ * - VITE_AI_ENDPOINT set, call succeeds → honour the endpoint's verdict
+ * - VITE_AI_ENDPOINT set, call fails    → fail-closed (endpoint configured
+ *   but broken is a sign something is wrong; block rather than bypass)
  */
 export async function moderateImage(dataUrl: string): Promise<ModerationResult> {
-  if (AI_ENDPOINT) {
-    try {
-      const res = await fetch(`${AI_ENDPOINT}/moderate`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ image: dataUrl }),
-      });
-      if (res.ok) return (await res.json()) as ModerationResult;
-    } catch {
-      /* fall through to fail-open */
-    }
+  if (!AI_ENDPOINT) {
+    console.warn("[Lahza] moderateImage: VITE_AI_ENDPOINT not set — image moderation is disabled. Set it before going live.");
+    return { ok: true };
   }
-  return { ok: true };
+  try {
+    const res = await fetch(`${AI_ENDPOINT}/moderate`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ image: dataUrl }),
+    });
+    if (res.ok) return (await res.json()) as ModerationResult;
+  } catch {
+    /* network error — fail-closed when endpoint is configured */
+  }
+  return { ok: false, reason: "Image review is temporarily unavailable. Please try again shortly." };
 }

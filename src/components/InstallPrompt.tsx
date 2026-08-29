@@ -36,7 +36,7 @@ function IosSheet({ onClose }: { onClose: () => void }) {
           <span className="grid h-11 w-11 place-items-center rounded-2xl bg-gold-500/15">
             <Smartphone className="h-5 w-5 text-gold-600" />
           </span>
-          <button type="button" onClick={onClose} aria-label="Close" className="rounded-full p-1 text-coffee-400 hover:bg-coffee-50">
+          <button type="button" onClick={onClose} aria-label={t("common.close")} className="rounded-full p-1 text-coffee-400 hover:bg-coffee-50">
             <X className="h-5 w-5" />
           </button>
         </div>

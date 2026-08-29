@@ -2,12 +2,12 @@ import { useI18n } from "@/i18n/I18nContext";
 
 /** Segmented EN / العربية toggle. Switches document dir instantly. */
 export function LanguageToggle({ className = "" }: { className?: string }) {
-  const { lang, setLang } = useI18n();
+  const { lang, setLang, t } = useI18n();
   return (
     <div
       className={`inline-flex items-center rounded-full border border-coffee-100 bg-white p-0.5 text-xs font-semibold shadow-sm ${className}`}
       role="group"
-      aria-label="Language"
+      aria-label={t("meta.langToggle")}
     >
       <button
         type="button"

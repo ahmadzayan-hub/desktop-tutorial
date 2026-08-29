@@ -3,6 +3,7 @@ export const en = {
   meta: {
     langName: "English",
     otherLangName: "العربية",
+    langToggle: "Language",
   },
 
   nav: {

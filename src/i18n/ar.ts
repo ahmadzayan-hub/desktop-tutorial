@@ -5,6 +5,7 @@ export const ar: Dict = {
   meta: {
     langName: "العربية",
     otherLangName: "English",
+    langToggle: "اللغة",
   },
 
   nav: {
