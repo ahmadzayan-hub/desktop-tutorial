@@ -150,12 +150,16 @@ function learnFromIgnore() {
  * @param {Telegraf} bot
  */
 function setupHandlers(bot) {
-  // حارس المالك: قبل ضبط chatId (مرحلة الإعداد) نسمح للكل عشان تجرّب،
-  // وبعد ضبطه نرد على المالك بس — تطبيقاً لقاعدة "يكلّمني أنا فقط".
-  const isOwner = (ctx) => {
-    if (!config.chatId) return true;
-    return String(ctx.chat?.id) === String(config.chatId);
-  };
+  // حارس المالك: عمره ما يسمح لحد قبل ما chatId يتظبط. كان في الأول
+  // بيسمح للكل "أثناء الإعداد" — لكن dryRun وchatId قيمتين مستقلتين
+  // تمامًا في config.js، فلو حد شغّل dryRun=false (إرسال حقيقي عبر Groq)
+  // قبل ما يحط chatId، أي غريب يلاقي البوت كان يقدر يشغّل /suggest
+  // ويستهلك حصة Groq المجانية بتاعة المالك، ويوصل لأمثلة أسلوبه الخاصة
+  // (few-shot من store) عن طريق الاقتراحات. /start لوحده مش محتاج
+  // isOwner (بيطبع chat_id عشان أول مرة بس)، فمفيش داعي "نسمح للكل"
+  // على أي أمر تاني أصلاً — المالك الحقيقي بياخد chat_id من /start
+  // ويحطه في config.js ويعيد التشغيل، زي ما الرسالة نفسها بتقول له.
+  const isOwner = (ctx) => Boolean(config.chatId) && String(ctx.chat?.id) === String(config.chatId);
 
   // اقتراح فوري مشترك بين الأوامر (مع التقاط الأخطاء).
   const requestSuggestion = async (ctx, { slot, occasion }) => {

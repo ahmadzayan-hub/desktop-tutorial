@@ -49,6 +49,20 @@ test('حارس المالك: أي حد غير المالك بيتجاهل', asyn
   assert.strictEqual(sent.length, 0);
 });
 
+test('حارس المالك: chatId فاضي معناه مفيش مالك — محدش (حتى غريب) بيتنفّذله أمر', async () => {
+  // ده بالظبط ثغرة كانت موجودة: قبل ما chatId يتظبط، أي حد كان يعتبر
+  // "مالك". لو dryRun=false (زي إعداد الاختبار ده) كان غريب يقدر يشغّل
+  // /suggest فعليًا ويستهلك حصة Groq ويوصل لأمثلة أسلوب المالك.
+  const original = config.chatId;
+  config.chatId = '';
+  try {
+    await H.commands.suggest(makeCtx(STRANGER, '/suggest'));
+    assert.strictEqual(sent.length, 0, 'مفيش رسالة المفروض اتبعتت لغريب لما chatId فاضي');
+  } finally {
+    config.chatId = original;
+  }
+});
+
 test('رد نصي حر بيتسجّل كتعديل (edited)', async () => {
   const sink = [];
   await H.commands.suggest(makeCtx(OWNER, '/suggest'));
