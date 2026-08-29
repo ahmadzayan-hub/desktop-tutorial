@@ -1,6 +1,7 @@
 package com.wifeassistant
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -61,6 +62,12 @@ class MainActivity : ComponentActivity() {
     private val notifPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { /* اختياري */ }
 
+    // نتابع الـ intent الحالي كـ state: لازم للإقران عبر wisal://pair — لو
+    // التطبيق شغّال بالفعل و launchMode=singleTask، أندرويد بيوصّل رابط
+    // الدعوة التاني عبر onNewIntent مش onCreate جديد، فلازم نحدّث الـ state
+    // بدل ما نفضل واقفين على الـ intent الأول.
+    private var currentIntent by mutableStateOf<Intent?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -69,6 +76,8 @@ class MainActivity : ComponentActivity() {
         requestNotificationPermissionIfNeeded()
         // جدولة WorkManager بره الـ main thread عشان ما تأخّرش بدء التشغيل/أول فريم.
         lifecycleScope.launch(Dispatchers.Default) { Scheduler.scheduleDaily(this@MainActivity) }
+
+        currentIntent = intent
 
         setContent {
             // نقرأ تفضيلات المظهر واللغة ونخلّيها state عشان تتغيّر فوراً من الإعدادات.
@@ -88,9 +97,12 @@ class MainActivity : ComponentActivity() {
                     // key(appLanguage): تغيير اللغة يعيد تكوين الشجرة كلها فتتبدّل كل النصوص فورًا.
                     key(appLanguage) {
                         // دعوة إقران وصلت عبر wisal://pair — شاشة القبول ليها الأولوية.
-                        var pendingInvite by remember {
+                        // remember(currentIntent) عشان أي دعوة جديدة توصل وقت
+                        // ما التطبيق شغّال بالفعل (عبر onNewIntent) تتقرأ من
+                        // جديد بدل ما تفضل الشاشة واقفة على أول دعوة اتفتح بيها.
+                        var pendingInvite by remember(currentIntent) {
                             mutableStateOf(
-                                intent?.dataString?.let { com.wifeassistant.data.pairing.Pairing.parsePayload(it) }
+                                currentIntent?.dataString?.let { com.wifeassistant.data.pairing.Pairing.parsePayload(it) }
                             )
                         }
                         val invite = pendingInvite
@@ -110,6 +122,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        currentIntent = intent
     }
 
     private fun requestNotificationPermissionIfNeeded() {
