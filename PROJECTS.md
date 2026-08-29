@@ -30,9 +30,16 @@ and a Telegram bot.
 | --- | --- | --- | --- |
 | `wisal-web/` | Landing + download page | Static HTML/CSS/JS (own `vercel.json`, `manifest`, `sitemap`, `robots`, `llms.txt`) | Vercel/Netlify as a **separate project** with Root Directory = `wisal-web` |
 | `android-wife-assistant/` | Android app | Kotlin + Gradle | Google Play / signed APK |
+| `wisal-desktop/` | Windows desktop app | Electron | GitHub Releases (`windows-latest` tag: `Wisal-Setup.exe` / `Wisal-Portable.exe`), own CI at `.github/workflows/desktop.yml` |
 | `telegram-wife-assistant/` | Telegram bot | Node.js (PM2 `ecosystem.config.js`) | Any always-on host (VPS/Render/Railway) via PM2 |
 | `wisal-cloud-api/` | Business-mode backend (WhatsApp Business Cloud API relay) | Node.js Vercel functions | Vercel as a **separate project**, Root Directory = `wisal-cloud-api` |
 | `wisal-direct-relay/` | Wisal Direct backend — device registry + encrypted-envelope store-and-forward (Phase 3, in progress; not the E2EE protocol itself, see `docs/decisions/ADR-002-e2ee-protocol.md`) | Node.js Vercel functions | Vercel as a **separate project**, Root Directory = `wisal-direct-relay` |
+
+`agent-os/` and `agentic-os/` are organizational layers that describe/govern the
+Wisal product line as an agentic system (roles, skills, memory, tools) rather
+than shipping application code themselves — see their own `README.md`/`OS.md`
+for scope. Neither is deployed; both are documentation + supporting scripts for
+how agents work on this workspace.
 
 ## Product line 3 — Beyond Style UAE (landing page)
 
@@ -45,6 +52,12 @@ and a Telegram bot.
 | **Standalone** | Yes — static files, host anywhere |
 
 `docs/` holds shared threat models (`THREAT_MODEL.md`, `THREAT_MODEL_WISAL.md`).
+
+## Out of scope
+
+`operational-plan/` (static HTML annual operational plan documents) is not part
+of any product line above — unrelated content, not linked from or linking to
+any of the apps here.
 
 ## No duplication
 
@@ -68,6 +81,9 @@ no shared or duplicated source folders across projects.
   ecosystem.config.js` on any always-on host. Needs `GROQ_API_KEY` +
   `TELEGRAM_BOT_TOKEN` (see its `README.md`).
 - **android-wife-assistant** — open in Android Studio, or `./gradlew assembleRelease`.
+- **wisal-desktop** — `cd wisal-desktop && npm install && npm start` for dev; CI
+  (`.github/workflows/desktop.yml`) builds and publishes installers to GitHub
+  Releases.
 - **wisal-cloud-api** — new Vercel project, Root Directory `wisal-cloud-api`. See its `README.md` for required env vars.
 - **wisal-direct-relay** — new Vercel project, Root Directory `wisal-direct-relay`. No shared secret required (per-request device signatures); see its `README.md` for the production-storage blocker before real deployment.
 - **landing (Beyond Style UAE)** — already auto-deploys to GitHub Pages via
