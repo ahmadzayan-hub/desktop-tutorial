@@ -10,6 +10,7 @@
 function createInMemoryStore() {
   const devices = new Map();   // deviceId -> { deviceId, publicKeyB64, registeredAtEpochSec }
   const envelopes = new Map(); // id -> envelope
+  const seenSubmissionSignatures = new Map(); // signatureB64 -> expiresAtEpochSec (لمنع الإعادة)
 
   return {
     // ---- الأجهزة ----
@@ -45,7 +46,20 @@ function createInMemoryStore() {
           removed++;
         }
       }
+      for (const [sig, expiresAt] of seenSubmissionSignatures) {
+        if (expiresAt <= nowEpochSec) seenSubmissionSignatures.delete(sig);
+      }
       return removed;
+    },
+
+    // ---- منع إعادة إرسال مغلف (replay) ----
+    // بصمة كل توقيع إيداع اتقبل قبل كده — بايتات مطابقة حرفيًا معناها نفس
+    // الطلب اتلقَط وأُعيد بعثه. بتتنضف تلقائيًا مع sweepExpired.
+    hasSeenSubmissionSignature(signatureB64) {
+      return seenSubmissionSignatures.has(signatureB64);
+    },
+    recordSubmissionSignature(signatureB64, expiresAtEpochSec) {
+      seenSubmissionSignatures.set(signatureB64, expiresAtEpochSec);
     },
   };
 }

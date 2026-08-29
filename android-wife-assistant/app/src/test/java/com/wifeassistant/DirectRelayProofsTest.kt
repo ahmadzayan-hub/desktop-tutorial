@@ -13,7 +13,10 @@ class DirectRelayProofsTest {
     }
 
     @Test fun matchesServerSubmitFormat() {
-        assertEquals("devA:devB:Y2lwaGVy:1800003600", DirectRelayProofs.submit("devA", "devB", "Y2lwaGVy", 1_800_003_600L))
+        assertEquals(
+            "devA:devB:Y2lwaGVy:VODOZEMAC:1800003600",
+            DirectRelayProofs.submit("devA", "devB", "Y2lwaGVy", "VODOZEMAC", 1_800_003_600L),
+        )
     }
 
     @Test fun matchesServerFetchFormat() {

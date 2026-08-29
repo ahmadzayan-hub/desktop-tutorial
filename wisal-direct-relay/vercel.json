@@ -2,5 +2,11 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
     "api/*.js": { "maxDuration": 15 }
-  }
+  },
+  "rewrites": [
+    { "source": "/api/devices", "destination": "/api/relay?op=devices" },
+    { "source": "/api/envelopes", "destination": "/api/relay?op=envelopes" },
+    { "source": "/api/inbox", "destination": "/api/relay?op=inbox" },
+    { "source": "/api/ack", "destination": "/api/relay?op=ack" }
+  ]
 }

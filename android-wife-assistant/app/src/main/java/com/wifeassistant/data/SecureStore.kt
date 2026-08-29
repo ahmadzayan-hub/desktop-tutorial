@@ -53,7 +53,14 @@ object SecureStore {
 
     fun setSecret(context: Context, key: String, value: String) {
         val enc = secure(context)
-        if (enc != null) enc.edit().putString(key, value).apply()
-        else legacy(context).edit().putString(key, value).apply()
+        if (enc != null) {
+            enc.edit().putString(key, value).apply()
+            // نمسح أي نسخة قديمة غير مشفّرة من نفس المفتاح — لو التشفير كان
+            // فشل مرة قبل كده وكتب نسخة plaintext، أول نجاح بعد كده لازم
+            // يشيلها فورًا بدل ما تفضل قاعدة على القرص من غير داعي.
+            legacy(context).edit().remove(key).apply()
+        } else {
+            legacy(context).edit().putString(key, value).apply()
+        }
     }
 }

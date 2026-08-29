@@ -64,7 +64,7 @@ const NOW = 1_800_000_000;
 
   const ciphertextB64 = Buffer.from('opaque-bytes-not-plaintext').toString('base64');
   const expiresAt = NOW + 3600;
-  const proof = `devA:${bobId}:${ciphertextB64}:${expiresAt}`;
+  const proof = `devA:${bobId}:${ciphertextB64}:VODOZEMAC:${expiresAt}`;
   const submit = submitEnvelope(
     store,
     { senderDeviceId: 'devA', recipientDeviceId: bobId, ciphertextB64, backend: 'VODOZEMAC', expiresAtEpochSec: expiresAt },
@@ -114,23 +114,56 @@ const NOW = 1_800_000_000;
   const ct = Buffer.from('x').toString('base64');
 
   // مغلف بصلاحية في الماضي: مرفوض
-  const expiredProof = `devA:devB:${ct}:${NOW - 1}`;
+  const expiredProof = `devA:devB:${ct}:VODOZEMAC:${NOW - 1}`;
   const expired = submitEnvelope(store, { senderDeviceId: 'devA', recipientDeviceId: 'devB', ciphertextB64: ct, backend: 'VODOZEMAC', expiresAtEpochSec: NOW - 1 }, sign(alice.privateKey, expiredProof), NOW);
   assert.strictEqual(expired.ok, false);
   assert.strictEqual(expired.reason, 'already expired');
 
   // TTL أطول من المسموح: مرفوض
   const tooLongExp = NOW + 30 * 24 * 3600;
-  const tooLongProof = `devA:devB:${ct}:${tooLongExp}`;
+  const tooLongProof = `devA:devB:${ct}:VODOZEMAC:${tooLongExp}`;
   const tooLong = submitEnvelope(store, { senderDeviceId: 'devA', recipientDeviceId: 'devB', ciphertextB64: ct, backend: 'VODOZEMAC', expiresAtEpochSec: tooLongExp }, sign(alice.privateKey, tooLongProof), NOW);
   assert.strictEqual(tooLong.ok, false);
   assert.strictEqual(tooLong.reason, 'ttl too long');
 
+  // انتهاء غير رقمي (NaN): لازم يترفض صريح، مش يعدّي المقارنات بصمت
+  const nanProof = `devA:devB:${ct}:VODOZEMAC:not-a-number`;
+  const nanExpiry = submitEnvelope(store, { senderDeviceId: 'devA', recipientDeviceId: 'devB', ciphertextB64: ct, backend: 'VODOZEMAC', expiresAtEpochSec: 'not-a-number' }, sign(alice.privateKey, nanProof), NOW);
+  assert.strictEqual(nanExpiry.ok, false);
+  assert.strictEqual(nanExpiry.reason, 'invalid expiry');
+
   // مُرسِل غير مسجّل: مرفوض
-  const unregisteredProof = `devZ:devB:${ct}:${NOW + 100}`;
+  const unregisteredProof = `devZ:devB:${ct}:VODOZEMAC:${NOW + 100}`;
   const unregistered = submitEnvelope(store, { senderDeviceId: 'devZ', recipientDeviceId: 'devB', ciphertextB64: ct, backend: 'VODOZEMAC', expiresAtEpochSec: NOW + 100 }, sign(alice.privateKey, unregisteredProof), NOW);
   assert.strictEqual(unregistered.ok, false);
   assert.strictEqual(unregistered.reason, 'sender not registered');
+
+  // مستلم غير مسجّل: مرفوض
+  const unregRecipientProof = `devA:ghost:${ct}:VODOZEMAC:${NOW + 100}`;
+  const unregRecipient = submitEnvelope(store, { senderDeviceId: 'devA', recipientDeviceId: 'ghost', ciphertextB64: ct, backend: 'VODOZEMAC', expiresAtEpochSec: NOW + 100 }, sign(alice.privateKey, unregRecipientProof), NOW);
+  assert.strictEqual(unregRecipient.ok, false);
+  assert.strictEqual(unregRecipient.reason, 'recipient not registered');
+
+  // إعادة إرسال نفس التوقيع بالظبط (replay): يترفض تاني مرة
+  const replayProof = `devA:devB:${ct}:VODOZEMAC:${NOW + 100}`;
+  const replaySig = sign(alice.privateKey, replayProof);
+  const first = submitEnvelope(store, { senderDeviceId: 'devA', recipientDeviceId: 'devB', ciphertextB64: ct, backend: 'VODOZEMAC', expiresAtEpochSec: NOW + 100 }, replaySig, NOW);
+  assert.strictEqual(first.ok, true);
+  const replay = submitEnvelope(store, { senderDeviceId: 'devA', recipientDeviceId: 'devB', ciphertextB64: ct, backend: 'VODOZEMAC', expiresAtEpochSec: NOW + 100 }, replaySig, NOW + 1);
+  assert.strictEqual(replay.ok, false);
+  assert.strictEqual(replay.reason, 'replayed submission');
+
+  // بصمة الإثبات لازم تشمل backend — لو غيّرته من غير ما تعيد التوقيع
+  // بالقيمة الجديدة، السيرفر يرفض (منع تلاعب بتصنيف بروتوكول التشفير).
+  const tamperedBackendProof = `devA:devB:${ct}:VODOZEMAC:${NOW + 200}`; // موقّع كـ VODOZEMAC
+  const tamperedBackend = submitEnvelope(
+    store,
+    { senderDeviceId: 'devA', recipientDeviceId: 'devB', ciphertextB64: ct, backend: 'SIGNAL', expiresAtEpochSec: NOW + 200 }, // اتبعت كـ SIGNAL
+    sign(alice.privateKey, tamperedBackendProof),
+    NOW,
+  );
+  assert.strictEqual(tamperedBackend.ok, false);
+  assert.strictEqual(tamperedBackend.reason, 'bad signature');
 
   // توقيع fetch قديم جدًا (خارج نافذة الانحراف الزمني): مرفوض
   const staleTs = NOW - 1000;
@@ -139,9 +172,15 @@ const NOW = 1_800_000_000;
   assert.strictEqual(stale.ok, false);
   assert.strictEqual(stale.reason, 'stale timestamp');
 
+  // توقيت غير رقمي (NaN) على fetch: لازم يترفض صريح، مش يعدّي فحص الانحراف بصمت
+  const nanTsProof = `fetch:devB:not-a-number`;
+  const nanTs = listInbox(store, { deviceId: 'devB', timestamp: 'not-a-number', signatureB64: sign(bob.privateKey, nanTsProof) }, NOW);
+  assert.strictEqual(nanTs.ok, false);
+  assert.strictEqual(nanTs.reason, 'invalid timestamp');
+
   // تأكيد تسليم مغلف لشخص تاني: مرفوض
-  const proof = `devA:devB:${ct}:${NOW + 100}`;
-  const submit = submitEnvelope(store, { senderDeviceId: 'devA', recipientDeviceId: 'devB', ciphertextB64: ct, backend: 'VODOZEMAC', expiresAtEpochSec: NOW + 100 }, sign(alice.privateKey, proof), NOW);
+  const proof = `devA:devB:${ct}:VODOZEMAC:${NOW + 300}`;
+  const submit = submitEnvelope(store, { senderDeviceId: 'devA', recipientDeviceId: 'devB', ciphertextB64: ct, backend: 'VODOZEMAC', expiresAtEpochSec: NOW + 300 }, sign(alice.privateKey, proof), NOW);
   const wrongAckProof = `ack:${submit.id}`;
   const wrongAck = ackDelivery(store, { deviceId: 'devA', envelopeId: submit.id, signatureB64: sign(alice.privateKey, wrongAckProof) }, NOW);
   assert.strictEqual(wrongAck.ok, false);
@@ -158,7 +197,7 @@ const NOW = 1_800_000_000;
 
   const ct = Buffer.from('y').toString('base64');
   const shortExp = NOW + 50;
-  const proof = `devA:devB:${ct}:${shortExp}`;
+  const proof = `devA:devB:${ct}:VODOZEMAC:${shortExp}`;
   const submit = submitEnvelope(store, { senderDeviceId: 'devA', recipientDeviceId: 'devB', ciphertextB64: ct, backend: 'VODOZEMAC', expiresAtEpochSec: shortExp }, sign(alice.privateKey, proof), NOW);
   assert.strictEqual(submit.ok, true);
 

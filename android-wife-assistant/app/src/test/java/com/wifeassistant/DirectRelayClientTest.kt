@@ -75,7 +75,7 @@ class DirectRelayClientTest {
 
         val bodyStr = server.takeRequest().body.readUtf8()
         val sigMatch = Regex("\"signatureB64\":\"([^\"]+)\"").find(bodyStr)!!.groupValues[1]
-        val proof = DirectRelayProofs.submit(identity.deviceId, "devB", ct, expiresAt)
+        val proof = DirectRelayProofs.submit(identity.deviceId, "devB", ct, "DEMO_ONLY", expiresAt)
         assertTrue(DeviceIdentityCodec.verify(identity.publicKeyB64, proof.toByteArray(), Base64.getDecoder().decode(sigMatch)))
     }
 

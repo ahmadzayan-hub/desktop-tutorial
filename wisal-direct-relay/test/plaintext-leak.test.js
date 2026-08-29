@@ -31,7 +31,7 @@ registerDevice(store, { deviceId: 'devB', publicKeyB64: bob.publicKeyB64, signat
 // بيتعامل معاه كـ opaque bytes ومايفتحوش أبدًا).
 const ciphertextB64 = Buffer.from(SEEDED_PLAINTEXT, 'utf8').toString('base64');
 const expiresAt = NOW + 3600;
-const proof = `devA:devB:${ciphertextB64}:${expiresAt}`;
+const proof = `devA:devB:${ciphertextB64}:VODOZEMAC:${expiresAt}`;
 const submit = submitEnvelope(
   store,
   { senderDeviceId: 'devA', recipientDeviceId: 'devB', ciphertextB64, backend: 'VODOZEMAC', expiresAtEpochSec: expiresAt },

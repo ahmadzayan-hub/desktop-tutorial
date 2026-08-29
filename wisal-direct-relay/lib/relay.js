@@ -37,14 +37,31 @@ function submitEnvelope(store, envelope, signatureB64, nowEpochSec) {
   if (!senderDeviceId || !recipientDeviceId || !ciphertextB64 || !backend || !expiresAtEpochSec) {
     return refused('missing fields');
   }
+  // لازم رقم فعلي — لو جه نص غير رقمي (أو أي قيمة غير محدودة) كل مقارنات
+  // الانتهاء بعد كده بتتقيّم NaN وترجع false دايمًا، يعني يتخطّى فحص
+  // الانتهاء والـ TTL بصمت. رفض صريح هنا أأمن من مقارنة NaN صامتة.
+  if (!Number.isFinite(expiresAtEpochSec)) return refused('invalid expiry');
+
   const sender = store.getDevice(senderDeviceId);
   if (!sender) return refused('sender not registered');
+  // المستلم لازم يكون جهاز مسجَّل — مفيش داعي نخزّن مغلفات لمعرّف وهمي
+  // محدش هيقدر يجيبها أو يأكّد تسليمها أبدًا.
+  if (!store.getDevice(recipientDeviceId)) return refused('recipient not registered');
 
-  const proof = `${senderDeviceId}:${recipientDeviceId}:${ciphertextB64}:${expiresAtEpochSec}`;
+  // بصمة الإثبات بتشمل backend عمدًا — لو اتشالت، حد على المسار (أو الـ
+  // relay نفسه لو اتلخبط) يقدر يغيّر تصنيف بروتوكول التشفير من غير ما
+  // يبوّظ التوقيع، وده يناقض مبدأ المشروع الأساسي: مفيش وصف تشفير كاذب.
+  const proof = `${senderDeviceId}:${recipientDeviceId}:${ciphertextB64}:${backend}:${expiresAtEpochSec}`;
   if (!verifySignature(sender.publicKeyB64, proof, signatureB64)) return refused('bad signature');
 
   if (expiresAtEpochSec <= nowEpochSec) return refused('already expired');
   if (expiresAtEpochSec - nowEpochSec > MAX_ENVELOPE_TTL_SECONDS) return refused('ttl too long');
+
+  // منع إعادة الإرسال (replay): توقيع مُلتقَط ومُعاد بنفس البايتات بالظبط
+  // بيترفض. التوقيع نفسه فريد لكل عملية توقيع حقيقية، فمطابقته الحرفية
+  // معناها نفس الطلب اتبعت قبل كده.
+  if (store.hasSeenSubmissionSignature(signatureB64)) return refused('replayed submission');
+  store.recordSubmissionSignature(signatureB64, expiresAtEpochSec);
 
   const id = `${senderDeviceId}:${nowEpochSec}:${Math.random().toString(36).slice(2, 10)}`;
   store.putEnvelope({
@@ -60,12 +77,17 @@ function submitEnvelope(store, envelope, signatureB64, nowEpochSec) {
 // والـ timestamp لازم يكون قريب من وقت السيرفر (يمنع إعادة استخدام توقيع قديم).
 function listInbox(store, { deviceId, timestamp, signatureB64 }, nowEpochSec) {
   if (!deviceId || !timestamp || !signatureB64) return refused('missing fields');
+  const ts = Number(timestamp);
+  // نفس منطق الحماية من NaN فوق: timestamp غير رقمي يخلّي فحص الانحراف
+  // الزمني يرجع false دايمًا (NaN > رقم = false) فيقبل توقيع قديم اتسرّب.
+  if (!Number.isFinite(ts)) return refused('invalid timestamp');
+
   const device = store.getDevice(deviceId);
   if (!device) return refused('device not registered');
 
   const proof = `fetch:${deviceId}:${timestamp}`;
   if (!verifySignature(device.publicKeyB64, proof, signatureB64)) return refused('bad signature');
-  if (Math.abs(nowEpochSec - Number(timestamp)) > FETCH_CLOCK_SKEW_SECONDS) return refused('stale timestamp');
+  if (Math.abs(nowEpochSec - ts) > FETCH_CLOCK_SKEW_SECONDS) return refused('stale timestamp');
 
   store.sweepExpired(nowEpochSec);
   const items = store.listEnvelopesFor(deviceId).map(

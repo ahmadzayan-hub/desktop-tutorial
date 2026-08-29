@@ -48,7 +48,7 @@ class DirectRelayClient(private val baseUrl: String) {
         expiresAtEpochSec: Long,
     ): Result<String> = withContext(Dispatchers.IO) {
         if (!isConfigured()) return@withContext Result.failure(IllegalStateException("relay not configured"))
-        val proof = DirectRelayProofs.submit(identity.deviceId, recipientDeviceId, ciphertextB64, expiresAtEpochSec)
+        val proof = DirectRelayProofs.submit(identity.deviceId, recipientDeviceId, ciphertextB64, backend, expiresAtEpochSec)
         val body = json.encodeToString(
             SubmitRequest.serializer(),
             SubmitRequest(identity.deviceId, recipientDeviceId, ciphertextB64, backend, expiresAtEpochSec, signB64(identity, proof)),
