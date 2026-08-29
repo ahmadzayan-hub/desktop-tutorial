@@ -152,6 +152,7 @@ jobs:
       # فيه wisal.apk و wisal.aab بس - عشان رابط التنزيل يبقى نضيف.
       - name: Prune stale release assets
         if: github.event_name != 'pull_request'
+        continue-on-error: true # تنظيف تجميلي بس - لو فشل ملوش تأثير على نجاح الـ release نفسه
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
